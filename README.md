@@ -9,4 +9,8 @@ The theme uses root-relative URLs so `/sky-chart/` and historical `/sky-chart//`
 
 Vendor stylesheet sources and versions are documented in `wp-content/themes/aiobservatory/assets/css/VENDOR.md`.
 
-Known export gaps: some original photos, decorative assets, and third-party widgets are unavailable. The `/initial/` reservation form and newsletter rely on WordPress plugins/backend endpoints not included in this repository; changing URLs cannot restore those services. The homepage's Astrophotography and Robotic Scopes descriptions remain visible, but their links were removed because neither destination page exists in the export or on the live site.
+Astrophotography and Robotic Scopes now have pages based on the existing Station 1, hardware and software descriptions. Construction-gallery links use exported originals where available, otherwise the matching exported thumbnail. Unavailable overview/weather illustrations have been removed rather than substituted with unrelated pictures.
+
+The sky page uses HTTPS forecast previews with visible provider links and a fallback message on image errors. Legacy sky-map, Earth-view and ephemeris images are replaced with links to current astronomy tools. The weather page links to the KPAPENAR3 dashboard instead of the retired Flash widget and banner.
+
+Known export gaps: the `/initial/` reservation form and newsletter rely on WordPress plugins/backend endpoints not included in this repository; changing URLs cannot restore those services. Third-party providers may change or become unavailable; check forecast/observation timestamps before use.
