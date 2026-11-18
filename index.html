@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body onload="FadeAudio(); hideControls();">
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2><video id="video-jsi" autoplay >
+<source src="wp-content/themes/aiobservatory/assets/video/vid360.mp4#t=0,48" type="video/mp4">  <!-- change FadeAudio() if end time changes -->
+</video></section> 
+<img id="posterz" class="poster" src="wp-content/uploads/2017/02/poster.png" /></div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+  <!-- preloader - spinning cog when site opens-->
+  <div id="preloader">
+    <div id="preloader-img"></div>
+  </div>
+  <!-- /preloader -->
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+
+
+
+  
+
+
+
+<!--  navicon menu-->
+    
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="/">
+    <img src="wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+
+  <!-- fullpage -->
+  <div id="fullpage">
+
+    <!-- home -->
+    <div class="section active home-section">
+      <div class="section-entry">
+        <div class="container">
+          <div class="row">
+            <section id="wpb_h_widget-2" class="widget widget_wpb_h_widget"><div class="col-md-12">
+              <!-- section title -->
+              <div class="section-heading">
+                <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0">
+                 APPLIED  <span>ASTRONOMY</span> 
+                </h1>
+                
+                
+                <p class="animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="100">
+                 unlimited horizons</p>
+              </div>
+              <!-- /section title -->
+              <!-- countdown -->
+              <ul id="countdown" class="row">
+                <li class="time-wrap col-xs-6 col-sm-3 animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="200">
+                  <span class="time days"></span>
+                  <p class="unit days_ref shuffle" 
+                  data-shuffle="7000"></p>
+                </li>
+                <li class="time-wrap col-xs-6 col-sm-3 animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="300">
+                  <span class="time hours"></span>
+                  <p class="unit hours_ref shuffle" 
+                  data-shuffle="11000"></p>
+                </li>
+                <li class="time-wrap col-xs-6 col-sm-3 animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="400">
+                  <span class="time minutes"></span>
+                  <p class="unit minutes_ref shuffle" 
+                  data-shuffle="13000"></p>
+                </li>
+                <li class="time-wrap col-xs-6 col-sm-3 animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="500">
+                  <span class="time seconds"></span>
+                  <p class="unit seconds_ref shuffle" 
+                  data-shuffle="8000"></p>
+                </li>
+              </ul>
+              <!-- /countdown -->
+ 
+               <!--  2 of the buttons used to link down the mainpage via anchor code that I removed -->
+               <!--  see original funcitons.php from developers -->
+               
+              <div class="home-btn-wrapper">
+               <!-- btn-white to make white....I liked it transparant -->
+                <a class="btn btn-transparent animated" href="/station1/" title="Station 1" 
+                  data-animation="fadeInUp" 
+                  data-delay="600">Station 1</a>
+                  
+                <a class="btn btn-transparent animated" href="/initial/" title="Reserve" 
+                  data-animation="fadeInUp" 
+                  data-delay="600">Reserve</a>
+                  
+                <a class="btn btn-transparent animated" href="index.html#" title="Employment" 
+                  data-animation="fadeInUp" 
+                  data-delay="600">Employment</a>
+              </div>
+            </div></section> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /home -->
+
+
+
+
+
+   <!-- service -->
+    <div class="section service-section">
+      <div class="section-entry">
+        <section id="wpb_widget-3" class="widget widget_wpb_widget"><div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <!-- section title -->
+              <div class="section-heading">
+                <h2 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0">
+                 OBSERVATORY  <span>SERVICES</span> </h2>
+                <p class="animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="100">
+                  our current pursuits</p>
+              </div>
+              <!-- /section title -->
+            </div>
+          </div>
+          <div class="row">
+
+
+            <!-- service list -->
+            <div class="service-wrapper clearfix">
+            
+              <div class="service col-md-4 animated" 
+                data-animation="fadeInUp" 
+                data-delay="200">
+
+                 <a href="/station1/" style="display: block">
+                <i class="icon-chemistry icons"></i> <!-- service icon --></a>
+
+                <h3>RESEARCH</h3> <!-- service title -->
+                <p>Specializing in Spectroscopy,Photometry, Catalog proofs and Data collection</p> <!-- service content -->
+              </div>
+              
+
+              <div class="service col-md-4 animated" 
+                data-animation="fadeInUp" 
+                data-delay="300">
+
+                 <a href="/astrophotography" style="display: block">
+                <i class="icon-camera icons"></i> <!-- service icon --></a>
+
+                <h3>ASTROPHOTOGRAPHY</h3> <!-- service title -->
+                <p>Filtered config for Planetary, Deepsky and everything in-between</p> <!-- service content -->
+              </div>
+              
+              <div class="service col-md-4 animated" 
+                data-animation="fadeInUp" 
+                data-delay="400">
+
+                <a href="/robotic" style="display: block">
+                <i class="icon-feed icons"></i> <!-- service icon --></a>
+
+                <h3>ROBOTIC SCOPES</h3> <!-- service title -->
+                <p>Fully remote controlled telescopes for amateurs and professionals</p> <!-- service content -->
+              </div>
+            </div>
+            <!-- /service list -->
+
+
+          </div>
+        </div></section> 
+      </div>
+    </div>
+    <!-- /service -->
+
+
+
+
+
+
+
+    <!-- subscribe-->
+    <div class="section subscribe-section">
+      <div class="section-entry">
+        <div class="container">
+          <div class="row">
+            		<aside id="simplenewsletter-widget" class="widget">
+			<h2 class="widget-title"></h2>
+			<div class="col-md-12">
+              <!-- section title -->
+              <div class="section-heading">
+                <h2 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0">
+                 NEWS  <span>LETTER</span> </h2>
+                <p class="animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="100">
+                   subscribe to be notified</p>
+              </div>
+              <!-- /section title -->
+            </div>
+            <div class="col-md-12">
+		
+			<div class="simplenewsletter" data-showon='append'>
+		<form method='POST' id='subscribe-form' class='form_simplenewsletter-69b45870013c4'>
+						<input  name='simplenewsletter[name]' type='hidden' placeholder='Name' value="Subscriber"/>
+		
+					<div class="form-group">
+                  <div class="input-group animated" 
+                    data-animation="fadeInUp" 
+                    data-delay="500">
+                    <input type="email" name="simplenewsletter[email]" class="form-control" id="subscribe-email" placeholder="Email">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-subscribe simplenewsleter-field-submit">
+                        <i class="fa fa-fw fa-paper-plane submit"></i>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+                <label class="subscribe-notice animated" for="subscribe-email" 
+                data-animation="fadeInUp" 
+                data-delay="600"></label>
+
+	</form>
+	<div class="simplenewsletter_spinner" style="display:none;">
+		<img src="wp-content/plugins/simple-newsletter-br/images/loading_spinner.gif" style="margin-left:45%;">
+	</div>
+</div>
+<script>
+	/** initSimpleNewsletter('.form_simplenewsletter-69b45870013c4'); **/
+</script>
+			</div>
+		</aside>
+		 
+            <!-- /subscribe-form -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /subscribe -->
+
+
+
+
+ 
+
+
+
+
+
+
+    <!-- contact -->
+    <div class="section contact-section">
+      <div class="section-entry">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12">
+              <!-- section title -->
+              <div class="section-heading">
+                <h2 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0">
+                   CONTACT  <span>US</span> </h2>
+                <p class="animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="100">
+                  any enquiries or say hello</p>
+              </div>
+              <!-- /section title -->
+            </div>
+            <!-- contact form -->
+             
+            <div class="col-md-6 col-md-offset-3">
+            
+
+
+<style>
+  div#cbox1 {
+  height: 336px !important;
+  }
+</style>
+
+
+
+
+
+    <div id="cbox1" >
+        <div id="cbox2">
+            <a class="open" id="ylink" href="index.html#"></a>
+            
+<!-- IN MY FOOTER-----------------------------START------------------------------------------- -->
+    <form id="contact-form" action="https://ai2observatory.com/index.php" method="post">
+    
+                <div class="row form-group">
+                  <div class="col-xs-6">
+                    <input type="text" name="cf_name" class="form-control form-control-line animated" 
+                      data-animation="fadeInUp" 
+                      data-delay="200" 
+                      placeholder="your namez" id="contact-name">
+                  </div>
+                  
+                  <div class="col-xs-6">
+                    <input type="text" name="cf_email" class="form-control form-control-line animated" 
+                      data-animation="fadeInUp" 
+                      data-delay="300" 
+                      placeholder="your email" id="contact-email">
+                  </div>
+                </div>
+                
+                <div class="row form-group">
+                  <div class="col-md-12">
+                    <textarea name="cf_message" class="form-control form-control-line animated" 
+                      data-animation="fadeInUp" 
+                      data-delay="400" 
+                      rows="1" placeholder="your message" id="contact-message"></textarea>
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-contact animated" 
+                  data-animation="fadeInUp" 
+                  data-delay="500">Submit</button>
+                <div class="contact-notice animated" 
+                data-animation="fadeInUp" 
+                data-delay="600"></div>
+              </form>
+	    </div>
+</div>
+
+
+<!-- IN MY FOOTER-----------------------------END------------------------------------------- -->
+
+             
+            </div>
+
+            <!-- /contact form -->
+
+
+            <!-- contact way -->
+            <div class="contact-way col-md-12">
+              <div class="row">
+                <div class="col-md-4">
+                  <p class="animated" 
+                    data-animation="fadeInUp" 
+                    data-delay="500"><i class="fa fa-map-marker"></i>  Pen Argyl, Pennsylvania USA</p>
+                </div>
+                <div class="col-md-4">
+                  <p class="animated" 
+                    data-animation="fadeInUp" 
+                    data-delay="600"><i class="fa fa-phone"></i>  (001) 570.906.5329</p>
+                </div>
+                <div class="col-md-4">
+                  <p class="animated" 
+                    data-animation="fadeInUp" 
+                    data-delay="700"><i class="fa fa-envelope-o"></i> j.irwin@ai2observatory.com</p>
+                </div>
+              </div>
+            </div>
+            <!-- /contact way -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /contact -->
+
+  </div>
+  <!-- /fullpage -->
+
+  <!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+
+
+
+  
+  <!--<input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/NOIMG">-->
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+  <!-- audio control -->
+  <div id="audio-control">
+    <i id="audio-play" class="fa fa-fw"></i>
+  </div>
+  <!-- /audio control -->
+
+
+  <!-- audio -->
+  <audio id="audio-player" src="wp-content/themes/aiobservatory/assets/audio/01.mp3" loop></audio>
+  <!-- /audio -->
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="wp-content/themes/aiobservatory/assets/js/plugin.js"></script>
+<script type='text/javascript' src="wp-content/themes/aiobservatory/assets/js/main.js"></script>
+<!-- script end -->
+
+
+
+<script>
+$('button.menu-toggle').on('click', function(){
+  $('body').toggleClass('open');
+  $('#video-jsi').toggleClass('open');
+  $('#poster').toggleClass('open');
+  $('#header').toggleClass('open');
+  $('#fullpage').toggleClass('open');
+});
+
+</script>
+
+
+</body>
+</html>
