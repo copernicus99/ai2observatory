@@ -14,17 +14,17 @@
   <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
   <meta name="author" content="James Irwin">
   <title>AI&sup2; Observatory</title> <!-- website title -->
-  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
-  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <link type='text/css' href="/wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="/wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
   <!--[if lt IE 9]>
   
   <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
   
   <![endif]-->
   
-  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+  <link rel="icon" href="/wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+  <script src="/wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js">  </script>
 
   <script>
   var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
@@ -92,12 +92,12 @@
 
 
 <!--  navicon menu-->
-    <ul id="menu-menu-1" class="menu"><li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="../station1//">STATION 1</a></li>
-<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-542"><a href="../sky-chart//">ASTRO CONDITIONS</a></li>
-<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="../the-weather//">LOCAL WEATHER</a></li>
-<li id="menu-item-462" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-462"><a href="../hardware//">HW &#038; SW</a></li>
-<li id="menu-item-562" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-562"><a href="../overview//">CONSTRUCTION</a></li>
-<li id="menu-item-359" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-359"><a href="//"><< HOME</a></li>
+    <ul id="menu-menu-1" class="menu"><li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="/station1/">STATION 1</a></li>
+<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-542"><a href="/sky-chart/">ASTRO CONDITIONS</a></li>
+<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="/the-weather/">LOCAL WEATHER</a></li>
+<li id="menu-item-462" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-462"><a href="/hardware/">HW &#038; SW</a></li>
+<li id="menu-item-562" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-562"><a href="/overview/">CONSTRUCTION</a></li>
+<li id="menu-item-359" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-359"><a href="/"><< HOME</a></li>
 </ul>
 </nav>
 
@@ -106,8 +106,8 @@
 
   <!-- header99 -->
   <header id="header">
-    <a href="..//">
-    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+    <a href="/">
+    <img src="/wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
   </header>
   <!-- /header -->
 <!-- fullpage -->
@@ -157,7 +157,7 @@ The application server hosts all the applications associated with performing res
 &#8211; ASCOM<br />
 The <u>AS</u>tronomy <u>C</u>ommon <u>O</u>bject <u>M</u>odel (ASCOM) is an open-source platform that acts as a layer between the hardware and the client removing any hardware specific dependencies.  Each device manufacturer will write their standard drivers for Windows, Mac, etc <i>as well as</i> for ASCOM.  They will expose their device specific features into and out-of ASCOM using the ASCOM defined properties and methods.  Just about all Astronomy devices are now ASCOM compliant meaning that they can all be interfaced together and exchange data using the ASCOM hub.</p>
 <div style="text-align:center">
-<img src="../wp-content/uploads/2017/10/ASCOM-300x172.png" alt="" width="300" height="172" class="alignnone size-medium wp-image-1203" srcset="../wp-content/uploads/2017/10/ASCOM-300x172.png 300w, ../wp-content/uploads/2017/10/ASCOM.png 401w" sizes="(max-width: 300px) 100vw, 300px" />
+<img src="/wp-content/uploads/2017/10/ASCOM-300x172.png" alt="" width="300" height="172" class="alignnone size-medium wp-image-1203" srcset="/wp-content/uploads/2017/10/ASCOM-300x172.png 300w, /wp-content/uploads/2017/10/ASCOM.png 401w" sizes="(max-width: 300px) 100vw, 300px" />
 </div>
 <p>&nbsp;</p>
 <p><b>MOUNT CONTROL</b><br />
@@ -166,14 +166,14 @@ The <u>AS</u>tronomy <u>C</u>ommon <u>O</u>bject <u>M</u>odel (ASCOM) is an open
 &nbsp;<br />
 *Communications to/from the mount are handled solely by ASCOM.  These communications are transmitted over a special &#8216;EQDIRECT&#8217; cable.  This cable transforms the mount&#8217;s native TTL signal to a serial one that a computer can read via COM port.  Similarly it transforms the serial signal to TTL on its way to the mount.</p>
 <div style="text-align:center">
-<img src="../wp-content/uploads/2017/02/eqascom-300x254.jpg" alt="" width="501" height="424" class="alignnone size-medium wp-image-1209" srcset="../wp-content/uploads/2017/02/eqascom-300x254.jpg 300w, ../wp-content/uploads/2017/02/eqascom.jpg 501w" sizes="(max-width: 501px) 100vw, 501px" />
+<img src="/wp-content/uploads/2017/02/eqascom-300x254.jpg" alt="" width="501" height="424" class="alignnone size-medium wp-image-1209" srcset="/wp-content/uploads/2017/02/eqascom-300x254.jpg 300w, /wp-content/uploads/2017/02/eqascom.jpg 501w" sizes="(max-width: 501px) 100vw, 501px" />
 </div>
 <p>&nbsp;</p>
 <p><b>DATA ACQUISITION &#038; CORE CONTROL</b><br />
 &#8211; MaximDL (MaxDL)<br />
 MaxDL is the central application used to setup the data capture routines for AP/Photometry/Spectrosopy.  MaxDL also controls all the dome operations, performs the precision focusing, spins the filters, cools the CCDs, and brokers the in/outbound commands between the device specific applications (most of which are described below) via ASCOM.</p>
 <div style="text-align:center">
-<img src="../wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg" alt="" width="717" height="411" class="alignnone size-medium wp-image-1194" srcset="../wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg 300w, ../wp-content/uploads/2017/02/MaxIMDL6b.jpg 717w" sizes="(max-width: 717px) 100vw, 717px" />
+<img src="/wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg" alt="" width="717" height="411" class="alignnone size-medium wp-image-1194" srcset="/wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg 300w, /wp-content/uploads/2017/02/MaxIMDL6b.jpg 717w" sizes="(max-width: 717px) 100vw, 717px" />
 </div>
 <p>&nbsp;</p>
 <p><b>DOME CONTROL</b><br />
@@ -181,28 +181,28 @@ MaxDL is the central application used to setup the data capture routines for AP/
 This is a feature rich application used to operate the dome&#8217;s shutters and spin the dome to the proper azimuth&#8230;.basically slaving to the scope. There are a number of motors and actuators that handle the physical lifting and spinning via Foster Systems control boxes.  AstroMC is the front end application that communicates with these boxes.  Is it&#8217;s current implementation, AstroMC acts as a &#8216;driver&#8217; between MaxDL and Foster boxes.  All the dome commands are executed in MaxDL and &#8216;handed-off&#8217; to AstroMC via ASCOM.</p>
 <p>From the main AstroMC UI (pictured) there are controls for the shutter open/close, the dome rotation/slaving, parking, synching etc. Within the menus you will find many other configurations for the motors and switches.</p>
 <div style="text-align:center">
-<img class="wp-image-436 size-full alignnone" src="../wp-content/uploads/2017/02/AstroMC.png" width="315" height="349" srcset="../wp-content/uploads/2017/02/AstroMC.png 315w, ../wp-content/uploads/2017/02/AstroMC-271x300.png 271w" sizes="(max-width: 315px) 100vw, 315px" />
+<img class="wp-image-436 size-full alignnone" src="/wp-content/uploads/2017/02/AstroMC.png" width="315" height="349" srcset="/wp-content/uploads/2017/02/AstroMC.png 315w, /wp-content/uploads/2017/02/AstroMC-271x300.png 271w" sizes="(max-width: 315px) 100vw, 315px" />
 </div>
 <p>&nbsp;</p>
 <p><b>POINTING</b><br />
 &#8211; Stellarium &amp; Stellarium Scope<br />
 Stellarium&#8217;s extensive object database (almost 300 million entries) and intuitive graphical UI make it easy to locate targets and simulate sessions. Once an object is selected, it is only a click or three to determine rise/transit/set times as well as most other common object attributes. Pointing also happens with a simple command and the object lands at the center of the FOV.  The Stellarium Scope application handles the communications between Stellarium and the mount (again via ASCOM).</p>
 <div style="text-align:center">
-<img class="alignnone wp-image-437 size-full" src="../wp-content/uploads/2017/02/Stell.png" width="803" height="379" srcset="../wp-content/uploads/2017/02/Stell.png 803w, ../wp-content/uploads/2017/02/Stell-300x142.png 300w, ../wp-content/uploads/2017/02/Stell-768x362.png 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+<img class="alignnone wp-image-437 size-full" src="/wp-content/uploads/2017/02/Stell.png" width="803" height="379" srcset="/wp-content/uploads/2017/02/Stell.png 803w, /wp-content/uploads/2017/02/Stell-300x142.png 300w, /wp-content/uploads/2017/02/Stell-768x362.png 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
 </div>
 <p>&nbsp;</p>
 <p><b>GUIDING</b><br />
 &#8211; PHD2<br />
 The most top-of-the-line professional mounts out there will drift at some point as they track an object.  They may also exhibit small inconsistencies in the motor drive speed and the gear mesh.  These tiny imperfections, over time, create a smearing of the data being collected.  To offset these affects astronomers implement guiding devices and procedures.  PHD2 is an off-the-shelf guiding applications that locks on a star and forces the mount (through perfectly timed speed-up/slow-down commands) to stay fixed on an object for an extended period of time.</p>
 <div style="text-align:center">
-<img src="../wp-content/uploads/2017/02/phd2b-300x162.jpg" alt="" width="804" height="433" class="alignnone size-medium wp-image-1220" srcset="../wp-content/uploads/2017/02/phd2b-300x162.jpg 300w, ../wp-content/uploads/2017/02/phd2b-768x414.jpg 768w, ../wp-content/uploads/2017/02/phd2b.jpg 804w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+<img src="/wp-content/uploads/2017/02/phd2b-300x162.jpg" alt="" width="804" height="433" class="alignnone size-medium wp-image-1220" srcset="/wp-content/uploads/2017/02/phd2b-300x162.jpg 300w, /wp-content/uploads/2017/02/phd2b-768x414.jpg 768w, /wp-content/uploads/2017/02/phd2b.jpg 804w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
 </div>
 <p>&nbsp;</p>
 <p><b>POST PROCESSING</b><br />
 &#8211; PixInsight<br />
 For processing AP noting gets better than PixInsight.  It&#8217;s not as intuitive as other applications in terms of navigation and basic operation and it will take a new user a while to figure out how to get things done&#8230;..the payoff however is enormous.  Editing options are broken down into &#8216;processes&#8217;.  There is a very organized menu of processes but each has its own effect, list of settings and combinations.  They are very specialized to a particular type of correction and the order in which the are applied is crucial.  There are dedicated books on the application as well as courses and seminars.</p>
 <div style="text-align:center">
-<img src="../wp-content/uploads/2017/02/pix2-300x169.jpg" alt="" width="768" height="432" class="alignnone size-medium wp-image-1223" srcset="../wp-content/uploads/2017/02/pix2-300x169.jpg 300w, ../wp-content/uploads/2017/02/pix2.jpg 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+<img src="/wp-content/uploads/2017/02/pix2-300x169.jpg" alt="" width="768" height="432" class="alignnone size-medium wp-image-1223" srcset="/wp-content/uploads/2017/02/pix2-300x169.jpg 300w, /wp-content/uploads/2017/02/pix2.jpg 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
 </div>
 <p>&nbsp;</p>
 		
@@ -264,7 +264,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
   <ul>
     
     <li>
-        <a href="../station1//" class=""><span></span>
+        <a href="/station1/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> STATION 1</div>
@@ -274,7 +274,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
     
 
     <li>
-        <a href="../sky-chart//" class=""><span></span>
+        <a href="/sky-chart/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> ASTRO CONDITIONS</div>
@@ -284,7 +284,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
     
 
     <li>
-        <a href="../the-weather//" class=""><span></span>
+        <a href="/the-weather/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> LOCAL WEATHER</div>
@@ -294,7 +294,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
     
 
     <li>
-        <a href="../hardware//" class=""><span></span>
+        <a href="/hardware/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> HW & SW</div>
@@ -304,14 +304,14 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
 
         
                         <ul class="sub-menu">
-                                <a class="btn btn-transparent animated in fadeInUp" href="../hardware//" data-animation="fadeInUp" data-delay="600" >HARDWARE</a>
+                                <a class="btn btn-transparent animated in fadeInUp" href="/hardware/" data-animation="fadeInUp" data-delay="600" >HARDWARE</a>
                
             
         
     
 
         
-                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >SOFTWARE</a>
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/sofware/" data-animation="fadeInUp" data-delay="600" >SOFTWARE</a>
                
                         </ul>
             
@@ -320,7 +320,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
     
 
     <li>
-        <a href="../overview//" class=""><span></span>
+        <a href="/overview/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> CONSTRUCTION</div>
@@ -330,7 +330,7 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
     
 
     <li>
-        <a href="//" class=""><span></span>
+        <a href="/" class=""><span></span>
            
         </a>
         <div class="fp-tooltip left"> << HOME</div>
@@ -373,13 +373,12 @@ For processing AP noting gets better than PixInsight.  It&#8217;s not as intuiti
 
 
 <!-- script start -->
-<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
 <!--[if lt IE 10]>
 <script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
 <script type='text/javascript' src='js/ie/ie.js'></script>
 <![endif]-->
-<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
-<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+<script type='text/javascript' src="/wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="/wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
 
 </body>
 </html>
