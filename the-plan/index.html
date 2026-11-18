@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+
+  
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-2" class="menu"><li id="menu-item-548" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-548"><a href="../overview//">PRE PLANNING</a></li>
+<li id="menu-item-550" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-550"><a href="../exterior//">THE BUILD</a></li>
+<li id="menu-item-564" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-564"><a href="/station1"><< STATION 1</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> PRE  <span>PLANNING</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p><b>The Plan&#8230;</b><br />
+&nbsp;<br />
+Conceptualization for AI2 started in December 2013 and construction of Station 1 completed 22 months later.  Another 6 months of work inside and first light was April 2016. The planning took over a year to get right. The actual construction (building) took only a 3 months. Planning should always be 90% of the time for project like this. Initial planning took the form of pen to paper and later graduated to Google SketchUp to render a 3D CAD model.<br />
+&nbsp;</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/10/Sketch1-290x300.jpg" alt="" width="290" height="300" class="alignnone size-medium wp-image-1028" srcset="../wp-content/uploads/2017/10/Sketch1-290x300.jpg 290w, ../wp-content/uploads/2017/10/Sketch1.jpg 336w" sizes="(max-width: 290px) 100vw, 290px" />
+</div>
+<p>A thorough understanding of modern construction techniques is necessary to build to the tolerances required for this type of project. If you do not possess such skills then plan on outsourcing those bits of work or you will likely be unsuccessful. While the internet is an indespensable reference, it is no substitute for an experienced carpenter. This blog isn&#8217;t meant to be a &#8216;how to&#8217; guide by any means but rather a detailed account of one way to do it.<br />
+&nbsp;</p>
+<ol>
+<li>In the following section I will share some early points of considerations that will help steer you to the optimal design based on the scientific goals you are pursuing<br />
+&nbsp;</p>
+<ul>
+<li>What types of research will be conducted and what are the research objectives and goals? Most mid- sized (3-6 meter) dome observatories can adequetly handle the common instrumentation for Spectroscopy, Astrometry, Photometry and Astrophotography (Solar system and deep sky). Remotely controlled (robotic) telescopes are also a very popular income stream for an observatory but competition is steep as are the start-up costs and technical challenges.<br />
+&nbsp;
+       </li>
+<li>Where will the observatory be located? Typically the dark, still skies that make for research grade astronomy are far from where most of us live. You should have a good understanding of the sky quality overhead at the site you are planning as well as the limitations it presents. While filters, adaptive optics and other special technologies can reduce light pollution and certain atmospheric conditions, there will always be limitations in most suburban and even rural areas. Have a look at the following links (link to Bortle, Danko, Google dark sky proj) and be familiar with astronomical &#8216;seeing&#8217;. Weather trends are also worth knowing. Yuma AZ has an average of over 300 clear nights a year while Portland, OR has about 155. So you can potentially do 2x more Astronomy in Yuma! Also be aware of overhead air traffic which will smear your data. Finally its worth thinking about the area of the sky you will be able to access from your latitude. From the north pole only 1/2 of the sky will ever be available to you. As you move further south more comes into view. At the equator all of the sections of the sky come into view throughout the year.<br />
+&nbsp;
+       </li>
+<li>How high off the ground can the telescope instrumentation be placed? At higher elevations, the atmosphere is thinner thereby minimizing the effects of atmospheric turbulence and resulting in better &#8220;seeing&#8221;. There are two main components to this turbulence:
+<ol type="A">&nbsp;</p>
+<li>Low-level terrain disturbance. This results from the surrounding topography. For instance, valleys are filled with colder air during the night, resulting in greater thermal differential vs ground and therefore more intense low-level turbulence. Hillsides, hilltops and bottoms often have more unsteady air as well, mostly due to the constantly sinking cooler air around them.</li>
+<li>Local air turbulence is produced as objects and surfaces warmer than air (like pavement, roofs, roads, you! [a person at rest dissipates around 200 watts]) raise the temperature of the air layer around them, causing it to rise up forming turbulent, non-uniform light-transmitting structures.
+       </li>
+</ol>
+<p>To mitigate these air effects it is highly recommended to get the pier up as high as possible. This is the main reason most professional observatories are located on mountain tops.<br />
+&nbsp;</li>
+<li>What size pier will be needed? Mid-sized observatories generally have piers ranging from 8&#8243; diameter and 3&#8242; high to 24&#8243; diameter and 20&#8242; high. The pier will be the most important element of the design if any meaningful research is expected to take place. For support, a below grade footing will be placed and this becomes significantly more massive as the pier diameter and/or height increases. The pier must also be completely isolated from the observatory floor to assure vibration isolation between the observatory structure and building machinery. The pier height is relative to the dome horizon line and should be set to allow an unobstructed telescopic view starting from about 10 degrees above earth&#8217;s horizon. A rule of thumb is that the RA/DEC axis of the mount should fall slightly above the shutter sill. Be sure ALL footing/pier placements consider the true azimuth line and NS cardinal points. Piers are generally poured concrete that can be hollowed out to reduce the moment of inertia and the thermal mass issues. Deflection is another major concern with the pier and can be calculated using deflection formulas found <a href="../wp-content/uploads/2017/02/Pier-Deflections-Calculator.xlsx">here</a>. A mounting plate will also be required to transition from the concrete to the mount base.<br />
+&nbsp;</li>
+<li>Where will the control room be located? The temperature and humidity inside the observatory dome MUST be equivalent to (or less than) the ambient temperature outside the dome. This requires minimum heat generation, good ventilation, no insulation, and a low thermal mass construction. There are many reasons for this, most important of which are
+<ol type="A">
+<li>Light gathering instrumentation needs to be very cool to operate effectively. Most obvious is the CCD imaging chip. A heated room will work in opposition to this.</li>
+<li>When the dome shutter opens, if the air entering is not at equilibrium, scope mirrors will warp and distort images at the focal plane.</li>
+<li>Telescope dewing will also result from warmer air inside tube depending on the humidity</li>
+<li>Telescope flexure (especially if synchronized optics are in use) is another optical pitfall that occurs when there are temperature differentials</li>
+</ol>
+<p>For these reasons there needs to be a separate, but typically adjacent, room to operate the observatory&#8217;s main systems. Typically a space the size of a small bedroom would be plenty to house the main instrument controls for configuration, run, acquire and process. Always maintain a close proximity to the dome….do not exceed 125 cable feet of the telescope pier. An area for making coffee and a spot for short naps will make you much more productive across a session. The control room should be in the initial planning as data and electrical conduits will need to be installed. Where possible, utilize ventilation systems to exhaust heat downwind from the dome.<br />
+&nbsp;</li>
+<li>How often will observing sessions take place and what will be the typical duration? More frequent observing demands certain types of physical automation like:
+<ol type="A">
+<li>Dome rotation</li>
+<li>Powered shutters</li>
+<li>Actuators/motors/controllers/sensors/switches/etc</li>
+</ol>
+<p>And if observing remotely:</p>
+<ol type="A">
+<li>Firewalls/VPN for remote logon</li>
+<li>System redundancy and failover protections</li>
+<li>Survalience</li>
+<li>Weather monitoring</li>
+</ol>
+</li>
+</ul>
+</li>
+<p>&nbsp;</p>
+<li>I start observatory designs on paper with freehand sketches to get ideas on the possibilities for placement, framing options, view obstructions etc. I had a total of 4 design considerations for Station 1 but settled on the extended roof for many reasons. Being attached to the house has big advantages in access, security, electrical/network wire runs. However, such a design required signoff from others with stake in the house&#8230;namely my wife. After long discussions she was willing to go with the plan under the following conditions:
+<ul>
+<li>The entire structure must be easily removed if/when the time comes. Once removed the house must be easily returned to its original condition. I took &#8216;easily&#8217; to mean @ 1 days work. This also gives potential future home buyers the option to keep it or not….preserving our ability to sell without obstacles if we ever need to.</li>
+<li>The final construction must have &#8216;very little&#8217; impact on the outdoor experience. In other words it should blend with the rest of the house and not be an eyesore. It also shouldn&#8217;t detract from the views. Obviously this is all a bit subjective (I think it&#8217;s beautiful). But so far it hasn&#8217;t offended anyone.
+</li>
+</ul>
+<p>&nbsp;<br />
+Specific to the marital terms, the entire structure is removable by pulling a handful of nails and replacing some soffit, corner returns and vinyl siding. This &#8216;undo&#8217; feature required some additional modern building hardware and fabrication techniques. To keep the eyesore factor low was mostly achieved by continuing the existing roof line and matching posts, shingles and other siding elements.<br />
+&nbsp;<br />
+While these conditions certainly presented some challenges, there were a few other, more difficult, ones to tackle. When extending off any habitable structure you need to plan for wind dynamics, complex air currents, heat flows and the heat sink effect, vibration transfer etc…..issues not so important when building detached.<br />
+&nbsp;<br />
+The other challenges were largely addressed by locating the observatory instruments ~20&#8242; off the ground and ~21 feet from the nearest heated wall. Fortunately the wind and heat sink issues are intermittent and can be planned around.</li>
+<p>&nbsp;</p>
+<li>After the final concepts were penciled out and it seemed plausible, the layout entered the next phase….modeling in SketchUp. Google Sketchup is a remarkable little bit of software. It&#8217;s very intuitive and sits on a huge knowledge base. The simplest way to explain it (if you aren&#8217;t familiar with CAD programs) is that it&#8217;s like a digital Lego set. Using basic shapes you can build anything from a simple one color, one texture ball to the strikingly complex. I have seen models of Apache helicopters, F1 racecars, the Colosseum of Rome and even a full scale metropolis! And these aren&#8217;t &#8216;outlines&#8217; or artistic renderings, these are full scale, entirely zoomable, all parts inclusive, user intractable, 3D experience of the object(s) of interest. Once a construction design is complete you can easily export plans for permits, supply takeoffs or exterior elevations&#8230;.and show for each phase. You can do a virtual &#8216;walk-through&#8217; and save layers for each part of the build to present a movie-like demonstration of the project start to finish. The platform makes heavy use of artificial intelligence (sometimes to where it&#8217;s scary) and can often predict what you want to do and do it for you! There are also numerous libraries, consisting of objects and builds from other users, that you can easily import saving you lots of time. Best of all, the freeware version will likely meet all your needs.</li>
+</ol>
+<p>Reference websites, books, etc here</p>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/dome_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> PRE PLANNING</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../overview//" data-animation="fadeInUp" data-delay="600" >OVERVIEW</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >THE PLAN</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../exterior//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> THE BUILD</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../exterior//" data-animation="fadeInUp" data-delay="600" >EXTERIOR</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../footer//" data-animation="fadeInUp" data-delay="600" >FOOTER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../pier//" data-animation="fadeInUp" data-delay="600" >PIER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../interior//" data-animation="fadeInUp" data-delay="600" >INTERIOR</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/station1" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << STATION 1</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

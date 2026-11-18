@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+  
+
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-1" class="menu"><li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="../station1//">STATION 1</a></li>
+<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-542"><a href="../sky-chart//">ASTRO CONDITIONS</a></li>
+<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="../the-weather//">LOCAL WEATHER</a></li>
+<li id="menu-item-462" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-427 current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-462"><a href="/">HW &#038; SW</a></li>
+<li id="menu-item-562" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-562"><a href="../overview//">CONSTRUCTION</a></li>
+<li id="menu-item-359" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-359"><a href="//"><< HOME</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> HARDWARE  <span>SOFTWARE</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p>All optical, mechanical and capture accessories at ST1 are less than 4 years old.  The primary rig is composed of top of the line, durable components and devices that are professionally tested and certified.  Each piece is chosen for its compatibility, flexibility and precision.  All device are fitted together with rigid 2&#8243; CNC machined threaded extension tubes and all connections are made with compression fittings.  Data and power lines are all separated to prevent cross-talk and great attention is given to the balancing, alignment and calibration routines&#8230;.each of which conforms to the established industry standards.<br />
+&nbsp;<br />
+Since most astronomical equipment and instrumentation is IC based, it becomes obsolete quickly.  Like cell phones, televisions and the automobile, they all gets smarter with time.  That being the case, at AI2 new devices are continually being tested, piloted and put into service.  It is said that ground based amateur equipment surpasses that on the Hubble Space Telescope when it launched in 1990 in terms of features, performance and results.  While this may be a slight exaggeration, it&#8217;s not too far off.  Its quite remarkable just how far the technology has progressed in just these last 2 decades. The bottom line is that state of the art equipment = cutting edge science.</p>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p><b>THE DOME</b><br />
+The observatory dome was manufactured by Exploradome. It is composed of a UV stabilized polyethylene and is maintenance-free and virtually indestructible. All the surfaces and doors have about a 1/2” thickness. Polyethylene is extremely durable. It has a higher impact resistance than fiberglass, aluminum and even steel. It’s coefficient of friction is lower than nylon and comparable to Teflon, making it slippery enough for easy cleanup&#8230;..and snow slides right off. The dome sits on an aluminum ring that is supported by wheels which ensures a smooth rotation. The shutter slides up and over the top presenting a good view up to and past the zenith.<br />
+&nbsp;<br />
+The dome drive controls are built off the Lesvedome (K8055N) Systems platform. There is a motorized cog to drive the dome azimuth rotation and a separate motorized chain drive to open and close the upper shutter. The lower shutter is driven by two linear actuators.  Both motors and actuators are commanded from the PC.</p>
+<p>&nbsp;</p>
+<p><b>SCOPE/MOUNT</b></p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2019/05/C14-MX-e1558577885269-225x300.jpg" alt="" width="484" height="645" class="alignnone size-medium wp-image-1363" srcset="../wp-content/uploads/2019/05/C14-MX-e1558577885269-225x300.jpg 225w, ../wp-content/uploads/2019/05/C14-MX-e1558577885269.jpg 484w" sizes="(max-width: 484px) 100vw, 484px" />
+</div>
+<p>&nbsp;</p>
+<p>The heart of the observatory is a Celestron EdgeHD 1400 OTA. EdgeHD is an aplanatic, flat field Schmidt-Cassegrain telescope that produces aberration-free images across a wide visual and photographic field of view. The optical system was designed to reduce more than just off-axis star coma; it also provides an astrograph-quality flat focal plane all the way to the edge of the field of view. Some other specs on the native assembly:</p>
+<p>&nbsp;</p>
+<ol>
+<li>Aperture (mm) 355.6 mm (14 in)</li>
+<li>Focal Length 3910 mm (154 in)</li>
+<li>Focal Ratio 11</li>
+<li>Highest Useful Magnification 840x</li>
+<li>Lowest Useful Magnification 51x</li>
+<li>Limiting Stellar Magnitude 15.3</li>
+<li>Resolution (Rayleigh) 0.39 arc seconds</li>
+<li>Resolution (Dawes) 0.33 arc seconds</li>
+</ol>
+<p>&nbsp;</p>
+<p>The scope is driven by a Software Bisque Paramount MX+ GoTo Equatorial Mount . The mount connects via USB PC and utilizes the SB MKS 5000 dual‐axis motion control system interface.  </p>
+<ol>
+<li>Weight rating 110 lbs</li>
+<li>Max slew speed 10°/sec</li>
+<li>High-torque, brush-less servo motors</li>
+<li>Periodic Error +/-7 arc seconds (pre-PEC) and +/-1 arc seconds (post-PEC)</li>
+<li>Belt driven gears result in zero backlash</li>
+<li>Research‐grade 7.5 in. (19 cm)  375 tooth brass right  ascension and declination  gears. </li>
+<li>16&#8243; x 1.5&#8243; Dec shaft</li>
+<li>Dual encoders</li>
+</ol>
+<p>&nbsp;</p>
+<p><b>AP IMAGE TRAIN</b><br />
+There are a few different image train configurations available depending on the project. The most common setups are</p>
+<ol>
+<li>Deep Sky &amp; Photometry<br />
+&#8211; QSI640 CCD camera with a Kodak KAI-04022 Mono chip at prime focus<br />
+&#8211; Baader LRGB filters driven by the internal QSI auto filter wheel<br />
+&#8211; QSI Off-axis guiding using a Lodestar CCD<br />
+&#8211; .7 reducer used for larger objects</li>
+<li>Planetary<br />
+&#8211; ZWO 174MM CMOS camera at prime focus<br />
+&#8211; Various filters via EFWmini filterwheel<br />
+&#8211; 2x Barlow</li>
+<li>Wide Angle<br />
+&#8211; Atik 460EX Mono CCD with a Sony IMX174 chip with a Hyperstar lens<br />
+&#8211; Astrodon LRGB filters &amp; Narrowband</li>
+<li>Spectroscopy<br />
+&#8211; Sheylak Lhires Spectrograph</li>
+<li>Solar<br />
+&#8211; In development</li>
+</ol>
+<p>&nbsp;</p>
+<p><b>FOCUSING</b><br />
+2&#8243; Starlight Instruments FeatherTouch Crayford on the rear cell (locked primary)<br />
+Starizona MicroTouch for the native focuser assembly (unlocked primary)<br />
+* All focusing is electronically controlled, temperature compensated and automatic</p>
+<p>&nbsp;</p>
+<p><b>ADAPTIVE OPTICS</b><br />
+A design is underway for an adaptive optics system but this is still early in the process as the technologies are very new</p>
+<p>&nbsp;</p>
+<p><b>COMPUTING ARCHITECTURE</b><br />
+Following is a high level network/computing architecture diagram showing the main components and the interconnectivity.  There are 2 core hubs.  One sits in the observatory itself and handles all the on-site controls.  From there a harness runs down to a basement to the other hub&#8230;..the central datacenter. There is about 1500&#8242; of cable between all the instruments and both hubs.  In the datacenter, 2 servers form the computing backbone and numerous switches handle the device management and security services.  There is also a dedicated T1 to eliminate any bandwidth bottlenecks.  ST1 exposes a logon to the observatory using terminal services which provides direct access to the virtual machine.  The full software stack is extended off the application server and made available to the users.  Some of the observatory control systems will be locked to one user at a time (for obvious reasons) while other applications can be run in parallel.</p>
+<div style="text-align:center">
+<img class="alignnone wp-image-429 size-full" src="../wp-content/uploads/2017/02/AI220Architecture.png" width="984" height="556" srcset="../wp-content/uploads/2017/02/AI220Architecture.png 984w, ../wp-content/uploads/2017/02/AI220Architecture-300x170.png 300w, ../wp-content/uploads/2017/02/AI220Architecture-768x434.png 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+</div>
+<p>&nbsp;</p>
+<p><b>OBSERVATORY SERVER</b><br />
+The heavy lifting is performed by a HP Proliant DL380P GEN8 server.  This sits atop a 10TB HP NAS file/storage server.  The storage will soon migrate to solid state (SSD) solution given the enormous data and processing demands.  There are a couple firewalls in service managed by 4 different gigabit switches and given the end device port requirements there is a large USB/Serial feed which made for a very unique cabling design.<br />
+&nbsp;<br />
+Currently there is a rough draft iOT framework and a hope to migrate some of the devices to it in 2018.  A cross-device (hardware in-specific) driver platform is already in place that everything rides on (ASCOM) so the software impacts to the conversion are pretty minimal.  This will largely be an end-point swap with a ton of network reconfiguration.</p>
+<div style="text-align:center">
+<img class="alignnone wp-image-430 size-full" src="../wp-content/uploads/2017/02/Server.jpg" width="388" height="517" srcset="../wp-content/uploads/2017/02/Server.jpg 388w, ../wp-content/uploads/2017/02/Server-225x300.jpg 225w" sizes="(max-width: 388px) 100vw, 388px" />
+</div>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/globe_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../station1//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> STATION 1</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../sky-chart//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> ASTRO CONDITIONS</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../the-weather//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> LOCAL WEATHER</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/" class="active"><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> HW & SW</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >HARDWARE</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../sofware//" data-animation="fadeInUp" data-delay="600" >SOFTWARE</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> CONSTRUCTION</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << HOME</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

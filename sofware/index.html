@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+  
+
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-1" class="menu"><li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="../station1//">STATION 1</a></li>
+<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-542"><a href="../sky-chart//">ASTRO CONDITIONS</a></li>
+<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="../the-weather//">LOCAL WEATHER</a></li>
+<li id="menu-item-462" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-462"><a href="../hardware//">HW &#038; SW</a></li>
+<li id="menu-item-562" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-562"><a href="../overview//">CONSTRUCTION</a></li>
+<li id="menu-item-359" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-359"><a href="//"><< HOME</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> HARDWARE  <span>SOFTWARE</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p>Of all the systems at ST1, it&#8217;s the software systems that are the most dynamic.  Maintaining 3 different OSs on 5 different machines that together host over 25 astronomy specific applications is no small endeavor.  To further complicate matters, many of the applications are hubs that integrate, or cross-integrate, other applications.  If any one of the links breaks down, the whole system chain fails.  Although it would be nice to get to a working platform and leave it alone, there are always updates of some kind that need to be tested and applied.  These range from small patches to full version upgrades and keep the AI2 software engineers very busy.  Following is a rough assessment of what&#8217;s in place to run current operations at ST1:<br />
+&nbsp;<br />
+&#8211; 2 Windows based laptops for on-site observatory control.<br />
+&#8211; 1 Mac based laptop for session planning, data reduction and image processing<br />
+&#8211; 1 Linux Debian 9 based Apache Geronimo application server for remote operations and data storage<br />
+&#8211; 1 Linux Debian 9 based Apache HTTP webserver w PHP &#038; SQL to run the reservation system.  This ai2observatory.com site is hosted outside the AI2 network but will likely be migrated in at some point soon.<br />
+&#8211; NAS storage is managed using Ceph<br />
+&nbsp;<br />
+The application server hosts all the applications associated with performing research and running observatory operations.  The user facing applications are extended to remote users (via terminal services or RDP) or to on-site users at the Windows machines.</p>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p><b>DRIVER HUB</b><br />
+&#8211; ASCOM<br />
+The <u>AS</u>tronomy <u>C</u>ommon <u>O</u>bject <u>M</u>odel (ASCOM) is an open-source platform that acts as a layer between the hardware and the client removing any hardware specific dependencies.  Each device manufacturer will write their standard drivers for Windows, Mac, etc <i>as well as</i> for ASCOM.  They will expose their device specific features into and out-of ASCOM using the ASCOM defined properties and methods.  Just about all Astronomy devices are now ASCOM compliant meaning that they can all be interfaced together and exchange data using the ASCOM hub.</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/10/ASCOM-300x172.png" alt="" width="300" height="172" class="alignnone size-medium wp-image-1203" srcset="../wp-content/uploads/2017/10/ASCOM-300x172.png 300w, ../wp-content/uploads/2017/10/ASCOM.png 401w" sizes="(max-width: 300px) 100vw, 300px" />
+</div>
+<p>&nbsp;</p>
+<p><b>MOUNT CONTROL</b><br />
+&#8211; EQASCOM (EQMOD)<br />
+  EQASCOM is a application designed specifically for mount control.  It sits on ASCOM which manages all communications to/from the mount*.  EQASCOM offers a comprehensive UI containing a long list of configuration and control features.  Build a pointing model using sync commands, map periodic error, set limits so the scope doesn&#8217;t impact the pier, park and un-park, manually slew, choose from one of many tracking rates, perform pulse guiding and much more.<br />
+&nbsp;<br />
+*Communications to/from the mount are handled solely by ASCOM.  These communications are transmitted over a special &#8216;EQDIRECT&#8217; cable.  This cable transforms the mount&#8217;s native TTL signal to a serial one that a computer can read via COM port.  Similarly it transforms the serial signal to TTL on its way to the mount.</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/02/eqascom-300x254.jpg" alt="" width="501" height="424" class="alignnone size-medium wp-image-1209" srcset="../wp-content/uploads/2017/02/eqascom-300x254.jpg 300w, ../wp-content/uploads/2017/02/eqascom.jpg 501w" sizes="(max-width: 501px) 100vw, 501px" />
+</div>
+<p>&nbsp;</p>
+<p><b>DATA ACQUISITION &#038; CORE CONTROL</b><br />
+&#8211; MaximDL (MaxDL)<br />
+MaxDL is the central application used to setup the data capture routines for AP/Photometry/Spectrosopy.  MaxDL also controls all the dome operations, performs the precision focusing, spins the filters, cools the CCDs, and brokers the in/outbound commands between the device specific applications (most of which are described below) via ASCOM.</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg" alt="" width="717" height="411" class="alignnone size-medium wp-image-1194" srcset="../wp-content/uploads/2017/02/MaxIMDL6b-300x172.jpg 300w, ../wp-content/uploads/2017/02/MaxIMDL6b.jpg 717w" sizes="(max-width: 717px) 100vw, 717px" />
+</div>
+<p>&nbsp;</p>
+<p><b>DOME CONTROL</b><br />
+&#8211; AstroMC<br />
+This is a feature rich application used to operate the dome&#8217;s shutters and spin the dome to the proper azimuth&#8230;.basically slaving to the scope. There are a number of motors and actuators that handle the physical lifting and spinning via Foster Systems control boxes.  AstroMC is the front end application that communicates with these boxes.  Is it&#8217;s current implementation, AstroMC acts as a &#8216;driver&#8217; between MaxDL and Foster boxes.  All the dome commands are executed in MaxDL and &#8216;handed-off&#8217; to AstroMC via ASCOM.</p>
+<p>From the main AstroMC UI (pictured) there are controls for the shutter open/close, the dome rotation/slaving, parking, synching etc. Within the menus you will find many other configurations for the motors and switches.</p>
+<div style="text-align:center">
+<img class="wp-image-436 size-full alignnone" src="../wp-content/uploads/2017/02/AstroMC.png" width="315" height="349" srcset="../wp-content/uploads/2017/02/AstroMC.png 315w, ../wp-content/uploads/2017/02/AstroMC-271x300.png 271w" sizes="(max-width: 315px) 100vw, 315px" />
+</div>
+<p>&nbsp;</p>
+<p><b>POINTING</b><br />
+&#8211; Stellarium &amp; Stellarium Scope<br />
+Stellarium&#8217;s extensive object database (almost 300 million entries) and intuitive graphical UI make it easy to locate targets and simulate sessions. Once an object is selected, it is only a click or three to determine rise/transit/set times as well as most other common object attributes. Pointing also happens with a simple command and the object lands at the center of the FOV.  The Stellarium Scope application handles the communications between Stellarium and the mount (again via ASCOM).</p>
+<div style="text-align:center">
+<img class="alignnone wp-image-437 size-full" src="../wp-content/uploads/2017/02/Stell.png" width="803" height="379" srcset="../wp-content/uploads/2017/02/Stell.png 803w, ../wp-content/uploads/2017/02/Stell-300x142.png 300w, ../wp-content/uploads/2017/02/Stell-768x362.png 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+</div>
+<p>&nbsp;</p>
+<p><b>GUIDING</b><br />
+&#8211; PHD2<br />
+The most top-of-the-line professional mounts out there will drift at some point as they track an object.  They may also exhibit small inconsistencies in the motor drive speed and the gear mesh.  These tiny imperfections, over time, create a smearing of the data being collected.  To offset these affects astronomers implement guiding devices and procedures.  PHD2 is an off-the-shelf guiding applications that locks on a star and forces the mount (through perfectly timed speed-up/slow-down commands) to stay fixed on an object for an extended period of time.</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/02/phd2b-300x162.jpg" alt="" width="804" height="433" class="alignnone size-medium wp-image-1220" srcset="../wp-content/uploads/2017/02/phd2b-300x162.jpg 300w, ../wp-content/uploads/2017/02/phd2b-768x414.jpg 768w, ../wp-content/uploads/2017/02/phd2b.jpg 804w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+</div>
+<p>&nbsp;</p>
+<p><b>POST PROCESSING</b><br />
+&#8211; PixInsight<br />
+For processing AP noting gets better than PixInsight.  It&#8217;s not as intuitive as other applications in terms of navigation and basic operation and it will take a new user a while to figure out how to get things done&#8230;..the payoff however is enormous.  Editing options are broken down into &#8216;processes&#8217;.  There is a very organized menu of processes but each has its own effect, list of settings and combinations.  They are very specialized to a particular type of correction and the order in which the are applied is crucial.  There are dedicated books on the application as well as courses and seminars.</p>
+<div style="text-align:center">
+<img src="../wp-content/uploads/2017/02/pix2-300x169.jpg" alt="" width="768" height="432" class="alignnone size-medium wp-image-1223" srcset="../wp-content/uploads/2017/02/pix2-300x169.jpg 300w, ../wp-content/uploads/2017/02/pix2.jpg 768w" sizes="(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px" />
+</div>
+<p>&nbsp;</p>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/globe_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../station1//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> STATION 1</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../sky-chart//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> ASTRO CONDITIONS</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../the-weather//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> LOCAL WEATHER</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../hardware//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> HW & SW</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../hardware//" data-animation="fadeInUp" data-delay="600" >HARDWARE</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >SOFTWARE</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> CONSTRUCTION</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << HOME</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

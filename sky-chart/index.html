@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+  
+
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-1" class="menu"><li id="menu-item-541" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-541"><a href="../station1//">STATION 1</a></li>
+<li id="menu-item-542" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-350 current_page_item menu-item-542"><a href="/">ASTRO CONDITIONS</a></li>
+<li id="menu-item-543" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-543"><a href="../the-weather//">LOCAL WEATHER</a></li>
+<li id="menu-item-462" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-462"><a href="../hardware//">HW &#038; SW</a></li>
+<li id="menu-item-562" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-562"><a href="../overview//">CONSTRUCTION</a></li>
+<li id="menu-item-359" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-359"><a href="//"><< HOME</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> ASTRO  <span>CONDITIONS</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p>This page serves to assist users with their high-level planning.  The tables and widgets found here are meant to provide an &#8216;at a glance&#8217; understanding of the astronomical conditions and crude star/planetary placements at ST1.  Much more powerful applications and systems exist behind the firewall.  See the HW &#038; SW page for those. </p>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>The &#8216;Clear Sky Chart&#8217; is the astronomer&#8217;s go-to forecast. It shows the conditions over the next 48 hours and is pretty accurate. The data comes from a model developed by Allan Rahill of the Canadian Meteorological Center. CMC&#8217;s numerical weather forecasts are unique and specifically designed for astronomers.  Locate a column of blue blocks and that&#8217;s when the sky will be best.  The darker the blue the better. A more detailed explanation is <a href="http://cleardarksky.com/csk/">here</a>, but the short version is: the clear sky chart predicts hourly cloud cover, atmospheric transparency and seeing.</p>
+<p>&nbsp;</p>
+<div style="text-align:center">
+<a href="http://www.cleardarksky.com/c/Ai2OBPAkey.html" target="_blank"><img class="img-responsive" style="border-style:solid; border-color:white; 
+    border-width:1px" src="http://www.cleardarksky.com/c/Ai2OBPAcsk.gif?c=2109643" /></a>
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>The 7timer forecast is equally indispensable and is generated real-time.  The icons are a little easier to read than the color gradients of other charts and the temperature values are nice.  The extra day of forecast here is also useful.</p>
+<p>&nbsp;</p>
+<div style="text-align:center">
+<img class="img-responsive" src="http://www.7timer.org/v4/bin/astro.php?lon=-75.26&#038;lat=40.86&#038;lang=en&#038;ac=0&#038;unit=british&#038;tzshift=0" style="border-style:solid; border-color:white; text-align: center; border-width:1px" />
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>Another favorite is the Metro Blue Astronomical forecast.  Here you&#8217;ll find hourly detail on different cloud levels and there are 2 different indexes foe seeing, jet stream, temp, humidity and you&#8217;ll find the planets that are up.   It&#8217;s very comprehensive table based collection of data that reads like a TV guide.<br />
+&nbsp;</p>
+<div style="text-align:center">
+<a href="https://www.meteoblue.com/en/weather/forecast/seeing/east-bangor_united-states_5187760" target="_blank"><br />
+<img class="alignnone wp-image-442 size-full" style="text-align: center;" src="../wp-content/uploads/2017/02/east-bangor_united-states_5187760.png" width="204" height="65" /><br />
+</a>
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>Here is a simple chart of the universe overhead.  The map is a current and gives the major objects (constellations, planets, etc) for the entire sky.  There are red lines for the ecliptic and horizon as well as the alpha star names.</p>
+<p>&nbsp;</p>
+<div style="text-align:center">
+<iframe src="http://free.timeanddate.com/clock/i5n1f51o/n3662/fcfff/tct/pct/tt0/tw0/tm1/th2/ta1/tb4" frameborder="0" width="148" height="34" allowTransparency="true"></iframe>
+</div>
+<div style="font-family:sans-serif,Arial,Helvetica; font-size:10pt; text-align:center">
+<div>
+<img src="http://ws.astroviewer.net/skymap?type=png&amp;size=500&amp;colorset=0&amp;lang=en&amp;lon=-75.48&amp;lat=40.6&amp;city=Allentown%2C+PA&amp;timezone=EST&amp;deco=16399&amp;id=4d6174" width="500" height="500" style="border-style:solid; border-color:white; text-align:center; border-width:1px" />
+</div>
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>This little application creates a view of the Earth with daytime and nighttime areas shaded appropriately. The image generated is of the apparent disk you would see if you were in a spacecraft looking back at Earth.</p>
+<p>&nbsp;</p>
+<div style="font-family:sans-serif,Arial,Helvetica; font-size:10pt; text-align:center">
+<div>
+<img src="http://api.usno.navy.mil/imagery/earth.png?view=west&#038;date=today" width="500" height="500" style="border-style:solid; border-color:white; text-align:center; border-width:1px" />
+</div>
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+<p>Lastly is a planetary ephemeris table.  This table is updated monthly so it will always be at most few degrees/minutes from true.  For sun and moon position data please click <a href="https://www.timeanddate.com/astronomy/usa/allentown" target="_blank">here</a>.</p>
+<p>&nbsp;</p>
+<div style="text-align:center">
+<img class="img-responsive" style="border-style:solid; border-color:white; border-width:1px" src="../wp-content/themes/aiobservatory/assets/img/z.JPG" />
+</div>
+<p>&nbsp;<br />
+&nbsp;</p>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/globe_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../station1//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> STATION 1</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/" class="active"><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> ASTRO CONDITIONS</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../the-weather//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> LOCAL WEATHER</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../hardware//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> HW & SW</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../hardware//" data-animation="fadeInUp" data-delay="600" >HARDWARE</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../sofware//" data-animation="fadeInUp" data-delay="600" >SOFTWARE</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> CONSTRUCTION</div>
+    
+        
+        </li>                           
+    
+
+    <li>
+        <a href="//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << HOME</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

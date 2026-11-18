@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+
+  
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-2" class="menu"><li id="menu-item-548" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-548"><a href="../overview//">PRE PLANNING</a></li>
+<li id="menu-item-550" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-550"><a href="../exterior//">THE BUILD</a></li>
+<li id="menu-item-564" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-564"><a href="/station1"><< STATION 1</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> THE  <span>BUILD</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p><b>The Pier&#8230;</b><br />
+&nbsp;<br />
+By far the most stressful part of the job was the pier. Standing up 1 ton of concrete vertically with the exacting specifications demanded by astronomy gave many opportunities for error….an if an error should arise then what? Check the astro forums and you&#8217;ll find examples where piers needed to be jackhammered out and replaced! I had no appetite or fortitude for such a task. So with the goal clearly set, a one-time pier install, I got started.</p>
+<ol>
+&nbsp;</p>
+<li>The project starts a couple weeks after the footer is poured to allow a little hardening time there. The plan called for 26 &#8211; 80lb bags of 4k PSI concrete. I would again need to vibrate it in during the pour so I rented that again. Since the top of the tube would be about 12&#8242; from the ground I was forced to mix by hand as there were no pump trucks in the area…and to bring one in would cost a hefty sum. This also worried me a little since mixing by hand can result in too much water being added weakening the pier. The water would need to be carefully rationed during the mix. Two more critical items were the mixer and the hoist ladder. With everything on site the hard work starts.
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/1.jpg"  width="653" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/1-2-300x225.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/2.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/2-2-225x300.jpg"/></a>
+</div>
+</div>
+</li>
+<li>I cut down the tops of the vertical rebars 12&#8243; below the observatory floor. Next I wired in the rings form the bottom up every 12&#8243; to the top. The rings were 11&#8243; diameter rebar straights that I had rolled by a local manufacturer. After everything was tied together I was surprised VERY rigid the rebar cage was without any support above the base&#8230;.even with a good &#8216;jostle&#8217; it didn&#8217;t budge at all.
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/3.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/3-2-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/4.jpg"  width="490" height=653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/4-2-225x300.jpg"/></a>
+</div>
+</div>
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/5.jpg"  width="653" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/5-1-300x225.jpg"/></a>
+</div>
+</div>
+</li>
+<li>At this point I put together the jig for the Jbolts. This was two 16&#8243; plywood disks drilled out for the 4 evenly spaced Jbolts. I positioned my Jbolts 2&#8243; in from the outside of the pier and I used 1/2&#8243; x 10&#8243; Jbolts. A good idea here was to dill the hole though both disks at the same time so the Jbolts sat exactly vertical when inserted. Once inserted I put nuts on both sides of the lower disk and then one on top to lock it all together.
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/6.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/6-1-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/7.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/7-2-225x300.jpg"/></a>
+</div>
+</div>
+</li>
+<li>Now it&#8217;s time to drop the sonotube down over the rebar cage. I used a 12&#8242; Easy Pour cardboard form tube that was a stock item at my local concrete supply house. It&#8217;s a commercial product that is much thicker than anything the home improvement box stores will carry. With the dome already installed, getting this into place was a little tricky. Since my gable end wasn&#8217;t sided yet, I pulled off a piece of the plywood there, chopped out a stud, pushed the tube up a ladder and into the observatory. From here I just opened the dome shutter, stood the tube up into it and then I was able to swing the bottom into the hole and down over the rebar. Finally, something that went EASIER than expected. Not much of that in this project. I then drilled two tiny holes in the sonotube and inserted wire to keep the rebar cage centered. I also took the 6&#8243; kicker cutoff and wedged it between the tube and the floor to assure the tube was centered in the hole. Lastly, to minimize the risk of a blowout at the base, I strapped a tiedown around the bottom of the tube sucking it in nicely to the kicker.
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/8.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/8-2-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/9.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9-2-225x300.jpg"/></a>
+</div>
+</div>
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/9a.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9a-1-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/9b.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9b-1-225x300.jpg"/></a>
+</div>
+</div>
+</li>
+<li>Next was the concrete. I mixed one bag at a time adding 4 quarts of water to each via electric mixer. After it was uniformly blended I poured it out of the mixer and into a 5 gal bucket. I put that bucket on the hoist ladder and hoisted it up to the observatory. I then climbed the adjacent ladder, swung the bucket into the observatory and poured it down the tube. 26 cycles later and the pier was poured. It&#8217;s critical to mention that with each bucket I ran the vibrator all around the tube (outside and inside the rebar cage) and down into the pervious pour. There certainly were air pockets forming due to the dryness of the mix and the amount of rebar but the vibrator made all the concrete settle nice and smooth. Once the pour was up to floor, I dropped the Jbolt jig on top, checked the tube was level and called it a day.
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/9c.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9c-1-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/pier/9d.jpg"  width="490" height="653"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9d-1-225x300.jpg"/></a>
+</div>
+</div>
+</li>
+<li>The 16&#8243; concrete pier terminates at the observatory floor. Atop the concrete pier is a 6&#8243; diameter steel DOM (1/4&#8243; wall) pipe that runs up to the dome equator where it marries the mount. I ran a two piece pier for a few reasons:
+<ol type="A">
+<li>If I want/need to break-down the observatory, I can topple the pier w/o any deconstruction of the framing or the roof. For example, if I ever sell the house.<br />
+To convert the observatory to a normal roof would only require three steps:</p>
+<ul>
+<li>Drop the pier</li>
+<li>remove the cylinder dome support and dome</li>
+<li>Plywood over the opening and paper/shingle it (I ordered extra shingles for just this purpose)</li>
+</ul>
+</li>
+<li>A 16&#8243; diameter at the mount would increase the risk of equipment collision</li>
+<li>Lowering the scope (if I ever had to) would require chiseling concrete&#8230;.not something easily done&#8230;and any dust would certainly find its way into the delicate optics and electronics nearby. Any raising of the scope would best be done with steel&#8230;so why not just run all the way up from the floor?</li>
+<li>If a piertech or other pier diameter/composition/function should be required, it&#8217;s easy to swap out the top section for modification.</li>
+</ol>
+<p>In short, a removable top section maximizes flexibility for future changes.</li>
+<p>&nbsp;&nbsp;</p>
+<li>The specs for the steel pier fabrication are outlined here. As described above there were four 1/2&#8243; j-bolts sunk into the head of the concrete pier and &#8220;dried in place&#8221; Those jbolts rise up into a 3/4&#8243; thick steel disk that is the same diameter as the pier (16&#8243;). Threading a nut and washer down each jbolt holds the disk securely in place onto the concrete pier. Four 1/2&#8243; bolts were welded into the disk that align with the flange on the base of the steel pier&#8230;.these bolts are inside the jbolts. Threading a nut and washer down the flange bolts holds the steel pier securely in palce on the disk. Lastly, for the head of the pier I fabricated two 7&#8243;x7&#8243; steel plates that were 1/2&#8243; thick&#8230;one &#8220;upper&#8221; and one &#8220;lower&#8221;. These two plates were sandwiched together and joined the pier with the mount base.
+<ol type="A">
+<li>Lower. I welded this plate onto the top to the steel pier. The following holes wre drilled:
+<ul>
+<li>Four 1/4&#8243; holes&#8230;.one in each corner to attach the upper plate (sandwich style)</li>
+<li>One 2&#8243; hole in the center for the mount&#8217;s M12 center bolt to drop into (handle side)</li>
+</ul>
+</li>
+<li>Upper. This plate was attached directly to the mount base. The following holes wre drilled:
+<ul>
+<li>Four 1/4&#8243; holes&#8230;.one in each corner to attach the lower plate (sandwich style)</li>
+<li>One 12mm hole in the center for the mount&#8217;s M12 center bolt to pass though upwards and thread into the mount
+<li>Two 8mm tapped holes for the mounts M8 azimuth bolts to bolt down into</li>
+<li>One post to act as the position pin on the South side of the plate (the azimuth screws push off this)
+           </ul>
+</li>
+</ol>
+</li>
+</ol>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/dome_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> PRE PLANNING</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../overview//" data-animation="fadeInUp" data-delay="600" >OVERVIEW</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../the-plan//" data-animation="fadeInUp" data-delay="600" >THE PLAN</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../exterior//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> THE BUILD</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../exterior//" data-animation="fadeInUp" data-delay="600" >EXTERIOR</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../footer//" data-animation="fadeInUp" data-delay="600" >FOOTER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >PIER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../interior//" data-animation="fadeInUp" data-delay="600" >INTERIOR</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/station1" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << STATION 1</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

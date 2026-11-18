@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+
+  
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-2" class="menu"><li id="menu-item-548" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-548"><a href="../overview//">PRE PLANNING</a></li>
+<li id="menu-item-550" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-550"><a href="../exterior//">THE BUILD</a></li>
+<li id="menu-item-564" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-564"><a href="/station1"><< STATION 1</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> THE  <span>BUILD</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p><b>The Footer&#8230;</b><br />
+&nbsp;</p>
+<ol>
+<li>Step one was to find the point on the floor within the observatory where the pier would penetrate. I chose to place this at the exact center directly beneath the peak of the dome.  Some like to offset the pier so the mount pivot point (not always the same as the pier center) is exactly in the dome center but the reasoning never convinced me.
+<p>To find this center point I used a plumb bob and marked a spot on the floor directly under a reference point on the drive track inside edge.  Knowing the diameter of the inside of the drive track was 87&#8243;, I found the opposing point 180* opposite, scribed a reference point there and again a mark on the floor.  Next I measured from the reference points on the track down to the mark&#8230;each was 96&#8243; in my case. The 96&#8243; represents one leg of a right triangle.  Next I drew a line connecting the 2 marks on the floor and put an &#8216;x&#8217; at 1/2 the distance&#8230;.43.5&#8243; in my case. This 43.5&#8243; represents the second leg of the triangle.  With these 2 legs we can calculate the hypotenuse to be @ 105.5&#8243;. I cut 4 strings to this length and taped one end of each at the 0/90/180/270* points on the track. I pulled the other end of the stings down to the floor, and where all 4 met, marked the point&#8230;.which was essentially at the x previously marked.  Lastly we drilled a hole marking the final position.</p>
+<div style="text-align:center">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/1.jpg"  alt="" width="490" height="653"><br />
+<!-- Small initial img --><img class="alignnone size-medium wp-image-376" src="../wp-content/uploads/2017/02/1-1-225x300.jpg" alt="" width="225" height="300"/></a>
+</div>
+</li>
+<li>Well before the first scoop of dirt was dug I modeled the entire footing/pier system. This was mainly so I could submit to my engineering friend for evaluation, but as mentioned earlier, it also helped with my material list. Once finished I saved the object as a Sketchup component and imported it into the master observatory sketch which gave me the visualizations and elevations I needed for my plans. Engineering gave the blessing so off to work I went. I dropped a plumb-bob down from the center point hole in the observatory floor and transferred that point to earth. I measured out from this point and painted the footer perimeter on the ground for the excavation.  I checked it by measuring a baseline off the house exterior and the other 3 lines off that. While the dig was really clean on 3 sides, the 4th side (closest to the machine) was over dug due to the scooping behavior of a bucket removing dirt.
+<div style="text-align:center">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/2.jpg"  alt="" width="490" height="490"><br />
+<!-- Small initial img --><img class="alignnone size-medium wp-image-376" src="../wp-content/uploads/2017/02/2-1-300x300.jpg" alt="" width="300" height="300"/></a>
+</div>
+<p>Once dug out, I again dropped the plumb-bob to mark the center of the footer at the base of the 4x4x4 hole. Here I drove a piece of rebar. The overall footing plug is 4x4x5 deep since I extended it about 12&#8243; above grade. Next I measured out from the centered rebar stake for the corners&#8230;.34&#8243; radially from center to be exact. To assure the footing was square with the house I remeasured the baseline and used a plumb bob to transition the ends of that line to the bottom of the hole. Then I measured between each corner point to assure 48&#8243; (the perimeter of the box). Lastly I verified 2 separate lines between two corner points (that went across the middle) were equal. I drove corner stakes at the final positions of the 4 corner points to finalize the footer footprint. I severely underestimated the work to prep the footing for the pour. Dig a hole and fill it with concrete right? Not quite. I wanted to raise the footing 16&#8243; out of the ground so I would need less (of the more unstable) pier above it. This meant I would need to build a wooden form above the ground to hold that concrete. Other complicators were the un-level ground surface and the fact my hole was way overdug by the excavator requiring special bracing to assure that side didn&#8217;t blowout during the pour. The rebar cage was a challenge too. Following are the detailed steps.<br />
+&nbsp;<br />
+To start I cut 2 sheets of plywood in half (for 4&#215;4 sections) to make the walls of the footing. I dropped each section into the hole and attached them outside their corner stakes with some 2x scraps and screws. Inside of each corner on the ground I placed a solid 16x8x4&#8243; concrete bock. These blocks will support the corner posts of the rebar box. Rebar shouldn&#8217;t be in contact with earth at any point. When there is contact, rust will start at that end and eventually rust the entire piece out. It will also likely spread to other bars in contact with it. You will end up with large long voids in the concrete that rebar previously occupied. I make sure to leave at least 2&#8243; between metal and dirt at all points.<br />
+&nbsp;<br />
+The rebar box starts with 1/2&#8243; (#4) rebar stood-up vertically 2&#8243; inside of each corner. Rebar is easily cut with a circular saw and an abrasive blade. After making sure each bar was plumb, I attached the tops to the plywood box to keep them in place….a 3/4&#8243; hole in a scrap of plywood is a great jig for this task. After all 4 were up, I built the first of 4 rebar &#8220;floors&#8221;. Each floor is 7 rebars laid in parallel, horizontally and evenly spaced. These 7 bars are supported on each end by a perpendicular bar…so each floor is 9 bars total. The end of every bar is tied with 17 gauge fixing wire to the one it crosses. All floors are level and roughly 12&#8243; apart. The first floor was just a few inches above the bottom of the footing hole and the last one landed a few inches above it.</p>
+<div style="text-align:center">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/3.jpg"  alt="" width="490" height="653"><br />
+<!-- Small initial img --><img class="alignnone size-medium wp-image-376" src="../wp-content/uploads/2017/02/3-1-225x300.jpg" alt="" width="225" height="300"/></a>
+</div>
+<p>After all the rebar was placed I started on the above grade form. The box was basic…4 48&#8243; 2x12s screwed together at their ends to make a 12&#8243; high square. If the grade was level I would be mostly done….but it was not….so I had to lay 2x12s flat on the ground around the perimeter of the hole. Then 3/4&#8243; holes were drilled into the ends of these boards and rebar driven though and into the ground to keep them in place. The box built previously was placed on this 2&#215;12 base and was obviously far from level. The edge opposite the highest edge was build up by placing additional 2x12s until reaching level all the way across. The sides were then filled in with scrap plywood &amp; 2x to seal all possible gaps assuring there would be no escaping concrete. I then back filled the form in the hole with dirt and placed a 3/4&#8243; plywood cap on top. I also threw some crushed stone in the bottom of the hole for good measure. This will assist with drainage.<br />
+&nbsp;<br />
+Next step in the footing work was to build a base for the pier&#8217;s rebar cage. This was a 12&#8243; diameter vertical rebar tube comprised of 4 vertical bars connected horizontally with 12&#8243; diameter rebar rings. 4 &#8211; 72&#8243; bars were cut for this pier base. I took each one, placed it in my trailer hitch receiver, and bent a smooth 45* arc at one end. This will give the pier base structure much more stability as it runs at an angles through the footing. I next found the exact center of the plywood footing cap and scribed a 16&#8243; circle around it and cut it out. 16&#8243; is the diameter of the pier. I then fabricated a &#8216;reber jig&#8217; at the top of the footer about a foot above the 16&#8243; cut out. On this jig I marked all 4 of the 90* intersections to the circle and then measured in 2&#8243; from each point and drilled a 3/4&#8243; hole. Each of the 4 rebars were fed through these jig holes with 24&#8243; remaining above it. Each bar was leveled and the lower ends wire tied to the footing cage bars. The holes in the jig (that the bars were fed though) kept them secure and in place.<br />
+&nbsp;<br />
+4 more holes were then drilled into the jig between the others an full size bars (16&#8242;) were fed down though it that extended up to the observatory floor. Again these were bent at angles at the bottom and tied into the footer rebar cage. These 4 bars extended all the way down and sat on the the footer blocks</p>
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/5.jpg"  width="368" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/5-225x300.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/7.jpg"  width="368" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/7-1-225x300.jpg"/></a>
+</div>
+</div>
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/8.jpg"  width="653" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/8-1-300x225.jpg"/></a>
+</div>
+</div>
+<p>The final task was to cut 6&#8243; off the cardboard sonotube to be used as a kicker form. This 6&#8243; &#8216;ring&#8217; was placed on top of the footer and will be filled during the footer pour. later, the pier sonotube will actually slide down over this dry kicker plug when it is being placed.</li>
+<p>&nbsp;</p>
+<li>A few days later was footer pour day and it went well. The footer mix was a 4&#8243; slump at 4k PSI. The full footer required 3 yards&#8230;.I ordered 3.5 yards (@ 15% more than needed). As the concrete was filling the hole I was vibrating it to assure it filled all the nooks and crannys between the rebar grids. Be prepared and eyes wide open during this phase as forms will shift a little (at least mine did) and other little unexpected things will pop-up. When the pour was complete I &#8220;scrabbled&#8221; the top of the kicker&#8230;..scabbling just means to leave an irregular surface. With this type of surface, the (cold) joint between the footer and pier will be more rigid and better fused than two flat/smooth surfaces would be. An option to scrabbling it is to carve a &#8220;key&#8221; in the top of the kicker&#8230;this accomplishes the same goal. Masons in my area key the tops of basement footings before pouring the foundation walls. Only snag with the pour was that the side of the footer that was over dug (and backfilled when the form was placed) blew out a bit. As a result, the footer required a little more concrete to fill. Be sure to ALWAYS overestimate delivered concrete! Luckily the blowout was small (only a few inches at the top) so it didn&#8217;t compromise anything structurally. A few days later the top of the form was removed and a thing of beauty revealed!
+<div style="text-align:center;">
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/9.jpg"  width="490" height="368"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9-1-300x225.jpg"/></a>
+</div>
+<div style="display:inline-block;padding:0 0 0 0;">
+<!-- Large img after click --><a href="../wp-content/themes/aiobservatory/assets/img/footer/9z.jpg"  width="368" height="490"><br />
+<!-- Small initial img --><img src="../wp-content/uploads/2017/02/9z-225x300.jpg"/></a>
+</div>
+</div>
+</li>
+</ol>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/dome_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="../overview//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> PRE PLANNING</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../overview//" data-animation="fadeInUp" data-delay="600" >OVERVIEW</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../the-plan//" data-animation="fadeInUp" data-delay="600" >THE PLAN</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../exterior//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> THE BUILD</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../exterior//" data-animation="fadeInUp" data-delay="600" >EXTERIOR</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >FOOTER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../pier//" data-animation="fadeInUp" data-delay="600" >PIER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../interior//" data-animation="fadeInUp" data-delay="600" >INTERIOR</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/station1" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << STATION 1</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>

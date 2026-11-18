@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js" lang="en"><![endif]-->
+<!--[if IE 7 ]><html class="ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js" lang="en"><![endif]-->
+<!--[if IE 8 ]><html class="ie ie8 ie-lt10 ie-lt9 no-js" lang="en"><![endif]-->
+<!--[if IE 9 ]><html class="ie ie9 ie-lt10 no-js" lang="en"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="en"><!--<![endif]-->
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A12 Observatory">
+  <meta name="keywords" content="A12 Observatory, James Irwin, 5709065329">
+  <meta name="author" content="James Irwin">
+  <title>AI&sup2; Observatory</title> <!-- website title -->
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/bootstrap.min.css" rel='stylesheet'>
+  <link type='text/css' href="../wp-content/themes/aiobservatory/assets/css/style.css" rel='stylesheet'>
+  <!--[if lt IE 9]>
+  
+  <script type="text/javascript" src="js/ie/html5shiv.min.js"></script>
+  
+  <![endif]-->
+  
+  <link rel="icon" href="../wp-content/themes/aiobservatory/assets/img/favicon.ico"> <!-- website icon -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">  </script>
+
+  <script>
+  var url = "https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&hd=true";
+  $.ajax({
+  url: url,
+  success: function(result){
+  if("copyright" in result) {
+    $("#copyright").text("Image Credits: " + result.copyright);
+  }
+  else {
+    $("#copyright").text("Image Credits: " + "Public Domain");
+  }
+  
+  if(result.media_type == "video") {
+    $("#apod_img_id").css("display", "none"); 
+    $("#apod_vid_id").attr("src", result.url);
+  }
+  else {
+    $("#apod_vid_id").css("display", "none"); 
+    $("#apod_img_id").attr("src", result.url);
+  }
+  $("#reqObject").text(url);
+  $("#returnObject").text(JSON.stringify(result, null, 4));  
+  $("#apod_explaination").text(result.explanation);
+  $("#apod_title").text(result.title);
+}
+});
+  </script>
+
+
+
+<body >
+
+
+<!--  I added this div to source my own video & poster -->
+<div id="wrapper"> 
+ 
+
+
+<section id="cc_widget_image-2" class="widget cc_widget_image"><h2 class="widget-title">Image</h2></section> 
+</div> 
+
+
+  <div class="overlay1"></div> <!-- overlay  I added "1" to supress -->
+  <div class="pattern1"></div> <!-- pattern  I added "1" to supress -->
+
+
+
+
+
+<button class="menu-toggle"></button>
+
+
+
+
+<nav class="mob-nav" id="">
+
+<!-- --------------JSI test order number and assign menu ----------------- -->
+
+
+  
+
+
+
+
+
+<!--  navicon menu-->
+    <ul id="menu-menu-2" class="menu"><li id="menu-item-548" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-365 current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children menu-item-548"><a href="/">PRE PLANNING</a></li>
+<li id="menu-item-550" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-550"><a href="../exterior//">THE BUILD</a></li>
+<li id="menu-item-564" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-564"><a href="/station1"><< STATION 1</a></li>
+</ul>
+</nav>
+
+
+
+
+  <!-- header99 -->
+  <header id="header">
+    <a href="..//">
+    <img src="../wp-content/uploads/2017/02/FINAL_TRANS-1.png" width="276" height="116" alt="" border="0">    </a>
+  </header>
+  <!-- /header -->
+<!-- fullpage -->
+<div id="fullpage"> 
+  
+  <!-- homey -->
+  <div class="section active home-section">
+    <div class="section-entry">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12"> 
+            <!-- section title -->
+            <div class="section-heading sn-2">
+              <h1 class="section-title animated" 
+                  data-animation="fadeInDown" 
+                  data-delay="0"> PRE  <span>PLANNING</span> <!-- put text in span for purple glow --> 
+              </h1>
+            </div>
+            <!-- /section title --> 
+           
+            
+       <div class="home-btn-wrapper"> <!-- 5 BUTTONS -->
+			  
+			     <div id="append-sub-menu"></div>
+				  
+
+
+                   </div>
+            <!-- 5 BUTTONS  -->
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="conten-wrap"> 
+             <p style="text-align: left;"><b>The Overview&#8230;</b></p>
+<p>&nbsp;</p>
+<p style="text-align: left;">Observatories (regardless of the type) increase observing time and consistency since the assembly/breakdown of the scope and mount hardware isn&#8217;t required for each session. For those starting out, this process can take hours but will eventually come down sharply with repeated practice. But even if your setup is rapid, there is still the lift and shift of all the equipment to deal with. And there is nothing more frustrating than getting everything in place only to have a deck of clouds move in and spoil your night. For these reasons and more, people have crafted all kinds of amateur and semi-pro observatories in all kinds of places.</p>
+<p>&nbsp;</p>
+<div style="text-align:center;">
+<div style="display:inline-block">
+<img src="../wp-content/themes/aiobservatory/assets/img/plan2.jpg" />
+</div>
+<div style="display:inline-block">
+<img src="../wp-content/themes/aiobservatory/assets/img/plan1.jpg" />
+</div>
+<div style="display:inline-block">
+<img src="../wp-content/themes/aiobservatory/assets/img/plan4.jpg" />
+</div>
+</div>
+<p style="text-align: left;">I have been involved with many such observatories over the years, from tarp wall boxes to Rubbermaid sheds to Roll-off roofs….all served the purpose at hand….which was typically visual with some astrophotography. To participate in the more advanced studies of the day, more sophisticated accommodations were required. <b></b>The professional observatories like those from Technical Innovations, Ash-dome, Explora-dome and the like, will provide the comfort and reliability necessary to operate highly sensitive instrumentation over the long term. These are very rigid structures capable of withstanding harsh weather, high winds and the constant functional and operational demands. In addition, these products offer high security, full automation (with a low coefficient of friction) and are UV stabilized minimizing maintenance. Don&#8217;t be surprised, but prices range from 10-50k just for the dome (not including the observatory beneath it)</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">In Dec 2013 I was lucky enough to land a role on a PA Space Grant Consortium project. I decided to reinvest the early stage contract funding back into the profession and in Feb 2014 started to consider different types of observatories and locations. The initial two work objectives were catalog proofing (spectroscopy and photometry) and remote/robotic operation.</p>
+<p style="text-align: left;">My local skies are Bortle 4 and Danko 4.5 with average seeing being &#8220;Good&#8221; (@ 1 arc sec). Horizons are low and I can see down to almost -50* DEC. The atmosphere provides an average of 3-4 clear nights a week, it is generally transparent, low humidity and with a naked eye visibility (NELM) down to 6.5 mag.  With these conditions, and proper capturing/processing, I could work from home with all the equipment just a few steps outside!.  Config, maintenance, etc all becomes much easier….and the project much cheaper. This means remote work is optional (not mandatory) and I don&#8217;t need to lot shop or pay someone else to use their systems.</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">The final design extended an existing gable end porch roof. Onto that extended roof we scribed a half ellipse down each drop which, when cut out, became the opening for the observatory cylinder walls. Finally the dome was raised 20&#8242; and dropped on the walls.</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">&#8211; STATION 1 MILESTONES &#8211;<br />
+&gt; Began planning December 2013<br />
+&gt; Fist plausible design achieved in November 2014<br />
+&gt; First component arrived in January 2015 (over 1 year later)<br />
+&gt; Groundbreaking was in June 2015<br />
+&gt; Construction completed in October 2015<br />
+&gt; First light in April 2016</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">Many factors go into the construction (not to mention the maintenance and operation) of a research grade observatory. A range of skills and disciplines will be called upon which include:</p>
+<ol style="text-align: left;" type="a">
+<li>Project management &#8211; planning, designing, budgeting, creative concept, plan execution and coordination</li>
+<li>Partnering &#8211; zoning officials, investors, tradesman, suppliers</li>
+<li>Building &#8211; contracting, excavation, carpentry (including many custom and one time solutions), electrical, HVAC</li>
+<li>Metalworking &#8211; fabrication, machining, welding</li>
+<li>Technical &#8211; software (including programming), networking, hardware….a &#8216;maker&#8217; background will also come in very handy</li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: left;">All this in addition to the science! To which a major commitment must be made to be competitive.  This endeavor can quickly become (at least) a full time job.  The demands will be significant and impossible to harmonize with any other job or work activities&#8230;not to mention family!  This will present frequent ongoing challenges making an already complex project even harder.</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">This above isn&#8217;t meant to discourage, but it wouldn&#8217;t be fair not to mention the enormity of it all. I have seen many start out on this path, but few finish. I have seen relationships end and bank accounts drained. A healthy appreciation of the complexity, and a good risk management plan, will keep you safe. And, if necessary, a change of mind is perfectly normal, and easy to recover from, as long as it happens early enough in the game.</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">It&#8217;s best to visualize an observatory build project as phases. I organized my build (as well as this documentation) into 5 baic phases. The items outlined below are detailed behind the &#8220;PRE PLANNING&#8221; and &#8220;THE BUILD&#8221; links in the left hand menu. This will only discuss what it took to get to first light. There have been numerous changes ever since, and I expect that will continue. When time permits I will bundle all those key improvements as well and post here. <span style="color: #ff8040;">Orange</span> items are still being written up.</p>
+<p>&nbsp;</p>
+<p style="text-align: left;">PHASE 1 &#8211; THE PLAN</p>
+<ol style="text-align: left;">
+<li>Points of consideration</li>
+<li>Design</li>
+<li>Modeling</li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: left;">PHASE 2 &#8211; EXTERIOR</p>
+<ol style="text-align: left;">
+<li>Break ground</li>
+<li>Raise the lallys and girders</li>
+<li>Floor joists and floor</li>
+<li>Rafters and ridge</li>
+<li>Roof deck and shingles</li>
+<li>Cut the ellipse</li>
+<li>Frame the cylindar</li>
+<li>Raise the dome</li>
+<li>Skin the cylinder</li>
+<li>Gable end wall</li>
+<li>Cut the ridge beam (turnbuckle)</li>
+<li>Roof butt gutters</li>
+<li><span style="color: #ff8040;">Metal work</span></li>
+<li><span style="color: #ff8040;">Vinyl for Eave, Soffit and Undercarriage</span></li>
+<li><span style="color: #ff8040;">Gable end siding</span></li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: left;">PHASE 3 &#8211; FOOTER</p>
+<ol style="text-align: left;">
+<li>Pier opening and finding center</li>
+<li>Dig, place rebar &amp; build form</li>
+<li>The pour</li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: left;">PHASE 4 &#8211; PIER</p>
+<ol style="text-align: left;">
+<li>Setup</li>
+<li>Wire up the cage</li>
+<li>Jbolt assembly</li>
+<li>The tube</li>
+<li>The mix</li>
+<li>Upper pier approach</li>
+<li>Upper pier specs</li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: left;">PHASE 5 &#8211; INTERIOR</p>
+<ol>
+<li style="text-align: left;"><span style="color: #ff8040;">Control room entry</span></li>
+<li style="text-align: left;"><span style="color: #ff8040;">Raceways</span></li>
+<li style="text-align: left;"><span style="color: #ff8040;">Linoleium</span></li>
+<li style="text-align: left;"><span style="color: #ff8040;">Electrical (subpanel/outlets/LED lighting/dimmer)</span></li>
+<li style="text-align: left;"><span style="color: #ff8040;">Pier hookups (elec strip, data strip and wire control&#8230;.network details under HW menu)</span></li>
+<li style="text-align: left;"><span style="color: #ff8040;">Snow issue and enhancements</span></li>
+</ol>
+		
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /home --> 
+  
+</div>
+<!-- /fullpage --> 
+
+<!-- footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <!--  text before and in ahref to show as a footer  -->
+          <span class="animated copyright"
+            data-delay="900">   <a href="index.html#" target="_blank">  </a> <!-- copyright text and link -->
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- /footer -->
+
+
+
+  <!-- social icon -->
+  <div class="social"><a href="https://www.facebook.com/facebook" title="facebook" class="fa fa-facebook" target="_blank"></a><a href="https://twitter.com/twitter" title="facebook" class="fa fa-twitter" target="_blank"></a><a href="https://plus.google.com/google" title="facebook" class="fa fa-google-plus" target="_blank"></a><a href="https://dribbble.com/dribbble" title="facebook" class="fa fa-dribbble" target="_blank"></a><a href="https://www.youtube.com/youtube" title="facebook" class="fa fa-youtube-play" target="_blank"></a></div>  <!-- /social icon -->
+
+
+
+
+
+
+<!-- ---------------JSI test order number and assign background-------------- -->
+
+
+
+  
+  <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/dome_bg.jpg">
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fp-nav" class="left full-nav" style="margin-top: -144px;">
+
+  <ul>
+    
+    <li>
+        <a href="/" class="active"><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> PRE PLANNING</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-nontransparent animated in fadeInUp" href="/" data-animation="fadeInUp" data-delay="600" >OVERVIEW</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../the-plan//" data-animation="fadeInUp" data-delay="600" >THE PLAN</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="../exterior//" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> THE BUILD</div>
+    
+        
+    
+
+        
+                        <ul class="sub-menu">
+                                <a class="btn btn-transparent animated in fadeInUp" href="../exterior//" data-animation="fadeInUp" data-delay="600" >EXTERIOR</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../footer//" data-animation="fadeInUp" data-delay="600" >FOOTER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../pier//" data-animation="fadeInUp" data-delay="600" >PIER</a>
+               
+            
+        
+    
+
+        
+                                <a class="btn btn-transparent animated in fadeInUp" href="../interior//" data-animation="fadeInUp" data-delay="600" >INTERIOR</a>
+               
+                        </ul>
+            
+        
+        </li>                           
+    
+
+    <li>
+        <a href="/station1" class=""><span></span>
+           
+        </a>
+        <div class="fp-tooltip left"> << STATION 1</div>
+    
+        
+        </li>                           
+    
+
+</ul>
+
+  </div>
+
+
+
+
+  
+
+ 
+  <!-- video control -->
+  <div id="video-control">
+    <i id="play" class="fa fa-fw fa-pause"></i>
+    <i id="volume" class="fa fa-fw"></i>
+  </div>
+  <!-- /video control -->
+
+
+  <!-- video -->
+  <div id="bg-video"></div>
+  <!-- /video -->
+
+
+
+
+
+
+
+
+
+ <!-- <input type="hidden" id="bg-img" value="/wp-content/themes/aiobservatory/assets/img/bg/video-desktop4.jpg">  -->
+
+
+<!-- script start -->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/jquery-1.11.2.min.js"></script>
+<!--[if lt IE 10]>
+<script type='text/javascript' src='js/ie/jquery.placeholder.js'></script>
+<script type='text/javascript' src='js/ie/ie.js'></script>
+<![endif]-->
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/variable.js"></script>
+<script type='text/javascript' src="../wp-content/themes/aiobservatory/assets/js/main-n.js"></script>
+
+</body>
+</html>
