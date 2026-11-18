@@ -2,6 +2,14 @@ DirectoryIndex index.html
 
 RewriteEngine On
 
+# Repair old links before checking whether the requested file exists.
+RewriteCond %{THE_REQUEST} "\s/+([A-Za-z0-9_-][^?\ ]*?)//+([^?\ ]*)"
+RewriteRule ^ /%1/%2 [R=301,L,NE]
+
+# Old relative menus could append a sibling page to the current page URL.
+RewriteRule ^(?:exterior|footer|hardware|interior|overview|pier|sky-chart|sofware|station1|the-plan|the-weather)/(exterior|footer|hardware|interior|overview|pier|sky-chart|sofware|station1|the-plan|the-weather)/?$ /$1/ [R=301,L]
+
+
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
