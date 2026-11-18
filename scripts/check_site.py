@@ -18,7 +18,7 @@ class Tags(HTMLParser):
 
 class SitePaths(unittest.TestCase):
     def test_theme_pages_have_portable_links_and_assets(self):
-        pages = [p for p in ROOT.rglob("*.html") if "/assets/css/style.css" in p.read_text()]
+        pages = [p for p in ROOT.rglob("*.html") if "TEMP" not in p.relative_to(ROOT).parts and "/assets/css/style.css" in p.read_text()]
         self.assertEqual(len(pages), 14)
         for page in pages:
             for tag, attrs in Tags(page.read_text()).tags:

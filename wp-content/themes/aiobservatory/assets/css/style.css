@@ -1552,3 +1552,26 @@ nav:before {
 .remote-preview { margin-bottom: 2em; }
 .remote-preview img { margin: 0 auto; }
 .remote-preview [hidden] { display: none !important; }
+
+/* Separate observing resources and construction photographs from adjacent text. */
+.spaced-content > h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1rem;
+}
+.spaced-content .remote-preview {
+    margin-bottom: 0;
+}
+.conten-wrap .construction-links,
+.conten-wrap .build-photo {
+    margin: 2.5rem 0;
+}
+.conten-wrap .build-photo {
+    text-align: center;
+}
+.conten-wrap .build-photo img {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+}
+
+.conten-wrap { overflow-wrap: break-word; }
