@@ -483,6 +483,8 @@ document on ready
 =================================================*/
 
   $(document).on('ready', function() {
+    // Navigation must not wait for background video or remote widgets to load.
+    _preloader();
     console.log(window.orientation);
     if (!isMobile){
     _leftNavLoadToggle();
