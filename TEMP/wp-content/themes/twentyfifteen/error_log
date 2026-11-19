@@ -1,0 +1,2 @@
+[03-Jan-2026 19:39:46 UTC] PHP Fatal error:  Call to undefined function get_header() in /home/jsirwn/public_html/wp-content/themes/twentyfifteen/index.php on line 17
+[04-Jan-2026 12:09:54 UTC] PHP Fatal error:  Call to undefined function get_header() in /home/jsirwn/public_html/wp-content/themes/twentyfifteen/index.php on line 17
