@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/Unknown.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/Unknown.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_Unknown
+ */
+class NF_Fields_Unknown extends NF_Fields_Hidden
+{
+    protected $_name = &#x27;unknown&#x27;;
+
+    protected $_type = &#x27;unknown&#x27;;
+
+    protected $_section = &#x27;&#x27;;
+
+    protected $_icon = &#x27;question&#x27;;
+
+    protected $_templates = &#x27;null&#x27;;
+
+    protected $_aliases = array();
+
+    protected $_settings_only = array(
+        &#x27;label&#x27;, &#x27;default&#x27;
+    );
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Unknown&#x27;, &#x27;ninja-forms&#x27; );
+
+        $this-&gt;_settings[ &#x27;message&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;message&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;html&#x27;,
+            &#x27;label&#x27; =&gt; &#x27;&#x27;,
+            &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        );
+
+        $this-&gt;_settings[ &#x27;label&#x27; ][ &#x27;group&#x27; ] = &#x27;&#x27;;
+
+        unset( $this-&gt;_settings[ &#x27;default&#x27; ] ); // TODO: Seeing an error when removing default form the $_settings_only property, so just unsetting it here for now.
+
+        add_filter( &#x27;nf_sub_hidden_field_types&#x27;, array( $this, &#x27;hide_field_type&#x27; ) );
+    }
+
+    public function validate( $field, $data )
+    {
+        return array(); // Return empty array with no errors.
+    }
+
+    function hide_field_type( $field_types )
+    {
+        $field_types[] = $this-&gt;_name;
+        return $field_types;
+    }
+
+    public static function create( $field )
+    {
+        $unknown = Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+        if( is_object( $field ) ){
+            $unknown-&gt;update_settings(array(
+                &#x27;id&#x27;      =&gt; $field-&gt;get_id(),
+                &#x27;label&#x27;   =&gt; $field-&gt;get_setting( &#x27;label&#x27; ),
+                &#x27;order&#x27;   =&gt; $field-&gt;get_setting( &#x27;order&#x27; ),
+                &#x27;key&#x27;     =&gt; $field-&gt;get_setting( &#x27;key&#x27; ),
+                &#x27;type&#x27;    =&gt; &#x27;unknown&#x27;,
+                &#x27;message&#x27; =&gt; sprintf( __( &#x27;Field type &quot;%s&quot; not found.&#x27;, &#x27;ninja-forms&#x27; ), $field-&gt;get_setting( &#x27;type&#x27; ) )
+            ));
+        } elseif( isset( $field[ &#x27;settings&#x27; ] ) ){
+            $unknown-&gt;update_settings(array(
+                &#x27;id&#x27;      =&gt; $field[ &#x27;id&#x27; ],
+                &#x27;label&#x27;   =&gt; $field[ &#x27;settings&#x27; ][ &#x27;label&#x27; ],
+                &#x27;order&#x27;   =&gt; $field[ &#x27;settings&#x27; ][ &#x27;order&#x27; ],
+                &#x27;key&#x27;     =&gt; $field[ &#x27;settings&#x27; ][ &#x27;key&#x27; ],
+                &#x27;type&#x27;    =&gt; &#x27;unknown&#x27;,
+                &#x27;message&#x27; =&gt; sprintf( __( &#x27;Field type &quot;%s&quot; not found.&#x27;, &#x27;ninja-forms&#x27; ), $field[ &#x27;settings&#x27; ][ &#x27;type&#x27; ] )
+            ));
+        } else {
+            $unknown-&gt;update_settings(array(
+                &#x27;id&#x27;      =&gt; $field[ &#x27;id&#x27; ],
+                &#x27;label&#x27;   =&gt; $field[ &#x27;label&#x27; ],
+                &#x27;order&#x27;   =&gt; $field[ &#x27;order&#x27; ],
+                &#x27;key&#x27;     =&gt; $field[ &#x27;key&#x27; ],
+                &#x27;type&#x27;    =&gt; &#x27;unknown&#x27;,
+                &#x27;message&#x27; =&gt; sprintf( __( &#x27;Field type &quot;%s&quot; not found.&#x27;, &#x27;ninja-forms&#x27; ), $field[ &#x27;type&#x27; ] )
+            ));
+        }
+        return $unknown;
+    }
+}
+</pre></details></body></html>

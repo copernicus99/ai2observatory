@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/WPCLI/NinjaFormsCommand.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/WPCLI/NinjaFormsCommand.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! class_exists( &#x27;WP_CLI_Command&#x27; ) ) exit;
+
+/**
+ * The Ninja Forms WP-CLI Command
+ */
+class NF_WPCLI_NinjaFormsCommand extends WP_CLI_Command
+{
+    /**
+     * Display Ninja Forms Information
+     *
+     * @subcommand info
+     */
+    function info()
+    {
+        $this-&gt;peeking_ninja();
+        WP_CLI::success( &#x27;Welcome to the Ninja Forms WP-CLI Extension!&#x27; );
+        WP_CLI::line( &#x27;&#x27; );
+        WP_CLI::line( &#x27;- Ninja Forms Version: &#x27; . Ninja_Forms::VERSION );
+        WP_CLI::line( &#x27;- Ninja Forms Directory: &#x27; . Ninja_Forms::$dir );
+        WP_CLI::line( &#x27;- Ninja Forms Public URL: &#x27; . Ninja_Forms::$url );
+        WP_CLI::line( &#x27;&#x27; );
+    }
+
+    /**
+     * Creates a Form
+     *
+     * ## OPTIONS
+     *
+     * &lt;title&gt;
+     * : The form title.
+     *
+     * ## EXAMPLES
+     *
+     *     wp ninja-forms form &quot;My New Form&quot;
+     *
+     * @synopsis &lt;title&gt;
+     * @subcommand form
+     * @alias create-form
+     */
+    public function create_form( $args, $assoc_args )
+    {
+        list( $title ) = $args;
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, $title );
+        $form-&gt;save();
+    }
+
+    /**
+     * @subcommand list
+     * @alias list-forms
+     */
+    public function list_forms( $args, $assoc_args )
+    {
+        foreach( Ninja_Forms()-&gt;form()-&gt;get_forms() as $form ){
+            WP_CLI::line( &#x27;#&#x27; . $form-&gt;get_id() . &#x27; - &#x27; . $form-&gt;get_setting( &#x27;title&#x27; ) );
+        }
+    }
+
+    /**
+     * @synopsis &lt;id&gt;
+     * @subcommand get
+     * @alias get-form
+     */
+    public function get_form( $args, $assoc_args )
+    {
+        list( $id ) = $args;
+
+        $form = Ninja_Forms()-&gt;form( $id )-&gt;get();
+
+        WP_CLI::line( &#x27;#&#x27; . $form-&gt;get_id() . &#x27; - &#x27; . $form-&gt;get_setting( &#x27;title&#x27; ) );
+
+        foreach( Ninja_Forms()-&gt;form( $id )-&gt;get_fields() as $field ){
+
+            $key = $field-&gt;get_setting( &#x27;key&#x27; );
+            $label = $field-&gt;get_setting( &#x27;label&#x27; );
+
+            if( ! $key ) $key = strtolower( str_replace( &#x27; &#x27;, &#x27;&#x27;, $label ) );
+
+            WP_CLI::line( &quot;&#x27;$key&#x27;: $label&quot; );
+        }
+    }
+
+    /**
+     * Installs mock form data
+     */
+    public function mock()
+    {
+        $mock_data = new NF_Database_MockData();
+
+        $mock_data-&gt;form_contact_form_1();
+        $mock_data-&gt;form_contact_form_2();
+        $mock_data-&gt;form_email_submission();
+        $mock_data-&gt;form_long_form();
+    }
+
+    private function peeking_ninja()
+    {
+        $output = file_get_contents( Ninja_Forms::$dir . &#x27;includes/Templates/wpcli-header-art.txt&#x27; );
+        WP_CLI::line( $output );
+    }
+
+} // END CLASS NF_WPCLI_NinjaFormsCommand
+</pre></details></body></html>

@@ -1,0 +1,195 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/SystemStatus.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/SystemStatus.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_SystemStatus extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $menu_slug = &#x27;nf-system-status&#x27;;
+
+    public $priority = 12;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function get_page_title()
+    {
+        return __( &#x27;Get Help&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    public function get_capability()
+    {
+        return apply_filters( &#x27;ninja_forms_admin_status_capabilities&#x27;, $this-&gt;capability );
+    }
+
+    public function display()
+    {
+        /** @global wpdb $wpdb */
+        global $wpdb;
+
+        wp_enqueue_style( &#x27;nf-admin-system-status&#x27;, Ninja_Forms::$url . &#x27;assets/css/admin-system-status.css&#x27; );
+        wp_enqueue_script( &#x27;nf-admin-system-status-script&#x27;, Ninja_Forms::$url . &#x27;assets/js/admin-system-status.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jBox.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_style( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/css/jBox.css&#x27; );
+        wp_enqueue_style( &#x27;nf-font-awesome&#x27;, Ninja_Forms::$url . &#x27;assets/css/font-awesome.min.css&#x27; );
+        
+        //PHP locale
+        $locale = localeconv();
+
+        if ( is_multisite() ) {
+            $multisite = __( &#x27;Yes&#x27;, &#x27;ninja-forms&#x27; );
+        } else {
+            $multisite = __( &#x27;No&#x27;, &#x27;ninja-forms&#x27; );
+         }
+
+         //TODO: Possible refactor
+         foreach( $locale as $key =&gt; $val ){
+             if( is_string( $val ) ){
+                $data = $key . &#x27;: &#x27; . $val . &#x27;&lt;/br&gt;&#x27;;
+             }
+         }
+
+         //TODO: Ask if this check is need
+         //if ( function_exists( &#x27;phpversion&#x27; ) ) echo esc_html( phpversion() );
+
+         //WP_DEBUG
+         if ( defined(&#x27;WP_DEBUG&#x27;) &amp;&amp; WP_DEBUG ){
+             $debug = __( &#x27;Yes&#x27;, &#x27;ninja-forms&#x27; );
+         } else {
+            $debug =  __( &#x27;No&#x27;, &#x27;ninja-forms&#x27; );
+         }
+
+         //WPLANG
+         if ( defined( &#x27;WPLANG&#x27; ) &amp;&amp; WPLANG ) {
+            $lang = WPLANG;
+         } else {
+            $lang = __( &#x27;Default&#x27;, &#x27;ninja-forms&#x27; );
+         }
+
+         //TODO: Ask if this long list of ini_get checks are need?
+
+        //  if( function_exists( &#x27;ini_get&#x27; ) ){
+        //     $get_ini = size_format( ini_get(&#x27;post_max_size&#x27;) );
+        //  }
+
+        //SUHOSIN
+        if ( extension_loaded( &#x27;suhosin&#x27; ) ) {
+            $suhosin =  __( &#x27;Yes&#x27;, &#x27;ninja-forms&#x27; );
+        } else {
+            $suhosin =  __( &#x27;No&#x27;, &#x27;ninja-forms&#x27; );
+        }
+        
+        //max_input_nesting_level check for 5.2.2
+        if ( version_compare( PHP_VERSION, &#x27;5.2.2&#x27;, &#x27;&gt;&#x27; ) ) {
+            $max_input_nesting_level = ini_get( &#x27;max_input_nesting_level&#x27; );
+        } else {
+            $max_input_nesting_level = __( &#x27;Unknown&#x27;, &#x27;ninja-forms&#x27; );
+        }
+        
+        //max_input_vars check for 5.3.8
+        if ( version_compare( PHP_VERSION, &#x27;5.3.8&#x27;, &#x27;&gt;&#x27; ) ) {
+            $max_input_vars = ini_get( &#x27;max_input_vars&#x27; );
+        } else {
+            $max_input_vars = __( &#x27;Unknown&#x27;, &#x27;ninja-forms&#x27; );
+        }
+
+
+        //Time Zone Check
+        //TODO: May need refactored
+        $default_timezone = get_option( &#x27;timezone_string&#x27; );
+
+        //Check for active plugins
+        $active_plugins = (array) get_option( &#x27;active_plugins&#x27;, array() );
+
+        if ( is_multisite() ) {
+            $active_plugins = array_merge( $active_plugins, get_site_option( &#x27;active_sitewide_plugins&#x27;, array() ) );
+        }
+
+        $all_plugins = array();
+
+        foreach ( $active_plugins as $plugin ) {
+            $plugin_data    = @get_plugin_data( WP_PLUGIN_DIR . &#x27;/&#x27; . $plugin );
+            $dirname        = dirname( $plugin );
+            $version_string = &#x27;&#x27;;
+
+            if ( ! empty( $plugin_data[&#x27;Name&#x27;] ) ) {
+
+                // link the plugin name to the plugin url if available
+                $plugin_name = $plugin_data[&#x27;Name&#x27;];
+                if ( ! empty( $plugin_data[&#x27;PluginURI&#x27;] ) ) {
+                    $plugin_name = &#x27;&lt;a href=&quot;&#x27; . esc_attr( $plugin_data[ &#x27;PluginURI&#x27; ] ) . &#x27;&quot; title=&quot;&#x27; . __( &#x27;Visit plugin homepage&#x27; , &#x27;ninja-forms&#x27; ) . &#x27;&quot;&gt;&#x27; . $plugin_name . &#x27;&lt;/a&gt;&#x27;;
+                }
+
+                $all_plugins[] = $plugin_name . &#x27; &#x27; . __( &#x27;by&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; &#x27; . $plugin_data[&#x27;Author&#x27;] . &#x27; &#x27; . __( &#x27;version&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; &#x27; . $plugin_data[&#x27;Version&#x27;] . $version_string;
+            }
+        }
+
+        if ( sizeof( $all_plugins ) == 0 ) {
+            $site_wide_plugins = &#x27;-&#x27;;
+        } else {
+            $site_wide_plugins = implode( &#x27;, &lt;br/&gt;&#x27;, $all_plugins );
+        }
+
+        $server_ip = &#x27;&#x27;;
+        if( array_key_exists( &#x27;SERVER_ADDR&#x27;, $_SERVER ) )
+            $server_ip = $_SERVER[ &#x27;SERVER_ADDR&#x27; ];
+        elseif( array_key_exists( &#x27;LOCAL_ADDR&#x27;, $_SERVER ) )
+            $server_ip = $_SERVER[ &#x27;LOCAL_ADDR&#x27; ];
+        $host_name = gethostbyaddr( $server_ip );
+
+        $wp_version = get_bloginfo(&#x27;version&#x27;);
+        $wp_compatible = ( version_compare( $wp_version, Ninja_Forms::WP_MIN_VERSION ) &gt;= 0 ) ? __( &#x27;Supported&#x27;, &#x27;ninja-forms&#x27; ) : __( &#x27;Not Supported&#x27;, &#x27;ninja-forms&#x27; );
+
+        /* 
+         * Error log
+         */
+        $error_log = array();
+
+        $log = $wpdb-&gt;get_results( &#x27;SELECT * FROM `&#x27; . $wpdb-&gt;prefix . &#x27;nf3_objects` WHERE type = &quot;log&quot; ORDER BY created_at DESC LIMIT 10&#x27;, ARRAY_A );
+        
+        if ( is_array( $log ) &amp;&amp; 0 &lt; count( $log ) ) {
+            foreach ( $log as $error ) {
+                $error_object = Ninja_Forms()-&gt;form()-&gt;object( $error[ &#x27;id&#x27; ] )-&gt;get();
+                // Make sure we don&#x27;t have a duplicate message
+                if ( false === in_array( $error_object-&gt;get_setting( &#x27;message&#x27; ) ,$error_log ) ) {
+                    $error_log[] = $error_object-&gt;get_setting( &#x27;message&#x27; );
+                }
+            }
+        } else {
+            $error_log[] = __( &#x27;None Logged&#x27;, &#x27;ninja-forms&#x27; );
+        }
+
+        //Output array
+        $environment = array(
+            __( &#x27;Home URL&#x27;,&#x27;ninja-forms&#x27; ) =&gt; home_url(),
+            __( &#x27;Site URL&#x27;,&#x27;ninja-forms&#x27; ) =&gt; site_url(),
+            __( &#x27;Ninja Forms Version&#x27;,&#x27;ninja-forms&#x27; ) =&gt; esc_html( Ninja_Forms::VERSION ),
+            __( &#x27;WP Version&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $wp_version . &#x27; - &#x27; . $wp_compatible,
+            __( &#x27;WP Multisite Enabled&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $multisite,
+            __( &#x27;Web Server Info&#x27;,&#x27;ninja-forms&#x27; ) =&gt; esc_html( $_SERVER[&#x27;SERVER_SOFTWARE&#x27;] ),
+            __( &#x27;PHP Version&#x27;,&#x27;ninja-forms&#x27; ) =&gt; esc_html( phpversion() ),
+            //TODO: Possibly Refactor with Ninja forms global $_db?
+            __( &#x27;MySQL Version&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $wpdb-&gt;db_version(),
+            __( &#x27;PHP Locale&#x27;,&#x27;ninja-forms&#x27; ) =&gt;  $data,
+            //TODO: Possibly move the ninja_forms_letters_to_numbers function over.
+            __( &#x27;WP Memory Limit&#x27;,&#x27;ninja-forms&#x27; ) =&gt; WP_MEMORY_LIMIT,
+            __( &#x27;WP Debug Mode&#x27;, &#x27;ninja-forms&#x27; ) =&gt; $debug,
+            __( &#x27;WP Language&#x27;, &#x27;ninja-forms&#x27; ) =&gt; $lang,
+            __( &#x27;WP Max Upload Size&#x27;,&#x27;ninja-forms&#x27; ) =&gt; size_format( wp_max_upload_size() ),
+            __(&#x27;PHP Post Max Size&#x27;,&#x27;ninja-forms&#x27; ) =&gt; ini_get( &#x27;post_max_size&#x27; ),
+            __(&#x27;Max Input Nesting Level&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $max_input_nesting_level,
+            __(&#x27;PHP Time Limit&#x27;,&#x27;ninja-forms&#x27; ) =&gt; ini_get(&#x27;max_execution_time&#x27;),
+            __( &#x27;PHP Max Input Vars&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $max_input_vars,
+            __( &#x27;SUHOSIN Installed&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $suhosin,
+            __( &#x27;Server IP Address&#x27;, &#x27;ninja-forms&#x27; ) =&gt; $server_ip,
+            __( &#x27;Host Name&#x27;, &#x27;ninja-forms&#x27; ) =&gt; $host_name,
+            __( &#x27;SMTP&#x27;,&#x27;ninja-forms&#x27; ) =&gt; ini_get(&#x27;SMTP&#x27;),
+            __( &#x27;smtp_port&#x27;,&#x27;ninja-forms&#x27; ) =&gt; ini_get(&#x27;smtp_port&#x27;),
+            __( &#x27;Default Timezone&#x27;,&#x27;ninja-forms&#x27; ) =&gt; $default_timezone,
+        );
+
+        Ninja_Forms::template( &#x27;admin-menu-system-status.html.php&#x27;, compact( &#x27;environment&#x27;, &#x27;site_wide_plugins&#x27;, &#x27;error_log&#x27; ) );
+    }
+} // End Class NF_Admin_SystemStatus
+</pre></details></body></html>

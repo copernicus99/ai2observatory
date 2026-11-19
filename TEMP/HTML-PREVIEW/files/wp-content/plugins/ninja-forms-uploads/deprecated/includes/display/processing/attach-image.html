@@ -1,0 +1,254 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/processing/attach-image.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/processing/attach-image.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+function ninja_forms_attach_files_to_post( $post_id ){
+	global $ninja_forms_processing;
+
+	if( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) ){
+		foreach( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) as $field_id ){
+			$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+
+			if( is_array( $user_value ) AND !empty( $user_value ) ){
+				$tmp_array = array();
+
+				$args = array(
+		           &#x27;post_parent&#x27; =&gt; $post_id,
+		           &#x27;post_status&#x27; =&gt; &#x27;null&#x27;,
+		           &#x27;post_type&#x27;=&gt; &#x27;attachment&#x27;,
+		           &#x27;posts_per_page&#x27; =&gt; -1,
+		        );
+
+		        $attachments = get_posts( $args );
+
+		        if( !empty( $attachments ) ){
+		        	$x = 0;
+		        	foreach( $attachments as $attachment ){
+
+		        		$attach_field = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_field_id&#x27;, true );
+						$file_key = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_file_key&#x27;, true );
+						$upload_id = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_upload_id&#x27;, true );
+						if( $attach_field == $field_id ){
+							if( !array_key_exists( $file_key, $user_value ) ){
+								if( $upload_id != &#x27;&#x27; ){
+									ninja_forms_delete_upload( $upload_id );
+								}
+								wp_delete_attachment( $attachment-&gt;ID );
+							}else{
+								$tmp_array[$x][&#x27;id&#x27;] = $attachment-&gt;ID;
+								$tmp_array[$x][&#x27;field_id&#x27;] = $attach_field;
+								$tmp_array[$x][&#x27;file_key&#x27;] = $file_key;
+							}
+						}else if( $attach_field == &#x27;&#x27; ){
+							wp_update_post( array( &#x27;ID&#x27; =&gt; $attachment-&gt;ID, &#x27;post_parent&#x27; =&gt; 0 ) );
+						}
+						$x++;
+		        	}
+		        }
+
+		        $attachments = $tmp_array;
+
+				foreach( $user_value as $key =&gt; $file ){
+					// Check to see if we are changing files that already exist.
+					if( !isset( $file[&#x27;changed&#x27;] ) OR $file[&#x27;changed&#x27;] == 1 ){
+						foreach( $attachments as $attachment ){
+							if( $attachment[&#x27;file_key&#x27;] == $key ){
+								$upload_id = get_post_meta( $attachment[&#x27;id&#x27;], &#x27;ninja_forms_upload_id&#x27;, true );
+								if( $upload_id != &#x27;&#x27; ){
+									ninja_forms_delete_upload( $upload_id );
+								}
+								wp_delete_attachment( $attachment[&#x27;id&#x27;] );
+							}
+						}
+					}
+
+					if( isset( $file[&#x27;complete&#x27;] ) AND $file[&#x27;complete&#x27;] == 1 &amp;&amp; ( ! isset ( $file[&#x27;changed&#x27;] ) || $file[&#x27;changed&#x27;] == 1 ) ){
+						
+						$filename = $file[&#x27;file_path&#x27;].$file[&#x27;file_name&#x27;];
+						$attach_array = ninja_forms_generate_metadata( $post_id, $filename );
+						
+						$attach_id = $attach_array[&#x27;attach_id&#x27;];
+						$attach_data = $attach_array[&#x27;attach_data&#x27;];
+						if( !empty( $attach_array ) AND isset( $field_row[&#x27;data&#x27;][&#x27;featured_image&#x27;] ) AND $field_row[&#x27;data&#x27;][&#x27;featured_image&#x27;] == 1 ){
+							ninja_forms_set_featured_image( $post_id, $attach_id );
+						}
+						update_post_meta( $attach_id, &#x27;ninja_forms_field_id&#x27;, $field_id );
+						update_post_meta( $attach_id, &#x27;ninja_forms_file_key&#x27;, $key );
+						update_post_meta( $attach_id, &#x27;ninja_forms_upload_id&#x27;, $file[&#x27;upload_id&#x27;] );
+						$file[&#x27;attachment_id&#x27;] = $attach_id;
+						$user_value[ $key ] = $file;
+						
+					}
+				}
+				$ninja_forms_processing-&gt;update_field_value( $field_id, $user_value );
+			} else {
+
+				$args = array(
+		           &#x27;post_parent&#x27; =&gt; $post_id,
+		           &#x27;post_status&#x27; =&gt; &#x27;null&#x27;,
+		           &#x27;post_type&#x27;=&gt; &#x27;attachment&#x27;,
+		           &#x27;posts_per_page&#x27; =&gt; -1,
+		        );
+
+		        $attachments = get_posts( $args );
+
+				// Loop through our attachments and make sure that we don&#x27;t have any empty fields.
+				foreach ( $ninja_forms_processing-&gt;get_all_fields() as $field_id =&gt; $user_value ) {
+					if ( $ninja_forms_processing-&gt;get_field_setting( $field_id, &#x27;type&#x27;) == &#x27;_upload&#x27; ) {
+						
+				        if( !empty( $attachments ) ){
+				        	foreach( $attachments as $attachment ){
+
+				        		$attach_field = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_field_id&#x27;, true );
+								if( $attach_field == $field_id &amp;&amp; empty ( $user_value ) ){
+									wp_delete_attachment( $attachment-&gt;ID );
+								}
+				        	}
+				        }
+					}
+				}
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_create_post&#x27;, &#x27;ninja_forms_attach_files_to_post&#x27; );
+add_action( &#x27;ninja_forms_update_post&#x27;, &#x27;ninja_forms_attach_files_to_post&#x27; );
+
+/*
+ *
+ * Function to check whether or not a file should be added to the media library. If it is, call the attachment function.
+ *
+ * @since 1.0.3
+ * @return void
+ */
+
+function ninja_forms_check_add_to_media_library( $form_id ){
+	global $ninja_forms_processing;
+	if ( $ninja_forms_processing-&gt;get_form_setting( &#x27;create_post&#x27; ) != 1 ) {
+		if( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) ){
+			foreach( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) as $field_id ){
+
+				$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+				$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+				if( isset( $field_row[&#x27;data&#x27;][&#x27;media_library&#x27;] ) AND $field_row[&#x27;data&#x27;][&#x27;media_library&#x27;] == 1 ){
+					
+					if( is_array( $user_value ) ){
+						foreach( $user_value as $key =&gt; $file ){
+							$filename = $file[&#x27;file_path&#x27;].$file[&#x27;file_name&#x27;];
+							$attach_array = ninja_forms_generate_metadata( &#x27;&#x27;, $filename );
+							$user_value[$key][&#x27;attachment_id&#x27;] = $attach_array[&#x27;attach_id&#x27;];
+						}
+						// $ninja_forms_processing-&gt;update_field_value( $field_id, $user_value );
+					}
+				}
+			}
+		}		
+	}
+}
+
+add_action( &#x27;ninja_forms_post_process&#x27;, &#x27;ninja_forms_check_add_to_media_library&#x27; );
+
+
+function ninja_forms_generate_metadata( $post_id, $filename ){
+
+	$wp_filetype = wp_check_filetype( basename( $filename ), null );
+	$attachment = array(
+		&#x27;post_mime_type&#x27; =&gt; $wp_filetype[&#x27;type&#x27;],
+		&#x27;post_title&#x27; =&gt; preg_replace( &#x27;/\.[^.]+$/&#x27;, &#x27;&#x27;, basename( $filename ) ),
+		&#x27;post_content&#x27; =&gt; &#x27;&#x27;,
+		&#x27;post_status&#x27; =&gt; &#x27;null&#x27;
+	);
+	$attach_id = wp_insert_attachment( $attachment, $filename, $post_id );
+	// you must first include the image.php file
+	// for the function wp_generate_attachment_metadata() to work
+	require_once(ABSPATH . &quot;wp-admin&quot; . &#x27;/includes/image.php&#x27;);
+	require_once(ABSPATH . &quot;wp-admin&quot; . &#x27;/includes/media.php&#x27;);
+	$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+	$attach_data[&#x27;ninja_forms_upload_field&#x27;] = true;
+	wp_update_attachment_metadata( $attach_id,  $attach_data );
+	return array( &#x27;attach_id&#x27; =&gt; $attach_id, &#x27;attach_data&#x27; =&gt; $attach_data );
+}
+
+function ninja_forms_set_featured_image( $post_id, $attach_id ) {
+	// set as featured image
+	return update_post_meta( $post_id, &#x27;_thumbnail_id&#x27;, $attach_id );
+}
+
+function ninja_forms_post_edit_file_attachment_filter( $data, $field_id ){
+	global $post;
+
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+	if( $field_type == &#x27;_upload&#x27; AND is_object( $post ) ){
+		$args = array(
+			&#x27;post_type&#x27; =&gt; &#x27;attachment&#x27;,
+			&#x27;numberposts&#x27; =&gt; null,
+			&#x27;post_status&#x27; =&gt; null,
+			&#x27;post_parent&#x27; =&gt; $post-&gt;ID,
+		    &#x27;posts_per_page&#x27; =&gt; -1,
+		); 
+		$attachments = get_posts($args);
+		if( $attachments ){
+			foreach ($attachments as $attachment) {
+				$attach_field = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_field_id&#x27;, true );
+				$file_key = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_file_key&#x27;, true );
+				$upload_id = get_post_meta( $attachment-&gt;ID, &#x27;ninja_forms_upload_id&#x27;, true );
+				if( $attach_field == $field_id ){
+					$filename = basename ( get_attached_file( $attachment-&gt;ID ) );
+					$filepath = str_replace( $filename, &#x27;&#x27;, get_attached_file( $attachment-&gt;ID ) );
+					if ( ! is_array( $data[&#x27;default_value&#x27;] ) ) {
+						$data[&#x27;default_value&#x27;] = array();
+					}					
+					$data[&#x27;default_value&#x27;][$file_key] = array(
+						&#x27;user_file_name&#x27; =&gt; $filename,
+						&#x27;file_name&#x27; =&gt; $filename,
+						&#x27;file_path&#x27; =&gt; $filepath,
+						&#x27;file_url&#x27; =&gt; wp_get_attachment_url( $attachment-&gt;ID ),
+						&#x27;complete&#x27; =&gt; 1,
+						&#x27;upload_id&#x27; =&gt; $upload_id
+					);
+
+				}
+			}
+		}
+
+		if( isset( $field_row[&#x27;data&#x27;][&#x27;featured_image&#x27;] ) AND $field_row[&#x27;data&#x27;][&#x27;featured_image&#x27;] == 1 ){
+			$post_thumbnail_id = get_post_thumbnail_id( $post-&gt;ID );
+			if ( $post_thumbnail_id != &#x27;&#x27; ) {
+				$attach_field = get_post_meta( $post_thumbnail_id, &#x27;ninja_forms_field_id&#x27;, true );
+				if( $attach_field == &#x27;&#x27; ){
+					$file_key = ninja_forms_field_uploads_create_key( array() );
+					$upload_id = &#x27;&#x27;;				
+					$filename = basename ( get_attached_file( $post_thumbnail_id ) );
+					$filepath = str_replace( $filename, &#x27;&#x27;, get_attached_file( $post_thumbnail_id ) );
+					$data[&#x27;default_value&#x27;][$file_key] = array(
+						&#x27;user_file_name&#x27; =&gt; $filename,
+						&#x27;file_name&#x27; =&gt; $filename,
+						&#x27;file_path&#x27; =&gt; $filepath,
+						&#x27;file_url&#x27; =&gt; wp_get_attachment_url( $post_thumbnail_id ),
+						&#x27;complete&#x27; =&gt; 1,
+						&#x27;upload_id&#x27; =&gt; $upload_id
+					);
+				}				
+			}
+
+		}
+
+		if( isset( $data[&#x27;default_value&#x27;] ) AND is_array( $data[&#x27;default_value&#x27;] ) ){
+			uasort($data[&#x27;default_value&#x27;], &#x27;ninja_forms_compare_file_name&#x27;);
+		}
+	}
+	
+	return $data;
+}
+
+add_filter( &#x27;ninja_forms_field&#x27;, &#x27;ninja_forms_post_edit_file_attachment_filter&#x27;, 25, 2 );
+
+function ninja_forms_compare_file_name( $a, $b ){
+	if ( !isset ( $a[&#x27;file_name&#x27;] ) or !isset ( $b[&#x27;file_name&#x27;] ) )
+		return false;
+    if( $a[&#x27;file_name&#x27;] == $b[&#x27;file_name&#x27;] ){
+        return 0;
+    }
+    return ($a[&#x27;file_name&#x27;] &lt; $b[&#x27;file_name&#x27;]) ? -1 : 1;
+}</pre></details></body></html>

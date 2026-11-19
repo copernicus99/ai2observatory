@@ -1,0 +1,163 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_Controllers_Form extends NF_Abstracts_Controller
+{
+    private $publish_processing;
+
+    public function __construct()
+    {
+        add_action( &#x27;plugins_loaded&#x27;, array( $this, &#x27;plugins_loaded&#x27; ) );
+
+        add_action( &#x27;wp_ajax_nf_ajax_get_new_nonce&#x27;, array( $this, &#x27;get_new_nonce&#x27; ) );
+	    add_action( &#x27;wp_ajax_nopriv_nf_ajax_get_new_nonce&#x27;, array( $this, &#x27;get_new_nonce&#x27; ) );
+        add_action( &#x27;wp_ajax_nf_save_form&#x27;,   array( $this, &#x27;save&#x27; )   );
+        add_action( &#x27;wp_ajax_nf_delete_form&#x27;, array( $this, &#x27;delete&#x27; ) );
+    }
+
+    public function plugins_loaded()
+    {
+        $this-&gt;publish_processing = new NF_Database_PublishProcessing();
+    }
+
+    public function save()
+    {
+        check_ajax_referer( &#x27;ninja_forms_builder_nonce&#x27;, &#x27;security&#x27; );
+
+        if( ! isset( $_POST[ &#x27;form&#x27; ] ) ){
+            $this-&gt;_errors[] = __( &#x27;Form Not Found&#x27;, &#x27;ninja-forms&#x27; );
+            $this-&gt;_respond();
+        }
+
+        $form_data = json_decode( stripslashes( $_POST[&#x27;form&#x27;] ), ARRAY_A );
+
+        if( is_string( $form_data[ &#x27;id&#x27; ] ) ) {
+            $tmp_id = $form_data[ &#x27;id&#x27; ];
+            $form = Ninja_Forms()-&gt;form()-&gt;get();
+            $form-&gt;save();
+            $form_data[ &#x27;id&#x27; ] = $form-&gt;get_id();
+            $this-&gt;_data[ &#x27;new_ids&#x27; ][ &#x27;forms&#x27; ][ $tmp_id ] = $form_data[ &#x27;id&#x27; ];
+        } else {
+            $form = Ninja_Forms()-&gt;form($form_data[&#x27;id&#x27;])-&gt;get();
+        }
+
+        unset( $form_data[ &#x27;settings&#x27; ][ &#x27;_seq_num&#x27; ] );
+
+        $form-&gt;update_settings( $form_data[ &#x27;settings&#x27; ] )-&gt;save();
+
+        if( isset( $form_data[ &#x27;fields&#x27; ] ) ) {
+            $db_fields_controller = new NF_Database_FieldsController( $form_data[ &#x27;id&#x27; ], $form_data[ &#x27;fields&#x27; ] );
+            $db_fields_controller-&gt;run();
+            $form_data[ &#x27;fields&#x27; ] = $db_fields_controller-&gt;get_updated_fields_data();
+            $this-&gt;_data[&#x27;new_ids&#x27;][&#x27;fields&#x27;] = $db_fields_controller-&gt;get_new_field_ids();
+        }
+
+        if( isset( $form_data[ &#x27;deleted_fields&#x27; ] ) ){
+
+            foreach( $form_data[ &#x27;deleted_fields&#x27; ] as  $deleted_field_id ){
+
+                $field = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ])-&gt;get_field( $deleted_field_id );
+                $field-&gt;delete();
+            }
+        }
+
+        if( isset( $form_data[ &#x27;actions&#x27; ] ) ) {
+
+            /*
+             * Loop Actions and fire Save() hooks.
+             */
+            foreach ($form_data[&#x27;actions&#x27;] as &amp;$action_data) {
+
+                $id = $action_data[&#x27;id&#x27;];
+
+                $action = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ] )-&gt;get_action( $id );
+
+                $action-&gt;update_settings($action_data[&#x27;settings&#x27;])-&gt;save();
+
+                $action_type = $action-&gt;get_setting( &#x27;type&#x27; );
+
+                if( isset( Ninja_Forms()-&gt;actions[ $action_type ] ) ) {
+                    $action_class = Ninja_Forms()-&gt;actions[ $action_type ];
+
+                    $action_settings = $action_class-&gt;save( $action_data[&#x27;settings&#x27;] );
+                    if( $action_settings ){
+                        $action_data[&#x27;settings&#x27;] = $action_settings;
+                        $action-&gt;update_settings( $action_settings )-&gt;save();
+                    }
+                }
+
+                if ($action-&gt;get_tmp_id()) {
+
+                    $tmp_id = $action-&gt;get_tmp_id();
+                    $this-&gt;_data[&#x27;new_ids&#x27;][&#x27;actions&#x27;][$tmp_id] = $action-&gt;get_id();
+                    $action_data[ &#x27;id&#x27; ] = $action-&gt;get_id();
+                }
+
+                $this-&gt;_data[ &#x27;actions&#x27; ][ $action-&gt;get_id() ] = $action-&gt;get_settings();
+            }
+        }
+
+        /*
+         * Loop Actions and fire Publish() hooks.
+         */
+        foreach ($form_data[&#x27;actions&#x27;] as &amp;$action_data) {
+
+            $action = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ] )-&gt;get_action( $action_data[&#x27;id&#x27;] );
+
+            $action_type = $action-&gt;get_setting( &#x27;type&#x27; );
+
+            if( isset( Ninja_Forms()-&gt;actions[ $action_type ] ) ) {
+                $action_class = Ninja_Forms()-&gt;actions[ $action_type ];
+
+                if( $action-&gt;get_setting( &#x27;active&#x27; ) &amp;&amp; method_exists( $action_class, &#x27;publish&#x27; ) ) {
+                    $data = $action_class-&gt;publish( $this-&gt;_data );
+                    if ($data) {
+                        $this-&gt;_data = $data;
+                    }
+                }
+            }
+        }
+
+        if( isset( $form_data[ &#x27;deleted_actions&#x27; ] ) ){
+
+            foreach( $form_data[ &#x27;deleted_actions&#x27; ] as  $deleted_action_id ){
+
+                $action = Ninja_Forms()-&gt;form()-&gt;get_action( $deleted_action_id );
+                $action-&gt;delete();
+            }
+        }
+
+        delete_user_option( get_current_user_id(), &#x27;nf_form_preview_&#x27; . $form_data[&#x27;id&#x27;] );
+        update_option( &#x27;nf_form_&#x27; . $form_data[ &#x27;id&#x27; ], $form_data );
+
+        do_action( &#x27;ninja_forms_save_form&#x27;, $form-&gt;get_id() );
+
+        $this-&gt;_respond();
+    }
+
+    public function delete()
+    {
+        check_ajax_referer( &#x27;ninja_forms_builder_nonce&#x27;, &#x27;security&#x27; );
+
+        $this-&gt;_respond();
+    }
+
+	/**
+	 * Let&#x27;s generate a unique nonce for each form render so that we don&#x27;t get
+	 * caught with an expiring nonce accidentally and fail to allow a submission
+	 * @since 3.2
+	 */
+    public function get_new_nonce() {
+    	// get a timestamp to append to nonce name
+		$current_time_stamp = time();
+
+		// Let&#x27;s generate a unique nonce
+    	$new_nonce_name = &#x27;ninja_forms_display_nonce_&#x27; . $current_time_stamp;
+
+		$res = array(
+			&#x27;new_nonce&#x27; =&gt; wp_create_nonce( $new_nonce_name ),
+			&#x27;nonce_ts&#x27; =&gt; $current_time_stamp );
+
+		$this-&gt;_respond( $res );
+    }
+}
+</pre></details></body></html>

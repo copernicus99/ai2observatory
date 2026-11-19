@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/StatusIcon.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/StatusIcon.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_StatusIcon extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var bool
+	 */
+	private $use_icon;
+
+	protected function define_options() {
+		return array( &#x27;use_icon&#x27; =&gt; &#x27;&#x27; );
+	}
+
+	public function create_view() {
+
+		$setting = $this-&gt;create_element( &#x27;radio&#x27; )
+		                -&gt;set_options( array(
+			                &#x27;1&#x27; =&gt; __( &#x27;Yes&#x27; ),
+			                &#x27;&#x27;  =&gt; __( &#x27;No&#x27; ),
+		                ) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Use an icon?&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27; =&gt; __( &#x27;Use an icon instead of text for displaying the status.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $setting,
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_use_icon() {
+		return $this-&gt;use_icon;
+	}
+
+	/**
+	 * @param int $use_icons
+	 *
+	 * @return bool
+	 */
+	public function set_use_icon( $use_icon ) {
+		$this-&gt;use_icon = $use_icon;
+
+		return true;
+	}
+
+	private function get_future_date( $post_id )  {
+		return date_i18n( get_option( &#x27;date_format&#x27; ) . &#x27; &#x27; . get_option( &#x27;time_format&#x27; ), strtotime( get_post_field( &#x27;post_date&#x27;, $post_id ) ) );
+	}
+
+	/**
+	 * @param string $status
+	 * @param int    $post_id
+	 *
+	 * @return string
+	 */
+	public function format( $status, $post_id ) {
+		global $wp_post_statuses;
+
+		$value = $status;
+
+		if ( $this-&gt;get_use_icon() ) {
+
+			switch ( $status ) {
+				case &#x27;private&#x27; :
+					$value = ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;hidden&#x27;, &#x27;class&#x27; =&gt; &#x27;gray&#x27; ) ), __( &#x27;Private&#x27; ) );
+					break;
+				case &#x27;publish&#x27; :
+					$value = ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;yes&#x27;, &#x27;class&#x27; =&gt; &#x27;blue large&#x27; ) ), __( &#x27;Published&#x27; ) );
+					break;
+				case &#x27;draft&#x27; :
+					$value = ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;edit&#x27;, &#x27;class&#x27; =&gt; &#x27;green&#x27; ) ), __( &#x27;Draft&#x27; ) );
+					break;
+				case &#x27;pending&#x27; :
+					$value = ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;backup&#x27;, &#x27;class&#x27; =&gt; &#x27;orange&#x27; ) ), __( &#x27;Pending for review&#x27; ) );
+					break;
+				case &#x27;future&#x27; :
+					$value = ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;clock&#x27; ) ), __( &#x27;Future&#x27; ) . &#x27;: &lt;em&gt;&#x27; . $this-&gt;get_future_date( $post_id ) . &#x27;&lt;/em&gt;&#x27; );
+					break;
+			}
+
+			if ( get_post_field( &#x27;post_password&#x27;, $post_id ) ) {
+				$value .= ac_helper()-&gt;html-&gt;tooltip( ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;lock&#x27;, &#x27;class&#x27; =&gt; &#x27;gray&#x27; ) ), __( &#x27;Password protected&#x27; ) );
+			}
+		} else if ( isset( $wp_post_statuses[ $status ] ) ) {
+			$value = $wp_post_statuses[ $status ]-&gt;label;
+
+			if ( &#x27;future&#x27; === $status ) {
+				$value .= &quot; &lt;p class=&#x27;description&#x27;&gt;&quot; . $this-&gt;get_future_date( $post_id ) . &quot;&lt;/p&gt;&quot;;
+			}
+		}
+
+		return $value;
+	}
+
+}
+</pre></details></body></html>

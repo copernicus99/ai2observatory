@@ -1,0 +1,208 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Notice/Review.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Notice/Review.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;div class=&quot;ac-message updated&quot;&gt;
+            &lt;div class=&quot;info&quot;&gt;
+                &lt;p&gt;
+					
+                &lt;/p&gt;
+                &lt;p class=&quot;buttons&quot;&gt;
+                    &lt;a class=&quot;button button-primary&quot; href=&quot;https://wordpress.org/support/view/plugin-reviews/codepress-admin-columns?rate=5#postform&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;
+                    &lt;a class=&quot;button button-secondary hide-review-notice&quot; href=&#x27;#&#x27;&gt;&lt;/a&gt;
+                &lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;help hidden&quot;&gt;
+                &lt;a href=&quot;#&quot; class=&quot;hide-notice hide-review-notice&quot;&gt;&lt;/a&gt;
+                &lt;p&gt;
+					
+					
+						
+					
+						
+					
+                &lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+			jQuery( function( $ ) {
+				$( document ).ready( function() {
+					$( &#x27;.updated a.hide-review-notice&#x27; ).click( function( e ) {
+						e.preventDefault();
+
+						var el = $( this ).parents( &#x27;.ac-message&#x27; );
+						var el_close = el.find( &#x27;.hide-notice&#x27; );
+						var soft = $( this ).hasClass( &#x27;hide-review-notice-soft&#x27; );
+
+						if ( soft ) {
+							el.find( &#x27;.info&#x27; ).slideUp();
+							el.find( &#x27;.help&#x27; ).slideDown();
+						}
+						else {
+							el_close.hide();
+							el_close.after( &#x27;&lt;div class=&quot;spinner right&quot;&gt;&lt;/div&gt;&#x27; );
+							el.find( &#x27;.spinner&#x27; ).show();
+						}
+
+						$.post( ajaxurl, {
+							&#x27;action&#x27; : &#x27;cpac_hide_review_notice&#x27;
+						}, function() {
+							if ( !soft ) {
+								el.find( &#x27;.spinner&#x27; ).remove();
+								el.slideUp();
+							}
+						} );
+
+						return false;
+					} );
+				} );
+			} );
+        &lt;/script&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Notice_Review {
+
+	const OPTION_INSTALL_DATE = &#x27;cpac-install-timestamp&#x27;;
+
+	const OPTION_ADMIN_NOTICE_KEY = &#x27;cpac-hide-review-notice&#x27;;
+
+	function __construct() {
+		register_activation_hook( __FILE__, array( $this, &#x27;insert_install_timestamp&#x27; ) );
+
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;maybe_display_review_notice&#x27; ) );
+		add_action( &#x27;wp_ajax_cpac_hide_review_notice&#x27;, array( $this, &#x27;ajax_hide_review_notice&#x27; ) );
+	}
+
+	public function insert_install_timestamp() {
+		ac_helper()-&gt;user-&gt;update_meta_site( self::OPTION_INSTALL_DATE, time() );
+	}
+
+	private function get_install_timestamp() {
+		$timestamp = ac_helper()-&gt;user-&gt;get_meta_site( self::OPTION_INSTALL_DATE, true );
+
+		if ( &#x27;&#x27; == $timestamp ) {
+			$this-&gt;insert_install_timestamp();
+
+			$timestamp = time();
+		}
+
+		return $timestamp;
+	}
+
+	public function maybe_display_review_notice() {
+		if ( AC()-&gt;suppress_site_wide_notices() ) {
+			return;
+		}
+
+		if ( ! AC()-&gt;user_can_manage_admin_columns() ) {
+			return;
+		}
+
+		if ( $this-&gt;is_review_notice_shown() ) {
+			return;
+		}
+
+		// Display notice after 30 days
+		if ( ( time() - ( 30 * DAY_IN_SECONDS ) ) &gt;= $this-&gt;get_install_timestamp() ) {
+			add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;display_review_notice&#x27; ) );
+		}
+	}
+
+	public function is_review_notice_shown() {
+		return &#x27;1&#x27; === get_user_meta( get_current_user_id(), self::OPTION_ADMIN_NOTICE_KEY, true );
+	}
+
+	public function ajax_hide_review_notice() {
+		update_user_meta( get_current_user_id(), self::OPTION_ADMIN_NOTICE_KEY, &#x27;1&#x27;, true );
+	}
+
+	public function display_review_notice() {
+		$product = __( &#x27;Admin Columns&#x27;, &#x27;codepress-admin-columns&#x27; );
+
+		if ( ac_is_pro_active() ) {
+			$product = __( &#x27;Admin Columns Pro&#x27;, &#x27;codepress-admin-columns&#x27; );
+		}
+
+		wp_enqueue_style( &#x27;ac-sitewide-notices&#x27; );
+
+		?&gt;
+        &lt;div class=&quot;ac-message updated&quot;&gt;
+            &lt;div class=&quot;info&quot;&gt;
+                &lt;p&gt;
+					&lt;?php printf( __(
+						&quot;We don&#x27;t mean to bug you, but you&#x27;ve been using %s for some time now, and we were wondering if you&#x27;re happy with the plugin. If so, could you please leave a review at wordpress.org? If you&#x27;re not happy with %s, please %s.&quot;, &#x27;codepress-admin-columns&#x27; ),
+						&#x27;&lt;strong&gt;&#x27; . $product . &#x27;&lt;/strong&gt;&#x27;,
+						$product,
+						&#x27;&lt;a class=&quot;hide-review-notice hide-review-notice-soft&quot; href=&quot;#&quot;&gt;&#x27; . __( &#x27;click here&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/a&gt;&#x27;
+					); ?&gt;
+                &lt;/p&gt;
+                &lt;p class=&quot;buttons&quot;&gt;
+                    &lt;a class=&quot;button button-primary&quot; href=&quot;https://wordpress.org/support/view/plugin-reviews/codepress-admin-columns?rate=5#postform&quot; target=&quot;_blank&quot;&gt;&lt;?php _e( &#x27;Leave a review!&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+                    &lt;a class=&quot;button button-secondary hide-review-notice&quot; href=&#x27;#&#x27;&gt;&lt;?php _e( &quot;Permanently hide notice&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+                &lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;help hidden&quot;&gt;
+                &lt;a href=&quot;#&quot; class=&quot;hide-notice hide-review-notice&quot;&gt;&lt;/a&gt;
+                &lt;p&gt;
+					&lt;?php printf(
+						__( &quot;We&#x27;re sorry to hear that; maybe we can help! If you&#x27;re having problems properly setting up %s or if you would like help with some more advanced features, please visit our %s.&quot;, &#x27;codepress-admin-columns&#x27; ),
+						$product,
+						&#x27;&lt;a href=&quot;&#x27; . esc_url( ac_get_site_utm_url( &#x27;documentation&#x27;, &#x27;review-notice&#x27; ) ) . &#x27;&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;documentation page&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/a&gt;&#x27;
+					); ?&gt;
+					&lt;?php if ( ac_is_pro_active() ) : ?&gt;
+						&lt;?php printf(
+							__( &#x27;As an Admin Columns Pro user, you can also use your AdminColumns.com account to access product support through %s!&#x27;, &#x27;codepress-admin-columns&#x27; ),
+							&#x27;&lt;a href=&quot;&#x27; . esc_url( ac_get_site_utm_url( &#x27;forumns&#x27;, &#x27;review-notice&#x27; ) ) . &#x27;&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;our forums&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/a&gt;&#x27;
+						); ?&gt;
+					&lt;?php else : ?&gt;
+						&lt;?php printf(
+							__( &#x27;You can also find help on the %s, and %s.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+							&#x27;&lt;a href=&quot;https://wordpress.org/support/plugin/codepress-admin-columns#postform&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;Admin Columns forums on WordPress.org&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+							&#x27;&lt;a href=&quot;https://wordpress.org/plugins/codepress-admin-columns/faq/#plugin-info&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;find answers to some frequently asked questions&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/a&gt;&#x27;
+						); ?&gt;
+					&lt;?php endif; ?&gt;
+                &lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+			jQuery( function( $ ) {
+				$( document ).ready( function() {
+					$( &#x27;.updated a.hide-review-notice&#x27; ).click( function( e ) {
+						e.preventDefault();
+
+						var el = $( this ).parents( &#x27;.ac-message&#x27; );
+						var el_close = el.find( &#x27;.hide-notice&#x27; );
+						var soft = $( this ).hasClass( &#x27;hide-review-notice-soft&#x27; );
+
+						if ( soft ) {
+							el.find( &#x27;.info&#x27; ).slideUp();
+							el.find( &#x27;.help&#x27; ).slideDown();
+						}
+						else {
+							el_close.hide();
+							el_close.after( &#x27;&lt;div class=&quot;spinner right&quot;&gt;&lt;/div&gt;&#x27; );
+							el.find( &#x27;.spinner&#x27; ).show();
+						}
+
+						$.post( ajaxurl, {
+							&#x27;action&#x27; : &#x27;cpac_hide_review_notice&#x27;
+						}, function() {
+							if ( !soft ) {
+								el.find( &#x27;.spinner&#x27; ).remove();
+								el.slideUp();
+							}
+						} );
+
+						return false;
+					} );
+				} );
+			} );
+        &lt;/script&gt;
+		&lt;?php
+	}
+
+}
+</pre></details></body></html>

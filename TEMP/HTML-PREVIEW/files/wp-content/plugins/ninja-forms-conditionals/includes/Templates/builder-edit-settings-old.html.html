@@ -1,0 +1,632 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/includes/Templates/builder-edit-settings-old.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/includes/Templates/builder-edit-settings-old.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;!--
+    Template used for adding the &quot;Add Condition&quot; button to the Advanced drawer header.
+--&gt;
+&lt;script id=&quot;nf-tmpl-cl-advanced-drawer-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;a class=&quot;nf-add-new nf-add-new-condition&quot; title=&quot;&lt;%= nfcli18n.updateSettingsTitleAddNewCondition %&gt;&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;
+            &lt;%= nfcli18n.updateSettingsTitleAddNewCondition %&gt;
+        &lt;/a&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;%= nfcli18n.builderEditSettingsTitleDone %&gt;&quot; class=&quot;nf-button primary nf-close-drawer&quot; tabindex=&quot;-1&quot;&gt;
+            &lt;%= nfcli18n.builderEditSettingsTitleDone %&gt;
+        &lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Template used for conditions on the Advanced domain.
+--&gt;
+&lt;script id=&quot;nf-tmpl-cl-advanced-condition&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Condition Layout View --&gt;
+    &lt;div class=&quot;nf-condition&quot;&gt;
+        &lt;div class=&quot;nf-first-when-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;
+                &lt;%= nfcli18n.builderEditSettingsWhen %&gt;
+                &lt;div class=&quot;nf-when-controls&quot;&gt;
+                    &lt;i class=&quot;fa fa-chevron-circle-&lt;%= ( collapsed ) ? &#x27;down&#x27; : &#x27;up&#x27; %&gt; nf-collapse-condition&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                    &lt;i class=&quot;fa fa-minus-circle nf-remove-condition&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;nf-first-when&quot;&gt;
+
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-when-container&quot;&gt;
+            &lt;div class=&quot;nf-when-region&quot;&gt;
+                &lt;!-- WHEN Region --&gt;
+            &lt;/div&gt;
+            &lt;%
+            if ( ! collapsed ) {
+            %&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+            &lt;%
+            }
+            %&gt;
+        &lt;/div&gt;
+        &lt;%
+        if ( ! collapsed ) {
+        %&gt;
+        &lt;div class=&quot;nf-then-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;&lt;%= nfcli18n.builderEditSettingsDo %&gt;&lt;/div&gt;
+            &lt;div class=&quot;nf-then-region&quot;&gt;
+                &lt;!-- THEN Region --&gt;
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-then&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;nf-else-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;&lt;%= nfcli18n.builderEditSettingsConditionNotMet %&gt;&lt;/div&gt;
+            &lt;div class=&quot;nf-else-region&quot;&gt;
+                &lt;!-- ELSE Region --&gt;
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-else&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+
+        &lt;%
+        }
+        %&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    Template parts for the Advanced domain conditions display
+
+    First-When-Item is used for the first &quot;when&quot; statement of a condition.
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-advanced-first-when-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;
+            &lt;%= renderComparators( type, key, comparator ) %&gt;
+            &lt;div&gt;&lt;/div&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-input&quot;&gt;
+            &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    When/Then/Else templates
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-advanced-when-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-when&quot;&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;i class=&quot;fa fa-minus-circle nf-remove-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;select data-id=&quot;connector&quot; class=&quot;setting&quot;&gt;
+                    &lt;option value=&quot;AND&quot; &lt;%= ( &#x27;AND&#x27; == connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAnd %&gt;&lt;/option&gt;
+                    &lt;option value=&quot;OR&quot; &lt;%= ( &#x27;OR&#x27; == connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsOr %&gt;&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderComparators( type, key, comparator ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-input&quot;&gt;
+                &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-trigger-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-&lt;%= modelType %&gt;&quot;&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;i class=&quot;fa fa-minus-circle nf-remove-&lt;%= modelType %&gt;&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderKeySelect( key, modelType ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderTriggers( type, key, trigger, value ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-input&quot;&gt;
+                &lt;%= renderItemValue( key, trigger, value ) %&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    Templates for our per-action conditions.
+    Main condition layout template
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-actions-condition-layout&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Condition Layout View --&gt;
+    &lt;div class=&quot;nf-condition actions&quot;&gt;
+        &lt;div class=&quot;nf-when-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;
+                &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+                    &lt;label class=&quot;nf-select&quot;&gt;
+                        &lt;select class=&quot;condition-setting&quot; data-id=&quot;process&quot;&gt;
+                            &lt;option&gt;Select One&lt;/option&gt;
+                            &lt;option value=&quot;1&quot; &lt;%= ( 1 == data.process ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsProcessThis %&gt;&lt;/option&gt;
+                            &lt;option value=&quot;0&quot; &lt;%= ( 0 == data.process ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsDoNotProcessThis %&gt;&lt;/option&gt;
+                        &lt;/select&gt;
+                        &lt;div&gt;&lt;/div&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;nf-setting nf-one-third action-when-label&quot;&gt;
+                    When
+                &lt;/div&gt;
+                &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+                    &lt;label class=&quot;nf-select&quot;&gt;
+                        &lt;select class=&quot;condition-setting&quot; data-id=&quot;connector&quot;&gt;
+                            &lt;option value=&quot;all&quot; &lt;%= ( &#x27;all&#x27; == data.connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAll %&gt;&lt;/option&gt;
+                            &lt;option value=&quot;any&quot; &lt;%= ( &#x27;any&#x27; == data.connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAny %&gt;&lt;/option&gt;
+                        &lt;/select&gt;
+                        &lt;div&gt;&lt;/div&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;nf-when&quot;&gt;
+
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Template for our action condition &quot;When&quot; statement.
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-actions-condition-when&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;i class=&quot;fa fa-minus-circle nf-remove-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;
+            &lt;%= renderComparators( type, key, comparator ) %&gt;
+            &lt;div&gt;&lt;/div&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-input&quot;&gt;
+            &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Templates for our component parts:
+    Key Select,
+    Comparator Select,
+    Values (default and field-specific),
+    Triggers
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-key-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;key&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+        &lt;%
+        _.each( groups, function( group ) {
+        %&gt;
+        &lt;optgroup label=&quot;&lt;%= group.label %&gt;&quot;&gt;
+            &lt;%
+            _.each( group.options, function( option ) {
+            var selected = ( option.key == currentValue ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27;;
+            %&gt;
+            &lt;option value=&quot;&lt;%= option.key %&gt;&quot; &lt;%= selected %&gt; data-type=&quot;&lt;%= group.type %&gt;&quot;&gt;&lt;%= option.label %&gt;&lt;/option&gt;
+            &lt;%
+            } );
+            %&gt;
+        &lt;/optgroup&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-comparators&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;comparator&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+        &lt;%
+        _.each( data.comparators, function( comparator ) {
+        %&gt;
+        &lt;option value=&quot;&lt;%= comparator.value %&gt;&quot; &lt;%= ( comparator.value == data.currentComparator ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= comparator.label %&gt;&lt;/option&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; data-id=&quot;value&quot; class=&quot;setting&quot; value=&quot;&lt;%= value %&gt;&quot;&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-textarea&quot; type=&quot;text/template&quot;&gt;
+    &lt;textarea data-id=&quot;value&quot; class=&quot;setting&quot;&gt;&lt;%= value %&gt;&lt;/textarea&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-checkbox&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;nf-select&quot;&gt;
+        &lt;select data-id=&quot;value&quot; class=&quot;setting&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+            &lt;option value=&quot;1&quot; &lt;%= ( 1 == data.value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsChecked %&gt;&lt;/option&gt;
+            &lt;option value=&quot;0&quot; &lt;%= ( 0 === data.value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsUnchecked %&gt;&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-list&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;nf-select&quot;&gt;
+        &lt;select data-id=&quot;value&quot; class=&quot;setting&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;&lt;%= nfcli18n.builderEditSettingsSelectOne %&gt;&lt;/option&gt;
+            &lt;%
+            _.each( options.models, function( option ) {
+            %&gt;
+            &lt;option value=&quot;&lt;%= option.get( &#x27;value&#x27; ) %&gt;&quot; &lt;%= ( option.get( &#x27;value&#x27; ) === value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= option.get( &#x27;label&#x27; ) %&gt;&lt;/option&gt;
+            &lt;%
+            } );
+            %&gt;
+
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-date&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Date Value Template --&gt;
+    &lt;input type=&quot;text&quot; data-id=&quot;value&quot; class=&quot;setting setting-date&quot; value=&quot;&lt;%= value %&gt;&quot; placeholder=&quot;date&quot;&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-triggers&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;trigger&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;&lt;%= nfcli18n.builderEditSettingsSelectOne %&gt;&lt;/option&gt;
+        &lt;%
+        _.each( triggers, function( trigger ) {
+        %&gt;
+        &lt;option value=&quot;&lt;%= trigger.value %&gt;&quot; &lt;%= ( trigger.value == currentTrigger ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= trigger.label %&gt;&lt;/option&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;!--
+    Template used for adding the &quot;Add Condition&quot; button to the Advanced drawer header.
+--&gt;
+&lt;script id=&quot;nf-tmpl-cl-advanced-drawer-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;a class=&quot;nf-add-new nf-add-new-condition&quot; title=&quot;&lt;%= nfcli18n.updateSettingsTitleAddNewCondition %&gt;&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;
+            &lt;%= nfcli18n.updateSettingsTitleAddNewCondition %&gt;
+        &lt;/a&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;%= nfcli18n.builderEditSettingsTitleDone %&gt;&quot; class=&quot;nf-button primary nf-close-drawer&quot; tabindex=&quot;-1&quot;&gt;
+            &lt;%= nfcli18n.builderEditSettingsTitleDone %&gt;
+        &lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Template used for conditions on the Advanced domain.
+--&gt;
+&lt;script id=&quot;nf-tmpl-cl-advanced-condition&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Condition Layout View --&gt;
+    &lt;div class=&quot;nf-condition&quot;&gt;
+        &lt;div class=&quot;nf-first-when-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;
+                &lt;%= nfcli18n.builderEditSettingsWhen %&gt;
+                &lt;div class=&quot;nf-when-controls&quot;&gt;
+                    &lt;i class=&quot;fa fa-chevron-circle-&lt;%= ( collapsed ) ? &#x27;down&#x27; : &#x27;up&#x27; %&gt; nf-collapse-condition&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                    &lt;i class=&quot;fa fa-minus-circle nf-remove-condition&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;nf-first-when&quot;&gt;
+
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-when-container&quot;&gt;
+            &lt;div class=&quot;nf-when-region&quot;&gt;
+                &lt;!-- WHEN Region --&gt;
+            &lt;/div&gt;
+            &lt;%
+            if ( ! collapsed ) {
+            %&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+            &lt;%
+            }
+            %&gt;
+        &lt;/div&gt;
+        &lt;%
+        if ( ! collapsed ) {
+        %&gt;
+        &lt;div class=&quot;nf-then-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;&lt;%= nfcli18n.builderEditSettingsDo %&gt;&lt;/div&gt;
+            &lt;div class=&quot;nf-then-region&quot;&gt;
+                &lt;!-- THEN Region --&gt;
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-then&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;nf-else-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;&lt;%= nfcli18n.builderEditSettingsConditionNotMet %&gt;&lt;/div&gt;
+            &lt;div class=&quot;nf-else-region&quot;&gt;
+                &lt;!-- ELSE Region --&gt;
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-else&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+
+        &lt;%
+        }
+        %&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    Template parts for the Advanced domain conditions display
+
+    First-When-Item is used for the first &quot;when&quot; statement of a condition.
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-advanced-first-when-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;
+            &lt;%= renderComparators( type, key, comparator ) %&gt;
+            &lt;div&gt;&lt;/div&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+        &lt;label class=&quot;nf-input&quot;&gt;
+            &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    When/Then/Else templates
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-advanced-when-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-when&quot;&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;i class=&quot;fa fa-minus-circle nf-remove-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;select data-id=&quot;connector&quot; class=&quot;setting&quot;&gt;
+                    &lt;option value=&quot;AND&quot; &lt;%= ( &#x27;AND&#x27; == connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAnd %&gt;&lt;/option&gt;
+                    &lt;option value=&quot;OR&quot; &lt;%= ( &#x27;OR&#x27; == connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsOr %&gt;&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderComparators( type, key, comparator ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-input&quot;&gt;
+                &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-trigger-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-&lt;%= modelType %&gt;&quot;&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;i class=&quot;fa fa-minus-circle nf-remove-&lt;%= modelType %&gt;&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderKeySelect( key, modelType ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-select&quot;&gt;
+                &lt;%= renderTriggers( type, key, trigger, value ) %&gt;
+                &lt;div&gt;&lt;/div&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+            &lt;label class=&quot;nf-input&quot;&gt;
+                &lt;%= renderItemValue( key, trigger, value ) %&gt;
+            &lt;/label&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+&lt;!--
+    Templates for our per-action conditions.
+    Main condition layout template
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-actions-condition-layout&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Condition Layout View --&gt;
+    &lt;div class=&quot;nf-condition actions&quot;&gt;
+        &lt;div class=&quot;nf-when-container&quot;&gt;
+            &lt;div class=&quot;nf-condition-label&quot;&gt;
+                &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+                    &lt;label class=&quot;nf-select&quot;&gt;
+                        &lt;select class=&quot;condition-setting&quot; data-id=&quot;process&quot;&gt;
+                            &lt;option&gt;Select One&lt;/option&gt;
+                            &lt;option value=&quot;1&quot; &lt;%= ( 1 == data.process ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsProcessThis %&gt;&lt;/option&gt;
+                            &lt;option value=&quot;0&quot; &lt;%= ( 0 == data.process ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsDoNotProcessThis %&gt;&lt;/option&gt;
+                        &lt;/select&gt;
+                        &lt;div&gt;&lt;/div&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;nf-setting nf-one-third action-when-label&quot;&gt;
+                    When
+                &lt;/div&gt;
+                &lt;div class=&quot;nf-setting nf-one-third&quot;&gt;
+                    &lt;label class=&quot;nf-select&quot;&gt;
+                        &lt;select class=&quot;condition-setting&quot; data-id=&quot;connector&quot;&gt;
+                            &lt;option value=&quot;all&quot; &lt;%= ( &#x27;all&#x27; == data.connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAll %&gt;&lt;/option&gt;
+                            &lt;option value=&quot;any&quot; &lt;%= ( &#x27;any&#x27; == data.connector ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsAny %&gt;&lt;/option&gt;
+                        &lt;/select&gt;
+                        &lt;div&gt;&lt;/div&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;nf-when&quot;&gt;
+
+            &lt;/div&gt;
+            &lt;i class=&quot;fa fa-plus-circle nf-add-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Template for our action condition &quot;When&quot; statement.
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-actions-condition-when&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;i class=&quot;fa fa-minus-circle nf-remove-when&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;&lt;%= renderKeySelect( key, modelType ) %&gt;&lt;div&gt;&lt;/div&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-select&quot;&gt;
+            &lt;%= renderComparators( type, key, comparator ) %&gt;
+            &lt;div&gt;&lt;/div&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-setting nf-one-fourth&quot;&gt;
+        &lt;label class=&quot;nf-input&quot;&gt;
+            &lt;%= renderWhenValue( type, key, comparator, value ) %&gt;
+        &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!--
+    Templates for our component parts:
+    Key Select,
+    Comparator Select,
+    Values (default and field-specific),
+    Triggers
+--&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-key-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;key&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+        &lt;%
+        _.each( groups, function( group ) {
+        %&gt;
+        &lt;optgroup label=&quot;&lt;%= group.label %&gt;&quot;&gt;
+            &lt;%
+            _.each( group.options, function( option ) {
+            var selected = ( option.key == currentValue ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27;;
+            %&gt;
+            &lt;option value=&quot;&lt;%= option.key %&gt;&quot; &lt;%= selected %&gt; data-type=&quot;&lt;%= group.type %&gt;&quot;&gt;&lt;%= option.label %&gt;&lt;/option&gt;
+            &lt;%
+            } );
+            %&gt;
+        &lt;/optgroup&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-comparators&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;comparator&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+        &lt;%
+        _.each( data.comparators, function( comparator ) {
+        %&gt;
+        &lt;option value=&quot;&lt;%= comparator.value %&gt;&quot; &lt;%= ( comparator.value == data.currentComparator ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= comparator.label %&gt;&lt;/option&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; data-id=&quot;value&quot; class=&quot;setting&quot; value=&quot;&lt;%= value %&gt;&quot;&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-textarea&quot; type=&quot;text/template&quot;&gt;
+    &lt;textarea data-id=&quot;value&quot; class=&quot;setting&quot;&gt;&lt;%= value %&gt;&lt;/textarea&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-checkbox&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;nf-select&quot;&gt;
+        &lt;select data-id=&quot;value&quot; class=&quot;setting&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;Select One&lt;/option&gt;
+            &lt;option value=&quot;1&quot; &lt;%= ( 1 == data.value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsChecked %&gt;&lt;/option&gt;
+            &lt;option value=&quot;0&quot; &lt;%= ( 0 === data.value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= nfcli18n.builderEditSettingsUnchecked %&gt;&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-list&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;nf-select&quot;&gt;
+        &lt;select data-id=&quot;value&quot; class=&quot;setting&quot;&gt;
+            &lt;option value=&quot;&quot;&gt;&lt;%= nfcli18n.builderEditSettingsSelectOne %&gt;&lt;/option&gt;
+            &lt;%
+            _.each( options.models, function( option ) {
+            %&gt;
+            &lt;option value=&quot;&lt;%= option.get( &#x27;value&#x27; ) %&gt;&quot; &lt;%= ( option.get( &#x27;value&#x27; ) === value ) ? &#x27;selected=&quot;selected&quot;&#x27;: &#x27;&#x27; %&gt;&gt;&lt;%= option.get( &#x27;label&#x27; ) %&gt;&lt;/option&gt;
+            &lt;%
+            } );
+            %&gt;
+
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-value-date&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- Date Value Template --&gt;
+    &lt;input type=&quot;text&quot; data-id=&quot;value&quot; class=&quot;setting setting-date&quot; value=&quot;&lt;%= value %&gt;&quot; placeholder=&quot;date&quot;&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-cl-triggers&quot; type=&quot;text/template&quot;&gt;
+    &lt;select data-id=&quot;trigger&quot; class=&quot;setting&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;&lt;%= nfcli18n.builderEditSettingsSelectOne %&gt;&lt;/option&gt;
+        &lt;%
+        _.each( triggers, function( trigger ) {
+        %&gt;
+        &lt;option value=&quot;&lt;%= trigger.value %&gt;&quot; &lt;%= ( trigger.value == currentTrigger ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; %&gt;&gt;&lt;%= trigger.label %&gt;&lt;/option&gt;
+        &lt;%
+        } );
+        %&gt;
+    &lt;/select&gt;
+&lt;/script&gt;</pre></details></body></html>

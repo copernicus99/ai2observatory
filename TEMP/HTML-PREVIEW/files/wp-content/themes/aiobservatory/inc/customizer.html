@@ -1,0 +1,207 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/inc/customizer.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/inc/customizer.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Twenty Seventeen: Customizer
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+/**
+ * Add postMessage support for site title and description for the Theme Customizer.
+ *
+ * @param WP_Customize_Manager $wp_customize Theme Customizer object.
+ */
+function twentyseventeen_customize_register( $wp_customize ) {
+	$wp_customize-&gt;get_setting( &#x27;blogname&#x27; )-&gt;transport          = &#x27;postMessage&#x27;;
+	$wp_customize-&gt;get_setting( &#x27;blogdescription&#x27; )-&gt;transport   = &#x27;postMessage&#x27;;
+	$wp_customize-&gt;get_setting( &#x27;header_textcolor&#x27; )-&gt;transport  = &#x27;postMessage&#x27;;
+
+	$wp_customize-&gt;selective_refresh-&gt;add_partial( &#x27;blogname&#x27;, array(
+		&#x27;selector&#x27; =&gt; &#x27;.site-title a&#x27;,
+		&#x27;render_callback&#x27; =&gt; &#x27;twentyseventeen_customize_partial_blogname&#x27;,
+	) );
+	$wp_customize-&gt;selective_refresh-&gt;add_partial( &#x27;blogdescription&#x27;, array(
+		&#x27;selector&#x27; =&gt; &#x27;.site-description&#x27;,
+		&#x27;render_callback&#x27; =&gt; &#x27;twentyseventeen_customize_partial_blogdescription&#x27;,
+	) );
+
+	/**
+	 * Custom colors.
+	 */
+	$wp_customize-&gt;add_setting( &#x27;colorscheme&#x27;, array(
+		&#x27;default&#x27;           =&gt; &#x27;light&#x27;,
+		&#x27;transport&#x27;         =&gt; &#x27;postMessage&#x27;,
+		&#x27;sanitize_callback&#x27; =&gt; &#x27;twentyseventeen_sanitize_colorscheme&#x27;,
+	) );
+
+	$wp_customize-&gt;add_setting( &#x27;colorscheme_hue&#x27;, array(
+		&#x27;default&#x27;           =&gt; 250,
+		&#x27;transport&#x27;         =&gt; &#x27;postMessage&#x27;,
+		&#x27;sanitize_callback&#x27; =&gt; &#x27;absint&#x27;, // The hue is stored as a positive integer.
+	) );
+
+	$wp_customize-&gt;add_control( &#x27;colorscheme&#x27;, array(
+		&#x27;type&#x27;    =&gt; &#x27;radio&#x27;,
+		&#x27;label&#x27;    =&gt; __( &#x27;Color Scheme&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;choices&#x27;  =&gt; array(
+			&#x27;light&#x27;  =&gt; __( &#x27;Light&#x27;, &#x27;twentyseventeen&#x27; ),
+			&#x27;dark&#x27;   =&gt; __( &#x27;Dark&#x27;, &#x27;twentyseventeen&#x27; ),
+			&#x27;custom&#x27; =&gt; __( &#x27;Custom&#x27;, &#x27;twentyseventeen&#x27; ),
+		),
+		&#x27;section&#x27;  =&gt; &#x27;colors&#x27;,
+		&#x27;priority&#x27; =&gt; 5,
+	) );
+
+	$wp_customize-&gt;add_control( new WP_Customize_Color_Control( $wp_customize, &#x27;colorscheme_hue&#x27;, array(
+		&#x27;mode&#x27; =&gt; &#x27;hue&#x27;,
+		&#x27;section&#x27;  =&gt; &#x27;colors&#x27;,
+		&#x27;priority&#x27; =&gt; 6,
+	) ) );
+
+	/**
+	 * Theme options.
+	 */
+	$wp_customize-&gt;add_section( &#x27;theme_options&#x27;, array(
+		&#x27;title&#x27;    =&gt; __( &#x27;Theme Options&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;priority&#x27; =&gt; 130, // Before Additional CSS.
+	) );
+
+	$wp_customize-&gt;add_setting( &#x27;page_layout&#x27;, array(
+		&#x27;default&#x27;           =&gt; &#x27;two-column&#x27;,
+		&#x27;sanitize_callback&#x27; =&gt; &#x27;twentyseventeen_sanitize_page_layout&#x27;,
+		&#x27;transport&#x27;         =&gt; &#x27;postMessage&#x27;,
+	) );
+
+	$wp_customize-&gt;add_control( &#x27;page_layout&#x27;, array(
+		&#x27;label&#x27;       =&gt; __( &#x27;Page Layout&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;section&#x27;     =&gt; &#x27;theme_options&#x27;,
+		&#x27;type&#x27;        =&gt; &#x27;radio&#x27;,
+		&#x27;description&#x27; =&gt; __( &#x27;When the two column layout is assigned, the page title is in one column and content is in the other.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;choices&#x27;     =&gt; array(
+			&#x27;one-column&#x27; =&gt; __( &#x27;One Column&#x27;, &#x27;twentyseventeen&#x27; ),
+			&#x27;two-column&#x27; =&gt; __( &#x27;Two Column&#x27;, &#x27;twentyseventeen&#x27; ),
+		),
+		&#x27;active_callback&#x27; =&gt; &#x27;twentyseventeen_is_view_with_layout_option&#x27;,
+	) );
+
+	/**
+	 * Filter number of front page sections in Twenty Seventeen.
+	 *
+	 * @since Twenty Seventeen 1.0
+	 *
+	 * @param $num_sections integer
+	 */
+	$num_sections = apply_filters( &#x27;twentyseventeen_front_page_sections&#x27;, 4 );
+
+	// Create a setting and control for each of the sections available in the theme.
+	for ( $i = 1; $i &lt; ( 1 + $num_sections ); $i++ ) {
+		$wp_customize-&gt;add_setting( &#x27;panel_&#x27; . $i, array(
+			&#x27;default&#x27;           =&gt; false,
+			&#x27;sanitize_callback&#x27; =&gt; &#x27;absint&#x27;,
+			&#x27;transport&#x27;         =&gt; &#x27;postMessage&#x27;,
+		) );
+
+		$wp_customize-&gt;add_control( &#x27;panel_&#x27; . $i, array(
+			/* translators: %d is the front page section number */
+			&#x27;label&#x27;          =&gt; sprintf( __( &#x27;Front Page Section %d Content&#x27;, &#x27;twentyseventeen&#x27; ), $i ),
+			&#x27;description&#x27;    =&gt; ( 1 !== $i ? &#x27;&#x27; : __( &#x27;Select pages to feature in each area from the dropdowns. Add an image to a section by setting a featured image in the page editor. Empty sections will not be displayed.&#x27;, &#x27;twentyseventeen&#x27; ) ),
+			&#x27;section&#x27;        =&gt; &#x27;theme_options&#x27;,
+			&#x27;type&#x27;           =&gt; &#x27;dropdown-pages&#x27;,
+			&#x27;allow_addition&#x27; =&gt; true,
+			&#x27;active_callback&#x27; =&gt; &#x27;twentyseventeen_is_static_front_page&#x27;,
+		) );
+
+		$wp_customize-&gt;selective_refresh-&gt;add_partial( &#x27;panel_&#x27; . $i, array(
+			&#x27;selector&#x27;            =&gt; &#x27;#panel&#x27; . $i,
+			&#x27;render_callback&#x27;     =&gt; &#x27;twentyseventeen_front_page_section&#x27;,
+			&#x27;container_inclusive&#x27; =&gt; true,
+		) );
+	}
+}
+add_action( &#x27;customize_register&#x27;, &#x27;twentyseventeen_customize_register&#x27; );
+
+/**
+ * Sanitize the page layout options.
+ */
+function twentyseventeen_sanitize_page_layout( $input ) {
+	$valid = array(
+		&#x27;one-column&#x27; =&gt; __( &#x27;One Column&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;two-column&#x27; =&gt; __( &#x27;Two Column&#x27;, &#x27;twentyseventeen&#x27; ),
+	);
+
+	if ( array_key_exists( $input, $valid ) ) {
+		return $input;
+	}
+
+	return &#x27;&#x27;;
+}
+
+/**
+ * Sanitize the colorscheme.
+ */
+function twentyseventeen_sanitize_colorscheme( $input ) {
+	$valid = array( &#x27;light&#x27;, &#x27;dark&#x27;, &#x27;custom&#x27; );
+
+	if ( in_array( $input, $valid ) ) {
+		return $input;
+	}
+
+	return &#x27;light&#x27;;
+}
+
+/**
+ * Render the site title for the selective refresh partial.
+ *
+ * @since Twenty Seventeen 1.0
+ * @see twentyseventeen_customize_register()
+ *
+ * @return void
+ */
+function twentyseventeen_customize_partial_blogname() {
+	bloginfo( &#x27;name&#x27; );
+}
+
+/**
+ * Render the site tagline for the selective refresh partial.
+ *
+ * @since Twenty Seventeen 1.0
+ * @see twentyseventeen_customize_register()
+ *
+ * @return void
+ */
+function twentyseventeen_customize_partial_blogdescription() {
+	bloginfo( &#x27;description&#x27; );
+}
+
+/**
+ * Return whether we&#x27;re previewing the front page and it&#x27;s a static page.
+ */
+function twentyseventeen_is_static_front_page() {
+	return ( is_front_page() &amp;&amp; ! is_home() );
+}
+
+/**
+ * Return whether we&#x27;re on a view that supports a one or two column layout.
+ */
+function twentyseventeen_is_view_with_layout_option() {
+	// This option is available on all pages. It&#x27;s also available on archives when there isn&#x27;t a sidebar.
+	return ( is_page() || ( is_archive() &amp;&amp; ! is_active_sidebar( &#x27;sidebar-1&#x27; ) ) );
+}
+
+/**
+ * Bind JS handlers to instantly live-preview changes.
+ */
+function twentyseventeen_customize_preview_js() {
+	wp_enqueue_script( &#x27;twentyseventeen-customize-preview&#x27;, get_theme_file_uri( &#x27;/assets/js/customize-preview.js&#x27; ), array( &#x27;customize-preview&#x27; ), &#x27;1.0&#x27;, true );
+}
+add_action( &#x27;customize_preview_init&#x27;, &#x27;twentyseventeen_customize_preview_js&#x27; );
+
+/**
+ * Load dynamic logic for the customizer controls area.
+ */
+function twentyseventeen_panels_js() {
+	wp_enqueue_script( &#x27;twentyseventeen-customize-controls&#x27;, get_theme_file_uri( &#x27;/assets/js/customize-controls.js&#x27; ), array(), &#x27;1.0&#x27;, true );
+}
+add_action( &#x27;customize_controls_enqueue_scripts&#x27;, &#x27;twentyseventeen_panels_js&#x27; );
+</pre></details></body></html>

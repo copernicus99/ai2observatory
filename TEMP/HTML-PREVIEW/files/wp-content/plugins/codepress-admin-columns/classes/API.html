@@ -1,0 +1,167 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/API.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/API.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_API {
+
+	/**
+	 * @var array [
+	 *      $listscreen_key =&gt; [
+	 *          [ &#x27;columns&#x27; ][ array $column_settings ]
+	 *          [ &#x27;layout&#x27; ][ array $layout_settings ]
+	 *      ]
+	 * ]
+	 */
+	private $columndata;
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 */
+	public function set_column_settings( AC_ListScreen $list_screen ) {
+		if ( $settings = $this-&gt;get_column_settings( $list_screen ) ) {
+			$list_screen-&gt;set_settings( $settings )-&gt;set_read_only( true );
+		}
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return array|false
+	 */
+	public function get_column_settings( AC_ListScreen $list_screen ) {
+		if ( $columndata = $this-&gt;get_columndata( $list_screen-&gt;get_key() ) ) {
+			foreach ( $columndata as $data ) {
+				if ( $list_screen-&gt;get_storage_key() === $list_screen-&gt;get_key() . $data[&#x27;layout&#x27;][&#x27;id&#x27;] ) {
+					return $data[&#x27;columns&#x27;];
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return array
+	 */
+	public function get_layouts_settings( $list_screen ) {
+		$layouts = array();
+		if ( $columndata = $this-&gt;get_columndata( $list_screen-&gt;get_key() ) ) {
+			foreach ( $columndata as $data ) {
+				$layouts[] = $data[&#x27;layout&#x27;];
+			}
+		}
+
+		return $layouts;
+	}
+
+	/**
+	 * @param string|array $list_screen_key List screen key or keys
+	 * @param array        $column_data
+	 */
+	public function load_columndata( $list_screen_keys, $columndata ) {
+		foreach ( (array) $list_screen_keys as $list_screen_key ) {
+			$this-&gt;add_columndata( $list_screen_key, $columndata );
+		}
+	}
+
+	/**
+	 * @param string $list_screen_key List screen key
+	 * @param array  $column_data
+	 */
+	private function add_columndata( $list_screen_key, $columndata ) {
+		$columndata = $this-&gt;convert_old_format_to_current( $columndata );
+		$columndata = $this-&gt;set_as_read_only( $columndata );
+
+		$this-&gt;columndata[ $list_screen_key ] = array_merge( $this-&gt;get_columndata( $list_screen_key ), $columndata );
+	}
+
+	/**
+	 * @param string $list_screen_key
+	 *
+	 * @return array
+	 */
+	private function get_columndata( $list_screen_key ) {
+		if ( ! isset( $this-&gt;columndata[ $list_screen_key ] ) ) {
+			return array();
+		}
+
+		return $this-&gt;columndata[ $list_screen_key ];
+	}
+
+	/**
+	 * @param array $columndata
+	 *
+	 * @return array
+	 */
+	private function set_as_read_only( $columndata ) {
+		foreach ( $columndata as $k =&gt; $column ) {
+			$columndata[ $k ][&#x27;layout&#x27;][&#x27;read_only&#x27;] = true;
+		}
+
+		return $columndata;
+	}
+
+	/**
+	 * Convert the old v3 format to the latest which includes layouts
+	 *
+	 * @param array $columndata
+	 *
+	 * @return array
+	 */
+	private function convert_old_format_to_current( $columndata ) {
+
+		// Convert old export formats to new layout format
+		$old_format_columns = array();
+		foreach ( $columndata as $k =&gt; $data ) {
+			if ( ! isset( $data[&#x27;columns&#x27;] ) ) {
+				$old_format_columns[ $k ] = $data;
+				unset( $columndata[ $k ] );
+			}
+		}
+
+		if ( $old_format_columns ) {
+			array_unshift( $columndata, array( &#x27;columns&#x27; =&gt; $old_format_columns ) );
+		}
+
+		// Add layout if missing
+		foreach ( $columndata as $k =&gt; $data ) {
+			if ( ! isset( $data[&#x27;layout&#x27;] ) ) {
+
+				$columndata[ $k ] = array(
+					&#x27;columns&#x27; =&gt; isset( $data[&#x27;columns&#x27;] ) ? $data[&#x27;columns&#x27;] : $data,
+					&#x27;layout&#x27;  =&gt; array(
+						// unique id based on settings
+						&#x27;id&#x27;   =&gt; sanitize_key( substr( md5( serialize( $data ) ), 0, 16 ) ),
+						&#x27;name&#x27; =&gt; __( &#x27;Imported&#x27; ) . ( $k ? &#x27; #&#x27; . $k : &#x27;&#x27; ),
+					),
+				);
+			}
+		}
+
+		return $columndata;
+	}
+
+	/**
+	 * @param string $json JSON encoded settings
+	 */
+	public function load_from_json( $json ) {
+		$array = json_decode( $json, true );
+
+		$this-&gt;load_from_array( $array );
+	}
+
+	/**
+	 * @param array $array
+	 */
+	public function load_from_array( $array ) {
+		foreach ( $array as $list_screen =&gt; $columndata ) {
+			$this-&gt;load_columndata( $list_screen, $columndata );
+		}
+	}
+
+}
+</pre></details></body></html>

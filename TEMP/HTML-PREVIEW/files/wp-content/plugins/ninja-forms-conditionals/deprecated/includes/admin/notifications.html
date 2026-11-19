@@ -1,0 +1,506 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/notifications.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/notifications.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;tbody id=&quot;nf-conditions&quot;&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;div id=&quot;nf_cl_conditions&quot;&gt;
+					&lt;a href=&quot;#&quot; class=&quot;nf-cl-add button-secondary add-condition&quot; style=&quot;&quot;&gt;&lt;div class=&quot;dashicons dashicons-plus-alt&quot;&gt;&lt;/div&gt; &lt;/a&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-condition&quot;&gt;
+		&lt;div id=&quot;nf_cl_condition_&lt;#= cond_id #&gt;&quot; class=&quot;nf-cl-condition&quot; name=&quot;&quot;&gt;&lt;!-- Opening Conditional Logic Div --&gt;
+			&lt;div class=&quot;nf-cl-condition-title&quot;&gt;
+				&lt;select id=&quot;&quot; name=&quot;conditions[&lt;#= cond_id #&gt;][action]&quot; class=&quot;nf-cl-conditional-action&quot;&gt;
+					&lt;option value=&quot;process&quot; &lt;# if ( &#x27;process&#x27; == action ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;/option&gt;
+					&lt;option value=&quot;noprocess&quot; &lt;# if ( &#x27;noprocess&#x27; == action ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				
+				&lt;select name=&quot;conditions[&lt;#= cond_id #&gt;][connector]&quot;&gt;
+					&lt;option value=&quot;and&quot; &lt;# if ( &#x27;and&#x27; == connector ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;/option&gt;
+					&lt;option value=&quot;or&quot; &lt;# if ( &#x27;or&#x27; == connector ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				: &lt;a href=&quot;#&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;button-secondary nf-cl-add add-cr&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;&lt;div class=&quot;dashicons dashicons-plus-alt&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;spinner&quot; style=&quot;float:left;&quot;&gt;&lt;/span&gt; &lt;/a&gt;
+				&lt;a href=&quot;#&quot; class=&quot;nf-cl-delete delete-condition&quot; style=&quot;&quot;&gt;&lt;div class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/div&gt;&lt;/a&gt;
+			&lt;/div&gt;
+			&lt;div id=&quot;&quot; class=&quot;nf-cl-criteria&quot;&gt;&lt;/div&gt;
+		&lt;/div&gt; &lt;!-- Close Conditional Logic Div --&gt;
+	&lt;/script&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria&quot;&gt;
+		&lt;div class=&quot;single-criteria&quot; id=&quot;&lt;#= div_id #&gt;&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nf-cl-delete delete-cr&quot; style=&quot;&quot;&gt;&lt;div class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/div&gt;&lt;/a&gt;
+			&lt;select name=&quot;&lt;#= cr_name #&gt;[param]&quot; class=&quot;cr-param&quot; id=&quot;&quot; title=&quot;&quot; data-cr-id=&quot;&lt;#= cr_id #&gt;&quot; data-num=&quot;&lt;#= num #&gt;&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;-- &lt;/option&gt;
+				&lt;#
+				_.each( param_groups, function( params, group_label ) {
+					#&gt;
+					&lt;optgroup label=&quot;&lt;#= group_label #&gt;&quot;&gt;
+						&lt;#
+						_.each( params, function( param ) {
+							if ( selected_param == param.id ) {
+								var selected = &#x27;selected=&quot;selected&quot;&#x27;;
+							} else {
+								var selected = &#x27;&#x27;;
+							}
+							#&gt;
+							&lt;option value=&quot;&lt;#= param.id #&gt;&quot; &lt;#= selected #&gt;&gt;&lt;#= param.label #&gt;&lt;/option&gt;
+							&lt;#
+						})
+						#&gt;
+					&lt;/optgroup&gt;
+					&lt;#
+				});
+				#&gt;
+			&lt;/select&gt;
+			&lt;span class=&quot;cr-compare&quot;&gt;&lt;/span&gt;
+			&lt;span class=&quot;cr-value&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/script&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria-compare&quot;&gt;
+		&lt;select name=&quot;&lt;#= cr_name #&gt;[compare]&quot;&gt;
+			&lt;#
+			var param = nf_cl.getParam( selected_param );
+			if ( param !== null ) {
+				_.each( param.compare, function( value, key ) {
+					#&gt;
+					&lt;option value=&quot;&lt;#= key #&gt;&quot; &lt;# if ( compare == key ) { #&gt;selected=&quot;selected&quot;&lt;# }  #&gt;&gt;&lt;#= value #&gt;&lt;/option&gt;
+					&lt;#
+				} );
+			}
+			#&gt;
+		&lt;/select&gt;
+	&lt;/script&gt;	
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria-value&quot;&gt;
+		&lt;#
+		var param = nf_cl.getParam( selected_param );
+		if ( param !== null ) {
+			var type = param.conditions.type;
+			if ( type == &#x27;text&#x27; ) {
+				#&gt;
+				&lt;input type=&quot;text&quot; name=&quot;&lt;#= cr_name #&gt;[value]&quot; value=&quot;&lt;#= value #&gt;&quot;&gt;
+				&lt;#
+			} else if ( type == &#x27;select&#x27; ) {
+				#&gt;
+				&lt;select name=&quot;&lt;#= cr_name #&gt;[value]&quot;&gt;
+					&lt;#
+					_.each( param.conditions.options, function( opt, key ) {
+						// If we don&#x27;t have an opt.value, then use the opt var.
+						if ( &#x27;undefined&#x27; == typeof opt.value ) {
+							var v = opt;
+							var l = key;
+							opt = {};
+							opt.label = l;
+							opt.value = v;
+						}
+
+						if ( value == opt.value ) {
+							var selected = &#x27;selected=&quot;selected&quot;&#x27;;
+						} else {
+							var selected = &#x27;&#x27;;
+						}
+						#&gt;
+						&lt;option value=&quot;&lt;#= opt.value #&gt;&quot; &lt;#= selected #&gt;&gt;&lt;#= opt.label #&gt;&lt;/option&gt;
+						&lt;#
+					});
+					#&gt;
+				&lt;/select&gt;
+				&lt;#
+			} else if ( type == &#x27;textarea&#x27; ) {
+				#&gt;
+				&lt;textarea name=&quot;&lt;#= cr_name #&gt;[value]&quot; style=&quot;vertical-align:top&quot;&gt;&lt;#= value #&gt;&lt;/textarea&gt;
+				&lt;#
+			}
+		}
+		#&gt;
+	&lt;/script&gt;
+
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+function nf_cl_notification_settings( $id ) {
+	$conditions = nf_cl_get_conditions( $id );
+	if ( empty ( $conditions ) ) {
+		$add_button_style = &#x27;&#x27;;
+	} else {
+		$add_button_style = &#x27;display:none;&#x27;;
+	}
+	?&gt;
+	&lt;tbody id=&quot;nf-conditions&quot;&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;?php _e( &#x27;Conditional Processing&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;div id=&quot;nf_cl_conditions&quot;&gt;
+					&lt;a href=&quot;#&quot; class=&quot;nf-cl-add button-secondary add-condition&quot; style=&quot;&lt;?php echo $add_button_style; ?&gt;&quot;&gt;&lt;div class=&quot;dashicons dashicons-plus-alt&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Add&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/a&gt;
+				&lt;/div&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-condition&quot;&gt;
+		&lt;div id=&quot;nf_cl_condition_&lt;#= cond_id #&gt;&quot; class=&quot;nf-cl-condition&quot; name=&quot;&quot;&gt;&lt;!-- Opening Conditional Logic Div --&gt;
+			&lt;div class=&quot;nf-cl-condition-title&quot;&gt;
+				&lt;select id=&quot;&quot; name=&quot;conditions[&lt;#= cond_id #&gt;][action]&quot; class=&quot;nf-cl-conditional-action&quot;&gt;
+					&lt;option value=&quot;process&quot; &lt;# if ( &#x27;process&#x27; == action ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;?php _e( &#x27;Process This&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+					&lt;option value=&quot;noprocess&quot; &lt;# if ( &#x27;noprocess&#x27; == action ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;?php _e( &#x27;Do Not Process This&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				&lt;?php _e( &#x27;If&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;
+				&lt;select name=&quot;conditions[&lt;#= cond_id #&gt;][connector]&quot;&gt;
+					&lt;option value=&quot;and&quot; &lt;# if ( &#x27;and&#x27; == connector ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;?php _e( &#x27;All&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+					&lt;option value=&quot;or&quot; &lt;# if ( &#x27;or&#x27; == connector ) { #&gt; selected=&quot;selected&quot; &lt;# } #&gt;&gt;&lt;?php _e( &#x27;Any&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				&lt;?php _e( &#x27;of the following criteria are met&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;: &lt;a href=&quot;#&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;button-secondary nf-cl-add add-cr&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;&lt;div class=&quot;dashicons dashicons-plus-alt&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;&lt;/div&gt;&lt;span class=&quot;spinner&quot; style=&quot;float:left;&quot;&gt;&lt;/span&gt; &lt;?php _e( &#x27;Add Criteria&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/a&gt;
+				&lt;a href=&quot;#&quot; class=&quot;nf-cl-delete delete-condition&quot; style=&quot;&quot;&gt;&lt;div class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/div&gt;&lt;/a&gt;
+			&lt;/div&gt;
+			&lt;div id=&quot;&quot; class=&quot;nf-cl-criteria&quot;&gt;&lt;/div&gt;
+		&lt;/div&gt; &lt;!-- Close Conditional Logic Div --&gt;
+	&lt;/script&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria&quot;&gt;
+		&lt;div class=&quot;single-criteria&quot; id=&quot;&lt;#= div_id #&gt;&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nf-cl-delete delete-cr&quot; style=&quot;&quot;&gt;&lt;div class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/div&gt;&lt;/a&gt;
+			&lt;select name=&quot;&lt;#= cr_name #&gt;[param]&quot; class=&quot;cr-param&quot; id=&quot;&quot; title=&quot;&quot; data-cr-id=&quot;&lt;#= cr_id #&gt;&quot; data-num=&quot;&lt;#= num #&gt;&quot; data-cond-id=&quot;&lt;#= cond_id #&gt;&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;-- &lt;?php _e( &#x27;Select One&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;#
+				_.each( param_groups, function( params, group_label ) {
+					#&gt;
+					&lt;optgroup label=&quot;&lt;#= group_label #&gt;&quot;&gt;
+						&lt;#
+						_.each( params, function( param ) {
+							if ( selected_param == param.id ) {
+								var selected = &#x27;selected=&quot;selected&quot;&#x27;;
+							} else {
+								var selected = &#x27;&#x27;;
+							}
+							#&gt;
+							&lt;option value=&quot;&lt;#= param.id #&gt;&quot; &lt;#= selected #&gt;&gt;&lt;#= param.label #&gt;&lt;/option&gt;
+							&lt;#
+						})
+						#&gt;
+					&lt;/optgroup&gt;
+					&lt;#
+				});
+				#&gt;
+			&lt;/select&gt;
+			&lt;span class=&quot;cr-compare&quot;&gt;&lt;/span&gt;
+			&lt;span class=&quot;cr-value&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/script&gt;
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria-compare&quot;&gt;
+		&lt;select name=&quot;&lt;#= cr_name #&gt;[compare]&quot;&gt;
+			&lt;#
+			var param = nf_cl.getParam( selected_param );
+			if ( param !== null ) {
+				_.each( param.compare, function( value, key ) {
+					#&gt;
+					&lt;option value=&quot;&lt;#= key #&gt;&quot; &lt;# if ( compare == key ) { #&gt;selected=&quot;selected&quot;&lt;# }  #&gt;&gt;&lt;#= value #&gt;&lt;/option&gt;
+					&lt;#
+				} );
+			}
+			#&gt;
+		&lt;/select&gt;
+	&lt;/script&gt;	
+
+	&lt;script type=&quot;text/html&quot; id=&quot;tmpl-nf-cl-criteria-value&quot;&gt;
+		&lt;#
+		var param = nf_cl.getParam( selected_param );
+		if ( param !== null ) {
+			var type = param.conditions.type;
+			if ( type == &#x27;text&#x27; ) {
+				#&gt;
+				&lt;input type=&quot;text&quot; name=&quot;&lt;#= cr_name #&gt;[value]&quot; value=&quot;&lt;#= value #&gt;&quot;&gt;
+				&lt;#
+			} else if ( type == &#x27;select&#x27; ) {
+				#&gt;
+				&lt;select name=&quot;&lt;#= cr_name #&gt;[value]&quot;&gt;
+					&lt;#
+					_.each( param.conditions.options, function( opt, key ) {
+						// If we don&#x27;t have an opt.value, then use the opt var.
+						if ( &#x27;undefined&#x27; == typeof opt.value ) {
+							var v = opt;
+							var l = key;
+							opt = {};
+							opt.label = l;
+							opt.value = v;
+						}
+
+						if ( value == opt.value ) {
+							var selected = &#x27;selected=&quot;selected&quot;&#x27;;
+						} else {
+							var selected = &#x27;&#x27;;
+						}
+						#&gt;
+						&lt;option value=&quot;&lt;#= opt.value #&gt;&quot; &lt;#= selected #&gt;&gt;&lt;#= opt.label #&gt;&lt;/option&gt;
+						&lt;#
+					});
+					#&gt;
+				&lt;/select&gt;
+				&lt;#
+			} else if ( type == &#x27;textarea&#x27; ) {
+				#&gt;
+				&lt;textarea name=&quot;&lt;#= cr_name #&gt;[value]&quot; style=&quot;vertical-align:top&quot;&gt;&lt;#= value #&gt;&lt;/textarea&gt;
+				&lt;#
+			}
+		}
+		#&gt;
+	&lt;/script&gt;
+
+	&lt;?php
+}
+
+add_action( &#x27;nf_edit_notification_settings&#x27;, &#x27;nf_cl_notification_settings&#x27; );
+
+/**
+ * Hook into our notification save action
+ *
+ * @since 1.2.8
+ * @return void
+ */
+function nf_cl_save_notification( $n_id, $data, $new ) {
+	// Bail if we don&#x27;t have any conditional data.
+	if ( ! isset ( $data[&#x27;conditions&#x27;] ) || ! is_array ( $data[&#x27;conditions&#x27;] ) ) {
+		// Loop through our current conditions and remove any that weren&#x27;t sent.
+		$conditions = nf_cl_get_conditions( $n_id );
+
+		foreach ( $conditions as $cond_id ) {
+			nf_cl_delete_condition( $cond_id );
+		}
+		return false;	
+	}
+
+	// Loop through our current conditions and remove any that weren&#x27;t sent.
+	$conditions = nf_cl_get_conditions( $n_id );
+
+	foreach ( $conditions as $cond_id ) {
+		if ( ! isset ( $data[&#x27;conditions&#x27;][ $cond_id ] ) ) {
+			nf_cl_delete_condition( $cond_id );
+		}
+	}
+	
+	// $data[&#x27;conditions&#x27;] will store all the information about our conditions.
+	foreach ( $data[&#x27;conditions&#x27;] as $cond_id =&gt; $d ) { // Loop through our conditions and save the data.
+		if ( &#x27;new&#x27; == $cond_id ) {
+			// If we are creating a new condition, insert it and grab the id.
+			$cond_id = nf_cl_insert_condition( $n_id );
+		}
+
+		// Delete criteria that has been removed.
+		$criteria = nf_cl_get_criteria( $cond_id );
+		foreach ( $criteria as $cr_id ) {
+			if ( ! isset ( $d[&#x27;criteria&#x27;][ $cr_id ] ) ) {
+				nf_delete_object( $cr_id );
+			}
+		}
+
+		// Loop through any new criteria.
+		if ( isset ( $d[&#x27;criteria&#x27;][&#x27;new&#x27;] ) ) {
+			foreach ( $d[&#x27;criteria&#x27;][&#x27;new&#x27;] as $cr ) {
+				$cr_id = nf_cl_insert_criteria( $cond_id );
+				foreach ( $cr as $key =&gt; $value ) {
+					// Insert our meta values
+					nf_update_object_meta( $cr_id, $key, $value );
+				}
+			}
+			unset( $d[&#x27;criteria&#x27;][&#x27;new&#x27;] );
+		}
+
+		if ( isset ( $d[&#x27;criteria&#x27;] ) ) {
+			foreach ( $d[&#x27;criteria&#x27;] as $cr_id =&gt; $cr ) {
+				foreach ( $cr as $key =&gt; $value ) {
+					nf_update_object_meta( $cr_id, $key, $value );
+				}					
+			}
+			unset ( $d[&#x27;criteria&#x27;] );
+		}
+
+		// Save our other condition values.
+		foreach ( $d as $key =&gt; $value ) {
+			nf_update_object_meta( $cond_id, $key, $value );
+		}
+	}	
+
+}
+
+add_action( &#x27;nf_save_notification&#x27;, &#x27;nf_cl_save_notification&#x27;, 10, 3 );
+
+/**
+ * Hook into processing and modify our notifications
+ *
+ * @since 1.2.8
+ * @return void
+ */
+function nf_cl_notification_process( $id ) {
+	global $ninja_forms_processing;
+
+	// Check to see if this notification is active. If it isn&#x27;t, we don&#x27;t want to check anything else.
+	if ( ! Ninja_Forms()-&gt;notification( $id )-&gt;active )
+		return false;
+
+	// Check to see if we have any conditions on this notification
+	$conditions = nf_cl_get_conditions( $id );
+
+	if ( empty ( $conditions ) || ! is_array ( $conditions ) )
+		return false;
+
+	foreach ( $conditions as $cond_id ) {
+		// Grab our action
+		$action = nf_get_object_meta_value( $cond_id, &#x27;action&#x27; );
+		// Grab our connector
+		$connector = nf_get_object_meta_value( $cond_id, &#x27;connector&#x27; );
+		// Grab our criteria
+		$criteria = nf_cl_get_criteria( $cond_id );
+		$pass_array = array();
+		foreach ( $criteria as $cr_id ) {
+			$param = nf_get_object_meta_value( $cr_id, &#x27;param&#x27; );
+			$compare = nf_get_object_meta_value( $cr_id, &#x27;compare&#x27; );
+			$value = nf_get_object_meta_value( $cr_id, &#x27;value&#x27; );
+
+			if ( isset ( Ninja_Forms()-&gt;cl_triggers[ $param ] ) ) {
+				$pass_array[] = Ninja_Forms()-&gt;cl_triggers[ $param ]-&gt;compare( $value, $compare );
+			} else {
+				$user_value = $ninja_forms_processing-&gt;get_field_value( $param );
+				$pass_array[] = ninja_forms_conditional_compare( $user_value, $value, $compare );
+			}
+		}
+
+		// Check our connector. If it is set to &quot;all&quot;, then all our criteria have to match.
+		if ( &#x27;and&#x27; == $connector ) {
+			$pass = true;
+			foreach ( $pass_array as $p ) {
+				if ( ! $p ) {
+					$pass = false;
+					break;
+				}
+			}
+		} else { // If our connector is set to &quot;any&quot;, then only one criteria has to match.
+			$pass = false;
+			foreach ( $pass_array as $p ) {
+				if ( $p ) {
+					$pass = true;
+					break;
+				}
+			}
+		}
+
+		if ( $pass ) {
+			if ( &#x27;process&#x27; == $action ) {
+				Ninja_Forms()-&gt;notification( $id )-&gt;active = true;
+			} else if ( &#x27;noprocess&#x27; == $action ) {
+				Ninja_Forms()-&gt;notification( $id )-&gt;active = false;
+			}
+		} else {
+			if ( &#x27;process&#x27; == $action ) {
+				Ninja_Forms()-&gt;notification( $id )-&gt;active = false;
+			} else if ( &#x27;noprocess&#x27; == $action ) {
+				Ninja_Forms()-&gt;notification( $id )-&gt;active = true;
+			}
+		}
+	}
+}
+
+add_action( &#x27;nf_notification_before_process&#x27;, &#x27;nf_cl_notification_process&#x27; );
+
+/**
+ * Filter our form export.
+ */
+function nf_cl_form_export( $form_row ) {
+	// Make sure that this form has notifications on it.
+	if ( isset ( $form_row[&#x27;notifications&#x27;] ) ) {
+		// Loop through our notifications and check conditions.
+		foreach ( $form_row[&#x27;notifications&#x27;] as $id =&gt; $notification ) {
+			$conditions = nf_cl_get_conditions( $id );
+			// Make sure that we actually notifications to connect.
+			if ( empty ( $conditions ) )
+				continue;
+
+			$c_array = array(); // Stores all of our conditions.
+			// Loop over each condition.
+			foreach ( $conditions as $c_id ) {
+				// Grab the criteria ids for this condition.
+				$criteria = nf_cl_get_criteria( $c_id );
+				$cr_array = array(); // Stores all of our criteria.
+				// Loop through our criteria and populate our criteria array
+				foreach ( $criteria as $cr_id ) {
+					// Grab our three criteria settings.
+					$cr_array[] = array(
+						&#x27;param&#x27; 	=&gt; nf_get_object_meta_value( $cr_id, &#x27;param&#x27; ),
+						&#x27;compare&#x27; 	=&gt; nf_get_object_meta_value( $cr_id, &#x27;compare&#x27; ),
+						&#x27;value&#x27;		=&gt; nf_get_object_meta_value( $cr_id, &#x27;value&#x27; ),
+					);
+				}
+				// Add the criteria to the condition array.
+				$c_array[] = array( &#x27;action&#x27; =&gt; nf_get_object_meta_value( $c_id, &#x27;action&#x27; ), &#x27;connector&#x27; =&gt; nf_get_object_meta_value( $c_id, &#x27;connector&#x27; ), &#x27;criteria&#x27; =&gt; $cr_array );
+			}
+			$form_row[&#x27;notifications&#x27;][ $id ][&#x27;conditions&#x27;] = $c_array;
+		}
+	}
+
+	return $form_row;
+}
+
+add_filter( &#x27;nf_export_form_row&#x27;, &#x27;nf_cl_form_export&#x27; );
+
+/**
+ * Change the field IDs in our notification conditions after we import a form.
+ */
+function nf_cl_form_import( $n, $n_id, $form ) {
+	
+	// Bail if we don&#x27;t have any fields set.
+	if ( ! isset ( $form[&#x27;field&#x27;] ) || empty ( $form[&#x27;field&#x27;] ) )
+		return $n;
+
+	$fields = array();
+	foreach ( $form[&#x27;field&#x27;] as $field ) {
+		$old_id = $field[&#x27;old_id&#x27;];
+		$fields[ $old_id ] = $field[&#x27;id&#x27;];
+	}
+
+	// Make sure we have some conditions.
+	if ( isset ( $n[&#x27;conditions&#x27;] ) ) {
+		// Loop through our conditions, change the field ids, and insert them into the database.
+		foreach ( $n[&#x27;conditions&#x27;] as $condition ) {
+			// Make sure that we have criteria set.
+			if ( ! isset ( $condition[&#x27;criteria&#x27;] ) || empty( $condition[&#x27;criteria&#x27;] ) )
+				continue; // There isn&#x27;t any criteria set. Skip to the next condition.
+			
+			// Insert our condition
+			$c_id = nf_cl_insert_condition( $n_id );
+
+			// Update our condition meta
+			nf_update_object_meta( $c_id, &#x27;action&#x27;, $condition[&#x27;action&#x27;] );
+			nf_update_object_meta( $c_id, &#x27;connector&#x27;, $condition[&#x27;connector&#x27;] );
+
+			// Change our field ids.
+			// Loop through our criteria and search for field ids
+
+			foreach ( $condition[&#x27;criteria&#x27;] as $cr ) {
+				// First, we check the param to see if it is a field id.
+				if ( isset ( $fields[ $cr[&#x27;param&#x27;] ] ) )
+					$cr[&#x27;param&#x27;] = $fields[ $cr[&#x27;param&#x27;] ];
+
+				// Next, check to see if the value is a field id
+				if ( isset ( $fields[ $cr[&#x27;value&#x27;] ] ) )
+					$cr[&#x27;value&#x27;] = $fields[ $cr[&#x27;param&#x27;] ];
+
+				// Insert our criteria
+				$cr_id = nf_cl_insert_criteria( $c_id );
+
+				// Update our criteria object meta.
+				nf_update_object_meta( $cr_id, &#x27;param&#x27;, $cr[&#x27;param&#x27;] );
+				nf_update_object_meta( $cr_id, &#x27;compare&#x27;, $cr[&#x27;compare&#x27;] );
+				nf_update_object_meta( $cr_id, &#x27;value&#x27;, $cr[&#x27;value&#x27;] );
+
+			}
+
+		}
+
+		unset( $n[&#x27;conditions&#x27;] );
+	}
+
+	return $n;
+}
+
+add_filter( &#x27;nf_import_notification_meta&#x27;, &#x27;nf_cl_form_import&#x27;, 10, 3 );</pre></details></body></html>

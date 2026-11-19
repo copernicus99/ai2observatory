@@ -1,0 +1,711 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/Forms.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/Forms.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+            &lt;script&gt;
+                var nfDashItems = ;
+            &lt;/script&gt;
+            
+        &lt;script&gt;
+            var preloadedFormData = ;
+            // console.log( preloadedFormData );
+        &lt;/script&gt;
+        
+        &lt;script&gt;
+            var fieldTypeData     = ;
+            var fieldSettings     = ;
+            var fieldTypeSections = ;
+            // console.log( fieldTypeData );
+        &lt;/script&gt;
+        
+        &lt;script&gt;
+            var actionTypeData = ;
+            var actionSettings = ;
+            // console.log( actionTypeData );
+        &lt;/script&gt;
+        
+        &lt;script&gt;
+        var formSettingTypeData = ;
+        var formSettings = ;
+        &lt;/script&gt;
+        
+        &lt;script&gt;
+            var mergeTags = ;
+        &lt;/script&gt;
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_Forms extends NF_Abstracts_Menu
+{
+    public $page_title = &#x27;Ninja Forms&#x27;;
+
+    public $menu_slug = &#x27;ninja-forms&#x27;;
+
+    public $icon_url = &#x27;dashicons-feedback&#x27;;
+
+    public $position = &#x27;35.1337&#x27;;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if( ! defined( &#x27;DOING_AJAX&#x27; ) ) {
+            add_action(&#x27;current_screen&#x27;, array($this, &#x27;admin_init&#x27;));
+            add_action( &#x27;current_screen&#x27;, array( &#x27;NF_Admin_AllFormsTable&#x27;, &#x27;process_bulk_action&#x27; ) );
+        }
+
+        add_action( &#x27;admin_body_class&#x27;, array( $this, &#x27;body_class&#x27; ) );
+    }
+
+    public function body_class( $classes )
+    {
+        // Add class for the builder.
+        if( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; isset( $_GET[ &#x27;form_id&#x27; ] ) &amp;&amp; $_GET[&#x27;page&#x27;] == $this-&gt;menu_slug ) {
+            $classes = &quot;$classes ninja-forms-app&quot;;
+        }
+
+        return $classes;
+    }
+
+    public function get_page_title()
+    {
+        return __( &#x27;Ninja Forms&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    public function admin_init()
+    {
+        /*
+         * If we aren&#x27;t on the Ninja Forms menu page, don&#x27;t admin_init.
+         */
+        if ( empty( $_GET[ &#x27;page&#x27; ] ) || &#x27;ninja-forms&#x27; !== $_GET[ &#x27;page&#x27; ] ) {
+            return false;
+        }
+
+        /*
+         * Database Table Check
+         * If the nf3_ database tables do not exist, then re-run activation.
+         */
+        if ( ! ninja_forms_three_table_exists() ) {
+            Ninja_Forms()-&gt;activation();
+        }
+
+        if( isset( $_GET[ &#x27;form_id&#x27; ] ) &amp;&amp; ! is_numeric( $_GET[ &#x27;form_id&#x27; ] ) &amp;&amp; &#x27;new&#x27; != $_GET[ &#x27;form_id&#x27; ] ) {
+            if( current_user_can( apply_filters( &#x27;ninja_forms_admin_import_template_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) {
+                $this-&gt;import_from_template();
+            }
+        }
+
+        /* DISABLE OLD FORMS TABLE IN FAVOR OF NEW DASHBOARD */
+//        $this-&gt;table = new NF_Admin_AllFormsTable();
+    }
+
+    public function display()
+    {
+        if( isset( $_GET[ &#x27;form_id&#x27; ] ) ){
+
+
+            if( &#x27;new&#x27; == $_GET[ &#x27;form_id&#x27; ] ) {
+                $form_id = &#x27;tmp-&#x27; . time();
+            } else {
+                $form_id = (is_numeric($_GET[&#x27;form_id&#x27;])) ? absint($_GET[&#x27;form_id&#x27;]) : &#x27;&#x27;;
+            }
+
+            /*
+             * FORM BUILDER
+             */
+
+            Ninja_Forms::template( &#x27;admin-menu-new-form.html.php&#x27; );
+
+            $this-&gt;_enqueue_the_things( $form_id );
+
+            delete_user_option( get_current_user_id(), &#x27;nf_form_preview_&#x27; . $form_id );
+
+            if( ! isset( $_GET[ &#x27;ajax&#x27; ] ) ) {
+                $this-&gt;_localize_form_data( $form_id );
+
+                $this-&gt;_localize_field_type_data();
+
+                $this-&gt;_localize_action_type_data();
+
+                $this-&gt;_localize_form_settings();
+
+                $this-&gt;_localize_merge_tags();
+            }
+        } else {
+
+            /*
+             * ALL FORMS TABLE
+             * - DISABLE IN FAVOR OF NEW DASHBOARD.
+             */
+
+//            $this-&gt;table-&gt;prepare_items();
+//
+//            Ninja_Forms::template( &#x27;admin-menu-all-forms.html.php&#x27;, array(
+//                &#x27;table&#x27; =&gt; $this-&gt;table,
+//                &#x27;add_new_url&#x27; =&gt; admin_url( &#x27;admin.php?page=ninja-forms&amp;form_id=new&#x27; ),
+//                &#x27;add_new_text&#x27; =&gt; __( &#x27;Add New Form&#x27;, &#x27;ninja-forms&#x27; )
+//            ) );
+
+            /*
+             * DASHBOARD
+             */
+            $dash_items = Ninja_Forms()-&gt;config(&#x27;DashboardMenuItems&#x27;);
+            ?&gt;
+            &lt;script&gt;
+                var nfDashItems = &lt;?php echo( json_encode( array_values( $dash_items ) ) ); ?&gt;;
+            &lt;/script&gt;
+            &lt;?php
+
+            wp_enqueue_script( &#x27;backbone-radio&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/backbone.radio.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+            wp_enqueue_script( &#x27;backbone-marionette-3&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/backbone.marionette3.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+            wp_enqueue_script( &#x27;nf-jbox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jBox.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+            wp_enqueue_script( &#x27;nf-moment&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/moment-with-locales.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;nf-dashboard&#x27; ) );
+            wp_enqueue_script( &#x27;nf-dashboard&#x27;, Ninja_Forms::$url . &#x27;assets/js/min/dashboard.min.js&#x27;, array( &#x27;backbone-radio&#x27;, &#x27;backbone-marionette-3&#x27; ) );
+
+            wp_localize_script( &#x27;nf-dashboard&#x27;, &#x27;nfi18n&#x27;, Ninja_Forms::config( &#x27;i18nDashboard&#x27; ) );
+            wp_localize_script( &#x27;nf-dashboard&#x27;, &#x27;nfAdmin&#x27;, array(
+                &#x27;ajaxNonce&#x27;         =&gt; wp_create_nonce( &#x27;ninja_forms_dashboard_nonce&#x27; ),
+                &#x27;formTelemetry&#x27;     =&gt; ( get_option( &#x27;nf_form_tel_sent&#x27; ) ) ? 0 : 1
+            ) );
+
+            wp_enqueue_style( &#x27;nf-builder&#x27;, Ninja_Forms::$url . &#x27;assets/css/builder.css&#x27; );
+            wp_enqueue_style( &#x27;nf-dashboard&#x27;, Ninja_Forms::$url . &#x27;assets/css/dashboard.min.css&#x27; );
+            wp_enqueue_style( &#x27;nf-jbox&#x27;, Ninja_Forms::$url . &#x27;assets/css/jBox.css&#x27; );
+            wp_enqueue_style( &#x27;nf-font-awesome&#x27;, Ninja_Forms::$url . &#x27;assets/css/font-awesome.min.css&#x27; );
+
+            Ninja_Forms::template( &#x27;admin-menu-dashboard.html.php&#x27; );
+        }
+    }
+
+    public function submenu_separators()
+    {
+        add_submenu_page( &#x27;ninja-forms&#x27;, &#x27;&#x27;, &#x27;&#x27;, &#x27;read&#x27;, &#x27;&#x27;, &#x27;&#x27; );
+    }
+
+    private function import_from_template()
+    {
+        $template = sanitize_title( $_GET[&#x27;form_id&#x27;] );
+
+        $templates = Ninja_Forms::config( &#x27;NewFormTemplates&#x27; );
+
+        if( isset( $templates[ $template ] ) &amp;&amp; ! empty( $templates[ $template ][ &#x27;form&#x27; ] ) ) {
+            $form = $templates[ $template ][ &#x27;form&#x27; ];
+        } else {
+            $form = Ninja_Forms::template( $template . &#x27;.nff&#x27;, array(), TRUE );
+        }
+
+        if( ! $form ) die( &#x27;Template not found&#x27; );
+
+        $form = json_decode( html_entity_decode( $form ), true );
+
+        $form_id = Ninja_Forms()-&gt;form()-&gt;import_form( $form );
+
+        if( ! $form_id ){
+            $error_message = ( function_exists( &#x27;json_last_error_msg&#x27; ) &amp;&amp; json_last_error_msg() ) ? json_last_error_msg() : __( &#x27;Form Template Import Error.&#x27;, &#x27;ninja-forms&#x27; );
+            wp_die( $error_message );
+        }
+
+        header( &quot;Location: &quot; . admin_url( &quot;admin.php?page=ninja-forms&amp;form_id=$form_id&quot; ) );
+        exit();
+    }
+
+    private function _enqueue_the_things( $form_id )
+    {
+        global $wp_locale;
+
+        wp_enqueue_media();
+
+        wp_enqueue_style( &#x27;nf-builder&#x27;, Ninja_Forms::$url . &#x27;assets/css/builder.css&#x27; );
+        wp_enqueue_style( &#x27;nf-font-awesome&#x27;, Ninja_Forms::$url . &#x27;assets/css/font-awesome.min.css&#x27; );
+        /**
+         * CSS Libraries
+         */
+        wp_enqueue_style( &#x27;wp-color-picker&#x27; );
+        wp_enqueue_style( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/css/jBox.css&#x27; );
+        wp_enqueue_style( &#x27;summernote&#x27;, Ninja_Forms::$url . &#x27;assets/css/summernote.css&#x27; );
+        wp_enqueue_style( &#x27;codemirror&#x27;, Ninja_Forms::$url . &#x27;assets/css/codemirror.css&#x27; );
+        wp_enqueue_style( &#x27;codemirror-monokai&#x27;, Ninja_Forms::$url . &#x27;assets/css/monokai-theme.css&#x27; );
+        wp_enqueue_style( &#x27;pikaday-responsive&#x27;, Ninja_Forms::$url . &#x27;assets/css/pikaday-package.css&#x27; );
+
+        /**
+         * JS Libraries
+         */
+        wp_enqueue_script( &#x27;wp-util&#x27; );
+        wp_enqueue_script( &#x27;jquery-autoNumeric&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.autoNumeric.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-maskedinput&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.maskedinput.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+        wp_enqueue_script( &#x27;backbone-marionette&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/backbone.marionette.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+        wp_enqueue_script( &#x27;backbone-radio&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/backbone.radio.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;backbone&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-perfect-scrollbar&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/perfect-scrollbar.jquery.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-hotkeys-new&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.hotkeys.min.js&#x27; );
+        wp_enqueue_script( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jBox.min.js&#x27; );
+        wp_enqueue_script( &#x27;nf-jquery-caret&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.caret.min.js&#x27; );
+        wp_enqueue_script( &#x27;speakingurl&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/speakingurl.js&#x27; );
+        wp_enqueue_script( &#x27;jquery-slugify&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/slugify.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;speakingurl&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-mobile-events&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.mobile-events.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-ui-touch-punch&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.ui.touch-punch.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;jquery-classy-wiggle&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jquery.classywiggle.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;moment-with-locale&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/moment-with-locales.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;nf-builder&#x27; ) );
+        wp_enqueue_script( &#x27;pikaday&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/pikaday.min.js&#x27;, array( &#x27;moment-with-locale&#x27; ) );
+        wp_enqueue_script( &#x27;pikaday-responsive&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/pikaday-responsive.min.js&#x27;, array( &#x27;pikaday&#x27;, &#x27;modernizr&#x27; ) );
+
+        wp_enqueue_script( &#x27;bootstrap&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/bootstrap.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;codemirror&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/codemirror.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;codemirror-xml&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/codemirror-xml.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;codemirror-formatting&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/codemirror-formatting.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_script( &#x27;summernote&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/summernote.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;speakingurl&#x27; ) );
+
+
+        wp_enqueue_script( &#x27;nf-builder&#x27;, Ninja_Forms::$url . &#x27;assets/js/min/builder.js&#x27;, array( &#x27;jquery&#x27;, &#x27;jquery-ui-core&#x27;, &#x27;jquery-ui-draggable&#x27;, &#x27;jquery-ui-droppable&#x27;, &#x27;jquery-ui-sortable&#x27;, &#x27;jquery-effects-bounce&#x27;, &#x27;wp-color-picker&#x27; ) );
+        wp_localize_script( &#x27;nf-builder&#x27;, &#x27;nfi18n&#x27;, Ninja_Forms::config( &#x27;i18nBuilder&#x27; ) );
+
+        $home_url = parse_url( home_url() );
+
+        wp_localize_script( &#x27;nf-builder&#x27;, &#x27;nfAdmin&#x27;, array(
+            &#x27;ajaxNonce&#x27;         =&gt; wp_create_nonce( &#x27;ninja_forms_builder_nonce&#x27; ),
+            &#x27;requireBaseUrl&#x27;    =&gt; Ninja_Forms::$url . &#x27;assets/js/&#x27;,
+            &#x27;previewurl&#x27;        =&gt; home_url() . &#x27;/?nf_preview_form=&#x27;,
+            &#x27;wp_locale&#x27;         =&gt; $wp_locale-&gt;number_format,
+            &#x27;editFormText&#x27;      =&gt; __( &#x27;Edit Form&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;mobile&#x27;            =&gt; ( wp_is_mobile() ) ? 1: 0,
+            &#x27;currencySymbols&#x27;   =&gt; array_merge( array( &#x27;&#x27; =&gt; Ninja_Forms()-&gt;get_setting( &#x27;currency_symbol&#x27; ) ), Ninja_Forms::config( &#x27;CurrencySymbol&#x27; ) ),
+            &#x27;dateFormat&#x27;        =&gt; Ninja_Forms()-&gt;get_setting( &#x27;date_format&#x27; ),
+            &#x27;formID&#x27;            =&gt; isset( $_GET[ &#x27;form_id&#x27; ] ) ? absint( $_GET[ &#x27;form_id&#x27; ] ) : 0,
+            &#x27;home_url_host&#x27;     =&gt; $home_url[ &#x27;host&#x27; ]
+        ));
+
+        do_action( &#x27;nf_admin_enqueue_scripts&#x27; );
+    }
+
+    private function _localize_form_data( $form_id )
+    {
+        $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+
+        if( ! $form-&gt;get_tmp_id() ) {
+
+            if( $form_cache = get_option( &#x27;nf_form_&#x27; . $form_id, false ) ) {
+                $fields = $form_cache[ &#x27;fields&#x27; ];
+            } else {
+                $fields = ($form_id) ? Ninja_Forms()-&gt;form($form_id)-&gt;get_fields() : array();
+            }
+            $actions = ($form_id) ? Ninja_Forms()-&gt;form($form_id)-&gt;get_actions() : array();
+        } else {
+            $fields = array();
+            $actions = array();
+        }
+
+        $fields_settings = array();
+
+        if( ! empty( $fields ) ) {
+
+            // TODO: Replace unique field key checks with a refactored model/factory.
+//            $unique_field_keys = array();
+//            $form_cache = get_option( &#x27;nf_form_&#x27; . $form_id, false );
+//            $cache_updated = false;
+
+            foreach ($fields as $field) {
+
+                $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+
+                /*
+                 * Duplicate field check.
+                 * TODO: Replace unique field key checks with a refactored model/factory.
+                 */
+//                $field_key = $field-&gt;get_setting( &#x27;key&#x27; );
+//                if( in_array( $field_key, $unique_field_keys ) || &#x27;&#x27; == $field_key ){
+//
+//                    // Delete the field.
+//                    Ninja_Forms()-&gt;request( &#x27;delete-field&#x27; )-&gt;data( array( &#x27;field_id&#x27; =&gt; $field_id ) )-&gt;dispatch();
+//
+//                    // Remove the field from cache.
+//                    if( $form_cache ) {
+//                        if( isset( $form_cache[ &#x27;fields&#x27; ] ) ){
+//                            foreach( $form_cache[ &#x27;fields&#x27; ] as $cached_field_key =&gt; $cached_field ){
+//                                if( ! isset( $cached_field[ &#x27;id&#x27; ] ) ) continue;
+//                                if( $field_id != $cached_field[ &#x27;id&#x27; ] ) continue;
+//
+//                                // Flag cache to update.
+//                                $cache_updated = true;
+//
+//                                unset( $form_cache[ &#x27;fields&#x27; ][ $cached_field_key ] ); // Remove the field.
+//                            }
+//                        }
+//                    }
+//
+//                    continue; // Skip the duplicate field.
+//                }
+//                array_push( $unique_field_keys, $field_key ); // Log unique key.
+                /* END Duplicate field check. */
+
+                $type = ( is_object( $field ) ) ? $field-&gt;get_setting( &#x27;type&#x27; ) : $field[ &#x27;settings&#x27; ][ &#x27;type&#x27; ];
+
+                if( ! isset( Ninja_Forms()-&gt;fields[ $type ] ) ){
+                    $field = NF_Fields_Unknown::create( $field );
+                }
+
+                $settings = ( is_object( $field ) ) ? $field-&gt;get_settings() : $field[ &#x27;settings&#x27; ];
+                $settings[ &#x27;id&#x27; ] =  $field_id;
+
+                $settings = $this-&gt;null_data_check( $settings );
+
+                $fields_settings[] = $settings;
+            }
+
+//            if( $cache_updated ) {
+//                update_option(&#x27;nf_form_&#x27; . $form_id, $form_cache); // Update form cache without duplicate fields.
+//            }
+        }
+
+        $actions_settings = array();
+
+        if( ! empty( $actions ) ) {
+            foreach ($actions as $action) {
+
+                $type = $action-&gt;get_setting( &#x27;type&#x27; );
+
+                if( ! isset( Ninja_Forms()-&gt;actions[ $type ] ) ) continue;
+
+                $settings = $action-&gt;get_settings();
+                $settings[&#x27;id&#x27;] = $action-&gt;get_id();
+
+                $settings = $this-&gt;null_data_check( $settings );
+
+                $actions_settings[] = $settings;
+            }
+        }
+
+        if( $form-&gt;get_tmp_id() ){
+
+            $actions_settings = Ninja_Forms()-&gt;config( &#x27;FormActionDefaults&#x27; );
+        }
+
+        $form_data = array();
+        $form_data[&#x27;id&#x27;] = $form_id;
+
+        // Use form cache for form settings.
+        // TODO: Defer to refactor of factory/model.
+        if( isset( $form_cache[ &#x27;settings&#x27; ] ) ) {
+            $form_data[&#x27;settings&#x27;] = $form_cache[ &#x27;settings&#x27; ];
+        } else {
+            $form_data[&#x27;settings&#x27;] = $form-&gt;get_settings();
+        }
+
+        $form_data[&#x27;fields&#x27;] = $fields_settings;
+        $form_data[&#x27;actions&#x27;] = $actions_settings;
+
+        ?&gt;
+        &lt;script&gt;
+            var preloadedFormData = &lt;?php echo wp_json_encode( $form_data ); ?&gt;;
+            // console.log( preloadedFormData );
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+    /**
+     * Null Data Check
+     * Accepts array of settings and removes null data the array.
+     *
+     * @param $settings - a key/value pair of settings.
+     * @return array
+     */
+    private function null_data_check( $settings )
+    {
+        // Loop over the settings we receive.
+        foreach ($settings as $key =&gt; $setting) {
+            // Check for null values in the settings array.
+            if ( null === $setting ) {
+                // Remove null settings from the array.
+                unset( $settings[ $key ] );
+                continue;
+            }
+        }
+        return $settings;
+    }
+
+    private function _localize_field_type_data()
+    {
+        $field_type_sections = array_values( Ninja_Forms()-&gt;config( &#x27;FieldTypeSections&#x27; ) );
+        $field_type_settings = array();
+
+        $master_settings = array();
+
+        $setting_defaults = array();
+
+        foreach( Ninja_Forms()-&gt;fields as $field ){
+
+            $name = $field-&gt;get_name();
+            $settings = $field-&gt;get_settings();
+            $groups = Ninja_Forms::config( &#x27;SettingsGroups&#x27; );
+
+            $unique_settings = $this-&gt;_unique_settings( $settings );
+
+            $master_settings = array_merge( $master_settings, $unique_settings );
+
+            $settings_groups = $this-&gt;_group_settings( $settings, $groups );
+
+            $settings_defaults = $this-&gt;_setting_defaults( $unique_settings );
+
+            $field_type_settings[ $name ] = array(
+                &#x27;id&#x27; =&gt;  $name,
+                &#x27;nicename&#x27; =&gt; $field-&gt;get_nicename(),
+                &#x27;alias&#x27; =&gt; $field-&gt;get_aliases(),
+                &#x27;parentType&#x27; =&gt; $field-&gt;get_parent_type(),
+                &#x27;section&#x27; =&gt; $field-&gt;get_section(),
+                &#x27;icon&#x27; =&gt; $field-&gt;get_icon(),
+                &#x27;type&#x27; =&gt; $field-&gt;get_type(),
+                &#x27;settingGroups&#x27; =&gt; $settings_groups,
+                &#x27;settingDefaults&#x27; =&gt; $settings_defaults
+            );
+        }
+
+        $saved_fields = Ninja_Forms()-&gt;form()-&gt;get_fields( array( &#x27;saved&#x27; =&gt; 1) );
+
+        foreach( $saved_fields as $saved_field ){
+
+            $settings = $saved_field-&gt;get_settings();
+
+            $id     = $saved_field-&gt;get_id();
+            $type   = $settings[ &#x27;type&#x27; ];
+            $label  = $settings[ &#x27;label&#x27; ];
+
+            $field_type_settings[ $id ] = $field_type_settings[ $type ];
+            $field_type_settings[ $id ][ &#x27;id&#x27; ] = $id;
+            $field_type_settings[ $id ][ &#x27;type&#x27; ] = $type;
+            $field_type_settings[ $id ][ &#x27;nicename&#x27; ] = $label;
+            $field_type_settings[ $id ][ &#x27;section&#x27; ] = &#x27;saved&#x27;;
+
+            $defaults = $field_type_settings[ $id ][ &#x27;settingDefaults&#x27; ];
+            $defaults = array_merge( $defaults, $settings );
+            $defaults[ &#x27;saved&#x27; ] = TRUE;
+
+            $field_type_settings[ $id ][ &#x27;settingDefaults&#x27; ] = $defaults;
+        }
+
+        ?&gt;
+        &lt;script&gt;
+            var fieldTypeData     = &lt;?php echo wp_json_encode( array_values( $field_type_settings ) ); ?&gt;;
+            var fieldSettings     = &lt;?php echo wp_json_encode( array_values( $master_settings ) ); ?&gt;;
+            var fieldTypeSections = &lt;?php echo wp_json_encode( $field_type_sections ); ?&gt;;
+            // console.log( fieldTypeData );
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+    private function _localize_action_type_data()
+    {
+        $action_type_settings = array();
+
+        $master_settings_list = array();
+
+        foreach( Ninja_Forms()-&gt;actions as $action ){
+
+            $name = $action-&gt;get_name();
+            $settings = $action-&gt;get_settings();
+            $groups = Ninja_Forms::config( &#x27;SettingsGroups&#x27; );
+
+            $settings_groups = $this-&gt;_group_settings( $settings, $groups );
+
+            $master_settings_list = array_merge( $master_settings_list, $settings );
+
+            $action_type_settings[ $name ] = array(
+                &#x27;id&#x27; =&gt; $name,
+                &#x27;section&#x27; =&gt; $action-&gt;get_section(),
+                &#x27;nicename&#x27; =&gt; $action-&gt;get_nicename(),
+                &#x27;image&#x27; =&gt; $action-&gt;get_image(),
+                &#x27;settingGroups&#x27; =&gt; $settings_groups,
+                &#x27;settingDefaults&#x27; =&gt; $this-&gt;_setting_defaults( $master_settings_list )
+            );
+        }
+
+        $external_actions = $this-&gt;_fetch_action_feed();
+        $u_id = get_option( &#x27;nf_aff&#x27;, false );
+        if ( !$u_id ) $u_id = apply_filters( &#x27;ninja_forms_affiliate_id&#x27;, false );
+        foreach( $external_actions as $action){
+
+            if( ! isset( $action[ &#x27;name&#x27; ] ) || ! $action[ &#x27;name&#x27; ] ) continue;
+
+            $name = $action[ &#x27;name&#x27; ];
+            $nicename = ( isset( $action[ &#x27;nicename&#x27; ] ) ) ? $action[ &#x27;nicename&#x27; ] : &#x27;&#x27;;
+            $image = ( isset( $action[ &#x27;image&#x27; ] ) ) ? $action[ &#x27;image&#x27; ] : &#x27;&#x27;;
+            $link = ( isset( $action[ &#x27;link&#x27; ] ) ) ? $action[ &#x27;link&#x27; ] : &#x27;&#x27;;
+
+            if ( $u_id ) {
+                $last_slash = strripos( $link, &#x27;/&#x27; );
+                $link = substr( $link, 0, $last_slash );
+                $link =  urlencode( $link );
+                $link = &#x27;http://www.shareasale.com/r.cfm?u=&#x27; . $u_id . &#x27;&amp;b=812237&amp;m=63061&amp;afftrack=&amp;urllink=&#x27; . $link;
+            }
+
+            if( isset( $action_type_settings[ $name ] ) ) continue;
+
+            $action_type_settings[ $name ] = array(
+                &#x27;id&#x27; =&gt; $name,
+                &#x27;section&#x27; =&gt; &#x27;available&#x27;,
+                &#x27;nicename&#x27; =&gt; $nicename,
+                &#x27;image&#x27; =&gt; $image,
+                &#x27;link&#x27; =&gt; $link,
+                &#x27;settingGroups&#x27; =&gt; array(),
+                &#x27;settingDefaults&#x27; =&gt; array()
+            );
+        }
+
+        $action_type_settings = apply_filters( &#x27;ninja_forms_action_type_settings&#x27;, $action_type_settings );
+
+        ?&gt;
+        &lt;script&gt;
+            var actionTypeData = &lt;?php echo wp_json_encode( array_values( $action_type_settings ) ); ?&gt;;
+            var actionSettings = &lt;?php echo wp_json_encode( array_values( $master_settings_list ) ); ?&gt;;
+            // console.log( actionTypeData );
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+    protected function _localize_form_settings()
+    {
+        $form_settings_types = Ninja_Forms::config( &#x27;FormSettingsTypes&#x27; );
+
+        $form_settings[ &#x27;display&#x27; ] = Ninja_Forms::config( &#x27;FormDisplaySettings&#x27; );
+        $form_settings[ &#x27;restrictions&#x27; ] = Ninja_Forms::config( &#x27;FormRestrictionSettings&#x27; );
+        $form_settings[ &#x27;calculations&#x27; ] = Ninja_Forms::config( &#x27;FormCalculationSettings&#x27; );
+        $form_settings = apply_filters( &#x27;ninja_forms_localize_forms_settings&#x27;, $form_settings );
+
+        foreach( $form_settings_types as $group_name =&gt; $form_setting_group ){
+            if( ! isset( $form_settings[ $group_name ] ) ) $form_settings[ $group_name ] = array();
+            $form_settings[ $group_name ] = apply_filters( &#x27;ninja_forms_localize_form_&#x27; . $group_name . &#x27;_settings&#x27;, $form_settings[ $group_name ] );
+        }
+
+        $groups = Ninja_Forms::config( &#x27;SettingsGroups&#x27; );
+
+        $master_settings = array();
+
+        foreach( $form_settings_types as $id =&gt; $type ) {
+
+            if( ! isset( $form_settings[ $id ] ) ) $form_settings[ $id ] = &#x27;&#x27;;
+
+            $unique_settings = $this-&gt;_unique_settings( $form_settings[ $id ] );
+            $master_settings = array_merge( $master_settings, $unique_settings );
+
+            $form_settings_types[ $id ][&#x27;settingGroups&#x27;] = $this-&gt;_group_settings($form_settings[ $id ], $groups);
+            $form_settings_types[ $id ][&#x27;settingDefaults&#x27;] = $this-&gt;_setting_defaults($unique_settings);
+        }
+        ?&gt;
+        &lt;script&gt;
+        var formSettingTypeData = &lt;?php echo wp_json_encode( array_values( $form_settings_types ) )?&gt;;
+        var formSettings = &lt;?php echo wp_json_encode( array_values( $master_settings ) )?&gt;;
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+    protected function _localize_merge_tags()
+    {
+        $merge_tags = array(
+            &#x27;fields&#x27; =&gt; array(
+                &#x27;id&#x27;    =&gt; &#x27;fields&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Fields&#x27;, &#x27;ninja-forms&#x27; )
+            )
+        );
+
+        foreach( Ninja_Forms()-&gt;merge_tags as $key =&gt; $group ){
+            /*
+             * If the merge tag group doesn&#x27;t have a title, don&#x27;t localise it.
+             * 
+             * This convention is used to allow merge tags to continue to function,
+             * even though they can&#x27;t be added to new forms.
+             */
+            $title = $group-&gt;get_title();
+            if ( empty( $title ) ) continue;
+
+            $merge_tags[ $key ] = array(
+                &#x27;id&#x27;    =&gt; $group-&gt;get_id(),
+                &#x27;label&#x27; =&gt; $group-&gt;get_title(),
+                &#x27;tags&#x27;  =&gt; array_values( $group-&gt;get_merge_tags() ),
+                &#x27;default_group&#x27; =&gt; $group-&gt;is_default_group()
+            );
+        }
+        ?&gt;
+        &lt;script&gt;
+            var mergeTags = &lt;?php echo wp_json_encode( array_values( $merge_tags ) ); ?&gt;;
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+
+    protected function _group_settings( $settings, $groups )
+    {
+        if( ! is_array( $settings ) ) return $groups;
+
+        foreach( $settings as $setting ){
+
+            $group = ( isset( $setting[ &#x27;group&#x27; ] ) ) ? $setting[ &#x27;group&#x27; ] : &#x27;&#x27;;
+
+            if( isset( $setting[ &#x27;type&#x27;] ) &amp;&amp; &#x27;fieldset&#x27; == $setting[ &#x27;type&#x27; ] ){
+                $setting[ &#x27;settings&#x27; ] = array_values( $setting[ &#x27;settings&#x27; ] );
+            }
+
+            $groups[ $group ][ &#x27;settings&#x27;][] = $setting;
+        }
+
+        foreach( $groups as $id =&gt; $group ) {
+            if ( empty( $group[ &#x27;settings&#x27; ] ) ) {
+                unset( $groups[ $id ] );
+            }
+        }
+
+        unset( $groups[ &quot;&quot; ] );
+
+        usort($groups, array( $this, &#x27;setting_group_priority&#x27; ) );
+
+        return $groups;
+    }
+
+    protected function _unique_settings( $settings )
+    {
+        $unique_settings = array();
+
+        if( ! is_array( $settings ) ) return $unique_settings;
+
+        foreach( $settings as $setting ){
+
+            if( &#x27;fieldset&#x27; == $setting[ &#x27;type&#x27; ] ){
+
+                $unique_settings = array_merge( $unique_settings, $this-&gt;_unique_settings( $setting[ &#x27;settings&#x27; ] ) );
+            } else {
+
+                $name = $setting[ &#x27;name&#x27; ];
+                $unique_settings[ $name ] = $setting;
+            }
+
+        }
+
+        return $unique_settings;
+    }
+
+    protected function _setting_defaults( $settings )
+    {
+        $setting_defaults = array();
+
+        foreach( $settings as $setting ){
+
+            $name = ( isset( $setting[ &#x27;name&#x27; ] ) ) ? $setting[ &#x27;name&#x27; ] : &#x27;&#x27;;
+            $default = ( isset( $setting[ &#x27;value&#x27; ] ) ) ? $setting[ &#x27;value&#x27; ] : null;
+            $setting_defaults[ $name ] = $default;
+        }
+
+        return $setting_defaults;
+    }
+
+    protected function _fetch_action_feed()
+    {
+        return Ninja_Forms::config( &#x27;AvailableActions&#x27; );
+    }
+
+    protected function setting_group_priority( $a, $b )
+    {
+        $priority[ 0 ] = ( isset( $a[ &#x27;priority&#x27; ] ) ) ? $a[ &#x27;priority&#x27; ] : 500;
+        $priority[ 1 ] = ( isset( $b[ &#x27;priority&#x27; ] ) ) ? $b[ &#x27;priority&#x27; ] : 500;
+
+        return $priority[ 0 ] - $priority[ 1 ];
+    }
+
+    public function get_capability()
+    {
+        return apply_filters( &#x27;ninja_forms_admin_parent_menu_capabilities&#x27;, $this-&gt;capability );
+    }
+
+}
+</pre></details></body></html>

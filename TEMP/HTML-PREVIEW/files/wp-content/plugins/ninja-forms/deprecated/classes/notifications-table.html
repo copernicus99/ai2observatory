@@ -1,0 +1,439 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/notifications-table.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/notifications-table.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;div class=&quot;alignleft actions&quot;&gt;
+            &lt;select name=&quot;type&quot; id=&quot;filter-type&quot;&gt;
+                &lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+                
+                    &lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+                    
+            &lt;/select&gt;
+            &lt;span class=&quot;nf-more-actions&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt; &lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;
+            &lt;span style=&quot;float:left;&quot; class=&quot;spinner&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*************************** LOAD THE BASE CLASS *******************************
+ *******************************************************************************
+ * The WP_List_Table class isn&#x27;t automatically available to plugins, so we need
+ * to check if it&#x27;s available and load it if necessary. In this tutorial, we are
+ * going to use the WP_List_Table class directly from WordPress core.
+ *
+ * IMPORTANT:
+ * Please note that the WP_List_Table class technically isn&#x27;t an official API,
+ * and it could change at some point in the distant future. Should that happen,
+ * I will update this plugin with the most current techniques for your reference
+ * immediately.
+ *
+ * If you are really worried about future compatibility, you can make a copy of
+ * the WP_List_Table class (file path is shown just below) to use and distribute
+ * with your plugins. If you do that, just remember to change the name of the
+ * class to avoid conflicts with core.
+ *
+ * Since I will be keeping this tutorial up-to-date for the foreseeable future,
+ * I am going to work with the copy of the class provided in WordPress core.
+ */
+if( ! class_exists( &#x27;WP_List_Table&#x27; ) ) {
+    require_once( ABSPATH . &#x27;wp-admin/includes/class-wp-list-table.php&#x27; );
+}
+
+/************************** CREATE A PACKAGE CLASS *****************************
+ *******************************************************************************
+ * Create a new list table package that extends the core WP_List_Table class.
+ * WP_List_Table contains most of the framework for generating the table, but we
+ * need to define and override some methods so that our data can be displayed
+ * exactly the way we need it to be.
+ *
+ * To display this example on a page, you will first need to instantiate the class,
+ * then call $yourInstance-&gt;prepare_items() to handle any data manipulation, then
+ * finally call $yourInstance-&gt;display() to render the table to the page.
+ *
+ * Our theme for this list table is going to be movies.
+ */
+class NF_Notifications_List_Table extends WP_List_Table {
+
+    /**
+     * @var form_id
+     */
+    var $form_id = &#x27;&#x27;;
+
+    /** ************************************************************************
+     * REQUIRED. Set up a constructor that references the parent constructor. We
+     * use the parent reference to set some default configs.
+     ***************************************************************************/
+    function __construct(){
+        global $status, $page;
+
+        //Set parent defaults
+        parent::__construct( array(
+            &#x27;singular&#x27;  =&gt; &#x27;notification&#x27;,     //singular name of the listed records
+            &#x27;plural&#x27;    =&gt; &#x27;notifications&#x27;,    //plural name of the listed records
+            &#x27;ajax&#x27;      =&gt; false        //does this table support ajax?
+        ) );
+
+        $this-&gt;form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? absint( $_REQUEST[&#x27;form_id&#x27;] ) : &#x27;&#x27;;
+
+    }
+
+    /** ************************************************************************
+     * Recommended. This method is called when the parent class can&#x27;t find a method
+     * specifically build for a given column. Generally, it&#x27;s recommended to include
+     * one method for each column you want to render, keeping your package class
+     * neat and organized. For example, if the class needs to process a column
+     * named &#x27;title&#x27;, it would first see if a method named $this-&gt;column_title()
+     * exists - if it does, that method will be used. If it doesn&#x27;t, this one will
+     * be used. Generally, you should try to use custom column methods as much as
+     * possible.
+     *
+     * Since we have defined a column_title() method later on, this method doesn&#x27;t
+     * need to concern itself with any column with a name of &#x27;title&#x27;. Instead, it
+     * needs to handle everything else.
+     *
+     * For more detailed insight into how columns are handled, take a look at
+     * WP_List_Table::single_row_columns()
+     *
+     * @param array $item A singular item (one full row&#x27;s worth of data)
+     * @param array $column_name The name/slug of the column to be processed
+     * @return string Text or HTML to be placed inside the column &lt;td&gt;
+     **************************************************************************/
+    public function column_default($item, $column_name){
+        switch($column_name){
+            case &#x27;type&#x27;:
+                return Ninja_Forms()-&gt;notification( $item[&#x27;id&#x27;] )-&gt;type_name();
+            case &#x27;date_updated&#x27;:
+                return $item[$column_name];
+            default:
+                return print_r($item,true); //Show the whole array for troubleshooting purposes
+        }
+    }
+
+    /** ************************************************************************
+     * Recommended. This is a custom column method and is responsible for what
+     * is rendered in any column with a name/slug of &#x27;title&#x27;. Every time the class
+     * needs to render a column, it first looks for a method named
+     * column_{$column_title} - if it exists, that method is run. If it doesn&#x27;t
+     * exist, column_default() is called instead.
+     *
+     * This example also illustrates how to implement rollover actions. Actions
+     * should be an associative array formatted as &#x27;slug&#x27;=&gt;&#x27;link html&#x27; - and you
+     * will need to generate the URLs yourself. You could even ensure the links
+     *
+     *
+     * @see WP_List_Table::::single_row_columns()
+     * @param array $item A singular item (one full row&#x27;s worth of data)
+     * @return string Text to be placed inside the column &lt;td&gt; (movie title only)
+     **************************************************************************/
+    public function column_name( $item ){
+
+        $base_url = esc_url_raw( remove_query_arg( array( &#x27;_wp_http_referer&#x27;, &#x27;_wpnonce&#x27; ) ) );
+
+        $activate_text = ( Ninja_Forms()-&gt;notification( $item[&#x27;id&#x27;] )-&gt;active ) ? __( &#x27;Deactivate&#x27;, &#x27;ninja-forms&#x27; ) : __( &#x27;Activate&#x27;, &#x27;ninja-forms&#x27; );
+
+        $activate_action = ( Ninja_Forms()-&gt;notification( $item[&#x27;id&#x27;] )-&gt;active ) ? &#x27;deactivate&#x27; : &#x27;activate&#x27;;
+
+        $activate_url = esc_url( add_query_arg( array( &#x27;notification-action&#x27; =&gt; $activate_action, &#x27;id&#x27; =&gt; $item[&#x27;id&#x27;] ), $base_url ) );
+        $edit_url = esc_url( add_query_arg( array( &#x27;notification-action&#x27; =&gt; &#x27;edit&#x27;, &#x27;id&#x27; =&gt; $item[&#x27;id&#x27;] ), $base_url ) );
+        $delete_url = esc_url( add_query_arg( array( &#x27;action&#x27; =&gt; &#x27;delete&#x27; ), $base_url ) );
+        $duplicate_url = esc_url( add_query_arg( array( &#x27;notification-action&#x27; =&gt; &#x27;duplicate&#x27;, &#x27;id&#x27; =&gt; $item[&#x27;id&#x27;] ), $base_url ) );
+
+        //Build row actions
+        $actions = array(
+            &#x27;active&#x27;    =&gt; &#x27;&lt;a href=&quot;&#x27; . $activate_url . &#x27;&quot; class=&quot;notification-activate&quot; data-action=&quot;&#x27; . $activate_action . &#x27;&quot; data-n_id=&quot;&#x27; . $item[&#x27;id&#x27;] . &#x27;&quot;&gt;&#x27; . $activate_text . &#x27;&lt;/a&gt;&#x27;,
+            &#x27;edit&#x27;      =&gt; &#x27;&lt;a href=&quot;&#x27; . $edit_url . &#x27;&quot;&gt;&#x27; . __( &#x27;Edit&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+            &#x27;delete&#x27;    =&gt; &#x27;&lt;a href=&quot;&#x27; . $delete_url .&#x27;&quot; class=&quot;notification-delete&quot; data-n_id=&quot;&#x27; . $item[&#x27;id&#x27;] . &#x27;&quot;&gt;&#x27; . __( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+            &#x27;duplicate&#x27;    =&gt; &#x27;&lt;a href=&quot;&#x27; . $duplicate_url .&#x27;&quot;&gt;&#x27; . __( &#x27;Duplicate&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+        );
+
+        //Return the title contents
+        return sprintf( &#x27;&lt;a href=&quot;%1$s&quot;&gt;%2$s&lt;/a&gt; %3$s&#x27;,
+            /*$1%s*/ $edit_url,
+            /*$2%s*/ $item[&#x27;name&#x27;],
+            /*$3%s*/ $this-&gt;row_actions($actions)
+        );
+    }
+
+    /** ************************************************************************
+     * REQUIRED if displaying checkboxes or using bulk actions! The &#x27;cb&#x27; column
+     * is given special treatment when columns are processed. It ALWAYS needs to
+     * have it&#x27;s own method.
+     *
+     * @see WP_List_Table::::single_row_columns()
+     * @param array $item A singular item (one full row&#x27;s worth of data)
+     * @return string Text to be placed inside the column &lt;td&gt; (movie title only)
+     **************************************************************************/
+    public function column_cb($item){
+        return sprintf(
+            &#x27;&lt;input type=&quot;checkbox&quot; name=&quot;%1$s[]&quot; value=&quot;%2$s&quot; /&gt;&#x27;,
+            /*$1%s*/ $this-&gt;_args[&#x27;singular&#x27;],  //Let&#x27;s simply repurpose the table&#x27;s singular label (&quot;movie&quot;)
+            /*$2%s*/ $item[&#x27;id&#x27;]                //The value of the checkbox should be the record&#x27;s id
+        );
+    }
+
+    /** ************************************************************************
+     * REQUIRED! This method dictates the table&#x27;s columns and titles. This should
+     * return an array where the key is the column slug (and class) and the value
+     * is the column&#x27;s title text. If you need a checkbox for bulk actions, refer
+     * to the $columns array below.
+     *
+     * The &#x27;cb&#x27; column is treated differently than the rest. If including a checkbox
+     * column in your table you must create a column_cb() method. If you don&#x27;t need
+     * bulk actions or checkboxes, simply leave the &#x27;cb&#x27; entry out of your array.
+     *
+     * @see WP_List_Table::::single_row_columns()
+     * @return array An associative array containing column information: &#x27;slugs&#x27;=&gt;&#x27;Visible Titles&#x27;
+     **************************************************************************/
+    public function get_columns(){
+        $columns = array(
+            &#x27;cb&#x27;            =&gt; &#x27;&lt;input type=&quot;checkbox&quot; /&gt;&#x27;, //Render a checkbox instead of text
+            &#x27;name&#x27;          =&gt; __( &#x27;Name&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;type&#x27;          =&gt; __( &#x27;Type&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;date_updated&#x27;  =&gt; __( &#x27;Date Updated&#x27;, &#x27;ninja-forms&#x27; ),
+        );
+        return $columns;
+    }
+
+    /** ************************************************************************
+     * Optional. If you want one or more columns to be sortable (ASC/DESC toggle),
+     * you will need to register it here. This should return an array where the
+     * key is the column that needs to be sortable, and the value is db column to
+     * sort by. Often, the key and value will be the same, but this is not always
+     * the case (as the value is a column name from the database, not the list table).
+     *
+     * This method merely defines which columns should be sortable and makes them
+     * clickable - it does not handle the actual sorting. You still need to detect
+     * the ORDERBY and ORDER querystring variables within prepare_items() and sort
+     * your data accordingly (usually by modifying your query).
+     *
+     * @return array An associative array containing all the columns that should be sortable: &#x27;slugs&#x27;=&gt;array(&#x27;data_values&#x27;,bool)
+     **************************************************************************/
+    public function get_sortable_columns() {
+        $sortable_columns = array(
+            &#x27;name&#x27;     =&gt; array( &#x27;name&#x27;,false ),     //true means it&#x27;s already sorted
+            &#x27;type&#x27;    =&gt; array( &#x27;type&#x27;,false ),
+            &#x27;date_updated&#x27;  =&gt; array( &#x27;date_updated&#x27;,false )
+        );
+        return $sortable_columns;
+    }
+
+    /** ************************************************************************
+     * Optional. If you need to include bulk actions in your list table, this is
+     * the place to define them. Bulk actions are an associative array in the format
+     * &#x27;slug&#x27;=&gt;&#x27;Visible Title&#x27;
+     *
+     * If this method returns an empty value, no bulk action will be rendered. If
+     * you specify any bulk actions, the bulk actions box will be rendered with
+     * the table automatically on display().
+     *
+     * Also note that list tables are not automatically wrapped in &lt;form&gt; elements,
+     * so you will need to create those manually in order for bulk actions to function.
+     *
+     * @return array An associative array containing all the bulk actions: &#x27;slugs&#x27;=&gt;&#x27;Visible Titles&#x27;
+     **************************************************************************/
+    public function get_bulk_actions() {
+        $actions = array(
+            &#x27;activate&#x27;      =&gt; __( &#x27;Activate&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;deactivate&#x27;    =&gt; __( &#x27;Deactivate&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;delete&#x27;        =&gt; __( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; ),
+        );
+        return $actions;
+    }
+
+    public function extra_tablenav( $which ) {
+        if ( $which == &#x27;bottom&#x27; )
+            return false;
+
+        if ( isset ( $_REQUEST[&#x27;type&#x27;] ) ) {
+            $type = esc_html( $_REQUEST[&#x27;type&#x27;] );
+        } else {
+            $type = &#x27;&#x27;;
+        }
+
+        ?&gt;
+        &lt;div class=&quot;alignleft actions&quot;&gt;
+            &lt;select name=&quot;type&quot; id=&quot;filter-type&quot;&gt;
+                &lt;option value=&quot;&quot; &lt;?php selected( $type, &#x27;&#x27; ); ?&gt;&gt;&lt;?php _e( &#x27;- View All Types&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+                &lt;?php
+                foreach ( Ninja_Forms()-&gt;notifications-&gt;get_types() as $slug =&gt; $nicename ) {
+                    ?&gt;
+                    &lt;option value=&quot;&lt;?php echo $slug; ?&gt;&quot; &lt;?php selected( $type, $slug ); ?&gt;&gt;&lt;?php echo $nicename; ?&gt;&lt;/option&gt;
+                    &lt;?php
+                }
+                ?&gt;
+            &lt;/select&gt;
+            &lt;span class=&quot;nf-more-actions&quot;&gt;&lt;a href=&quot;&lt;?php echo nf_aff_link( &#x27;https://ninjaforms.com/extensions/?display=actions&amp;utm_medium=plugin&amp;utm_source=actions-table&amp;utm_campaign=Ninja+Forms+Upsell&amp;utm_content=Ninja+Forms+Actions&#x27; ); ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php _e( &#x27;Get More Types&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;
+            &lt;span style=&quot;float:left;&quot; class=&quot;spinner&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;?php
+    }
+
+    /**
+     * Generates content for a single row of the table
+     *
+     * @since 3.1.0
+     * @access protected
+     *
+     * @param object $item The current item
+     */
+    function single_row( $item ) {
+        static $alternate = &#x27;&#x27;;
+
+        $active = ( Ninja_Forms()-&gt;notification( $item[&#x27;id&#x27;] )-&gt;active ) ? &#x27;nf-notification-active &#x27; : &#x27;nf-notification-inactive&#x27;;
+        $alternate = ( $alternate == &#x27;&#x27; ? &#x27;alternate&#x27; : &#x27;&#x27; );
+
+        echo &#x27;&lt;tr class=&quot;&#x27; . $active . &#x27; &#x27; . $alternate . &#x27;&quot; id=&quot;&#x27; . $item[&#x27;id&#x27;] . &#x27;&quot;&gt;&#x27;;
+        $this-&gt;single_row_columns( $item );
+        echo &#x27;&lt;/tr&gt;&#x27;;
+    }
+
+    /** ************************************************************************
+     * REQUIRED! This is where you prepare your data for display. This method will
+     * usually be used to query the database, sort and filter the data, and generally
+     * get it ready to be displayed. At a minimum, we should set $this-&gt;items and
+     * $this-&gt;set_pagination_args(), although the following properties and methods
+     * are frequently interacted with here...
+     *
+     * @global WPDB $wpdb
+     * @uses $this-&gt;_column_headers
+     * @uses $this-&gt;items
+     * @uses $this-&gt;get_columns()
+     * @uses $this-&gt;get_sortable_columns()
+     * @uses $this-&gt;get_pagenum()
+     * @uses $this-&gt;set_pagination_args()
+     **************************************************************************/
+    public function prepare_items() {
+        global $wpdb; //This is used only if making any database queries
+
+        /**
+         * First, lets decide how many records per page to show
+         */
+        $per_page = 99999;
+
+
+        /**
+         * REQUIRED. Now we need to define our column headers. This includes a complete
+         * array of columns to be displayed (slugs &amp; titles), a list of columns
+         * to keep hidden, and a list of columns that are sortable. Each of these
+         * can be defined in another method (as we&#x27;ve done here) before being
+         * used to build the value for our _column_headers property.
+         */
+        $columns = $this-&gt;get_columns();
+        $hidden = array();
+        $sortable = $this-&gt;get_sortable_columns();
+
+
+        /**
+         * REQUIRED. Finally, we build an array to be used by the class for column
+         * headers. The $this-&gt;_column_headers property takes an array which contains
+         * 3 other arrays. One for all columns, one for hidden columns, and one
+         * for sortable columns.
+         */
+        $this-&gt;_column_headers = array($columns, $hidden, $sortable);
+
+
+        /**
+         * Optional. You can handle your bulk actions however you see fit. In this
+         * case, we&#x27;ll handle them within our package just to keep things clean.
+         */
+        //$this-&gt;process_bulk_action();
+
+
+        /**
+         * Instead of querying a database, we&#x27;re going to fetch the example data
+         * property we created for use in this plugin. This makes this example
+         * package slightly different than one you might build on your own. In
+         * this example, we&#x27;ll be using array manipulation to sort and paginate
+         * our data. In a real-world implementation, you will probably want to
+         * use sort and pagination data to build a custom query instead, as you&#x27;ll
+         * be able to use your precisely-queried data immediately.
+         */
+        $notifications = nf_get_notifications_by_form_id( $this-&gt;form_id );
+        $data = array();
+
+        if ( is_array( $notifications ) ) {
+            foreach ( $notifications as $id =&gt; $n ) {
+                if ( isset ( $_REQUEST[&#x27;type&#x27;] ) &amp;&amp; ! empty( $_REQUEST[&#x27;type&#x27;] ) ) {
+                    if ( nf_get_object_meta_value( $id, &#x27;type&#x27; ) == esc_html( $_REQUEST[&#x27;type&#x27;] ) ) {
+                        $n[&#x27;id&#x27;] = $id;
+                        $data[] = $n;
+                    }
+                } else {
+                    $n[&#x27;id&#x27;] = $id;
+                    $data[] = $n;
+                }
+
+            }
+        }
+
+        /**
+         * This checks for sorting input and sorts the data in our array accordingly.
+         *
+         * In a real-world situation involving a database, you would probably want
+         * to handle sorting by passing the &#x27;orderby&#x27; and &#x27;order&#x27; values directly
+         * to a custom query. The returned data will be pre-sorted, and this array
+         * sorting technique would be unnecessary.
+         */
+        function usort_reorder($a,$b){
+            $orderby = (!empty($_REQUEST[&#x27;orderby&#x27;])) ? esc_html( $_REQUEST[&#x27;orderby&#x27;] ) : &#x27;name&#x27;; //If no sort, default to title
+            $order = (!empty($_REQUEST[&#x27;order&#x27;])) ? esc_html( $_REQUEST[&#x27;order&#x27;] ) : &#x27;asc&#x27;; //If no order, default to asc
+            $result = strcmp($a[$orderby], $b[$orderby]); //Determine sort order
+            return ($order===&#x27;asc&#x27;) ? $result : -$result; //Send final sort direction to usort
+        }
+        usort($data, &#x27;usort_reorder&#x27;);
+
+
+        /***********************************************************************
+         * ---------------------------------------------------------------------
+         * vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+         *
+         * In a real-world situation, this is where you would place your query.
+         *
+         * For information on making queries in WordPress, see this Codex entry:
+         * http://codex.wordpress.org/Class_Reference/wpdb
+         *
+         * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         * ---------------------------------------------------------------------
+         **********************************************************************/
+
+
+        /**
+         * REQUIRED for pagination. Let&#x27;s figure out what page the user is currently
+         * looking at. We&#x27;ll need this later, so you should always include it in
+         * your own package classes.
+         */
+        $current_page = $this-&gt;get_pagenum();
+
+        /**
+         * REQUIRED for pagination. Let&#x27;s check how many items are in our data array.
+         * In real-world use, this would be the total number of items in your database,
+         * without filtering. We&#x27;ll need this later, so you should always include it
+         * in your own package classes.
+         */
+        $total_items = count($data);
+
+
+        /**
+         * The WP_List_Table class does not handle pagination for us, so we need
+         * to ensure that the data is trimmed to only the current page. We can use
+         * array_slice() to
+         */
+        $data = array_slice($data,(($current_page-1)*$per_page),$per_page);
+
+
+
+        /**
+         * REQUIRED. Now we can add our *sorted* data to the items property, where
+         * it can be used by the rest of the class.
+         */
+        $this-&gt;items = $data;
+
+
+        /**
+         * REQUIRED. We also have to register our pagination options &amp; calculations.
+         */
+        $this-&gt;set_pagination_args( array(
+            &#x27;total_items&#x27; =&gt; $total_items,                  //WE have to calculate the total number of items
+            &#x27;per_page&#x27;    =&gt; $per_page,                     //WE have to determine how many items to show on a page
+            &#x27;total_pages&#x27; =&gt; ceil($total_items/$per_page)   //WE have to calculate the total number of pages
+        ) );
+    }
+
+}
+</pre></details></body></html>

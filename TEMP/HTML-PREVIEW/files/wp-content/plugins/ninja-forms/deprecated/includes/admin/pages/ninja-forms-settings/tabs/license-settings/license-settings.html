@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/license-settings/license-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/license-settings/license-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;input class=&quot;button-primary menu-save ninja-forms-save-data&quot; id=&quot;ninja_forms_save_data_top&quot; type=&quot;submit&quot; value=&quot;&quot; /&gt;			
+		
+		&lt;input type=&quot;submit&quot; class=&quot;button-secondary&quot; id=&quot;nf_deactivate_all_licenses&quot; name=&quot;deactivate_all&quot; value=&quot;&quot;&gt;
+		
+	&lt;tr id=&quot;row_license_key&quot;&gt;
+		&lt;td colspan=&quot;2&quot;&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_tab_license_settings(){
+	$args = array(
+		&#x27;name&#x27; 				=&gt; __( &#x27;Licenses&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;page&#x27; 				=&gt; &#x27;ninja-forms-settings&#x27;,
+		&#x27;display_function&#x27; 	=&gt; &#x27;nf_license_settings_save_button&#x27;,
+		&#x27;save_function&#x27; 	=&gt; &#x27;ninja_forms_save_license_settings&#x27;,
+		&#x27;tab_reload&#x27; 		=&gt; true,
+		&#x27;show_save&#x27;			=&gt; false,
+	);
+	ninja_forms_register_tab( &#x27;license_settings&#x27;, $args );
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_tab_license_settings&#x27; );
+
+function ninja_forms_register_license_settings_metabox(){
+	$args = array(
+		&#x27;page&#x27; 				=&gt; &#x27;ninja-forms-settings&#x27;,
+		&#x27;tab&#x27; 				=&gt; &#x27;license_settings&#x27;,
+		&#x27;slug&#x27; 				=&gt; &#x27;license_settings&#x27;,
+		&#x27;title&#x27; 			=&gt; __( &#x27;Licenses&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;display_function&#x27;	=&gt; &#x27;nf_license_settings_no_licenses_notice&#x27;,
+	);
+	ninja_forms_register_tab_metabox( $args );
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_license_settings_metabox&#x27; );
+
+/**
+ * Output a save button so that we can call it: &quot;Save &amp; Activate&quot;
+ * 
+ * @since 2.9
+ * @return void
+ */
+function nf_license_settings_save_button() {
+	global $ninja_forms_tabs_metaboxes;
+
+	if ( ! isset ( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-settings&#x27;][&#x27;license_settings&#x27;][&#x27;license_settings&#x27;][&#x27;settings&#x27;] ) )
+		return false;
+
+	$show_save = false;
+	$show_deactivate = false;
+
+	// Loop through each of our licenses to set which buttons should be shown.
+	// We only want to show the &quot;Save &amp; Activate&quot; button if there are no active licenses.
+	// We only want to show the &quot;Deactivate All&quot; button if there is at least one active license.
+	foreach ( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-settings&#x27;][&#x27;license_settings&#x27;][&#x27;license_settings&#x27;][&#x27;settings&#x27;] as $setting ) {
+		// Check to see if this license is valid.
+		$valid = $setting[&#x27;save_function&#x27;][0]-&gt;is_valid();
+		// If we get a valid license, show deactivate all.
+		if ( $valid ) {
+			$show_deactivate = true;
+		} else { // If we get an invalid license, show the save button.
+			$show_save = true;
+		}
+	}
+
+	if ( $show_save ) {
+		?&gt;
+		&lt;input class=&quot;button-primary menu-save ninja-forms-save-data&quot; id=&quot;ninja_forms_save_data_top&quot; type=&quot;submit&quot; value=&quot;&lt;?php _e( &#x27;Save &amp; Activate&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; /&gt;			
+		&lt;?php		
+	}
+
+	if ( $show_deactivate ) {
+		?&gt;
+		&lt;input type=&quot;submit&quot; class=&quot;button-secondary&quot; id=&quot;nf_deactivate_all_licenses&quot; name=&quot;deactivate_all&quot; value=&quot;&lt;?php _e( &#x27;Deactivate All Licenses&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;
+		&lt;?php
+	}
+}
+
+/**
+ * Output a message letting the user know that they don&#x27;t have any extensions with licenses activated.
+ * 
+ * @since 2.9
+ * @return void
+ */
+function nf_license_settings_no_licenses_notice() {
+	global $ninja_forms_tabs_metaboxes;
+
+	if ( isset ( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-settings&#x27;][&#x27;license_settings&#x27;][&#x27;license_settings&#x27;][&#x27;settings&#x27;] ) ) {
+		return false;
+	}
+
+	$desc = sprintf( __( &#x27;To activate licenses for Ninja Forms extensions you must first %sinstall and activate%s the chosen extension. License settings will then appear below.&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/docs/installation/&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; );
+	?&gt;
+	&lt;tr id=&quot;row_license_key&quot;&gt;
+		&lt;td colspan=&quot;2&quot;&gt;&lt;?php echo $desc; ?&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;?php
+}
+
+function ninja_forms_save_license_settings( $data ){
+	$plugin_settings = nf_get_settings();
+
+	foreach( $data as $key =&gt; $val ){
+		$plugin_settings[$key] = $val;
+	}
+
+	update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings );
+
+	return false;
+}</pre></details></body></html>

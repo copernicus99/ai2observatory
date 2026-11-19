@@ -1,0 +1,182 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/upload-settings/upload-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/upload-settings/upload-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div class=&quot;&quot;&gt;
+        
+		&lt;h4&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code&quot; name=&quot;custom_upload_dir&quot; id=&quot;&quot; value=&quot;&quot; /&gt;
+		&lt;/label&gt;
+		&lt;span class=&quot;howto&quot;&gt;
+			:&lt;br /&gt;&lt;br /&gt;
+			&lt;br&gt;&lt;br&gt;
+			&lt;li&gt;%formtitle% - &lt;/li&gt;
+			&lt;li&gt;%username% - .&lt;/li&gt;
+			&lt;li&gt;%date% - .&lt;/li&gt;
+			&lt;li&gt;%month% - .&lt;/li&gt;
+			&lt;li&gt;%day% - .&lt;/li&gt;
+			&lt;li&gt;%year% - .&lt;/li&gt;
+			&lt;li&gt;For Example: /%formtitle%/%month%/%year%/ &amp;nbsp;&amp;nbsp;&amp;nbsp; would be &amp;nbsp;&amp;nbsp;&amp;nbsp; /MyFormTitle/04/2012/&lt;/li&gt;
+		&lt;/span&gt;
+
+		&lt;h4&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+			&lt;span class=&quot;code&quot;&gt;&lt;b&gt;&lt;/b&gt;&lt;/span&gt;
+		&lt;br /&gt;
+	&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+add_action(&#x27;admin_init&#x27;, &#x27;ninja_forms_register_tab_upload_settings&#x27;);
+function ninja_forms_register_tab_upload_settings(){
+	$args = array(
+		&#x27;name&#x27; =&gt; &#x27;Upload Settings&#x27;,
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-uploads&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_upload_settings&#x27;,
+		&#x27;tab_reload&#x27; =&gt; true,
+	);
+	if( function_exists( &#x27;ninja_forms_register_tab&#x27; ) ){
+		ninja_forms_register_tab(&#x27;upload_settings&#x27;, $args);
+	}
+}
+
+function nf_return_mb($val) {
+    $val = trim($val);
+    $last = strtolower($val[strlen($val)-1]);
+    switch($last) {
+        // The &#x27;G&#x27; modifier is available since PHP 5.1.0
+        case &#x27;g&#x27;:
+            $val *= 1024;
+        case &#x27;k&#x27;:
+            $val /= 1024;
+    }
+
+    return $val;
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_upload_settings_metabox&#x27;);
+function ninja_forms_register_upload_settings_metabox(){
+	$max_filesize = nf_return_mb( ini_get( &#x27;upload_max_filesize&#x27; ) );
+
+	$args = array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-uploads&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;upload_settings&#x27;,
+		&#x27;slug&#x27; =&gt; &#x27;upload_settings&#x27;,
+		&#x27;title&#x27; =&gt; __(&#x27;Upload Settings&#x27;, &#x27;ninja-forms-uploads&#x27;),
+		&#x27;settings&#x27; =&gt; array(
+			array(
+				&#x27;name&#x27; =&gt; &#x27;max_filesize&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Max File Size (in MB)&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27; =&gt; sprintf( __( &#x27;Your server\&#x27;s maximum file size is set to %s. This setting cannot be increased beyond this value. To increase your server file size limit, please contact your host.&#x27;, &#x27;ninja-forms-uploads&#x27; ), $max_filesize ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;upload_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __(&#x27;File upload error message&#x27;, &#x27;ninja-forms-uploads&#x27;),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;adv_settings&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;&#x27;,
+				&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_upload_settings_adv&#x27;,
+			),
+		),
+	);
+	if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+		ninja_forms_register_tab_metabox($args);
+	}
+}
+
+function ninja_forms_upload_settings_adv(){
+
+	$plugin_settings = nf_get_settings();
+
+	if(isset($plugin_settings[&#x27;base_upload_dir&#x27;])){
+		$base_upload_dir = stripslashes($plugin_settings[&#x27;base_upload_dir&#x27;]);
+	}else{	
+		$base_upload_dir = wp_upload_dir();
+		$base_upload_dir = $base_upload_dir[&#x27;basedir&#x27;];
+		$plugin_settings[&#x27;base_upload_dir&#x27;] = $base_upload_dir;
+		update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings );
+	}	
+
+	if(isset($plugin_settings[&#x27;base_upload_url&#x27;])){
+		$base_upload_url = stripslashes($plugin_settings[&#x27;base_upload_url&#x27;]);
+	}else{
+		$base_upload_url = wp_upload_dir();
+		$base_upload_url = $base_upload_url[&#x27;baseurl&#x27;];
+		$plugin_settings[&#x27;base_upload_url&#x27;] = $base_upload_url;
+		update_option( &#x27;ninja_forms_settings&#x27;, &#x27;ninja-forms-uploads&#x27; );
+	}
+
+	if(isset($plugin_settings[&#x27;custom_upload_dir&#x27;])){
+		$custom_upload_dir = stripslashes($plugin_settings[&#x27;custom_upload_dir&#x27;]);
+	}else{
+		$custom_upload_dir = &#x27;&#x27;;
+	}
+
+	if(isset($plugin_settings[&#x27;max_filesize&#x27;])){
+		$max_filesize = $plugin_settings[&#x27;max_filesize&#x27;];
+	}else{
+		$max_filesize = &#x27;&#x27;;
+	}
+
+
+
+?&gt;
+	&lt;div class=&quot;&quot;&gt;
+        &lt;?php /*
+		&lt;h4&gt;&lt;?php _e(&#x27;Base Directory&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;&lt;?php echo NINJA_FORMS_URL;?&gt;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code&quot; name=&quot;base_upload_dir&quot; id=&quot;base_upload_dir&quot; value=&quot;&lt;?php echo $base_upload_dir;?&gt;&quot; /&gt;
+		&lt;/label&gt;		
+		&lt;span class=&quot;howto&quot;&gt;Where should Ninja Forms place uploaded files? This should be the &quot;first part&quot; of the directory, including trailing slash. i.e. /var/html/wp-content/plugins/ninja-forms/uploads/&lt;/span&gt;
+		&lt;h4&gt;&lt;?php _e(&#x27;Base URL&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;&lt;?php echo NINJA_FORMS_URL;?&gt;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code&quot; name=&quot;base_upload_url&quot; id=&quot;base_upload_url&quot; value=&quot;&lt;?php echo $base_upload_url;?&gt;&quot; /&gt;
+		&lt;/label&gt;
+
+		&lt;span class=&quot;howto&quot;&gt;What is the URL to the base directory given above? This will be used on the backend to link to the files that have been uploaded.&lt;/span&gt;
+		&lt;br /&gt;
+		&lt;span class=&quot;howto&quot;&gt;&lt;b&gt;Please note that Ninja Forms will attempt to determine this directory, but you may need to overwrite it based on your server settings.&lt;/b&gt;&lt;/span&gt;
+		&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_default_base_upload_dir&quot; value=&quot;&lt;?php echo $default_base_upload_dir;?&gt;&quot;&gt;
+		&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_default_base_upload_url&quot; value=&quot;&lt;?php echo $default_base_upload_url;?&gt;&quot;&gt;
+		&lt;input type=&quot;button&quot; id=&quot;ninja_forms_reset_base_upload_dir&quot; value=&quot;Reset Upload Directory&quot;&gt;
+		&lt;br /&gt;
+		*/ ?&gt;
+		&lt;h4&gt;&lt;?php _e(&#x27;Custom Directory&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;&lt;?php echo NINJA_FORMS_URL;?&gt;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code&quot; name=&quot;custom_upload_dir&quot; id=&quot;&quot; value=&quot;&lt;?php echo $custom_upload_dir;?&gt;&quot; /&gt;
+		&lt;/label&gt;
+		&lt;span class=&quot;howto&quot;&gt;
+			&lt;?php _e( &#x27;If you want to create dynamic directories, you can put folder names in this box. You can use the following shortcodes, please include a slash at the beginning and a trailing slash&#x27;, &#x27;ninja-forms-uploads&#x27; );?&gt;:&lt;br /&gt;&lt;br /&gt;
+			&lt;?php _e( &#x27;For example: /custom/director/structure/&#x27;, &#x27;ninja-forms-uploads&#x27; );?&gt;&lt;br&gt;&lt;br&gt;
+			&lt;li&gt;%formtitle% - &lt;?php _e(&#x27;Puts in the title of the current form without any spaces&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/li&gt;
+			&lt;li&gt;%username% - &lt;?php _e(&#x27;Puts in the user\&#x27;s username if they are logged in&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;%date% - &lt;?php _e(&#x27;Puts in the date in yyyy-mm-dd (1998-05-23) format&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;%month% - &lt;?php _e(&#x27;Puts in the month in mm (04) format&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;%day% - &lt;?php _e(&#x27;Puts in the day in dd (20) format&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;%year% - &lt;?php _e(&#x27;Puts in the year in yyyy (2011) format&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;For Example: /%formtitle%/%month%/%year%/ &amp;nbsp;&amp;nbsp;&amp;nbsp; would be &amp;nbsp;&amp;nbsp;&amp;nbsp; /MyFormTitle/04/2012/&lt;/li&gt;
+		&lt;/span&gt;
+
+		&lt;h4&gt;&lt;?php _e(&#x27;Full Directory&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt; &lt;img id=&quot;&quot; class=&#x27;ninja-forms-help-text&#x27; src=&quot;&lt;?php echo NINJA_FORMS_URL;?&gt;/images/question-ico.gif&quot; title=&quot;&quot;&gt;&lt;/h4&gt;
+			&lt;span class=&quot;code&quot;&gt;&lt;?php echo $base_upload_dir;?&gt;&lt;b&gt;&lt;?php echo $custom_upload_dir;?&gt;&lt;/b&gt;&lt;/span&gt;
+		&lt;br /&gt;
+	&lt;/div&gt;
+&lt;?php
+}
+
+function ninja_forms_save_upload_settings( $data ){
+	$plugin_settings = nf_get_settings();
+	foreach( $data as $key =&gt; $val ){
+		if ( &#x27;max_filesize&#x27; == $key ) {
+			if ( $val &gt; preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, nf_return_mb( ini_get( &#x27;upload_max_filesize&#x27; ) ) ) ) {
+				$val = preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, nf_return_mb( ini_get( &#x27;upload_max_filesize&#x27; ) ) );
+			}
+			$val = preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, $val );
+		}
+		$plugin_settings[$key] = $val;
+	}
+	update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings );
+	$update_msg = __( &#x27;Settings Saved&#x27;, &#x27;ninja-forms-uploads&#x27; );
+	return $update_msg;
+}</pre></details></body></html>

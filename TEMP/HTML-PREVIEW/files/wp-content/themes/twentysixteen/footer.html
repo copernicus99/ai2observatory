@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentysixteen/footer.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentysixteen/footer.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+		&lt;/div&gt;&lt;!-- .site-content --&gt;
+
+		&lt;footer id=&quot;colophon&quot; class=&quot;site-footer&quot; role=&quot;contentinfo&quot;&gt;
+			
+				&lt;nav class=&quot;main-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&quot;&gt;
+					
+				&lt;/nav&gt;&lt;!-- .main-navigation --&gt;
+			
+
+			
+				&lt;nav class=&quot;social-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&quot;&gt;
+					
+				&lt;/nav&gt;&lt;!-- .social-navigation --&gt;
+			
+
+			&lt;div class=&quot;site-info&quot;&gt;
+				
+				&lt;span class=&quot;site-title&quot;&gt;&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+				&lt;a href=&quot;&quot;&gt;&lt;/a&gt;
+			&lt;/div&gt;&lt;!-- .site-info --&gt;
+		&lt;/footer&gt;&lt;!-- .site-footer --&gt;
+	&lt;/div&gt;&lt;!-- .site-inner --&gt;
+&lt;/div&gt;&lt;!-- .site --&gt;
+
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * The template for displaying the footer
+ *
+ * Contains the closing of the #content div and all content after
+ *
+ * @package WordPress
+ * @subpackage Twenty_Sixteen
+ * @since Twenty Sixteen 1.0
+ */
+?&gt;
+
+		&lt;/div&gt;&lt;!-- .site-content --&gt;
+
+		&lt;footer id=&quot;colophon&quot; class=&quot;site-footer&quot; role=&quot;contentinfo&quot;&gt;
+			&lt;?php if ( has_nav_menu( &#x27;primary&#x27; ) ) : ?&gt;
+				&lt;nav class=&quot;main-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&lt;?php esc_attr_e( &#x27;Footer Primary Menu&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&quot;&gt;
+					&lt;?php
+						wp_nav_menu( array(
+							&#x27;theme_location&#x27; =&gt; &#x27;primary&#x27;,
+							&#x27;menu_class&#x27;     =&gt; &#x27;primary-menu&#x27;,
+						 ) );
+					?&gt;
+				&lt;/nav&gt;&lt;!-- .main-navigation --&gt;
+			&lt;?php endif; ?&gt;
+
+			&lt;?php if ( has_nav_menu( &#x27;social&#x27; ) ) : ?&gt;
+				&lt;nav class=&quot;social-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&lt;?php esc_attr_e( &#x27;Footer Social Links Menu&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&quot;&gt;
+					&lt;?php
+						wp_nav_menu( array(
+							&#x27;theme_location&#x27; =&gt; &#x27;social&#x27;,
+							&#x27;menu_class&#x27;     =&gt; &#x27;social-links-menu&#x27;,
+							&#x27;depth&#x27;          =&gt; 1,
+							&#x27;link_before&#x27;    =&gt; &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27;,
+							&#x27;link_after&#x27;     =&gt; &#x27;&lt;/span&gt;&#x27;,
+						) );
+					?&gt;
+				&lt;/nav&gt;&lt;!-- .social-navigation --&gt;
+			&lt;?php endif; ?&gt;
+
+			&lt;div class=&quot;site-info&quot;&gt;
+				&lt;?php
+					/**
+					 * Fires before the twentysixteen footer text for footer customization.
+					 *
+					 * @since Twenty Sixteen 1.0
+					 */
+					do_action( &#x27;twentysixteen_credits&#x27; );
+				?&gt;
+				&lt;span class=&quot;site-title&quot;&gt;&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;&lt;?php bloginfo( &#x27;name&#x27; ); ?&gt;&lt;/a&gt;&lt;/span&gt;
+				&lt;a href=&quot;&lt;?php echo esc_url( __( &#x27;https://wordpress.org/&#x27;, &#x27;twentysixteen&#x27; ) ); ?&gt;&quot;&gt;&lt;?php printf( __( &#x27;Proudly powered by %s&#x27;, &#x27;twentysixteen&#x27; ), &#x27;WordPress&#x27; ); ?&gt;&lt;/a&gt;
+			&lt;/div&gt;&lt;!-- .site-info --&gt;
+		&lt;/footer&gt;&lt;!-- .site-footer --&gt;
+	&lt;/div&gt;&lt;!-- .site-inner --&gt;
+&lt;/div&gt;&lt;!-- .site --&gt;
+
+&lt;?php wp_footer(); ?&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></details></body></html>

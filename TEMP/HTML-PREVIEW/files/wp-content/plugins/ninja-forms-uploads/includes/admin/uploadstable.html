@@ -1,0 +1,415 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/admin/uploadstable.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/admin/uploadstable.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+if ( ! class_exists( &#x27;WP_List_Table&#x27; ) ) {
+	require_once( ABSPATH . &#x27;wp-admin/includes/class-wp-list-table.php&#x27; );
+}
+
+class NF_FU_Admin_UploadsTable extends WP_List_Table {
+
+	/** Class constructor */
+	public function __construct() {
+
+		parent::__construct( array(
+			&#x27;singular&#x27; =&gt; __( &#x27;Upload&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			//singular name of the listed records
+			&#x27;plural&#x27;   =&gt; __( &#x27;Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			//plural name of the listed records
+			&#x27;ajax&#x27;     =&gt; false
+			//should this table support ajax?
+		) );
+	}
+
+	public function no_items() {
+		_e( &#x27;No uploads found.&#x27;, &#x27;ninja-forms-uploads&#x27; );
+	}
+
+	/**
+	 * Prepare the items for the table to process
+	 *
+	 * @return Void
+	 */
+	public function prepare_items() {
+		$columns  = $this-&gt;get_columns();
+		$hidden   = $this-&gt;get_hidden_columns();
+		$sortable = $this-&gt;get_sortable_columns();
+
+		$form_id    = ! empty( $_REQUEST[&#x27;form_id&#x27;] ) ? trim( wp_unslash( $_REQUEST[&#x27;form_id&#x27;] ) ) : &#x27;&#x27;;
+		$begin_date = ! empty( $_REQUEST[&#x27;begin_date&#x27;] ) ? trim( wp_unslash( $_REQUEST[&#x27;begin_date&#x27;] ) ) : &#x27;&#x27;;
+		$end_date   = ! empty( $_REQUEST[&#x27;end_date&#x27;] ) ? trim( wp_unslash( $_REQUEST[&#x27;end_date&#x27;] ) ) : &#x27;&#x27;;
+		$search     = ! empty( $_REQUEST[&#x27;s&#x27;] ) ? trim( wp_unslash( $_REQUEST[&#x27;s&#x27;] ) ) : &#x27;&#x27;;
+
+		$data = $this-&gt;table_data( $form_id, $begin_date, $end_date, $search );
+		usort( $data, array( &amp;$this, &#x27;sort_data&#x27; ) );
+
+		$perPage     = 20;
+		$currentPage = $this-&gt;get_pagenum();
+		$totalItems  = count( $data );
+
+		$this-&gt;set_pagination_args( array(
+			&#x27;total_items&#x27; =&gt; $totalItems,
+			&#x27;per_page&#x27;    =&gt; $perPage,
+		) );
+
+		$data = array_slice( $data, ( ( $currentPage - 1 ) * $perPage ), $perPage );
+
+		$this-&gt;_column_headers = array( $columns, $hidden, $sortable );
+		$this-&gt;items           = $data;
+	}
+
+	/**
+	 * Override the parent columns method. Defines the columns to use in your listing table
+	 *
+	 * @return Array
+	 */
+	public function get_columns() {
+		$columns = array(
+			&#x27;cb&#x27;                =&gt; &#x27;&lt;input type=&quot;checkbox&quot; /&gt;&#x27;,
+			&#x27;filename&#x27;          =&gt; __( &#x27;File Name&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;original_filename&#x27; =&gt; __( &#x27;Original File name&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;date&#x27;              =&gt; __( &#x27;Created&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;form_name&#x27;         =&gt; __( &#x27;Form Name&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;user_name&#x27;         =&gt; __( &#x27;User Name&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;file_location&#x27;     =&gt; __( &#x27;File Location&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		);
+
+		return $columns;
+	}
+
+	/**
+	 * Define which columns are hidden
+	 *
+	 * @return Array
+	 */
+	public function get_hidden_columns() {
+		return array();
+	}
+
+	/**
+	 * Define the sortable columns
+	 *
+	 * @return Array
+	 */
+	public function get_sortable_columns() {
+		return array(
+			&#x27;filename&#x27;          =&gt; array( &#x27;filename&#x27;, true ),
+			&#x27;original_filename&#x27; =&gt; array( &#x27;original_filename&#x27;, true ),
+			&#x27;date&#x27;              =&gt; array( &#x27;date&#x27;, true ),
+			&#x27;form_name&#x27;         =&gt; array( &#x27;form_name&#x27;, true ),
+			&#x27;user_name&#x27;         =&gt; array( &#x27;user_name&#x27;, true ),
+			&#x27;file_location&#x27;     =&gt; array( &#x27;file_location&#x27;, true ),
+		);
+	}
+
+	/**
+	 * Get the table data
+	 *
+	 * @param string $form_id
+	 * @param string $begin_date
+	 * @param string $end_date
+	 * @param string $search
+	 *
+	 * @return array
+	 */
+	private function table_data( $form_id = &#x27;&#x27;, $begin_date = &#x27;&#x27;, $end_date = &#x27;&#x27;, $search = &#x27;&#x27; ) {
+		$data = array();
+
+		$where = array();
+		if ( ! empty( $search ) ) {
+			$where[] = &quot;`data` LIKE &#x27;%$search%&#x27;&quot;;
+		}
+
+		if ( ! empty( $form_id ) ) {
+			$where[] = &quot;`form_id` = $form_id&quot;;
+		}
+
+		if ( ! empty( $begin_date ) ) {
+			$begin_date = date( &quot;Y-m-d 00:00:00&quot;, strtotime( $begin_date ) );
+			$where[]    = &quot;`date_updated` &gt;= &#x27;$begin_date&#x27;&quot;;
+		}
+
+		if ( ! empty( $end_date ) ) {
+			$end_date = date( &quot;Y-m-d 23:59:59&quot;, strtotime( $end_date ) );
+			$where[]  = &quot;`date_updated` &lt;= &#x27;$end_date&#x27;&quot;;
+		}
+
+		if ( ! empty( $where ) ) {
+			$where = &#x27;WHERE &#x27; . implode( &#x27; AND &#x27;, $where );
+		} else {
+			$where = &#x27;&#x27;;
+		}
+
+		$uploads = NF_File_Uploads()-&gt;model-&gt;fetch( $where );
+
+		$forms = array();
+		$users = array();
+
+		foreach ( $uploads as $upload ) {
+			$upload_data = unserialize( $upload[&#x27;data&#x27;] );
+
+			if ( isset( $forms[ $upload[&#x27;form_id&#x27;] ] ) ) {
+				$form_name = $forms[ $upload[&#x27;form_id&#x27;] ];
+			} else {
+				$form                        = Ninja_Forms()-&gt;form( $upload[&#x27;form_id&#x27;] )-&gt;get();
+				$title                       = $form-&gt;get_setting( &#x27;title&#x27; );
+				$form_name                   = isset( $title ) ? $title : $form-&gt;get_id();
+				$forms[ $upload[&#x27;form_id&#x27;] ] = $form_name;
+			}
+
+			$user_name = __( &#x27;Guest&#x27;, &#x27;ninja-forms-uploads&#x27; );
+			if ( isset( $users[ $upload[&#x27;user_id&#x27;] ] ) ) {
+				$user_name = $users[ $upload[&#x27;user_id&#x27;] ];
+			} else {
+				$user = get_user_by( &#x27;id&#x27;, $upload[&#x27;user_id&#x27;] );
+				if ( $user ) {
+					$user_name                   = $user-&gt;user_nicename;
+					$users[ $upload[&#x27;user_id&#x27;] ] = $user_name;
+				}
+			}
+
+			$data[] = array(
+				&#x27;id&#x27;                =&gt; $upload[&#x27;id&#x27;],
+				&#x27;filename&#x27;          =&gt; $upload_data[&#x27;file_name&#x27;],
+				&#x27;original_filename&#x27; =&gt; $upload_data[&#x27;user_file_name&#x27;],
+				&#x27;date&#x27;              =&gt; $upload[&#x27;date_updated&#x27;],
+				&#x27;form_name&#x27;         =&gt; $form_name,
+				&#x27;user_name&#x27;         =&gt; $user_name,
+				&#x27;file_url&#x27;          =&gt; $upload_data[&#x27;file_url&#x27;],
+				&#x27;upload_location&#x27;   =&gt; $upload_data[&#x27;upload_location&#x27;],
+				&#x27;upload_id&#x27;         =&gt; $upload_data[&#x27;upload_id&#x27;],
+			);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Define what data to show on each column of the table
+	 *
+	 * @param  Array  $item        Data
+	 * @param  String $column_name - Current column name
+	 *
+	 * @return Mixed
+	 */
+	public function column_default( $item, $column_name ) {
+		switch ( $column_name ) {
+			case &#x27;filename&#x27;:
+				if ( isset( $item[&#x27;file_url&#x27;] ) ) {
+					$url = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_file_url( $item[&#x27;file_url&#x27;], $item );
+
+					$value = sprintf( &#x27;&lt;a href=&quot;%s&quot; target=&quot;_blank&quot;&gt;%s&lt;/a&gt;&#x27;, $url, $item[ $column_name ] );
+				} else {
+					$value = $item[ $column_name ];
+				}
+				$value .= &#x27;&lt;div class=&quot;row-actions&quot;&gt;&#x27;;
+				if ( isset( $url ) ) {
+					$value .= &#x27;&lt;span class=&quot;view&quot;&gt;&lt;a class=&quot;view&quot; title=&quot;&#x27; . __( &#x27;View this file&#x27;, &#x27;ninja-forms-uploads&#x27; ) . &#x27;&quot; href=&quot;&#x27; . $url . &#x27;&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;View&#x27;, &#x27;ninja-forms-uploads&#x27; ) . &#x27;&lt;/a&gt;&lt;/span&gt; | &#x27;;
+				}
+				$delete_link = NF_File_Uploads()-&gt;page-&gt;get_url( &#x27;&#x27;, array(
+					&#x27;action&#x27; =&gt; &#x27;delete&#x27;,
+					&#x27;upload&#x27; =&gt; $item[&#x27;id&#x27;],
+				), false );
+				$delete_link = wp_nonce_url( $delete_link, &quot;delete-upload_{$item[&#x27;id&#x27;]}&quot; );
+				$value .= &#x27;&lt;span class=&quot;trash&quot;&gt;&lt;a class=&quot;trash ninja-forms-delete-upload&quot; title=&quot;&#x27; . __( &#x27;Delete this file&#x27;, &#x27;ninja-forms-uploads&#x27; ) . &#x27;&quot; href=&quot;&#x27;. $delete_link . &#x27;&quot;&gt;&#x27; . __( &#x27;Delete&#x27;, &#x27;ninja-forms-uploads&#x27; ) . &#x27;&lt;/a&gt;&lt;/span&gt;&#x27;;
+				$value .= &#x27;&lt;/div&gt;&#x27;;
+				break;
+			case &#x27;file_location&#x27;:
+				$value = apply_filters( &#x27;ninja_forms_uploads_file_location&#x27;, $item[&#x27;upload_location&#x27;] );
+				break;
+			default:
+				$value = $item[ $column_name ];
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Allows you to sort the data by the variables set in the $_GET
+	 *
+	 * @return Mixed
+	 */
+	private function sort_data( $a, $b ) {
+		// Set defaults
+		$orderby = &#x27;id&#x27;;
+		$order   = &#x27;asc&#x27;;
+
+		// If orderby is set, use this as the sort column
+		if ( ! empty( $_GET[&#x27;orderby&#x27;] ) ) {
+			$orderby = $_GET[&#x27;orderby&#x27;];
+		}
+
+		// If order is set use this as the order
+		if ( ! empty( $_GET[&#x27;order&#x27;] ) ) {
+			$order = $_GET[&#x27;order&#x27;];
+		}
+
+
+		$result = strnatcmp( $a[ $orderby ], $b[ $orderby ] );
+
+		if ( $order === &#x27;asc&#x27; ) {
+			return $result;
+		}
+
+		return -$result;
+	}
+
+	function column_cb( $item ) {
+		return sprintf( &#x27;&lt;input type=&quot;checkbox&quot; name=&quot;bulk-delete-upload[]&quot; value=&quot;%s&quot; /&gt;&#x27;, $item[&#x27;id&#x27;] );
+	}
+
+	/**
+	 * Returns an associative array containing the bulk action
+	 *
+	 * @return array
+	 */
+	public function get_bulk_actions() {
+		$actions = array(
+			&#x27;bulk-delete-upload&#x27; =&gt; __( &#x27;Delete&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		);
+
+		return $actions;
+	}
+
+	/**
+	 * Process the bulk delete
+	 */
+	public static function process_bulk_action() {
+		// If the delete bulk action is triggered
+		if ( ( isset( $_POST[&#x27;action&#x27;] ) &amp;&amp; &#x27;bulk-delete-upload&#x27; === $_POST[&#x27;action&#x27;] ) || ( isset( $_POST[&#x27;action2&#x27;] ) &amp;&amp; &#x27;bulk-delete-upload&#x27; === $_POST[&#x27;action2&#x27;] ) ) {
+
+			$delete_ids = esc_sql( $_POST[&#x27;bulk-delete-upload&#x27;] );
+
+			$count = 0;
+			// loop over the array of record IDs and delete them
+			foreach ( $delete_ids as $id ) {
+				$result = self::delete_item( absint( $id ) );
+				if ( $result ) {
+					$count++;
+				}
+			}
+
+			if ( 0 === $count ) {
+				$args = array( &#x27;delete-error&#x27; =&gt; count( $delete_ids ) );
+			} else {
+				$args = array( &#x27;deleted&#x27; =&gt; $count );
+			}
+
+			$redirect = NF_File_Uploads()-&gt;page-&gt;get_url( &#x27;&#x27;, $args, false );
+			wp_redirect( $redirect );
+			exit;
+		}
+	}
+
+	/**
+	 * Delete single upload
+	 */
+	public static function delete_upload() {
+		if ( ! NF_FU_Helper::is_page() ) {
+			return;
+		}
+
+		if ( ! isset( $_GET[&#x27;action&#x27;] ) || &#x27;delete&#x27; !== $_GET[&#x27;action&#x27;] ) {
+			return;
+		}
+
+		$upload_id = filter_input( INPUT_GET, &#x27;upload&#x27;, FILTER_VALIDATE_INT );
+
+		if ( ! isset( $upload_id ) ) {
+			return;
+		}
+
+		if ( ! isset( $_GET[&#x27;_wpnonce&#x27;] ) || ! wp_verify_nonce( $_GET[&#x27;_wpnonce&#x27;], &#x27;delete-upload_&#x27; . $upload_id ) ) {
+			return;
+		}
+
+		$result = self::delete_item( $upload_id );
+
+		$args = array();
+
+		if ( $result ) {
+			$args[&#x27;deleted&#x27;] = 1;
+		} else {
+			$args[&#x27;delete-error&#x27;] = 1;
+		}
+
+		$redirect = NF_File_Uploads()-&gt;page-&gt;get_url( &#x27;&#x27;, $args, false );
+		wp_redirect( $redirect );
+		exit;
+	}
+
+	/**
+	 * Display notice for delete actions
+	 */
+	public static function action_notices() {
+		if ( ! NF_FU_Helper::is_page() ) {
+			return;
+		}
+
+		if ( isset( $_GET[&#x27;deleted&#x27;] ) ) {
+			Ninja_Forms::template( &#x27;admin-notice.html.php&#x27;, array(
+				&#x27;class&#x27;   =&gt; &#x27;updated notice notice-success&#x27;,
+				&#x27;message&#x27; =&gt; sprintf( _n( &#x27;%s upload deleted&#x27;, &#x27;%s uploads deleted&#x27;, $_GET[&#x27;deleted&#x27;], &#x27;ninja-forms-upload&#x27; ), $_GET[&#x27;deleted&#x27;] ),
+			) );
+		}
+
+		if ( isset( $_GET[&#x27;delete-error&#x27;] ) ) {
+			Ninja_Forms::template( &#x27;admin-notice.html.php&#x27;, array(
+				&#x27;class&#x27;   =&gt; &#x27;error notice notice-error&#x27;,
+				&#x27;message&#x27; =&gt; _n( &#x27;There was a problem deleting the upload&#x27;, &#x27;There was a problem deleting the uploads&#x27;, $_GET[&#x27;delete-error&#x27;], &#x27;ninja-forms-upload&#x27; ),
+			) );
+		}
+	}
+
+	/**
+	 * Delete the item from the file uploads table and remove file from server.
+	 *
+	 * @param int $id
+	 *
+	 * @return false|int
+	 */
+	public static function delete_item( $id ) {
+		$upload = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get( $id );
+
+		if ( file_exists( $upload-&gt;file_path ) ) {
+			unlink( $upload-&gt;file_path );
+		}
+
+		do_action( &#x27;ninja_forms_upload_delete_upload&#x27;, $upload );
+
+		return NF_File_Uploads()-&gt;model-&gt;delete( $id );
+	}
+
+	public function extra_tablenav( $which ) {
+		if ( &#x27;top&#x27; !== $which ) {
+			return;
+		}
+		$forms = Ninja_Forms()-&gt;form()-&gt;get_forms();
+
+		$form_options = array();
+		foreach ( $forms as $form ) {
+			$form_options[ $form-&gt;get_id() ] = $form-&gt;get_setting( &#x27;title&#x27; );
+		}
+
+		if ( isset( $_REQUEST[&#x27;form_id&#x27;] ) ) {
+			$form_selected = $_REQUEST[&#x27;form_id&#x27;];
+		} else {
+			$form_selected = 0;
+		}
+
+		if ( isset( $_REQUEST[&#x27;begin_date&#x27;] ) ) {
+			$begin_date = $_REQUEST[&#x27;begin_date&#x27;];
+		} else {
+			$begin_date = &#x27;&#x27;;
+		}
+
+		if ( isset( $_REQUEST[&#x27;end_date&#x27;] ) ) {
+			$end_date = $_REQUEST[&#x27;end_date&#x27;];
+		} else {
+			$end_date = &#x27;&#x27;;
+		}
+
+		NF_File_Uploads()-&gt;template( &#x27;admin-menu-uploads-filter.html&#x27;, compact( &#x27;form_options&#x27;, &#x27;form_selected&#x27;, &#x27;begin_date&#x27;, &#x27;end_date&#x27; ) );
+	}
+}
+</pre></details></body></html>

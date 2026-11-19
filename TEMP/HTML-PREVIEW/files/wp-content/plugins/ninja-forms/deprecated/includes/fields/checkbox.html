@@ -1,0 +1,145 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/checkbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/checkbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;input id=&quot;&quot; name=&quot;ninja_forms_field_&quot; type=&quot;hidden&quot; value=&quot;unchecked&quot; /&gt;&lt;input id=&quot;ninja_forms_field_&quot; name=&quot;ninja_forms_field_&quot; type=&quot;checkbox&quot; class=&quot;&quot; value=&quot;checked&quot;  rel=&quot;&quot;/&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;fields[]&quot; value=&quot;unchecked&quot;&gt;
+	&lt;input type=&quot;checkbox&quot; name=&quot;fields[]&quot; value=&quot;checked&quot; &gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_checkbox(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Checkbox&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27;    =&gt; &#x27;select&#x27;, //What type of input should this be?
+				&#x27;options&#x27; =&gt; array(
+					array(
+						&#x27;name&#x27;  =&gt; __( &#x27;Unchecked&#x27;, &#x27;ninja-forms&#x27; ),
+						&#x27;value&#x27; =&gt; &#x27;unchecked&#x27;,
+					),
+					array(
+						&#x27;name&#x27;  =&gt; __( &#x27;Checked&#x27;, &#x27;ninja-forms&#x27; ),
+						&#x27;value&#x27; =&gt; &#x27;checked&#x27;,
+					),
+				),
+				&#x27;name&#x27; =&gt; &#x27;default_value&#x27;, //What should it be named. This should always be a programmatic name, not a label.
+				&#x27;label&#x27; =&gt; __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;, //Additional classes to be added to the input element.
+			),
+		),
+		//&#x27;edit_function&#x27; =&gt; &#x27;ninja_forms_field_checkbox_edit&#x27;,
+		&#x27;display_function&#x27;  =&gt; &#x27;ninja_forms_field_checkbox_display&#x27;,
+		&#x27;group&#x27;             =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27;        =&gt; true,
+		&#x27;edit_label_pos&#x27;    =&gt; true,
+		&#x27;label_pos_options&#x27; =&gt; array(
+			array(&#x27;name&#x27; =&gt; __( &#x27;Left of Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;left&#x27;),
+			array(&#x27;name&#x27; =&gt; __( &#x27;Above Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;above&#x27;),
+			array(&#x27;name&#x27; =&gt; __( &#x27;Below Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;below&#x27;),
+			array(&#x27;name&#x27; =&gt; __( &#x27;Right of Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;right&#x27;),
+		),
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;action&#x27; =&gt; array(
+				&#x27;show&#x27; =&gt; array(
+					&#x27;name&#x27; =&gt; __( &#x27;Show This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;show&#x27;,
+					&#x27;output&#x27; =&gt; &#x27;show&#x27;,
+				),
+				&#x27;hide&#x27; =&gt; array(
+					&#x27;name&#x27; =&gt; __( &#x27;Hide This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;hide&#x27;,
+					&#x27;output&#x27; =&gt; &#x27;hide&#x27;,
+				),
+				&#x27;change_value&#x27; =&gt; array(
+					&#x27;name&#x27; =&gt; __( &#x27;Change Value&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;output&#x27; =&gt; &#x27;select&#x27;,
+					&#x27;options&#x27; =&gt; array(
+						&#x27;Checked&#x27; =&gt; &#x27;checked&#x27;,
+						&#x27;Unchecked&#x27; =&gt; &#x27;unchecked&#x27;,
+					),
+					&#x27;js_function&#x27; =&gt; &#x27;change_value&#x27;,
+
+				),
+
+			),
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;select&#x27;,
+				&#x27;options&#x27; =&gt; array(
+					&#x27;Checked&#x27; =&gt; &#x27;checked&#x27;,
+					&#x27;Unchecked&#x27; =&gt; &#x27;unchecked&#x27;,
+				),
+			),
+		),
+		&#x27;req_validation&#x27; =&gt; &#x27;ninja_forms_field_checkbox_validation&#x27;,
+		&#x27;edit_sub_value&#x27; =&gt; &#x27;nf_field_checkbox_edit_sub_value&#x27;,
+	);
+
+	ninja_forms_register_field(&#x27;_checkbox&#x27;, $args);
+}
+
+//Register the Checkbox field
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_checkbox&#x27;);
+
+//Checkbox Display Function
+function ninja_forms_field_checkbox_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+	$default_value = $data[&#x27;default_value&#x27;];
+	if($default_value == &#x27;checked&#x27; OR $default_value == 1){
+		$checked = &#x27;checked = &quot;checked&quot;&#x27;;
+	}else{
+		$checked = &#x27;&#x27;;
+	}
+
+	?&gt;&lt;input id=&quot;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;hidden&quot; value=&quot;unchecked&quot; /&gt;&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;checkbox&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;checked&quot; &lt;?php echo $checked;?&gt; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;/&gt;&lt;?php
+}
+
+//Checkbox Pre-Processing Function
+function ninja_forms_field_checkbox_pre_process( $field_id, $user_value ){
+	global $ninja_forms_processing;
+	if( $user_value != &#x27;checked&#x27; AND $user_value != &#x27;unchecked&#x27; ){
+		if( $user_value == 1 ){
+				$user_value = &#x27;checked&#x27;;
+		}else{
+			$user_value = &#x27;unchecked&#x27;;
+		}
+	}
+
+
+	if( $ninja_forms_processing-&gt;get_field_value( $field_id ) !== false ){
+		$ninja_forms_processing-&gt;update_field_value( $field_id, $user_value );
+	}
+
+}
+
+//Checkbox Validation Function
+function ninja_forms_field_checkbox_validation( $field_id, $user_value ){
+	if( $user_value != &#x27;unchecked&#x27; AND $user_value != &#x27;&#x27; ){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+/**
+ * Edit submission value output function
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_checkbox_edit_sub_value( $field_id, $user_value ) {
+	
+	if ( $user_value == &#x27;checked&#x27; ) {
+		$checked = &#x27;checked=&quot;checked&quot;&#x27;;
+	} else {
+		$checked = &#x27;&#x27;;
+	}
+
+	?&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; value=&quot;unchecked&quot;&gt;
+	&lt;input type=&quot;checkbox&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; value=&quot;checked&quot; &lt;?php echo $checked; ?&gt;&gt;
+	&lt;?php
+}</pre></details></body></html>

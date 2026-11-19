@@ -1,0 +1,339 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/form-list/form-list.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/form-list/form-list.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+	&lt;ul class=&quot;subsubsub&quot;&gt;
+		&lt;li class=&quot;all&quot;&gt;&lt;a href=&quot;&quot; class=&quot;current&quot;&gt; &lt;span class=&quot;count&quot;&gt;()&lt;/span&gt;&lt;/a&gt;
+	&lt;/ul&gt;
+	&lt;div id=&quot;&quot; class=&quot;tablenav top&quot;&gt;
+		&lt;div class=&quot;alignleft actions&quot;&gt;
+			&lt;select id=&quot;&quot; class=&quot;&quot; name=&quot;bulk_action&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+				&lt;option value=&quot;delete&quot;&gt;&lt;/option&gt;
+			&lt;/select&gt;
+			&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&quot; class=&quot;button-secondary&quot;&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;alignleft actions&quot;&gt;
+			&lt;select id=&quot;&quot; name=&quot;limit&quot;&gt;
+				&lt;option value=&quot;20&quot; &gt;20&lt;/option&gt;
+				&lt;option value=&quot;50&quot; &gt;50&lt;/option&gt;
+				&lt;option value=&quot;100&quot; &gt;100&lt;/option&gt;
+			&lt;/select&gt;
+			
+			&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&quot; class=&quot;button-secondary&quot;&gt;
+		&lt;/div&gt;
+		&lt;div id=&quot;&quot; class=&quot;alignright navtable-pages&quot;&gt;
+			
+			&lt;span class=&quot;displaying-num&quot;&gt; -    &lt;/span&gt;
+			
+			&lt;span class=&quot;pagination-links&quot;&gt;
+				&lt;a class=&quot;first-page disabled&quot; title=&quot;&quot; href=&quot;&quot;&gt;«&lt;/a&gt;
+				&lt;a class=&quot;prev-page disabled&quot; title=&quot;&quot; href=&quot;&quot;&gt;‹&lt;/a&gt;
+				&lt;span class=&quot;paging-input&quot;&gt;&lt;input class=&quot;current-page&quot; title=&quot;&quot; type=&quot;text&quot; name=&quot;paged&quot; value=&quot;&quot; size=&quot;2&quot;&gt;  &lt;span class=&quot;total-pages&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+				&lt;a class=&quot;next-page&quot; title=&quot;&quot; href=&quot;&quot;&gt;›&lt;/a&gt;
+				&lt;a class=&quot;last-page&quot; title=&quot;&quot; href=&quot;&quot;&gt;»&lt;/a&gt;
+			&lt;/span&gt;
+			
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;table class=&quot;wp-list-table widefat fixed posts&quot;&gt;
+		&lt;thead&gt;
+			&lt;tr&gt;
+				&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;&quot; class=&quot;ninja-forms-select-all&quot; title=&quot;ninja-forms-bulk-action&quot;&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/thead&gt;
+		&lt;tbody&gt;
+	
+			&lt;tr id=&quot;ninja_forms_form__tr&quot;&gt;
+				&lt;th scope=&quot;row&quot; class=&quot;check-column&quot;&gt;
+					&lt;input type=&quot;checkbox&quot; id=&quot;&quot; name=&quot;form_ids[]&quot; value=&quot;&quot; class=&quot;ninja-forms-bulk-action&quot;&gt;
+				&lt;/th&gt;
+				&lt;td class=&quot;post-title page-title column-title&quot;&gt;
+					&lt;strong&gt;
+						&lt;a href=&quot;&quot;&gt;&lt;/a&gt;
+					&lt;/strong&gt;
+					&lt;div class=&quot;row-actions&quot;&gt;
+						&lt;span class=&quot;edit&quot;&gt;&lt;a href=&quot;&quot;&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;trash&quot;&gt;&lt;a class=&quot;ninja-forms-delete-form&quot; title=&quot;&quot; href=&quot;#&quot; id=&quot;ninja_forms_delete_form_&quot;&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;duplicate&quot;&gt;&lt;a href=&quot;&quot; title=&quot;&quot;&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;bleep&quot;&gt; | &lt;/span&gt;
+						&lt;span class=&quot;subs&quot;&gt;&lt;a href=&quot;&quot; class=&quot;&quot; title=&quot;&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+					&lt;/div&gt;
+				&lt;/td&gt;
+				&lt;td&gt;
+					
+				&lt;/td&gt;
+				&lt;td&gt;
+					
+				&lt;/td&gt;
+				&lt;td&gt;
+					
+				&lt;/td&gt;
+			&lt;/tr&gt;
+
+			
+		&lt;/tbody&gt;
+		&lt;tfoot&gt;
+			&lt;tr&gt;
+				&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;&quot; class=&quot;ninja-forms-select-all&quot; title=&quot;ninja-forms-bulk-action&quot;&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/tfoot&gt;
+	&lt;/table&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+
+function ninja_forms_register_form_export(){
+	if( isset( $_REQUEST[&#x27;export_form&#x27;] ) AND $_REQUEST[&#x27;export_form&#x27;] == 1 ){
+		$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		ninja_forms_export_form( $form_id );
+	}
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_form_export&#x27; );
+
+function ninja_forms_register_form_duplicate(){
+	if ( isset ( $_REQUEST[&#x27;duplicate_form&#x27;] ) AND $_REQUEST[&#x27;duplicate_form&#x27;] == 1 ) {
+		$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		$form_row = ninja_forms_serialize_form( $form_id );
+		ninja_forms_import_form( $form_row );
+		$url = esc_url_raw( remove_query_arg( array( &#x27;duplicate_form&#x27;, &#x27;form_id&#x27; ) ) );
+		wp_redirect( $url );
+	}
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_form_duplicate&#x27; );
+
+function ninja_forms_register_tab_form_list(){
+	$new_link = esc_url( add_query_arg( array(&#x27;form_id&#x27; =&gt; &#x27;new&#x27;, &#x27;tab&#x27; =&gt; &#x27;form_settings&#x27;) ) );
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;All Forms&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_tab_form_list&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_form_list&#x27;,
+		&#x27;show_save&#x27; =&gt; false,
+		&#x27;active_class&#x27; =&gt; &#x27;form-list-active&#x27;,
+		&#x27;inactive_class&#x27; =&gt; &#x27;form-list-inactive&#x27;,
+		&#x27;show_tab_links&#x27; =&gt; false,
+		&#x27;show_this_tab_link&#x27; =&gt; false,
+		// &#x27;title&#x27; =&gt; &#x27;&lt;h2&gt;Forms &lt;a href=&quot;&#x27;.$new_link.&#x27;&quot; class=&quot;add-new-h2&quot;&gt;&#x27;.__( &#x27;Add New Form&#x27;, &#x27;ninja-forms&#x27; ).&#x27;&lt;/a&gt;&lt;/h2&gt;&#x27;,
+	);
+	ninja_forms_register_tab(&#x27;form_list&#x27;, $args);
+}
+
+add_action(&#x27;admin_init&#x27;, &#x27;ninja_forms_register_tab_form_list&#x27;);
+
+function ninja_forms_tab_form_list(){
+
+	do_action( &#x27;nf_admin_before_form_list&#x27; );
+
+	$all_forms = apply_filters( &#x27;ninja_forms_form_list_forms&#x27;, Ninja_Forms()-&gt;forms()-&gt;get_all() );
+
+	$form_count = count($all_forms);
+
+	if( isset( $_REQUEST[&#x27;limit&#x27;] ) ){
+		$saved_limit = absint( $_REQUEST[&#x27;limit&#x27;] );
+		$limit = absint( $_REQUEST[&#x27;limit&#x27;] );
+	}else{
+		$saved_limit = 20;
+		$limit = 20;
+	}
+
+	if( $form_count &lt; $limit ){
+		$limit = $form_count;
+	}
+
+	if( isset( $_REQUEST[&#x27;paged&#x27;]) AND !empty( $_REQUEST[&#x27;paged&#x27;] ) ){
+		$current_page = absint( $_REQUEST[&#x27;paged&#x27;] );
+	}else{
+		$current_page = 1;
+	}
+
+	if( $form_count &gt; $limit ){
+		$page_count = ceil( $form_count / $limit );
+	}else{
+		$page_count = 1;
+	}
+
+	if( $current_page &gt; 1 ){
+		$start = ( ( $current_page - 1 ) * $limit );
+		if( $form_count &lt; $limit ){
+			$end = $form_count;
+		}else{
+			$end = $current_page * $limit;
+			// $end = $end - 1;
+		}
+
+		if( $end &gt; $form_count ){
+			$end = $form_count;
+		}
+	}else{
+		$start = 0;
+		$end = $limit;
+	}
+
+	?&gt;
+
+	&lt;ul class=&quot;subsubsub&quot;&gt;
+		&lt;li class=&quot;all&quot;&gt;&lt;a href=&quot;&quot; class=&quot;current&quot;&gt;&lt;?php _e( &#x27;All&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;span class=&quot;count&quot;&gt;(&lt;?php echo $form_count;?&gt;)&lt;/span&gt;&lt;/a&gt;
+	&lt;/ul&gt;
+	&lt;div id=&quot;&quot; class=&quot;tablenav top&quot;&gt;
+		&lt;div class=&quot;alignleft actions&quot;&gt;
+			&lt;select id=&quot;&quot; class=&quot;&quot; name=&quot;bulk_action&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;&lt;?php _e( &#x27;Bulk Actions&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/option&gt;
+				&lt;option value=&quot;delete&quot;&gt;&lt;?php _e( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/option&gt;
+			&lt;/select&gt;
+			&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&lt;?php _e( &#x27;Apply&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;button-secondary&quot;&gt;
+		&lt;/div&gt;
+		&lt;div class=&quot;alignleft actions&quot;&gt;
+			&lt;select id=&quot;&quot; name=&quot;limit&quot;&gt;
+				&lt;option value=&quot;20&quot; &lt;?php selected($saved_limit, 20);?&gt;&gt;20&lt;/option&gt;
+				&lt;option value=&quot;50&quot; &lt;?php selected($saved_limit, 50);?&gt;&gt;50&lt;/option&gt;
+				&lt;option value=&quot;100&quot; &lt;?php selected($saved_limit, 100);?&gt;&gt;100&lt;/option&gt;
+			&lt;/select&gt;
+			&lt;?php _e( &#x27;Forms Per Page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+			&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&lt;?php _e( &#x27;Go&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;button-secondary&quot;&gt;
+		&lt;/div&gt;
+		&lt;div id=&quot;&quot; class=&quot;alignright navtable-pages&quot;&gt;
+			&lt;?php
+			if($form_count != 0 AND $current_page &lt;= $page_count){
+			?&gt;
+			&lt;span class=&quot;displaying-num&quot;&gt;&lt;?php if($start == 0){ echo 1; }else{ echo $start; }?&gt; - &lt;?php echo $end;?&gt; &lt;?php _e( &#x27;of&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;?php echo $form_count;?&gt; &lt;?php if($form_count == 1){ _e( &#x27;Form&#x27;, &#x27;ninja-forms&#x27; ); }else{ _e( &#x27;Forms&#x27;, &#x27;ninja-forms&#x27; ); }?&gt;&lt;/span&gt;
+			&lt;?php
+			}
+				if($page_count &gt; 1){
+
+					$first_page = esc_url( remove_query_arg( &#x27;paged&#x27; ) );
+					$last_page = esc_url( add_query_arg( array( &#x27;paged&#x27; =&gt; $page_count ) ) );
+
+					if($current_page &gt; 1){
+						$prev_page = $current_page - 1;
+						$prev_page = esc_url( add_query_arg( array(&#x27;paged&#x27; =&gt; $prev_page ) ) );
+					}else{
+						$prev_page = $first_page;
+					}
+					if($current_page != $page_count){
+						$next_page = $current_page + 1;
+						$next_page = esc_url( add_query_arg( array(&#x27;paged&#x27; =&gt; $next_page ) ) );
+					}else{
+						$next_page = $last_page;
+					}
+
+			?&gt;
+			&lt;span class=&quot;pagination-links&quot;&gt;
+				&lt;a class=&quot;first-page disabled&quot; title=&quot;&lt;?php _e( &#x27;Go to the first page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $first_page;?&gt;&quot;&gt;«&lt;/a&gt;
+				&lt;a class=&quot;prev-page disabled&quot; title=&quot;&lt;?php _e( &#x27;Go to the previous page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $prev_page;?&gt;&quot;&gt;‹&lt;/a&gt;
+				&lt;span class=&quot;paging-input&quot;&gt;&lt;input class=&quot;current-page&quot; title=&quot;&lt;?php _e( &#x27;Current page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; type=&quot;text&quot; name=&quot;paged&quot; value=&quot;&lt;?php echo $current_page;?&gt;&quot; size=&quot;2&quot;&gt; &lt;?php _e( &#x27;of&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;span class=&quot;total-pages&quot;&gt;&lt;?php echo $page_count;?&gt;&lt;/span&gt;&lt;/span&gt;
+				&lt;a class=&quot;next-page&quot; title=&quot;&lt;?php _e( &#x27;Go to the next page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $next_page;?&gt;&quot;&gt;›&lt;/a&gt;
+				&lt;a class=&quot;last-page&quot; title=&quot;&lt;?php _e( &#x27;Go to the last page&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $last_page;?&gt;&quot;&gt;»&lt;/a&gt;
+			&lt;/span&gt;
+			&lt;?php
+				}
+			?&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;table class=&quot;wp-list-table widefat fixed posts&quot;&gt;
+		&lt;thead&gt;
+			&lt;tr&gt;
+				&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;&quot; class=&quot;ninja-forms-select-all&quot; title=&quot;ninja-forms-bulk-action&quot;&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Form Title&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Shortcode&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Template Function&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Date Updated&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/thead&gt;
+		&lt;tbody&gt;
+	&lt;?php
+	if(is_array($all_forms) AND !empty($all_forms) AND $current_page &lt;= $page_count){
+		for ($i = $start; $i &lt; $end; $i++) {
+			$form_id = $all_forms[$i];
+			$data = Ninja_Forms()-&gt;form( $form_id )-&gt;get_all_settings();
+			$date_updated = $data[&#x27;date_updated&#x27;];
+			$date_updated = strtotime( $date_updated );
+			$date_updated = date_i18n( &#x27;F d, Y&#x27;, $date_updated );
+			$link = esc_url( remove_query_arg( array( &#x27;paged&#x27; ) ) );
+			$edit_link = esc_url( add_query_arg( array( &#x27;tab&#x27; =&gt; &#x27;builder&#x27;, &#x27;form_id&#x27; =&gt; $form_id ), $link ) );
+			$subs_link = admin_url( &#x27;edit.php?post_status=all&amp;post_type=nf_sub&amp;action=-1&amp;m=0&amp;form_id=&#x27; . $form_id . &#x27;&amp;paged=1&amp;mode=list&amp;action2=-1&#x27; );
+			$duplicate_link = esc_url( add_query_arg( array( &#x27;duplicate_form&#x27; =&gt; 1, &#x27;form_id&#x27; =&gt; $form_id ), $link ) );
+			$shortcode = apply_filters ( &quot;ninja_forms_form_list_shortcode&quot;, &quot;[ninja_forms id=&quot; .  $form_id . &quot;]&quot;, $form_id );
+			$template_function = apply_filters ( &quot;ninja_forms_form_list_template_function&quot;, &quot;&lt;pre&gt;if( function_exists( &#x27;ninja_forms_display_form&#x27; ) ){ ninja_forms_display_form( &quot; . &quot;$form_id&quot; . &quot; ); }&lt;/pre&gt;&quot;, $form_id );
+			?&gt;
+			&lt;tr id=&quot;ninja_forms_form_&lt;?php echo $form_id;?&gt;_tr&quot;&gt;
+				&lt;th scope=&quot;row&quot; class=&quot;check-column&quot;&gt;
+					&lt;input type=&quot;checkbox&quot; id=&quot;&quot; name=&quot;form_ids[]&quot; value=&quot;&lt;?php echo $form_id;?&gt;&quot; class=&quot;ninja-forms-bulk-action&quot;&gt;
+				&lt;/th&gt;
+				&lt;td class=&quot;post-title page-title column-title&quot;&gt;
+					&lt;strong&gt;
+						&lt;a href=&quot;&lt;?php echo $edit_link;?&gt;&quot;&gt;&lt;?php echo stripslashes( $data[&#x27;form_title&#x27;] );?&gt;&lt;/a&gt;
+					&lt;/strong&gt;
+					&lt;div class=&quot;row-actions&quot;&gt;
+						&lt;span class=&quot;edit&quot;&gt;&lt;a href=&quot;&lt;?php echo $edit_link;?&gt;&quot;&gt;&lt;?php _e( &#x27;Edit&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;trash&quot;&gt;&lt;a class=&quot;ninja-forms-delete-form&quot; title=&quot;&lt;?php _e( &#x27;Delete this form&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;#&quot; id=&quot;ninja_forms_delete_form_&lt;?php echo $form_id;?&gt;&quot;&gt;&lt;?php _e( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;duplicate&quot;&gt;&lt;a href=&quot;&lt;?php echo $duplicate_link;?&gt;&quot; title=&quot;&lt;?php _e( &#x27;Duplicate Form&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Duplicate&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt; | &lt;/span&gt;
+						&lt;span class=&quot;bleep&quot;&gt;&lt;?php echo ninja_forms_preview_link( $form_id ); ?&gt; | &lt;/span&gt;
+						&lt;span class=&quot;subs&quot;&gt;&lt;a href=&quot;&lt;?php echo $subs_link;?&gt;&quot; class=&quot;&quot; title=&quot;&lt;?php _e( &#x27;View Submissions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;View Submissions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;&lt;/span&gt;
+					&lt;/div&gt;
+				&lt;/td&gt;
+				&lt;td&gt;
+					&lt;?php echo $shortcode; ?&gt;
+				&lt;/td&gt;
+				&lt;td&gt;
+					&lt;?php echo $template_function; ?&gt;
+				&lt;/td&gt;
+				&lt;td&gt;
+					&lt;?php echo $date_updated;?&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+
+			&lt;?php
+		}
+	}else{
+
+
+	}	//End $all_forms if statement
+	?&gt;
+		&lt;/tbody&gt;
+		&lt;tfoot&gt;
+			&lt;tr&gt;
+				&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;&quot; class=&quot;ninja-forms-select-all&quot; title=&quot;ninja-forms-bulk-action&quot;&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Form Title&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Shortcode&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Template Function&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+				&lt;th&gt;&lt;?php _e( &#x27;Date Updated&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/tfoot&gt;
+	&lt;/table&gt;
+	&lt;?php
+}
+
+function ninja_forms_save_form_list( $data ){
+	if( isset( $data[&#x27;bulk_action&#x27;] ) AND $data[&#x27;bulk_action&#x27;] != &#x27;&#x27; ){
+		if( isset( $data[&#x27;form_ids&#x27;] ) AND is_array( $data[&#x27;form_ids&#x27;] ) AND !empty( $data[&#x27;form_ids&#x27;] ) ){
+			foreach( $data[&#x27;form_ids&#x27;] as $form_id ){
+				switch( $data[&#x27;bulk_action&#x27;] ){
+					case &#x27;delete&#x27;:
+						Ninja_Forms()-&gt;form( $form_id )-&gt;delete();
+						$ninja_forms_admin_update_message = count( $data[&#x27;form_ids&#x27;] ).&#x27; &#x27;;
+						if( count( $data[&#x27;form_ids&#x27;] ) &gt; 1 ){
+							$update_message = __( &#x27;Forms Deleted&#x27;, &#x27;ninja-forms&#x27; );
+						}else{
+							$update_message = __( &#x27;Form Deleted&#x27;, &#x27;ninja-forms&#x27; );
+						}
+						break;
+					case &#x27;export&#x27;:
+						ninja_forms_export_form( $form_id );
+						break;
+				}
+			}
+		}
+		$debug = ! empty ( $_REQUEST[&#x27;debug&#x27;] ) ? true : false;
+		Ninja_Forms()-&gt;forms()-&gt;update_cache( $debug );
+		return $update_message;
+	}
+}
+</pre></details></body></html>

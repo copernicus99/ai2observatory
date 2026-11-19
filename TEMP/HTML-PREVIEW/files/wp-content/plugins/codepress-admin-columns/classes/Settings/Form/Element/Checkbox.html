@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Form/Element/Checkbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Form/Element/Checkbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Form_Element_Checkbox extends AC_Settings_Form_Element {
+
+	/**
+	 * @var bool
+	 */
+	protected $vertical;
+
+	protected function get_type() {
+		return &#x27;checkbox&#x27;;
+	}
+
+	protected function get_classes() {
+		$classes = array(
+			$this-&gt;get_type() . &#x27;-labels&#x27;,
+		);
+
+		if ( $this-&gt;is_vertical() ) {
+			$classes[] = &#x27;vertical&#x27;;
+		}
+
+		return $classes;
+	}
+
+	public function render() {
+		$elements = $this-&gt;get_elements();
+
+		if ( ! $elements ) {
+			return false;
+		}
+
+		$template = &#x27;&lt;div class=&quot;%s-labels %s&quot;&gt;%s&lt;/div&gt;&#x27;;
+
+		return sprintf( $template, $this-&gt;get_type(), implode( &#x27; &#x27;, $this-&gt;get_classes() ), implode( &quot;\n&quot;, $elements ) );
+	}
+
+	private function get_elements() {
+		$options = $this-&gt;get_options();
+
+		if ( empty( $options ) ) {
+			return null;
+		}
+
+		$elements = array();
+
+		$value = $this-&gt;get_value();
+
+		foreach ( $options as $key =&gt; $label ) {
+			$input = new AC_Settings_Form_Element_Input( $this-&gt;get_name() );
+
+			$input-&gt;set_value( $key )
+			      -&gt;set_type( $this-&gt;get_type() )
+			      -&gt;set_id( $this-&gt;get_id() . &#x27;-&#x27; . $key );
+
+			if ( checked( $key, $value, false ) ) {
+				$input-&gt;set_attribute( &#x27;checked&#x27;, &#x27;checked&#x27; );
+			}
+
+			$attributes = $this-&gt;get_attributes();
+
+			$elements[] = sprintf( &#x27;&lt;label %s&gt;%s%s&lt;/label&gt;&#x27;, $this-&gt;get_attributes_as_string( $attributes ), $input-&gt;render(), esc_html( $label ) );
+		}
+
+		if ( $description = $this-&gt;render_description() ) {
+			$elements[] = $description;
+		}
+
+		return $elements;
+	}
+
+	public function set_vertical( $vertical ) {
+		$this-&gt;vertical = (bool) $vertical;
+	}
+
+	public function is_vertical() {
+		if ( empty( $this-&gt;vertical ) ) {
+			return false;
+		}
+
+		return $this-&gt;vertical;
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,205 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/Settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/Settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_Settings extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $menu_slug = &#x27;nf-settings&#x27;;
+
+    public $priority = 11;
+
+    protected $_prefix = &#x27;ninja_forms&#x27;;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if( isset( $_POST[ &#x27;update_ninja_forms_settings&#x27; ] ) ) {
+            add_action( &#x27;admin_init&#x27;, array( $this, &#x27;update_settings&#x27; ) );
+        }
+
+        add_action( &#x27;admin_body_class&#x27;, array( $this, &#x27;body_class&#x27; ) );
+
+        // Catch Contact Form 7 reCAPTCHA conflict.
+        add_filter( &#x27;nf_admin_notices&#x27;, array( $this, &#x27;ninja_forms_cf7_notice&#x27; ) );
+    }
+
+    public function body_class( $classes )
+    {
+        // Add class for the builder.
+        if( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == $this-&gt;menu_slug ) {
+            $classes = &quot;$classes ninja-forms-settings&quot;;
+        }
+
+        return $classes;
+    }
+    
+    /**
+     * Function to notify users of CF7 conflict
+     * 
+     * Since 3.0
+     *
+     * @param (array) $notices
+     * @return (array) $notices
+     */
+    public function ninja_forms_cf7_notice( $notices )
+    {
+        // If we don&#x27;t have recaptcha keys, bail.
+        $recaptcha_site_key = Ninja_Forms()-&gt;get_settings();
+        if ( $recaptcha_site_key[ &#x27;recaptcha_site_key&#x27; ] === &#x27;&#x27; ) {
+            return $notices;
+        }
+        // If we can detect Contact Form 7...
+        include_once( ABSPATH . &#x27;wp-admin/includes/plugin.php&#x27; );
+        if ( is_plugin_active( &#x27;contact-form-7/wp-contact-form-7.php&#x27; ) ) {
+            $notices[ &#x27;cf7&#x27; ] = array(
+                &#x27;title&#x27; =&gt; __( &#x27;Contact Form 7 is currently activated.&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;msg&#x27; =&gt; sprintf( __( &#x27;Please be aware that there is an issue with Contact Form 7 that breaks reCAPTCHA in other plugins.%sIf you need to use reCAPTCHA on any of your Ninja Forms, you will need to disable Contact Form 7.&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;br /&gt;&#x27; ),
+                &#x27;int&#x27; =&gt; 0
+            );
+        }
+        return $notices;
+    }
+
+    public function get_page_title()
+    {
+        return __( &#x27;Settings&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    public function get_capability()
+    {
+        return apply_filters( &#x27;ninja_forms_admin_settings_capabilities&#x27;, $this-&gt;capability );
+    }
+
+    public function display()
+    {
+        $tabs = apply_filters( &#x27;ninja_forms_settings_tabs&#x27;, array(
+                &#x27;settings&#x27; =&gt; __( &#x27;Settings&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;licenses&#x27; =&gt; __( &#x27;Licenses&#x27;, &#x27;ninja-forms&#x27; )
+            )
+        );
+
+        $tab_keys = array_keys( $tabs );
+        $active_tab = ( isset( $_GET[ &#x27;tab&#x27; ] ) ) ? $_GET[ &#x27;tab&#x27; ] : reset( $tab_keys );
+
+        wp_enqueue_style( &#x27;nf-admin-settings&#x27;, Ninja_Forms::$url . &#x27;assets/css/admin-settings.css&#x27; );
+
+        $groups = Ninja_Forms()-&gt;config( &#x27;PluginSettingsGroups&#x27; );
+
+        $grouped_settings = $this-&gt;get_settings();
+
+        $save_button_text = __( &#x27;Save Settings&#x27;, &#x27;ninja-forms&#x27; );
+
+        $setting_defaults = Ninja_Forms()-&gt;get_settings();
+
+        $errors = array();
+
+        foreach( $grouped_settings as $group =&gt; $settings ){
+
+            foreach( $settings as $id =&gt; $setting ){
+
+                $value = ( isset( $setting_defaults[ $id ] ) ) ? $setting_defaults[$id] : &#x27;&#x27;;
+
+                $grouped_settings[$group][$id][&#x27;id&#x27;] = $this-&gt;prefix( $grouped_settings[$group][$id][&#x27;id&#x27;] );
+                $grouped_settings[$group][$id][&#x27;value&#x27;] = $value;
+
+                $grouped_settings[$group][$id] = apply_filters( &#x27;ninja_forms_check_setting_&#x27; . $id, $grouped_settings[$group][$id] );
+
+                if( ! isset( $grouped_settings[$group][$id][ &#x27;errors&#x27; ] ) || ! $grouped_settings[$group][$id][ &#x27;errors&#x27; ] ) continue;
+
+                if( ! is_array( $grouped_settings[$group][$id][ &#x27;errors&#x27; ] ) ) $grouped_settings[$group][$id][ &#x27;errors&#x27; ] = array( $grouped_settings[$group][$id][ &#x27;errors&#x27; ] );
+
+                foreach( $grouped_settings[$group][$id][ &#x27;errors&#x27; ] as $old_key =&gt; $error ){
+                    $new_key = $grouped_settings[$group][$id][ &#x27;id&#x27; ] . &quot;[&quot; . $old_key . &quot;]&quot;;
+                    $errors[ $new_key ] = $error;
+                    $grouped_settings[$group][$id][ &#x27;errors&#x27;][ $new_key ] = $error;
+                    unset( $grouped_settings[$group][$id][ &#x27;errors&#x27; ][ $old_key ] );
+                }
+            }
+        }
+
+        $grouped_settings[ &#x27;general&#x27; ][ &#x27;version&#x27; ][ &#x27;value&#x27; ] = Ninja_Forms::VERSION;
+
+        $saved_fields = Ninja_Forms()-&gt;form()-&gt;get_fields( array( &#x27;saved&#x27; =&gt; 1 ) );
+
+        foreach( $saved_fields as $saved_field ){
+
+            $saved_field_id = $saved_field-&gt;get_id();
+
+            $grouped_settings[ &#x27;saved_fields&#x27;][] = array(
+                &#x27;id&#x27; =&gt; &#x27;&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;html&#x27;,
+                &#x27;html&#x27; =&gt; &#x27;&lt;a class=&quot;js-delete-saved-field button button-secondary&quot; data-id=&quot;&#x27; . $saved_field_id . &#x27;&quot;&gt;&#x27; . __( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+                &#x27;label&#x27; =&gt; $saved_field-&gt;get_setting( &#x27;label&#x27; ),
+
+            );
+        }
+
+	    $forms = Ninja_Forms()-&gt;form()-&gt;get_forms();
+	    $form_options = array();
+	    foreach( $forms as $form ){
+		    $form_options[] = array( &#x27;id&#x27; =&gt; $form-&gt;get_id(),
+			    &#x27;title&#x27; =&gt; $form-&gt;get_setting( &#x27;title&#x27; ) );
+	    }
+	    $form_options = apply_filters( &#x27;ninja_forms_submission_filter_form_options&#x27;, $form_options );
+	    asort($form_options);
+
+	    wp_enqueue_script( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jBox.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+
+	    wp_enqueue_style( &#x27;nf-combobox&#x27;, Ninja_Forms::$url . &#x27;assets/css/combobox.css&#x27; );
+	    wp_enqueue_style( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/css/jBox.css&#x27; );
+        wp_register_script( &#x27;ninja_forms_admin_menu_settings&#x27;, Ninja_Forms::$url . &#x27;assets/js/admin-settings.js&#x27;, array( &#x27;jquery&#x27; ), FALSE, TRUE );
+        wp_localize_script( &#x27;ninja_forms_admin_menu_settings&#x27;, &#x27;nf_settings&#x27;, array(
+            &#x27;ajax_url&#x27; =&gt; admin_url( &#x27;admin-ajax.php&#x27; ),
+            &#x27;forms&#x27;    =&gt; $form_options,
+            &#x27;nf_nuke_title&#x27; =&gt; __( &#x27;Remove ALL Ninja Forms data upon uninstall?&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;nonce&#x27;    =&gt; wp_create_nonce( &quot;ninja_forms_settings_nonce&quot; ),
+            &#x27;i18n&#x27;     =&gt; array(
+                &#x27;rollbackConfirm&#x27; =&gt; __( &#x27;Are you sure you want to rollback?&#x27;, &#x27;ninja-forms&#x27; )
+            )
+        ));
+
+
+        wp_enqueue_script( &#x27;ninja_forms_admin_menu_settings&#x27; );
+
+        Ninja_Forms::template( &#x27;admin-menu-settings.html.php&#x27;, compact( &#x27;tabs&#x27;, &#x27;active_tab&#x27;, &#x27;groups&#x27;, &#x27;grouped_settings&#x27;, &#x27;save_button_text&#x27;, &#x27;errors&#x27; ) );
+
+    }
+
+    public function update_settings()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_settings_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( ! isset( $_POST[ $this-&gt;_prefix ] ) ) return;
+
+        $settings = $_POST[ &#x27;ninja_forms&#x27; ];
+
+        if( isset( $settings[ &#x27;currency&#x27; ] ) ){
+            $currency = sanitize_text_field( $settings[ &#x27;currency&#x27; ] );
+            $currency_symbols = Ninja_Forms::config( &#x27;CurrencySymbol&#x27; );
+            $settings[ &#x27;currency_symbol&#x27; ] = ( isset( $currency_symbols[ $currency ] ) ) ? $currency_symbols[ $currency ] : &#x27;&#x27;;
+        }
+
+        foreach( $settings as $id =&gt; $value ){
+            $value = sanitize_text_field( $value );
+            $value = apply_filters( &#x27;ninja_forms_update_setting_&#x27; . $id, $value );
+            Ninja_Forms()-&gt;update_setting( $id, $value );
+            do_action( &#x27;ninja_forms_save_setting_&#x27; . $id, $value );
+        }
+    }
+
+    private function get_settings()
+    {
+        return apply_filters( &#x27;ninja_forms_plugin_settings&#x27;, array(
+            &#x27;general&#x27; =&gt; Ninja_Forms()-&gt;config( &#x27;PluginSettingsGeneral&#x27; ),
+            &#x27;recaptcha&#x27; =&gt; Ninja_Forms()-&gt;config( &#x27;PluginSettingsReCaptcha&#x27; ),
+            &#x27;advanced&#x27; =&gt; Ninja_Forms()-&gt;config( &#x27;PluginSettingsAdvanced&#x27; ),
+        ));
+    }
+
+    private function prefix( $value ){
+        return &quot;{$this-&gt;_prefix}[$value]&quot;;
+    }
+
+} // End Class NF_Admin_Settings
+</pre></details></body></html>

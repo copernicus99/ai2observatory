@@ -1,0 +1,184 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/ActionEmailSettings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/ActionEmailSettings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_action_email_settings&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Primary Settings
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+     * To
+     */
+
+    &#x27;to&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;to&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;To&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; __( &#x27;Email address or search for a field&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; &#x27;{wp:admin_email}&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Reply To
+     */
+
+    &#x27;reply_to&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;reply_to&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Reply To&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Subject
+     */
+
+    &#x27;email_subject&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;email_subject&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Subject&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; __( &#x27;Subject Text or seach for a field&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; __( &#x27;Ninja Forms Submission&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Email Message
+     */
+
+    &#x27;email_message&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;email_message&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;rte&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Email Message&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;{fields_table}&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; array(
+            &#x27;include&#x27; =&gt; array(
+                &#x27;calcs&#x27;,
+            ),
+        ),
+        &#x27;deps&#x27; =&gt; array(
+            &#x27;email_format&#x27; =&gt; &#x27;html&#x27;
+        )
+    ),
+
+    &#x27;email_message_plain&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;email_message_plain&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textarea&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Email Message&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+        &#x27;deps&#x27; =&gt; array(
+            &#x27;email_format&#x27; =&gt; &#x27;plain&#x27;
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Advanced Settings
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+     * From Name
+     */
+
+    &#x27;from_name&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;from_name&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;From Name&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; __( &#x27;Name or fields&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * From Address
+     */
+
+    &#x27;from_address&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;from_address&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;From Address&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; __( &#x27;One email address or field&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Format
+     */
+
+    &#x27;email_format&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;email_format&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+            &#x27;options&#x27; =&gt; array(
+                array( &#x27;label&#x27; =&gt; __( &#x27;HTML&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;html&#x27; ),
+                array( &#x27;label&#x27; =&gt; __( &#x27;Plain Text&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;plain&#x27; )
+            ),
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Format&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; &#x27;html&#x27;,
+        
+    ),
+
+    /*
+     * Cc
+     */
+
+    &#x27;cc&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;cc&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Cc&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Bcc
+     */
+
+    &#x27;bcc&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;bcc&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Bcc&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Attach CSV
+     */
+
+    &#x27;attach_csv&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;attach_csv&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Attach CSV&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+));
+</pre></details></body></html>

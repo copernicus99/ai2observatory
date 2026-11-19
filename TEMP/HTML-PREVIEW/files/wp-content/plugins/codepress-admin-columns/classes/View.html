@@ -1,0 +1,123 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/View.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/View.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_View
+	implements AC_ViewInterface {
+
+	/**
+	 * @var array
+	 */
+	private $data = array();
+
+	/**
+	 * @var string
+	 */
+	private $template;
+
+	public function __construct( array $data = array() ) {
+		$this-&gt;set_data( $data );
+	}
+
+	public function get( $key ) {
+		if ( ! isset( $this-&gt;data[ $key ] ) ) {
+			return null;
+		}
+
+		return $this-&gt;data[ $key ];
+	}
+
+	public function __get( $key ) {
+		return $this-&gt;get( $key );
+	}
+
+	public function __set( $key, $value ) {
+		return $this-&gt;set( $key, $value );
+	}
+
+	/**
+	 * @param $key
+	 * @param $value
+	 *
+	 * @return $this
+	 */
+	public function set( $key, $value ) {
+		$this-&gt;data[ $key ] = $value;
+
+		return $this;
+	}
+
+	public function get_data() {
+		return $this-&gt;data;
+	}
+
+	public function set_data( array $data ) {
+		foreach ( $data as $key =&gt; $value ) {
+			$this-&gt;set( $key, $value );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Will try to resolve the current template to a file
+	 *
+	 * @return false|string
+	 */
+	private function resolve_template() {
+
+		/**
+		 * Returns the available template paths for column settings
+		 *
+		 * @param array $paths Template paths
+		 * @param string $template Current template path
+		 */
+		$paths = apply_filters( &#x27;ac/view/templates&#x27;, array( AC()-&gt;get_plugin_dir() . &#x27;templates&#x27; ), $this-&gt;template );
+
+		foreach ( $paths as $path ) {
+			$file = $path . &#x27;/&#x27; . $this-&gt;template . &#x27;.php&#x27;;
+
+			if ( is_readable( $file ) ) {
+				include $file;
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function render() {
+		ob_start();
+
+		$this-&gt;resolve_template();
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_template() {
+		return $this-&gt;template;
+	}
+
+	/**
+	 * @param string $template
+	 *
+	 * @return $this
+	 */
+	public function set_template( $template ) {
+		$this-&gt;template = $template;
+
+		return $this;
+	}
+
+	public function __toString() {
+		return $this-&gt;render();
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/form/open-form-tag.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/form/open-form-tag.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;form id=&quot;ninja_forms_form_&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot; name=&quot;&quot; action=&quot;&quot; class=&quot;ninja-forms-form&quot;&gt;
+
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+function ninja_forms_register_display_open_form_tag() {
+	add_action( &#x27;ninja_forms_display_open_form_tag&#x27;, &#x27;ninja_forms_display_open_form_tag&#x27; );
+}
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_display_open_form_tag&#x27; );
+
+function ninja_forms_display_open_form_tag( $form_id ) {
+	$ajax = Ninja_Forms()-&gt;form( $form_id )-&gt;get_setting( &#x27;ajax&#x27; );
+	$ajax = ! empty ( $ajax ) ? $ajax : 0;
+
+	if ( $ajax == 1 ) {
+		if( is_ssl() ) {
+			$url = admin_url( &#x27;admin-ajax.php&#x27;, &#x27;https&#x27; );
+		}
+		else {
+			$url = admin_url( &#x27;admin-ajax.php&#x27;, &#x27;http&#x27; );
+		}
+		$url = apply_filters( &#x27;ninja_forms_ajax_url&#x27;, $url, $form_id );
+		$url = esc_url_raw( add_query_arg( &#x27;action&#x27;, &#x27;ninja_forms_ajax_submit&#x27;, $url ) );
+	} else {
+        if ( is_ssl() ) {
+            $url = &#x27;https:/&#x27; . htmlspecialchars( $_SERVER[&quot;REQUEST_URI&quot;] );
+        } else {
+            $url = &#x27;http:/&#x27; . htmlspecialchars( $_SERVER[&quot;REQUEST_URI&quot;] );
+        }
+        $url = &#x27;&#x27;;
+	}
+
+	$display = 1;
+
+	$display = apply_filters( &#x27;ninja_forms_display_form_visibility&#x27;, $display, $form_id );
+
+	if ( $display != 1 )
+		$hide_class = &quot; ninja-forms-no-display&quot;;
+	else
+		$hide_class = &quot;&quot;;
+
+	$form_class = &#x27;&#x27;;
+
+	$form_class = apply_filters( &#x27;ninja_forms_form_class&#x27;, $form_class, $form_id );
+
+	if ( ! empty( $form_class ) )
+		$form_class = &#x27; &#x27; . $form_class;
+
+	?&gt;
+	&lt;form id=&quot;ninja_forms_form_&lt;?php echo $form_id;?&gt;&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot; name=&quot;&quot; action=&quot;&lt;?php echo $url;?&gt;&quot; class=&quot;ninja-forms-form&lt;?php echo $form_class;?&gt;&lt;?php echo $hide_class;?&gt;&quot;&gt;
+
+	&lt;?php
+}
+</pre></details></body></html>

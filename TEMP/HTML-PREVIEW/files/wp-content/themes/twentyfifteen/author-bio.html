@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentyfifteen/author-bio.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentyfifteen/author-bio.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+&lt;div class=&quot;author-info&quot;&gt;
+	&lt;h2 class=&quot;author-heading&quot;&gt;&lt;/h2&gt;
+	&lt;div class=&quot;author-avatar&quot;&gt;
+		
+	&lt;/div&gt;&lt;!-- .author-avatar --&gt;
+
+	&lt;div class=&quot;author-description&quot;&gt;
+		&lt;h3 class=&quot;author-title&quot;&gt;&lt;/h3&gt;
+
+		&lt;p class=&quot;author-bio&quot;&gt;
+			
+			&lt;a class=&quot;author-link&quot; href=&quot;&quot; rel=&quot;author&quot;&gt;
+				
+			&lt;/a&gt;
+		&lt;/p&gt;&lt;!-- .author-bio --&gt;
+
+	&lt;/div&gt;&lt;!-- .author-description --&gt;
+&lt;/div&gt;&lt;!-- .author-info --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * The template for displaying Author bios
+ *
+ * @package WordPress
+ * @subpackage Twenty_Fifteen
+ * @since Twenty Fifteen 1.0
+ */
+?&gt;
+
+&lt;div class=&quot;author-info&quot;&gt;
+	&lt;h2 class=&quot;author-heading&quot;&gt;&lt;?php _e( &#x27;Published by&#x27;, &#x27;twentyfifteen&#x27; ); ?&gt;&lt;/h2&gt;
+	&lt;div class=&quot;author-avatar&quot;&gt;
+		&lt;?php
+		/**
+		 * Filter the author bio avatar size.
+		 *
+		 * @since Twenty Fifteen 1.0
+		 *
+		 * @param int $size The avatar height and width size in pixels.
+		 */
+		$author_bio_avatar_size = apply_filters( &#x27;twentyfifteen_author_bio_avatar_size&#x27;, 56 );
+
+		echo get_avatar( get_the_author_meta( &#x27;user_email&#x27; ), $author_bio_avatar_size );
+		?&gt;
+	&lt;/div&gt;&lt;!-- .author-avatar --&gt;
+
+	&lt;div class=&quot;author-description&quot;&gt;
+		&lt;h3 class=&quot;author-title&quot;&gt;&lt;?php echo get_the_author(); ?&gt;&lt;/h3&gt;
+
+		&lt;p class=&quot;author-bio&quot;&gt;
+			&lt;?php the_author_meta( &#x27;description&#x27; ); ?&gt;
+			&lt;a class=&quot;author-link&quot; href=&quot;&lt;?php echo esc_url( get_author_posts_url( get_the_author_meta( &#x27;ID&#x27; ) ) ); ?&gt;&quot; rel=&quot;author&quot;&gt;
+				&lt;?php printf( __( &#x27;View all posts by %s&#x27;, &#x27;twentyfifteen&#x27; ), get_the_author() ); ?&gt;
+			&lt;/a&gt;
+		&lt;/p&gt;&lt;!-- .author-bio --&gt;
+
+	&lt;/div&gt;&lt;!-- .author-description --&gt;
+&lt;/div&gt;&lt;!-- .author-info --&gt;
+</pre></details></body></html>

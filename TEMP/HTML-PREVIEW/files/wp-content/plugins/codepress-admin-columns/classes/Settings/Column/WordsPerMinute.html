@@ -1,0 +1,125 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/WordsPerMinute.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/WordsPerMinute.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_WordsPerMinute extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var int
+	 */
+	private $words_per_minute;
+
+	protected function define_options() {
+		return array(
+			&#x27;words_per_minute&#x27; =&gt; 200,
+		);
+	}
+
+	public function create_view() {
+		$setting = $this-&gt;create_element( &#x27;number&#x27; );
+		$setting
+			-&gt;set_attributes( array(
+				&#x27;min&#x27;         =&gt; 0,
+				&#x27;step&#x27;        =&gt; 1,
+				&#x27;placeholder&#x27; =&gt; $this-&gt;get_words_per_minute(),
+			) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Words per minute&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27; =&gt; __( &#x27;Estimated reading time in words per minute.&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27; &#x27; . sprintf( __( &#x27;By default: %s&#x27;, &#x27;codepress-admin-columns&#x27; ), $this-&gt;get_words_per_minute() ),
+			&#x27;setting&#x27; =&gt; $setting,
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_words_per_minute() {
+		return absint( $this-&gt;words_per_minute );
+	}
+
+	/**
+	 * @param int $words_per_minute
+	 *
+	 * @return $this
+	 */
+	public function set_words_per_minute( $words_per_minute ) {
+		$this-&gt;words_per_minute = $words_per_minute;
+
+		return $this;
+	}
+
+	/**
+	 * Create a human readable time based on seconds
+	 *
+	 * @param int $seconds
+	 *
+	 * @since 3.0
+	 * @return string
+	 */
+	protected function make_human_readable( $seconds ) {
+		$time = false;
+
+		if ( is_numeric( $seconds ) ) {
+			$minutes = floor( $seconds / 60 );
+			$seconds = floor( $seconds % 60 );
+
+			$time = $minutes;
+
+			if ( $minutes &amp;&amp; $seconds &lt; 10 ) {
+				$seconds = &#x27;0&#x27; . $seconds;
+			}
+
+			if ( &#x27;00&#x27; != $seconds ) {
+				$time .= &#x27;:&#x27; . $seconds;
+			}
+
+			if ( $minutes &lt; 1 ) {
+				$time = $seconds . &#x27; &#x27; . _n( &#x27;second&#x27;, &#x27;seconds&#x27;, $seconds, &#x27;codepress-admin-columns&#x27; );
+			} else {
+				$time .= &#x27; &#x27; . _n( &#x27;minute&#x27;, &#x27;minutes&#x27;, $minutes, &#x27;codepress-admin-columns&#x27; );
+			}
+		}
+
+		return $time;
+	}
+
+	/**
+	 * Return the seconds required to read this string based on average words per minute
+	 *
+	 * @param string $content
+	 *
+	 * @return int
+	 */
+	protected function get_estimated_reading_time_in_seconds( $string ) {
+		if ( $this-&gt;get_words_per_minute() &lt;= 0 ) {
+			return false;
+		}
+
+		$word_count = ac_helper()-&gt;string-&gt;word_count( $string );
+
+		if ( ! $word_count ) {
+			return false;
+		}
+
+		$seconds = (int) floor( ( $word_count / $this-&gt;get_words_per_minute() ) * 60 );
+
+		// No one can read a word in 0 seconds ;)
+		if ( $seconds &lt; 1 ) {
+			$seconds = 1;
+		}
+
+		return $seconds;
+	}
+
+	public function format( $value, $original_value ) {
+		return $this-&gt;make_human_readable( $this-&gt;get_estimated_reading_time_in_seconds( $value ) );
+	}
+
+}
+</pre></details></body></html>

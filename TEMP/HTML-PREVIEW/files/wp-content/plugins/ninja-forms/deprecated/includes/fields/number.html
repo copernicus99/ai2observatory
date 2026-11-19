@@ -1,0 +1,149 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/number.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/number.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;default_value_&quot; name=&quot;&quot; class=&quot;widefat ninja-forms-_text-default-value&quot;&gt;
+				&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_id&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;post_id&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+
+		&lt;label for=&quot;&quot; id=&quot;default_value_label_&quot; style=&quot;&quot;&gt;
+			&lt;span class=&quot;field-option&quot;&gt;
+			&lt;br /&gt;
+			&lt;input type=&quot;number&quot; class=&quot;widefat code&quot; name=&quot;ninja_forms_field_[default_value]&quot; id=&quot;ninja_forms_field__default_value&quot; value=&quot;&quot; /&gt;
+			&lt;/span&gt;
+		&lt;/label&gt;
+
+	&lt;/div&gt;
+	
+		&lt;input type=&quot;number&quot; name=&quot;ninja_forms_field_&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; rel=&quot;&quot; value=&quot;&quot;/&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_number() {
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Number&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_function&#x27; =&gt; &#x27;ninja_forms_field_number_edit&#x27;,
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;medium-text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;number_min&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Minimum Value&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;medium-text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;number_max&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Maximum Value&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;medium-text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;number_step&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Step (amount to increment by)&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_number_display&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;textarea&#x27;,
+			),
+		),
+	);
+
+	ninja_forms_register_field( &#x27;_number&#x27;, $args );
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_field_number&#x27; );
+
+function ninja_forms_field_number_edit( $field_id, $data ) {
+	
+	$plugin_settings = nf_get_settings();
+
+	$custom = &#x27;&#x27;;
+	// Default Value
+	if( isset( $data[&#x27;default_value&#x27;] ) ) {
+		$default_value = $data[&#x27;default_value&#x27;];
+	} else {
+		$default_value = &#x27;&#x27;;
+	}
+	if( $default_value == &#x27;none&#x27; ) {
+		$default_value = &#x27;&#x27;;
+	}
+
+	?&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;?php _e( &#x27;Default Value&#x27; , &#x27;ninja-forms&#x27; ); ?&gt;
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;default_value_&lt;?php echo $field_id;?&gt;&quot; name=&quot;&quot; class=&quot;widefat ninja-forms-_text-default-value&quot;&gt;
+				&lt;option value=&quot;&quot; &lt;?php if( $default_value == &#x27;&#x27; ) { echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;; } ?&gt;&gt;&lt;?php _e( &#x27;None&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_id&quot; &lt;?php if( $default_value == &#x27;_user_id&#x27;) { echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;; } ?&gt;&gt;&lt;?php _e( &#x27;User ID (If logged in)&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;post_id&quot; &lt;?php if( $default_value == &#x27;post_id&#x27;) { echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;; } ?&gt;&gt;&lt;?php _e( &#x27;Post / Page ID (If available)&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &lt;?php if( $custom != &#x27;no&#x27;) { echo &#x27;selected&#x27;; } ?&gt;&gt;&lt;?php _e( &#x27;Custom&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+
+		&lt;label for=&quot;&quot; id=&quot;default_value_label_&lt;?php echo $field_id;?&gt;&quot; style=&quot;&lt;?php if($custom == &#x27;no&#x27;) { echo &#x27;display:none;&#x27;; } ?&gt;&quot;&gt;
+			&lt;span class=&quot;field-option&quot;&gt;
+			&lt;?php _e( &#x27;Default Value&#x27; , &#x27;ninja-forms&#x27; ); ?&gt;&lt;br /&gt;
+			&lt;input type=&quot;number&quot; class=&quot;widefat code&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[default_value]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_default_value&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; /&gt;
+			&lt;/span&gt;
+		&lt;/label&gt;
+
+	&lt;/div&gt;
+	&lt;?php
+}
+
+function ninja_forms_field_number_display( $field_id, $data, $form_id = &#x27;&#x27; ) {
+	if ( isset( $data[&#x27;default_value&#x27;] ) ) {
+		$default_value = $data[&#x27;default_value&#x27;];
+	} elseif( isset( $data[&#x27;number_min&#x27;] ) ) {
+		$default_value = $data[&#x27;number_min&#x27;];
+	}
+
+	if ( isset( $data[&#x27;number_min&#x27;] ) ) {
+		$min = &#x27; min=&quot;&#x27; . esc_attr( $data[&#x27;number_min&#x27;] ) . &#x27;&quot;&#x27;;
+	} else {
+		$min = &#x27;&#x27;;
+	}
+
+	if ( isset( $data[&#x27;number_max&#x27;] ) ) {
+		$max = &#x27; max=&quot;&#x27; . esc_attr( $data[&#x27;number_max&#x27;] ) . &#x27;&quot;&#x27;;
+	} else {
+		$max = &#x27;&#x27;;
+	}
+
+	if ( isset( $data[&#x27;number_step&#x27;] ) ) {
+		$step = &#x27; step=&quot;&#x27; . esc_attr( $data[&#x27;number_step&#x27;] ) . &#x27;&quot;&#x27;;
+	} else {
+		$step = &#x27;&#x27;;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+
+?&gt;
+		&lt;input type=&quot;number&quot;&lt;?php echo $min . $max . $step; ?&gt; name=&quot;ninja_forms_field_&lt;?php echo esc_attr( $field_id ); ?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo esc_attr( $field_id ); ?&gt;&quot; class=&quot;&lt;?php echo esc_attr( $field_class ); ?&gt;&quot; rel=&quot;&lt;?php echo esc_attr( $field_id ); ?&gt;&quot; value=&quot;&lt;?php echo esc_attr( $default_value ); ?&gt;&quot;/&gt;
+&lt;?php
+}
+</pre></details></body></html>

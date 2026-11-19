@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/templates/admin-menu-uploads.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/templates/admin-menu-uploads.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div class=&quot;wrap&quot;&gt;
+
+	&lt;h1&gt;&lt;/h1&gt;
+
+	&lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+		
+			
+				&lt;span class=&quot;nav-tab nav-tab-active&quot;&gt;&lt;/span&gt;
+			
+				&lt;a href=&quot;&quot; target=&quot;&quot; class=&quot;nav-tab &quot;&gt;&lt;/a&gt;
+			
+		
+	&lt;/h2&gt;
+
+	&lt;div id=&quot;poststuff&quot;&gt;
+		
+	&lt;/div&gt;
+
+	&lt;script&gt;
+		jQuery( document ).ready( function( $ ) {
+			// close postboxes that should be closed
+			jQuery( &#x27;.if-js-closed&#x27; ).removeClass( &#x27;if-js-closed&#x27; ).addClass( &#x27;closed&#x27; );
+		} );
+	&lt;/script&gt;
+
+&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div class=&quot;wrap&quot;&gt;
+
+	&lt;h1&gt;&lt;?php _e( &#x27;File Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/h1&gt;
+
+	&lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+		&lt;?php foreach ( $tabs as $tab =&gt; $name ): ?&gt;
+			&lt;?php if ( $tab === $active_tab ): ?&gt;
+				&lt;span class=&quot;nav-tab nav-tab-active&quot;&gt;&lt;?php echo $name ?&gt;&lt;/span&gt;
+			&lt;?php else: ?&gt;
+				&lt;a href=&quot;&lt;?php echo add_query_arg( &#x27;tab&#x27;, $tab ); ?&gt;&quot; target=&quot;&quot; class=&quot;nav-tab &quot;&gt;&lt;?php echo $name ?&gt;&lt;/a&gt;
+			&lt;?php endif; ?&gt;
+		&lt;?php endforeach; ?&gt;
+	&lt;/h2&gt;
+
+	&lt;div id=&quot;poststuff&quot;&gt;
+		&lt;?php NF_File_Uploads()-&gt;template( &#x27;admin-menu-uploads-&#x27; . $active_tab . &#x27;.html&#x27;, compact( &#x27;save_button_text&#x27;, &#x27;table&#x27; ) ); ?&gt;
+	&lt;/div&gt;
+
+	&lt;script&gt;
+		jQuery( document ).ready( function( $ ) {
+			// close postboxes that should be closed
+			jQuery( &#x27;.if-js-closed&#x27; ).removeClass( &#x27;if-js-closed&#x27; ).addClass( &#x27;closed&#x27; );
+		} );
+	&lt;/script&gt;
+
+&lt;/div&gt;</pre></details></body></html>

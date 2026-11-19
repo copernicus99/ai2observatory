@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/admin/form-settings-metabox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/admin/form-settings-metabox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+function ninja_forms_register_mp_settings_metabox(){
+
+	$effects = array(
+		array( &#x27;name&#x27; =&gt; &#x27;Blind&#x27;, &#x27;value&#x27; =&gt; &#x27;blind&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Fade&#x27;, &#x27;value&#x27; =&gt; &#x27;fade&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Fold&#x27;, &#x27;value&#x27; =&gt; &#x27;fold&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Slide&#x27;, &#x27;value&#x27; =&gt; &#x27;slide&#x27; ),
+	);
+
+	$effects = apply_filters( &#x27;ninja_forms_mp_ajax_effects_array&#x27;, $effects );
+
+	$direction = array(
+		array( &#x27;name&#x27; =&gt; &#x27;Left to Right&#x27;, &#x27;value&#x27; =&gt; &#x27;ltr&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Right to Left&#x27;, &#x27;value&#x27; =&gt; &#x27;rtl&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Top to Bottom&#x27;, &#x27;value&#x27; =&gt; &#x27;ttb&#x27; ),
+		array( &#x27;name&#x27; =&gt; &#x27;Bottom to Top&#x27;, &#x27;value&#x27; =&gt; &#x27;btt&#x27; ),
+	);
+
+	$direction = apply_filters( &#x27;ninja_forms_mp_ajax_directions_array&#x27;, $direction );
+
+	if ( isset ( $_REQUEST[&#x27;form_id&#x27;] ) ) {
+		$form = ninja_forms_get_form_by_id( $_REQUEST[&#x27;form_id&#x27;] );
+		if ( isset ( $form[&#x27;ajax&#x27;] ) ) {
+			$ajax = $form[&#x27;ajax&#x27;];
+		} else {
+			$ajax = 0;
+		}
+	} else {
+		$ajax = 0;
+	}
+
+	$args = array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;form_settings&#x27;,
+		&#x27;slug&#x27; =&gt; &#x27;multi_part&#x27;,
+		&#x27;title&#x27; =&gt; __( &#x27;Multi-Part settings&#x27;, &#x27;ninja-forms-mp&#x27; ),
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+		&#x27;settings&#x27; =&gt; array(
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_progress_bar&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Display Progress Bar?&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help&#x27; =&gt; &#x27;&#x27;,
+				&#x27;default&#x27; =&gt; 0,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_breadcrumb&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Display Breadcrumb Navigation?&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help&#x27; =&gt; &#x27;&#x27;,
+				&#x27;default&#x27; =&gt; 0,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_display_titles&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Display Page Titles?&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help&#x27; =&gt; &#x27;&#x27;,
+				&#x27;default&#x27; =&gt; 0,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_ajax_effect&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;select&#x27;,
+				&#x27;options&#x27; =&gt; $effects,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Page Transition Effect&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help&#x27; =&gt; &#x27;&#x27;,
+				&#x27;default_value&#x27; =&gt; &#x27;slide&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_ajax_direction&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;select&#x27;,
+				&#x27;options&#x27; =&gt; $direction,
+				&#x27;label&#x27; =&gt; __( &#x27;Page Transition Direction&#x27;, &#x27;ninja-forms-mp&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_confirm&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Show Review Page&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;This page will allow your users to review and modify their fields on one page before they submit the form.&#x27;, &#x27;ninja-forms-mp&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;mp_confirm_msg&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;rte&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Review Page Message&#x27;, &#x27;ninja-forms-mp&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;This message will be shown to users at the top of the review page.&#x27;, &#x27;ninja-forms-mp&#x27; ),
+			),
+		),
+	);
+	
+	if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+		ninja_forms_register_tab_metabox($args);
+	}
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_mp_settings_metabox&#x27;, 11 );</pre></details></body></html>

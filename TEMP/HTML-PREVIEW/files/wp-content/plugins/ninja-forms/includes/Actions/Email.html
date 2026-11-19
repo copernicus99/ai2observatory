@@ -1,0 +1,402 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Actions/Email.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Actions/Email.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Action_Email
+ */
+final class NF_Actions_Email extends NF_Abstracts_Action
+{
+    /**
+    * @var string
+    */
+    protected $_name  = &#x27;email&#x27;;
+
+    /**
+    * @var array
+    */
+    protected $_tags = array();
+
+    /**
+    * @var string
+    */
+    protected $_timing = &#x27;late&#x27;;
+
+    /**
+    * @var int
+    */
+    protected $_priority = 10;
+
+    /**
+    * Constructor
+    */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; );
+
+        $settings = Ninja_Forms::config( &#x27;ActionEmailSettings&#x27; );
+
+        $this-&gt;_settings = array_merge( $this-&gt;_settings, $settings );
+
+        $this-&gt;_backwards_compatibility();
+    }
+
+    /*
+    * PUBLIC METHODS
+    */
+
+    public function process( $action_settings, $form_id, $data )
+    {
+        $action_settings = $this-&gt;sanitize_address_fields( $action_settings );
+
+        $errors = $this-&gt;check_for_errors( $action_settings );
+
+        $headers = $this-&gt;_get_headers( $action_settings );
+        
+        if ( has_filter( &#x27;ninja_forms_get_fields_sorted&#x27; ) ) {
+            $fields_by_key = array();
+            foreach( $data[ &#x27;fields&#x27; ] as $field ){
+                if( is_null( $field ) ) continue;
+                if( is_array( $field ) ){
+                    if( ! isset( $field[ &#x27;key&#x27; ] ) ) continue;
+                    $key = $field[ &#x27;key&#x27; ];
+                } else {
+                    $key = $field-&gt;get_setting(&#x27;key&#x27;);
+                }
+                $fields_by_key[ $key ] = $field;
+            }
+            $data[ &#x27;fields&#x27; ] = apply_filters( &#x27;ninja_forms_get_fields_sorted&#x27;, array(), $data[ &#x27;fields&#x27; ], $fields_by_key, $form_id );
+        }
+
+        $attachments = $this-&gt;_get_attachments( $action_settings, $data );
+
+        if( &#x27;html&#x27; == $action_settings[ &#x27;email_format&#x27; ] ) {
+            $message = wpautop( $action_settings[&#x27;email_message&#x27;] );
+        } else {
+            $message = $this-&gt;format_plain_text_message( $action_settings[ &#x27;email_message_plain&#x27; ] );
+        }
+
+        $message = apply_filters( &#x27;ninja_forms_action_email_message&#x27;, $message, $data, $action_settings );
+
+        try {
+            $sent = wp_mail($action_settings[&#x27;to&#x27;], $action_settings[&#x27;email_subject&#x27;], $message, $headers, $attachments);
+        } catch ( Exception $e ){
+            $sent = false;
+            $errors[ &#x27;email_not_sent&#x27; ] = $e-&gt;getMessage();
+        }
+
+        if( is_user_logged_in() &amp;&amp; current_user_can( &#x27;manage_options&#x27; ) ) {
+            $data[ &#x27;actions&#x27; ][ &#x27;email&#x27; ][ &#x27;to&#x27; ] = $action_settings[ &#x27;to&#x27; ];
+            $data[ &#x27;actions&#x27; ][ &#x27;email&#x27; ][ &#x27;headers&#x27; ] = $headers;
+            $data[ &#x27;actions&#x27; ][ &#x27;email&#x27; ][ &#x27;attachments&#x27; ] = $attachments;
+        }
+
+        $data[ &#x27;actions&#x27; ][ &#x27;email&#x27; ][ &#x27;sent&#x27; ] = $sent;
+
+        // Only show errors to Administrators.
+        if( $errors &amp;&amp; current_user_can( &#x27;manage_options&#x27; ) ){
+            $data[ &#x27;errors&#x27; ][ &#x27;form&#x27; ] = $errors;
+        }
+        
+        if ( ! empty( $attachments ) ) {
+            $this-&gt;_drop_csv();
+        }
+
+        return $data;
+    }
+
+    /**
+     * Sanitizes email address settings
+     * @since 3.2.2
+     *
+     * @param  array $action_settings
+     * @return array
+     */
+    protected function sanitize_address_fields( $action_settings )
+    {
+        // Build a look array to compare our email address settings to.
+        $email_address_settings = array( &#x27;to&#x27;, &#x27;from_address&#x27;, &#x27;reply_to&#x27;, &#x27;cc&#x27;, &#x27;bcc&#x27; );
+
+        // Loop over the look up values.
+        foreach( $email_address_settings as $setting ) {
+            // If the loop up values are not set in the action settings continue.
+            if ( ! isset( $action_settings[ $setting ] ) ) continue;
+
+            // If action settings do not match the look up values continue.
+            if ( ! $action_settings[ $setting ] ) continue;
+
+            // This is the array that will contain the sanitized email address values.
+            $sanitized_array = array();
+
+            /*
+             * Checks to see action settings is array,
+             * if not explodes to comma delimited array.
+             */
+            if( is_array( $action_settings[ $setting ] ) ) {
+                $email_addresses = $action_settings[ $setting ];
+            } else {
+                $email_addresses = explode( &#x27;,&#x27;, $action_settings[ $setting ] );
+            }
+
+            // Loop over our email addresses.
+            foreach( $email_addresses as $email ) {
+
+                // Updated to trim values in case there is a value with spaces/tabs/etc to remove whitespace
+                $email = trim( $email );
+                if ( empty( $email ) ) continue;
+
+                // Build our array of the email addresses.
+                $sanitized_array[] = $email;
+            }
+            // Sanitized our array of settings.
+            $action_settings[ $setting ] = implode( &#x27;,&#x27; ,$sanitized_array );
+        }
+        return $action_settings;
+    }
+
+    protected function check_for_errors( $action_settings )
+    {
+        $errors = array();
+
+        $email_address_settings = array( &#x27;to&#x27;, &#x27;from_address&#x27;, &#x27;reply_to&#x27;, &#x27;cc&#x27;, &#x27;bcc&#x27; );
+
+        foreach( $email_address_settings as $setting ){
+            if( ! isset( $action_settings[ $setting ] ) ) continue;
+            if( ! $action_settings[ $setting ] ) continue;
+
+
+            $email_addresses = is_array( $action_settings[ $setting ] ) ? $action_settings[ $setting ] : explode( &#x27;,&#x27;, $action_settings[ $setting ] );
+
+            foreach( (array) $email_addresses as $email ){
+                $email = trim( $email );
+                if ( false !== strpos( $email, &#x27;&lt;&#x27; ) &amp;&amp; false !== strpos( $email, &#x27;&gt;&#x27; ) ) {
+                    preg_match(&#x27;/(?:&lt;)[^&gt;]*(?:&gt;)/&#x27;, $email, $email);
+                    $email = $email[ 1 ];
+                }
+                if( ! is_email( $email ) ) {
+                    $errors[ &#x27;invalid_email&#x27; ] = sprintf( __( &#x27;Your email action &quot;%s&quot; has an invalid value for the &quot;%s&quot; setting. Please check this setting and try again.&#x27;, &#x27;ninja-forms&#x27;), $action_settings[ &#x27;label&#x27; ], $setting );
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    private function _get_headers( $settings )
+    {
+        $headers = array();
+
+        $headers[] = &#x27;Content-Type: text/&#x27; . $settings[ &#x27;email_format&#x27; ];
+        $headers[] = &#x27;charset=UTF-8&#x27;;
+
+        $headers[] = $this-&gt;_format_from( $settings );
+
+        $headers = array_merge( $headers, $this-&gt;_format_recipients( $settings ) );
+
+        return $headers;
+    }
+
+    private function _get_attachments( $settings, $data )
+    {
+        $attachments = array();
+
+        if( 1 == $settings[ &#x27;attach_csv&#x27; ] ){
+            $attachments[] = $this-&gt;_create_csv( $data[ &#x27;fields&#x27; ] );
+        }
+
+        if( ! isset( $settings[ &#x27;id&#x27; ] ) ) $settings[ &#x27;id&#x27; ] = &#x27;&#x27;;
+
+        $attachments = apply_filters( &#x27;ninja_forms_action_email_attachments&#x27;, $attachments, $data, $settings );
+
+        return $attachments;
+    }
+
+    private function _format_from( $settings )
+    {
+        $from_name = get_bloginfo( &#x27;name&#x27;, &#x27;raw&#x27; );
+        $from_name = apply_filters( &#x27;ninja_forms_action_email_from_name&#x27;, $from_name );
+        $from_name = ( $settings[ &#x27;from_name&#x27; ] ) ? $settings[ &#x27;from_name&#x27; ] : $from_name;
+
+        $from_address = get_bloginfo( &#x27;admin_email&#x27; );
+        $from_address = apply_filters( &#x27;ninja_forms_action_email_from_address&#x27;, $from_address );
+        $from_address = ( $settings[ &#x27;from_address&#x27; ] ) ? $settings[ &#x27;from_address&#x27; ] : $from_address;
+
+        return $this-&gt;_format_recipient( &#x27;from&#x27;, $from_address, $from_name );
+    }
+
+    private function _format_recipients( $settings )
+    {
+        $headers = array();
+
+        $recipient_settings = array(
+            &#x27;Cc&#x27; =&gt; $settings[ &#x27;cc&#x27; ],
+            &#x27;Bcc&#x27; =&gt; $settings[ &#x27;bcc&#x27; ],
+            &#x27;Reply-to&#x27; =&gt; $settings[ &#x27;reply_to&#x27; ],
+        );
+
+        foreach( $recipient_settings as $type =&gt; $emails ){
+
+            $emails = explode( &#x27;,&#x27;, $emails );
+
+            foreach( $emails as $email ) {
+
+                if( ! $email ) continue;
+
+                $matches = array();
+                if (preg_match(&#x27;/^&quot;?(?&lt;name&gt;[^&lt;&quot;]+)&quot;? &lt;(?&lt;email&gt;[^&gt;]+)&gt;$/&#x27;, $email, $matches)) {
+                    $headers[] = $this-&gt;_format_recipient($type, $matches[&#x27;email&#x27;], $matches[&#x27;name&#x27;]);
+                } else {
+                    $headers[] = $this-&gt;_format_recipient($type, $email);
+                }
+            }
+        }
+
+        return $headers;
+    }
+
+    private function _format_recipient( $type, $email, $name = &#x27;&#x27; )
+    {
+        $type = ucfirst( $type );
+
+        if( ! $name ) $name = $email;
+
+        $recipient = &quot;$type: $name &lt;$email&gt;&quot;;
+
+        return $recipient;
+    }
+
+    private function _create_csv( $fields )
+    {
+        $csv_array = array();
+        
+        // Get our current date.
+        $date_format = Ninja_Forms()-&gt;get_setting( &#x27;date_format&#x27; );
+        $today = date( $date_format, current_time( &#x27;timestamp&#x27; ) );
+        $csv_array[ 0 ][] = &#x27;Date Submitted&#x27;;
+        $csv_array[ 1 ][] = $today;
+
+        foreach( $fields as $field ){
+            
+            $ignore = array(
+                &#x27;hr&#x27;,
+                &#x27;submit&#x27;,
+                &#x27;html&#x27;,
+                &#x27;creditcardcvc&#x27;,
+                &#x27;creditcardexpiration&#x27;,
+                &#x27;creditcardfullname&#x27;,
+                &#x27;creditcardnumber&#x27;,
+                &#x27;creditcardzip&#x27;,
+            );
+
+            $ignore = apply_filters( &#x27;ninja_forms_csv_ignore_fields&#x27;, $ignore );
+
+            if( ! isset( $field[ &#x27;label&#x27; ] ) ) continue;
+            if( in_array( $field[ &#x27;type&#x27; ], $ignore ) ) continue;
+            
+            $label = ( &#x27;&#x27; != $field[ &#x27;admin_label&#x27; ] ) ? $field[ &#x27;admin_label&#x27; ] : $field[ &#x27;label&#x27; ];
+            
+            $value = WPN_Helper::stripslashes( $field[ &#x27;value&#x27; ] );
+            if ( empty( $value ) ) {
+                $value = &#x27;&#x27;;
+            }
+            if ( is_array( $value ) ) {
+                $value = implode( &#x27;,&#x27;, $value );
+            }
+
+            $csv_array[ 0 ][] = $label;
+            $csv_array[ 1 ][] = $value;
+        }
+
+        $csv_content = WPN_Helper::str_putcsv( $csv_array,
+            apply_filters( &#x27;ninja_forms_sub_csv_delimiter&#x27;, &#x27;,&#x27; ),
+            apply_filters( &#x27;ninja_forms_sub_csv_enclosure&#x27;, &#x27;&quot;&#x27; ),
+            apply_filters( &#x27;ninja_forms_sub_csv_terminator&#x27;, &quot;\n&quot; )
+        );
+
+        $upload_dir = wp_upload_dir();
+        $path = trailingslashit( $upload_dir[&#x27;path&#x27;] );
+
+        // create temporary file
+        $path = tempnam( $path, &#x27;Sub&#x27; );
+        $temp_file = fopen( $path, &#x27;r+&#x27; );
+
+        // write to temp file
+        fwrite( $temp_file, $csv_content );
+        fclose( $temp_file );
+
+        // find the directory we will be using for the final file
+        $path = pathinfo( $path );
+        $dir = $path[&#x27;dirname&#x27;];
+        $basename = $path[&#x27;basename&#x27;];
+
+        // create name for file
+        $new_name = apply_filters( &#x27;ninja_forms_submission_csv_name&#x27;, &#x27;ninja-forms-submission&#x27; );
+
+        // remove a file if it already exists
+        if( file_exists( $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; ) ) {
+            unlink( $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; );
+        }
+
+        // move file
+        rename( $dir.&#x27;/&#x27;.$basename, $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; );
+        return $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27;;
+    }
+    
+    /**
+     * Function to delete csv file from temp directory after Email Action has completed.
+     */
+    private function _drop_csv()
+    {
+        $upload_dir = wp_upload_dir();
+        $path = trailingslashit( $upload_dir[&#x27;path&#x27;] );
+
+        // create name for file
+        $new_name = apply_filters( &#x27;ninja_forms_submission_csv_name&#x27;, &#x27;ninja-forms-submission&#x27; );
+
+        // remove a file if it already exists
+        if( file_exists( $path.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; ) ) {
+            unlink( $path.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; );
+        }
+    }
+
+    /*
+     * Backwards Compatibility
+     */
+
+    private function _backwards_compatibility()
+    {
+        add_filter( &#x27;ninja_forms_sub_csv_delimiter&#x27;,        array( $this, &#x27;ninja_forms_sub_csv_delimiter&#x27;        ), 10, 1 );
+        add_filter( &#x27;ninja_sub_csv_enclosure&#x27;,              array( $this, &#x27;ninja_sub_csv_enclosure&#x27;              ), 10, 1 );
+        add_filter( &#x27;ninja_sub_csv_terminator&#x27;,             array( $this, &#x27;ninja_sub_csv_terminator&#x27;             ), 10, 1 );
+        add_filter( &#x27;ninja_forms_action_email_attachments&#x27;, array( $this, &#x27;ninja_forms_action_email_attachments&#x27; ), 10, 3 );
+    }
+
+    public function ninja_forms_sub_csv_delimiter( $delimiter )
+    {
+        return apply_filters( &#x27;nf_sub_csv_delimiter&#x27;, $delimiter );
+    }
+
+    public function ninja_sub_csv_enclosure( $enclosure )
+    {
+        return apply_filters( &#x27;nf_sub_csv_enclosure&#x27;, $enclosure );
+    }
+
+    public function ninja_sub_csv_terminator( $terminator )
+    {
+        return apply_filters( &#x27;nf_sub_csv_terminator&#x27;, $terminator );
+    }
+
+    public function ninja_forms_action_email_attachments( $attachments, $form_data, $action_settings )
+    {
+        return apply_filters( &#x27;nf_email_notification_attachments&#x27;, $attachments, $action_settings[ &#x27;id&#x27; ] );
+    }
+
+    private function format_plain_text_message( $message )
+    {
+        $message =  str_replace( array( &#x27;&lt;table&gt;&#x27;, &#x27;&lt;/table&gt;&#x27;, &#x27;&lt;tr&gt;&lt;td&gt;&#x27;, &#x27;&#x27; ), &#x27;&#x27;, $message );
+        $message =  str_replace( &#x27;&lt;/td&gt;&lt;td&gt;&#x27;, &#x27; &#x27;, $message );
+        $message =  str_replace( &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;, &quot;\r\n&quot;, $message );
+        return strip_tags( $message );
+    }
+}
+</pre></details></body></html>

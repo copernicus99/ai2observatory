@@ -1,0 +1,278 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentyfifteen/inc/template-tags.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentyfifteen/inc/template-tags.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;nav class=&quot;navigation comment-navigation&quot; role=&quot;navigation&quot;&gt;
+		&lt;h2 class=&quot;screen-reader-text&quot;&gt;&lt;/h2&gt;
+		&lt;div class=&quot;nav-links&quot;&gt;
+			
+		&lt;/div&gt;&lt;!-- .nav-links --&gt;
+	&lt;/nav&gt;&lt;!-- .comment-navigation --&gt;
+	
+
+	&lt;div class=&quot;post-thumbnail&quot;&gt;
+		
+	&lt;/div&gt;&lt;!-- .post-thumbnail --&gt;
+
+	
+
+	&lt;a class=&quot;post-thumbnail&quot; href=&quot;&quot; aria-hidden=&quot;true&quot;&gt;
+		
+	&lt;/a&gt;
+
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Custom template tags for Twenty Fifteen
+ *
+ * Eventually, some of the functionality here could be replaced by core features.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Fifteen
+ * @since Twenty Fifteen 1.0
+ */
+
+if ( ! function_exists( &#x27;twentyfifteen_comment_nav&#x27; ) ) :
+/**
+ * Display navigation to next/previous comments when applicable.
+ *
+ * @since Twenty Fifteen 1.0
+ */
+function twentyfifteen_comment_nav() {
+	// Are there comments to navigate through?
+	if ( get_comment_pages_count() &gt; 1 &amp;&amp; get_option( &#x27;page_comments&#x27; ) ) :
+	?&gt;
+	&lt;nav class=&quot;navigation comment-navigation&quot; role=&quot;navigation&quot;&gt;
+		&lt;h2 class=&quot;screen-reader-text&quot;&gt;&lt;?php _e( &#x27;Comment navigation&#x27;, &#x27;twentyfifteen&#x27; ); ?&gt;&lt;/h2&gt;
+		&lt;div class=&quot;nav-links&quot;&gt;
+			&lt;?php
+				if ( $prev_link = get_previous_comments_link( __( &#x27;Older Comments&#x27;, &#x27;twentyfifteen&#x27; ) ) ) :
+					printf( &#x27;&lt;div class=&quot;nav-previous&quot;&gt;%s&lt;/div&gt;&#x27;, $prev_link );
+				endif;
+
+				if ( $next_link = get_next_comments_link( __( &#x27;Newer Comments&#x27;, &#x27;twentyfifteen&#x27; ) ) ) :
+					printf( &#x27;&lt;div class=&quot;nav-next&quot;&gt;%s&lt;/div&gt;&#x27;, $next_link );
+				endif;
+			?&gt;
+		&lt;/div&gt;&lt;!-- .nav-links --&gt;
+	&lt;/nav&gt;&lt;!-- .comment-navigation --&gt;
+	&lt;?php
+	endif;
+}
+endif;
+
+if ( ! function_exists( &#x27;twentyfifteen_entry_meta&#x27; ) ) :
+/**
+ * Prints HTML with meta information for the categories, tags.
+ *
+ * @since Twenty Fifteen 1.0
+ */
+function twentyfifteen_entry_meta() {
+	if ( is_sticky() &amp;&amp; is_home() &amp;&amp; ! is_paged() ) {
+		printf( &#x27;&lt;span class=&quot;sticky-post&quot;&gt;%s&lt;/span&gt;&#x27;, __( &#x27;Featured&#x27;, &#x27;twentyfifteen&#x27; ) );
+	}
+
+	$format = get_post_format();
+	if ( current_theme_supports( &#x27;post-formats&#x27;, $format ) ) {
+		printf( &#x27;&lt;span class=&quot;entry-format&quot;&gt;%1$s&lt;a href=&quot;%2$s&quot;&gt;%3$s&lt;/a&gt;&lt;/span&gt;&#x27;,
+			sprintf( &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;%s &lt;/span&gt;&#x27;, _x( &#x27;Format&#x27;, &#x27;Used before post format.&#x27;, &#x27;twentyfifteen&#x27; ) ),
+			esc_url( get_post_format_link( $format ) ),
+			get_post_format_string( $format )
+		);
+	}
+
+	if ( in_array( get_post_type(), array( &#x27;post&#x27;, &#x27;attachment&#x27; ) ) ) {
+		$time_string = &#x27;&lt;time class=&quot;entry-date published updated&quot; datetime=&quot;%1$s&quot;&gt;%2$s&lt;/time&gt;&#x27;;
+
+		if ( get_the_time( &#x27;U&#x27; ) !== get_the_modified_time( &#x27;U&#x27; ) ) {
+			$time_string = &#x27;&lt;time class=&quot;entry-date published&quot; datetime=&quot;%1$s&quot;&gt;%2$s&lt;/time&gt;&lt;time class=&quot;updated&quot; datetime=&quot;%3$s&quot;&gt;%4$s&lt;/time&gt;&#x27;;
+		}
+
+		$time_string = sprintf( $time_string,
+			esc_attr( get_the_date( &#x27;c&#x27; ) ),
+			get_the_date(),
+			esc_attr( get_the_modified_date( &#x27;c&#x27; ) ),
+			get_the_modified_date()
+		);
+
+		printf( &#x27;&lt;span class=&quot;posted-on&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;%1$s &lt;/span&gt;&lt;a href=&quot;%2$s&quot; rel=&quot;bookmark&quot;&gt;%3$s&lt;/a&gt;&lt;/span&gt;&#x27;,
+			_x( &#x27;Posted on&#x27;, &#x27;Used before publish date.&#x27;, &#x27;twentyfifteen&#x27; ),
+			esc_url( get_permalink() ),
+			$time_string
+		);
+	}
+
+	if ( &#x27;post&#x27; == get_post_type() ) {
+		if ( is_singular() || is_multi_author() ) {
+			printf( &#x27;&lt;span class=&quot;byline&quot;&gt;&lt;span class=&quot;author vcard&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;%1$s &lt;/span&gt;&lt;a class=&quot;url fn n&quot; href=&quot;%2$s&quot;&gt;%3$s&lt;/a&gt;&lt;/span&gt;&lt;/span&gt;&#x27;,
+				_x( &#x27;Author&#x27;, &#x27;Used before post author name.&#x27;, &#x27;twentyfifteen&#x27; ),
+				esc_url( get_author_posts_url( get_the_author_meta( &#x27;ID&#x27; ) ) ),
+				get_the_author()
+			);
+		}
+
+		$categories_list = get_the_category_list( _x( &#x27;, &#x27;, &#x27;Used between list items, there is a space after the comma.&#x27;, &#x27;twentyfifteen&#x27; ) );
+		if ( $categories_list &amp;&amp; twentyfifteen_categorized_blog() ) {
+			printf( &#x27;&lt;span class=&quot;cat-links&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;%1$s &lt;/span&gt;%2$s&lt;/span&gt;&#x27;,
+				_x( &#x27;Categories&#x27;, &#x27;Used before category names.&#x27;, &#x27;twentyfifteen&#x27; ),
+				$categories_list
+			);
+		}
+
+		$tags_list = get_the_tag_list( &#x27;&#x27;, _x( &#x27;, &#x27;, &#x27;Used between list items, there is a space after the comma.&#x27;, &#x27;twentyfifteen&#x27; ) );
+		if ( $tags_list ) {
+			printf( &#x27;&lt;span class=&quot;tags-links&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;%1$s &lt;/span&gt;%2$s&lt;/span&gt;&#x27;,
+				_x( &#x27;Tags&#x27;, &#x27;Used before tag names.&#x27;, &#x27;twentyfifteen&#x27; ),
+				$tags_list
+			);
+		}
+	}
+
+	if ( is_attachment() &amp;&amp; wp_attachment_is_image() ) {
+		// Retrieve attachment metadata.
+		$metadata = wp_get_attachment_metadata();
+
+		printf( &#x27;&lt;span class=&quot;full-size-link&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;%1$s &lt;/span&gt;&lt;a href=&quot;%2$s&quot;&gt;%3$s &amp;times; %4$s&lt;/a&gt;&lt;/span&gt;&#x27;,
+			_x( &#x27;Full size&#x27;, &#x27;Used before full size attachment link.&#x27;, &#x27;twentyfifteen&#x27; ),
+			esc_url( wp_get_attachment_url() ),
+			$metadata[&#x27;width&#x27;],
+			$metadata[&#x27;height&#x27;]
+		);
+	}
+
+	if ( ! is_single() &amp;&amp; ! post_password_required() &amp;&amp; ( comments_open() || get_comments_number() ) ) {
+		echo &#x27;&lt;span class=&quot;comments-link&quot;&gt;&#x27;;
+		/* translators: %s: post title */
+		comments_popup_link( sprintf( __( &#x27;Leave a comment&lt;span class=&quot;screen-reader-text&quot;&gt; on %s&lt;/span&gt;&#x27;, &#x27;twentyfifteen&#x27; ), get_the_title() ) );
+		echo &#x27;&lt;/span&gt;&#x27;;
+	}
+}
+endif;
+
+/**
+ * Determine whether blog/site has more than one category.
+ *
+ * @since Twenty Fifteen 1.0
+ *
+ * @return bool True of there is more than one category, false otherwise.
+ */
+function twentyfifteen_categorized_blog() {
+	if ( false === ( $all_the_cool_cats = get_transient( &#x27;twentyfifteen_categories&#x27; ) ) ) {
+		// Create an array of all the categories that are attached to posts.
+		$all_the_cool_cats = get_categories( array(
+			&#x27;fields&#x27;     =&gt; &#x27;ids&#x27;,
+			&#x27;hide_empty&#x27; =&gt; 1,
+
+			// We only need to know if there is more than one category.
+			&#x27;number&#x27;     =&gt; 2,
+		) );
+
+		// Count the number of categories that are attached to the posts.
+		$all_the_cool_cats = count( $all_the_cool_cats );
+
+		set_transient( &#x27;twentyfifteen_categories&#x27;, $all_the_cool_cats );
+	}
+
+	if ( $all_the_cool_cats &gt; 1 ) {
+		// This blog has more than 1 category so twentyfifteen_categorized_blog should return true.
+		return true;
+	} else {
+		// This blog has only 1 category so twentyfifteen_categorized_blog should return false.
+		return false;
+	}
+}
+
+/**
+ * Flush out the transients used in {@see twentyfifteen_categorized_blog()}.
+ *
+ * @since Twenty Fifteen 1.0
+ */
+function twentyfifteen_category_transient_flusher() {
+	// Like, beat it. Dig?
+	delete_transient( &#x27;twentyfifteen_categories&#x27; );
+}
+add_action( &#x27;edit_category&#x27;, &#x27;twentyfifteen_category_transient_flusher&#x27; );
+add_action( &#x27;save_post&#x27;,     &#x27;twentyfifteen_category_transient_flusher&#x27; );
+
+if ( ! function_exists( &#x27;twentyfifteen_post_thumbnail&#x27; ) ) :
+/**
+ * Display an optional post thumbnail.
+ *
+ * Wraps the post thumbnail in an anchor element on index views, or a div
+ * element when on single views.
+ *
+ * @since Twenty Fifteen 1.0
+ */
+function twentyfifteen_post_thumbnail() {
+	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
+		return;
+	}
+
+	if ( is_singular() ) :
+	?&gt;
+
+	&lt;div class=&quot;post-thumbnail&quot;&gt;
+		&lt;?php the_post_thumbnail(); ?&gt;
+	&lt;/div&gt;&lt;!-- .post-thumbnail --&gt;
+
+	&lt;?php else : ?&gt;
+
+	&lt;a class=&quot;post-thumbnail&quot; href=&quot;&lt;?php the_permalink(); ?&gt;&quot; aria-hidden=&quot;true&quot;&gt;
+		&lt;?php
+			the_post_thumbnail( &#x27;post-thumbnail&#x27;, array( &#x27;alt&#x27; =&gt; get_the_title() ) );
+		?&gt;
+	&lt;/a&gt;
+
+	&lt;?php endif; // End is_singular()
+}
+endif;
+
+if ( ! function_exists( &#x27;twentyfifteen_get_link_url&#x27; ) ) :
+/**
+ * Return the post URL.
+ *
+ * Falls back to the post permalink if no URL is found in the post.
+ *
+ * @since Twenty Fifteen 1.0
+ *
+ * @see get_url_in_content()
+ *
+ * @return string The Link format URL.
+ */
+function twentyfifteen_get_link_url() {
+	$has_url = get_url_in_content( get_the_content() );
+
+	return $has_url ? $has_url : apply_filters( &#x27;the_permalink&#x27;, get_permalink() );
+}
+endif;
+
+if ( ! function_exists( &#x27;twentyfifteen_excerpt_more&#x27; ) &amp;&amp; ! is_admin() ) :
+/**
+ * Replaces &quot;[...]&quot; (appended to automatically generated excerpts) with ... and a &#x27;Continue reading&#x27; link.
+ *
+ * @since Twenty Fifteen 1.0
+ *
+ * @return string &#x27;Continue reading&#x27; link prepended with an ellipsis.
+ */
+function twentyfifteen_excerpt_more( $more ) {
+	$link = sprintf( &#x27;&lt;a href=&quot;%1$s&quot; class=&quot;more-link&quot;&gt;%2$s&lt;/a&gt;&#x27;,
+		esc_url( get_permalink( get_the_ID() ) ),
+		/* translators: %s: Name of current post */
+		sprintf( __( &#x27;Continue reading %s&#x27;, &#x27;twentyfifteen&#x27; ), &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . get_the_title( get_the_ID() ) . &#x27;&lt;/span&gt;&#x27; )
+		);
+	return &#x27; &amp;hellip; &#x27; . $link;
+}
+add_filter( &#x27;excerpt_more&#x27;, &#x27;twentyfifteen_excerpt_more&#x27; );
+endif;
+
+if ( ! function_exists( &#x27;twentyfifteen_the_custom_logo&#x27; ) ) :
+/**
+ * Displays the optional custom logo.
+ *
+ * Does nothing if the custom logo is not available.
+ *
+ * @since Twenty Fifteen 1.5
+ */
+function twentyfifteen_the_custom_logo() {
+	if ( function_exists( &#x27;the_custom_logo&#x27; ) ) {
+		the_custom_logo();
+	}
+}
+endif;
+</pre></details></body></html>

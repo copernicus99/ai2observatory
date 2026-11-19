@@ -1,0 +1,268 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/fields/upload.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/fields/upload.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class NF_FU_Fields_Upload
+ */
+class NF_FU_Fields_Upload extends NF_Abstracts_Field {
+
+	protected $_nicename = &#x27;File Upload&#x27;;
+	protected $_parent_type = &#x27;textbox&#x27;;
+	protected $_section = &#x27;common&#x27;;
+	protected $_templates = &#x27;file-upload&#x27;;
+	protected $_icon = &#x27;file&#x27;;
+    protected $_test_value = false;
+	protected $_settings_all_fields = array(
+		&#x27;key&#x27;,
+		&#x27;label&#x27;,
+		&#x27;label_pos&#x27;,
+		&#x27;required&#x27;,
+		&#x27;classes&#x27;,
+		&#x27;manual_key&#x27;,
+		&#x27;help&#x27;,
+		&#x27;description&#x27;,
+	);
+
+	public function __construct() {
+		$this-&gt;_name = NF_FU_File_Uploads::TYPE;
+		$this-&gt;_type = NF_FU_File_Uploads::TYPE;
+
+		parent::__construct();
+
+		$settings = NF_File_Uploads()-&gt;config( &#x27;field-settings&#x27; );
+
+		$this-&gt;_settings = array_merge( $this-&gt;_settings, $settings );
+
+        add_action( &#x27;nf_admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_enqueue_scripts&#x27; ) );
+	}
+
+	/**
+	 * Save the temp file
+	 *
+	 * @param $field
+	 * @param $data
+	 *
+	 * @return mixed
+	 */
+	public function process( $field, $data ) {
+
+		/*
+		 * If we don&#x27;t have any files set or we are saving progress, bail early.
+		 */
+		if ( ! isset( $field[&#x27;files&#x27;] ) || empty( $field[&#x27;files&#x27;] ) || ( isset ( $data[ &#x27;extra&#x27; ][ &#x27;saveProgress&#x27; ] ) &amp;&amp; ! empty( $data[ &#x27;extra&#x27; ][ &#x27;saveProgress&#x27; ] ) ) ) {
+			return $data;
+		}
+
+		$submission_data = array();
+
+		// Get common data
+		$user_id  = $this-&gt;get_user_id();
+		$base_dir = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_path( &#x27;&#x27; );
+		$base_url = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_url( &#x27;&#x27; );
+		$base_dir .= $data[&#x27;form_id&#x27;] . &#x27;/&#x27;;
+		$base_url .= $data[&#x27;form_id&#x27;] . &#x27;/&#x27;;
+
+		// Get custom directory using common data for shortcodes
+		$custom_upload_dir    = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;custom_upload_dir();
+		$is_custom_upload_dir = false;
+		NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;set_data( &#x27;formtitle&#x27;, $data[&#x27;settings&#x27;][&#x27;title&#x27;] );
+
+		if ( ! empty( $custom_upload_dir ) ) {
+			$custom_upload_dir = stripslashes( trim( $custom_upload_dir ) );
+			$custom_upload_dir = NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;replace_shortcodes( $custom_upload_dir );
+			$custom_upload_dir = NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;replace_field_shortcodes( $custom_upload_dir, $data[&#x27;fields&#x27;] );
+
+			if ( false !== strpos( $custom_upload_dir, &#x27;%filename%&#x27; ) ) {
+				$is_custom_upload_dir = true;
+			}
+		}
+
+		// Loop through all files
+		foreach ( $field[&#x27;files&#x27;] as $file_key =&gt; $file ) {
+			$tmp_file = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_path( $file[&#x27;tmp_name&#x27;], true );
+
+			// Remove the extension from the file name
+			$file_parts = explode( &#x27;.&#x27;, $file[&#x27;name&#x27;] );
+			$ext        = array_pop( $file_parts );
+
+			// Set the filename custom shortcode
+			NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;set_data( &#x27;filename&#x27;, implode( &#x27;.&#x27;, $file_parts ) );
+			$file_name = $file[&#x27;name&#x27;];
+
+			// Replace %filename% in custom dir
+			if ( $is_custom_upload_dir ) {
+				$custom_upload_dir = NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;replace_shortcode( $custom_upload_dir, &#x27;filename&#x27; );
+			}
+
+			// Custom renaming of files
+			if ( ! empty( $field[&#x27;upload_rename&#x27;] ) ) {
+				$file_name = NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;replace_shortcodes( $field[&#x27;upload_rename&#x27;] );
+				$file_name = NF_File_Uploads()-&gt;controllers-&gt;custom_paths-&gt;replace_field_shortcodes( $file_name, $data[&#x27;fields&#x27;] );
+
+				$file_name .= &#x27;.&#x27; . $ext;
+			}
+
+			$target_file = trailingslashit( $base_dir . ltrim( $custom_upload_dir, &#x27;/&#x27; ) ) . ltrim( $file_name, &#x27;/&#x27; );
+			$target_path = dirname( $target_file );
+			// Ensure the path exists
+			wp_mkdir_p( $target_path );
+
+			// Sanitize the filename for encoding
+			$file_name   = sanitize_file_name( basename( $target_file ) );
+			$target_file = $target_path . &#x27;/&#x27; . $file_name;
+
+			if ( file_exists( $target_file ) ) {
+				// Make sure we use a filename that is unique
+				$original_target_file = $target_file;
+
+				$i = 0;
+				do {
+					$i++;
+					$target_file = str_replace( &#x27;.&#x27; . $ext, &#x27;-&#x27; . $i . &#x27;.&#x27; . $ext, $original_target_file );
+				} while ( file_exists( $target_file ) );
+			}
+
+			// Get final filename
+			$file_name   = basename( $target_file );
+			$custom_path = str_replace( trailingslashit( $base_dir ), &#x27;&#x27;, trailingslashit( $target_path ) );
+			$file_url    = trailingslashit( $base_url . ltrim( $custom_path, &#x27;/&#x27; ) ) . $file_name;
+
+			// Move to permanent location
+			$result = rename( $tmp_file, $target_file );
+			if ( false === $result ) {
+				$data[&#x27;errors&#x27;][&#x27;fields&#x27;][ $field[&#x27;id&#x27;] ] = __( &#x27;File upload error&#x27; );
+
+				return $data;
+			}
+
+			// Add to FU table
+			$file_data = array(
+				&#x27;user_file_name&#x27;  =&gt; $file[&#x27;name&#x27;],
+				&#x27;file_name&#x27;       =&gt; $file_name,
+				&#x27;file_path&#x27;       =&gt; $target_file,
+				&#x27;file_url&#x27;        =&gt; $file_url,
+				&#x27;upload_location&#x27; =&gt; &#x27;server&#x27;,
+				&#x27;complete&#x27;        =&gt; 0,
+			);
+
+			$upload_id = NF_File_Uploads()-&gt;model-&gt;insert( $user_id, $data[&#x27;form_id&#x27;], $field[&#x27;id&#x27;], $file_data );
+
+			$file_data[&#x27;upload_id&#x27;] = $upload_id;
+			$file_data[&#x27;custom_path&#x27;] = $custom_path;
+
+			// Save to media library
+			if ( &quot;1&quot; == $field[&#x27;media_library&#x27;] ) {
+				$file_data[&#x27;attachment_id&#x27;] = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;create_attachment( $target_file, $file_name );
+			}
+
+			NF_File_Uploads()-&gt;model-&gt;update( $upload_id, $file_data );
+
+			// Store FU data in the processing object
+			$field[&#x27;files&#x27;][ $file_key ][&#x27;data&#x27;] = $file_data;
+
+			$submission_data[ $upload_id ] = $file_url;
+		}
+
+		foreach ( $data[&#x27;fields&#x27;] as $key =&gt; $data_field ) {
+			if ( $data_field[&#x27;id&#x27;] != $field[&#x27;id&#x27;] ) {
+				continue;
+			}
+
+			// Set the field value to the array of file upload data
+			$data[&#x27;fields&#x27;][ $key ][&#x27;value&#x27;] = $submission_data;
+			// Persist the data for each file
+			$data[&#x27;fields&#x27;][ $key ][&#x27;files&#x27;] = $field[&#x27;files&#x27;];
+
+			break;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get current logged in user ID
+	 *
+	 * @return int
+	 */
+	protected function get_user_id() {
+		$current_user = wp_get_current_user();
+
+		return ( $current_user ) ? $current_user-&gt;ID : 0;
+	}
+
+	/**
+	 * Display uploads URL
+	 *
+	 * @param int   $id
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public function admin_form_element( $id, $value ) {
+		if ( ! is_array( $value ) || empty( $value ) ) {
+			return $value;
+		}
+
+		$new_value = array();
+		foreach ( $value as $upload_id =&gt; $file_url ) {
+			if ( is_array( $file_url ) ) {
+				// FU 2.9.x data format
+				$upload_id = $file_url[&#x27;upload_id&#x27;];
+				$file_url  = $file_url[&#x27;file_url&#x27;];
+			}
+
+			$upload = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get( $upload_id );
+
+			if ( false !== $upload ) {
+				$file_url = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_file_url( $file_url, $upload-&gt;data );
+			}
+
+			$new_value[] = sprintf( &#x27;&lt;a href=&quot;%1$s&quot; target=&quot;_blank&quot;&gt;%2$s&lt;/a&gt;&lt;br&gt;&lt;input class=&quot;widefat&quot; disabled type=&quot;text&quot; value=&quot;%1$s&quot;&gt;&#x27;, $file_url, __( &#x27;View&#x27;, &#x27;ninja-forms-uploads&#x27; ) );
+		}
+
+		return implode( &#x27;&lt;br&gt;&#x27;, $new_value );
+	}
+
+	/**
+	 * Send already saved files to the front end
+	 *
+	 * @param array $settings
+	 * @param int   $form_id
+	 *
+	 * @return array
+	 */
+	public function localize_settings( $settings, $form_id ) {
+		// TODO get saved uploads for existing submission
+		// $files = array();
+		// $settings[&#x27;files&#x27;] = $files;
+
+
+		// If a max file size is defined for the field use that, else you the global setting
+		$server_max_file_size_mb = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_max_file_size_mb();
+		if ( ! isset( $settings[&#x27;max_file_size&#x27;] ) || empty( $settings[&#x27;max_file_size&#x27;] ) ) {
+			$max_file_size_mb = $server_max_file_size_mb;
+		} else {
+			$max_file_size_mb = $settings[&#x27;max_file_size&#x27;] &gt; $server_max_file_size_mb ? $server_max_file_size_mb : $settings[&#x27;max_file_size&#x27;];
+		}
+
+		$settings[&#x27;max_file_size_mb&#x27;] = $max_file_size_mb;
+		$max_file_size    = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;max_filesize( $max_file_size_mb );
+		$settings[&#x27;max_file_size&#x27;] = $max_file_size;
+		$settings[&#x27;uploadNonce&#x27;] = wp_create_nonce( &#x27;nf-file-upload-&#x27; . $settings[&#x27;id&#x27;] );
+
+		return $settings;
+	}
+
+	/**
+	 * Load admin scripts for the builder
+	 */
+	public function admin_enqueue_scripts() {
+	    $ver = NF_File_Uploads()-&gt;plugin_version;
+		$url = plugin_dir_url( NF_File_Uploads()-&gt;plugin_file_path );
+		wp_enqueue_script( &#x27;nf-fu-file-upload&#x27;, $url . &#x27;assets/js/builder/controllers/fieldFile.js&#x27;, array( &#x27;nf-builder&#x27; ), $ver );
+	}
+}
+</pre></details></body></html>

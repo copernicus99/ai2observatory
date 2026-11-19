@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/ListScreen/Media.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/ListScreen/Media.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_ListScreen_Media extends AC_ListScreenPost {
+
+	public function __construct() {
+		parent::__construct( &#x27;attachment&#x27; );
+
+		$this-&gt;set_screen_id( &#x27;upload&#x27; );
+		$this-&gt;set_screen_base( &#x27;upload&#x27; );
+		$this-&gt;set_key( &#x27;wp-media&#x27; );
+		$this-&gt;set_group( &#x27;media&#x27; );
+		$this-&gt;set_label( __( &#x27;Media&#x27; ) );
+
+		/* @see WP_Media_List_Table */
+		$this-&gt;set_list_table_class( &#x27;WP_Media_List_Table&#x27; );
+	}
+
+	public function set_manage_value_callback() {
+		add_action( &#x27;manage_media_custom_column&#x27;, array( $this, &#x27;manage_value&#x27; ), 100, 2 );
+	}
+
+	protected function get_object_by_id( $post_id ) {
+		// Author column depends on this global to be set.
+		global $authordata;
+
+		$authordata = get_userdata( get_post_field( &#x27;post_author&#x27;, $post_id ) );
+
+		return parent::get_object_by_id( $post_id );
+	}
+
+	/**
+	 * @since 2.4.7
+	 */
+	public function manage_value( $column_name, $id ) {
+		echo $this-&gt;get_display_value_by_column_name( $column_name, $id );
+	}
+
+	protected function register_column_types() {
+		$this-&gt;register_column_type( new AC_Column_CustomField() );
+		$this-&gt;register_column_type( new AC_Column_UsedByMenu() );
+
+		$this-&gt;register_column_types_from_dir( AC()-&gt;get_plugin_dir() . &#x27;classes/Column/Media&#x27;, &#x27;AC_&#x27; );
+	}
+
+}
+</pre></details></body></html>

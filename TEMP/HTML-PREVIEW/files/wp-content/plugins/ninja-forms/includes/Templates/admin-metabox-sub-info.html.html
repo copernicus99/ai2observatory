@@ -1,0 +1,178 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Templates/admin-metabox-sub-info.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Templates/admin-metabox-sub-info.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;input type=&quot;hidden&quot; name=&quot;nf_edit_sub&quot; value=&quot;1&quot;&gt;
+
+&lt;div id=&quot;minor-publishing&quot;&gt;
+
+    &lt;ul class=&quot;nf-sub-stats&quot;&gt;
+
+        &lt;li class=&quot;nf-sub-info-seq&quot;&gt;
+            #: &lt;strong&gt;&lt;/strong&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-status&quot;&gt;
+            Status: &lt;strong&gt;&lt;/strong&gt;
+            
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-form&quot;&gt;
+            Form: &lt;strong&gt;&lt;/strong&gt;
+        &lt;/li&gt;
+
+        &lt;li class=&quot;nf-sub-info-updated&quot;&gt;
+            &lt;strong&gt;&lt;/strong&gt;
+            
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-created&quot;&gt;
+            &lt;strong&gt;&lt;/strong&gt;
+            
+        &lt;/li&gt;
+
+        &lt;li class=&quot;nf-sub-info-user&quot;&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/li&gt;
+
+    &lt;/ul&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;major-publishing-actions&quot; class=&quot;nf-sub-actions&quot;&gt;
+    &lt;div id=&quot;delete-action&quot;&gt;&lt;a class=&quot;submitdelete deletion&quot; style=&quot;color:red;&quot; href=&quot;&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;input name=&quot;save&quot; type=&quot;submit&quot; class=&quot;button button-primary button-large nf-sub-actions-save&quot; id=&quot;publish&quot; accesskey=&quot;p&quot; value=&quot;&quot;&gt;
+    &lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- TODO: Move to Stylesheet. --&gt;
+&lt;style&gt;
+    .nf-sub-stats li {
+        padding: 5px 10px 5px;
+    }
+
+    .nf-sub-info-seq:before,
+    .nf-sub-info-form:before,
+    .nf-sub-info-status:before,
+    .nf-sub-info-created:before,
+    .nf-sub-info-updated:before,
+    .nf-sub-info-user:before {
+        color: #82878c;
+        font: 400 1.4em dashicons;
+        vertical-align: top;
+        padding-right: 5px;
+    }
+
+    .nf-sub-info-seq:before,
+    .nf-sub-info-form:before,
+    .nf-sub-info-status:before {
+        /* Dashicon: Post Screen - Status */
+        content: &quot;\f173&quot;;
+    }
+
+    .nf-sub-info-created:before,
+    .nf-sub-info-updated:before {
+        /* Dashicon: Post Screen - Calendar */
+        content: &quot;\f145&quot;;
+    }
+
+    .nf-sub-info-user:before {
+        /* Dashicon: Admin Menu - Users */
+        content: &quot;\f110&quot;;
+    }
+
+    .nf-sub-actions {
+        margin: 10px -12px -12px;
+    }
+
+    .nf-sub-actions:after {
+        content: &quot;&quot;;
+        display: table;
+        clear: both;
+    }
+
+    .nf-sub-actions .nf-sub-actions-save {
+        text-align: right;
+        float: right;
+    }
+&lt;/style&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;input type=&quot;hidden&quot; name=&quot;nf_edit_sub&quot; value=&quot;1&quot;&gt;
+
+&lt;div id=&quot;minor-publishing&quot;&gt;
+
+    &lt;ul class=&quot;nf-sub-stats&quot;&gt;
+
+        &lt;li class=&quot;nf-sub-info-seq&quot;&gt;
+            #: &lt;strong&gt;&lt;?php echo $seq_num; ?&gt;&lt;/strong&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-status&quot;&gt;
+            Status: &lt;strong&gt;&lt;?php echo $status; ?&gt;&lt;/strong&gt;
+            &lt;?php do_action( &#x27;nf_sub_edit_after_status&#x27;, $post ); ?&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-form&quot;&gt;
+            Form: &lt;strong&gt;&lt;?php echo $form_title; ?&gt;&lt;/strong&gt;
+        &lt;/li&gt;
+
+        &lt;li class=&quot;nf-sub-info-updated&quot;&gt;
+            &lt;?php _e( &#x27;Updated on: &#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;strong&gt;&lt;?php echo $mod_date; ?&gt;&lt;/strong&gt;
+            &lt;?php do_action( &#x27;nf_sub_edit_date_modified&#x27;, $post ); ?&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;nf-sub-info-created&quot;&gt;
+            &lt;?php _e ( &#x27;Submitted on: &#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;strong&gt;&lt;?php echo $sub_date; ?&gt;&lt;/strong&gt;
+            &lt;?php do_action( &#x27;nf_sub_edit_date_submitted&#x27;, $post ); ?&gt;
+        &lt;/li&gt;
+
+        &lt;li class=&quot;nf-sub-info-user&quot;&gt;&lt;?php _e( &#x27;Submitted by: &#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;strong&gt;&lt;?php echo $user; ?&gt;&lt;/strong&gt;&lt;/li&gt;
+
+    &lt;/ul&gt;
+
+&lt;/div&gt;
+
+&lt;div id=&quot;major-publishing-actions&quot; class=&quot;nf-sub-actions&quot;&gt;
+    &lt;div id=&quot;delete-action&quot;&gt;&lt;a class=&quot;submitdelete deletion&quot; style=&quot;color:red;&quot; href=&quot;&lt;?php echo get_delete_post_link( $post-&gt;ID ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Move to Trash&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;input name=&quot;save&quot; type=&quot;submit&quot; class=&quot;button button-primary button-large nf-sub-actions-save&quot; id=&quot;publish&quot; accesskey=&quot;p&quot; value=&quot;&lt;?php _e( &#x27;Update&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;
+    &lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- TODO: Move to Stylesheet. --&gt;
+&lt;style&gt;
+    .nf-sub-stats li {
+        padding: 5px 10px 5px;
+    }
+
+    .nf-sub-info-seq:before,
+    .nf-sub-info-form:before,
+    .nf-sub-info-status:before,
+    .nf-sub-info-created:before,
+    .nf-sub-info-updated:before,
+    .nf-sub-info-user:before {
+        color: #82878c;
+        font: 400 1.4em dashicons;
+        vertical-align: top;
+        padding-right: 5px;
+    }
+
+    .nf-sub-info-seq:before,
+    .nf-sub-info-form:before,
+    .nf-sub-info-status:before {
+        /* Dashicon: Post Screen - Status */
+        content: &quot;\f173&quot;;
+    }
+
+    .nf-sub-info-created:before,
+    .nf-sub-info-updated:before {
+        /* Dashicon: Post Screen - Calendar */
+        content: &quot;\f145&quot;;
+    }
+
+    .nf-sub-info-user:before {
+        /* Dashicon: Admin Menu - Users */
+        content: &quot;\f110&quot;;
+    }
+
+    .nf-sub-actions {
+        margin: 10px -12px -12px;
+    }
+
+    .nf-sub-actions:after {
+        content: &quot;&quot;;
+        display: table;
+        clear: both;
+    }
+
+    .nf-sub-actions .nf-sub-actions-save {
+        text-align: right;
+        float: right;
+    }
+&lt;/style&gt;</pre></details></body></html>

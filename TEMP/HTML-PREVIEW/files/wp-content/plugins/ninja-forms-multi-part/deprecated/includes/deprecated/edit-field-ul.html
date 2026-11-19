@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/edit-field-ul.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/edit-field-ul.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+				&lt;ul class=&quot;menu ninja-forms-field-list&quot; id=&quot;ninja_forms_field_list_&quot; data-order=&quot;&quot;&gt;
+			  		
+				&lt;/ul&gt;
+				"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_mp_register_edit_field_ul&#x27; );
+function ninja_forms_mp_register_edit_field_ul(){
+	if( isset( $_REQUEST[&#x27;form_id&#x27;] ) ){
+		$form_id = $_REQUEST[&#x27;form_id&#x27;];
+		$form_row = ninja_forms_get_form_by_id( $form_id );
+		$form_data = $form_row[&#x27;data&#x27;];
+		if( isset( $form_data[&#x27;multi_part&#x27;] ) ){
+				$multi_part = $form_data[&#x27;multi_part&#x27;];
+		}else{
+			$multi_part = 0;
+		}
+		
+		if( $multi_part == 1 ){
+			remove_action( &#x27;ninja_forms_edit_field_ul&#x27;, &#x27;ninja_forms_edit_field_output_ul&#x27; );
+			add_action( &#x27;ninja_forms_edit_field_ul&#x27;, &#x27;ninja_forms_edit_field_output_mp_ul&#x27; );
+			add_action( &#x27;ninja_forms_edit_field_before_ul&#x27;, &#x27;ninja_forms_edit_field_open_div&#x27; );
+		}
+	}
+}
+
+function ninja_forms_edit_field_output_mp_ul( $form_id ){
+	
+	$all_fields = ninja_forms_get_fields_by_form_id( $form_id );
+	if( is_array( $all_fields ) AND !empty( $all_fields ) ){
+		$pages = array();
+		$this_page = array();
+		$x = 0;
+		foreach( $all_fields as $field ){
+			if( $field[&#x27;type&#x27;] == &#x27;_page_divider&#x27; ){
+				$x++;
+			}
+			$pages[$x][] = $field[&#x27;id&#x27;];
+		}
+		
+		if( isset( $_REQUEST[&#x27;current_page&#x27;] ) ){
+			$current_page = $_REQUEST[&#x27;current_page&#x27;];
+		}else{
+			$current_page = 1;
+		}
+
+		if( is_array( $pages ) AND !empty( $pages ) ){
+			foreach( $pages as $page =&gt; $fields ){
+				?&gt;
+				&lt;ul class=&quot;menu ninja-forms-field-list&quot; id=&quot;ninja_forms_field_list_&lt;?php echo $page;?&gt;&quot; data-order=&quot;&lt;?php echo $page;?&gt;&quot;&gt;
+			  		&lt;?php
+						if( is_array( $fields ) AND !empty( $fields ) ){
+							foreach( $fields as $field_id ){
+								ninja_forms_edit_field( $field_id );
+							}
+						}
+					?&gt;
+				&lt;/ul&gt;
+				&lt;?php
+			}
+
+		}
+	}
+
+}</pre></details></body></html>

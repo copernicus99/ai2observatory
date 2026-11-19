@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Admin/Page.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Admin/Page.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+abstract class AC_Admin_Page {
+
+	/**
+	 * Should this page be displayed when no page is selected
+	 *
+	 * @var bool
+	 */
+	private $default;
+
+	/**
+	 * @var string
+	 */
+	private $slug;
+
+	/**
+	 * @var string
+	 */
+	private $label;
+
+	/**
+	 * @var bool False when menu page is hidden in menu
+	 */
+	private $show_in_menu = true;
+
+	/**
+	 * Display pages
+	 *
+	 * @return void
+	 */
+	public abstract function display();
+
+	/**
+	 * Is this the default to to display when no active page is present
+	 *
+	 * @return bool
+	 */
+	public function is_default() {
+		return (bool) $this-&gt;default;
+	}
+
+	public function set_default( $default ) {
+		$this-&gt;default = (bool) $default;
+
+		return $this;
+	}
+
+	public function get_slug() {
+		return $this-&gt;slug;
+	}
+
+	public function set_slug( $slug ) {
+		$this-&gt;slug = sanitize_key( $slug );
+
+		return $this;
+	}
+
+	public function show_in_menu() {
+		return $this-&gt;show_in_menu;
+	}
+
+	public function set_show_in_menu( $show ) {
+		$this-&gt;show_in_menu = (bool) $show;
+
+		return $this;
+	}
+
+	public function get_label() {
+		return $this-&gt;label;
+	}
+
+	public function set_label( $label ) {
+		$this-&gt;label = $label;
+
+		return $this;
+	}
+
+	/**
+	 * @return string URL
+	 */
+	public function get_link() {
+		return add_query_arg( array( &#x27;tab&#x27; =&gt; $this-&gt;slug ), AC()-&gt;admin()-&gt;get_settings_url() );
+	}
+
+	public function is_current_screen() {
+		return AC()-&gt;admin()-&gt;is_current_page( $this-&gt;get_slug() );
+	}
+
+	/**
+	 * Cast page to an array
+	 *
+	 * @return array
+	 */
+	public function to_array() {
+		return array(
+			&#x27;slug&#x27;    =&gt; $this-&gt;get_slug(),
+			&#x27;label&#x27;   =&gt; $this-&gt;get_label(),
+			&#x27;default&#x27; =&gt; $this-&gt;is_default(),
+		);
+	}
+
+	/**
+	 * Show the label of the page
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return $this-&gt;get_label();
+	}
+
+	/**
+	 * @param string $action
+	 *
+	 * @return bool
+	 */
+	public function verify_nonce( $action ) {
+		return wp_verify_nonce( filter_input( INPUT_POST, &#x27;_ac_nonce&#x27; ), $action );
+	}
+
+	/**
+	 * Nonce Field
+	 */
+	public function nonce_field( $action ) {
+		wp_nonce_field( $action, &#x27;_ac_nonce&#x27;, false );
+	}
+
+}
+</pre></details></body></html>

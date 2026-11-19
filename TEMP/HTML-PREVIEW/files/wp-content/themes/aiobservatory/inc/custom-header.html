@@ -1,0 +1,152 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/inc/custom-header.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/inc/custom-header.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;style id=&quot;twentyseventeen-custom-header-styles&quot; type=&quot;text/css&quot;&gt;
+	
+		.site-title,
+		.site-description {
+			position: absolute;
+			clip: rect(1px, 1px, 1px, 1px);
+		}
+	
+		.site-title a,
+		.colors-dark .site-title a,
+		.colors-custom .site-title a,
+		body.has-header-image .site-title a,
+		body.has-header-video .site-title a,
+		body.has-header-image.colors-dark .site-title a,
+		body.has-header-video.colors-dark .site-title a,
+		body.has-header-image.colors-custom .site-title a,
+		body.has-header-video.colors-custom .site-title a,
+		.site-description,
+		.colors-dark .site-description,
+		.colors-custom .site-description,
+		body.has-header-image .site-description,
+		body.has-header-video .site-description,
+		body.has-header-image.colors-dark .site-description,
+		body.has-header-video.colors-dark .site-description,
+		body.has-header-image.colors-custom .site-description,
+		body.has-header-video.colors-custom .site-description {
+			color: #;
+		}
+	
+	&lt;/style&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Custom header implementation
+ *
+ * @link https://codex.wordpress.org/Custom_Headers
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+/**
+ * Set up the WordPress core custom header feature.
+ *
+ * @uses twentyseventeen_header_style()
+ */
+function twentyseventeen_custom_header_setup() {
+
+	/**
+	 * Filter Twenty Seventeen custom-header support arguments.
+	 *
+	 * @since Twenty Seventeen 1.0
+	 *
+	 * @param array $args {
+	 *     An array of custom-header support arguments.
+	 *
+	 *     @type string $default-image     		Default image of the header.
+	 *     @type string $default_text_color     Default color of the header text.
+	 *     @type int    $width                  Width in pixels of the custom header image. Default 954.
+	 *     @type int    $height                 Height in pixels of the custom header image. Default 1300.
+	 *     @type string $wp-head-callback       Callback function used to styles the header image and text
+	 *                                          displayed on the blog.
+	 *     @type string $flex-height     		Flex support for height of header.
+	 * }
+	 */
+	add_theme_support( &#x27;custom-header&#x27;, apply_filters( &#x27;twentyseventeen_custom_header_args&#x27;, array(
+		&#x27;default-image&#x27;      =&gt; get_parent_theme_file_uri( &#x27;/assets/images/header.jpg&#x27; ),
+		&#x27;width&#x27;              =&gt; 2000,
+		&#x27;height&#x27;             =&gt; 1200,
+		&#x27;flex-height&#x27;        =&gt; true,
+		&#x27;video&#x27;              =&gt; true,
+		&#x27;wp-head-callback&#x27;   =&gt; &#x27;twentyseventeen_header_style&#x27;,
+	) ) );
+
+	register_default_headers( array(
+		&#x27;default-image&#x27; =&gt; array(
+			&#x27;url&#x27;           =&gt; &#x27;%s/assets/images/header.jpg&#x27;,
+			&#x27;thumbnail_url&#x27; =&gt; &#x27;%s/assets/images/header.jpg&#x27;,
+			&#x27;description&#x27;   =&gt; __( &#x27;Default Header Image&#x27;, &#x27;twentyseventeen&#x27; ),
+		),
+	) );
+}
+add_action( &#x27;after_setup_theme&#x27;, &#x27;twentyseventeen_custom_header_setup&#x27; );
+
+if ( ! function_exists( &#x27;twentyseventeen_header_style&#x27; ) ) :
+/**
+ * Styles the header image and text displayed on the blog.
+ *
+ * @see twentyseventeen_custom_header_setup().
+ */
+function twentyseventeen_header_style() {
+	$header_text_color = get_header_textcolor();
+
+	// If no custom options for text are set, let&#x27;s bail.
+	// get_header_textcolor() options: add_theme_support( &#x27;custom-header&#x27; ) is default, hide text (returns &#x27;blank&#x27;) or any hex value.
+	if ( get_theme_support( &#x27;custom-header&#x27;, &#x27;default-text-color&#x27; ) === $header_text_color ) {
+		return;
+	}
+
+	// If we get this far, we have custom styles. Let&#x27;s do this.
+	?&gt;
+	&lt;style id=&quot;twentyseventeen-custom-header-styles&quot; type=&quot;text/css&quot;&gt;
+	&lt;?php
+		// Has the text been hidden?
+		if ( &#x27;blank&#x27; === $header_text_color ) :
+	?&gt;
+		.site-title,
+		.site-description {
+			position: absolute;
+			clip: rect(1px, 1px, 1px, 1px);
+		}
+	&lt;?php
+		// If the user has set a custom color for the text use that.
+		else :
+	?&gt;
+		.site-title a,
+		.colors-dark .site-title a,
+		.colors-custom .site-title a,
+		body.has-header-image .site-title a,
+		body.has-header-video .site-title a,
+		body.has-header-image.colors-dark .site-title a,
+		body.has-header-video.colors-dark .site-title a,
+		body.has-header-image.colors-custom .site-title a,
+		body.has-header-video.colors-custom .site-title a,
+		.site-description,
+		.colors-dark .site-description,
+		.colors-custom .site-description,
+		body.has-header-image .site-description,
+		body.has-header-video .site-description,
+		body.has-header-image.colors-dark .site-description,
+		body.has-header-video.colors-dark .site-description,
+		body.has-header-image.colors-custom .site-description,
+		body.has-header-video.colors-custom .site-description {
+			color: #&lt;?php echo esc_attr( $header_text_color ); ?&gt;;
+		}
+	&lt;?php endif; ?&gt;
+	&lt;/style&gt;
+	&lt;?php
+}
+endif; // End of twentyseventeen_header_style.
+
+/**
+ * Customize video play/pause button in the custom header.
+ */
+function twentyseventeen_video_controls( $settings ) {
+	$settings[&#x27;l10n&#x27;][&#x27;play&#x27;] = &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Play background video&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;play&#x27; ) );
+	$settings[&#x27;l10n&#x27;][&#x27;pause&#x27;] = &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Pause background video&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;pause&#x27; ) );
+	return $settings;
+}
+add_filter( &#x27;header_video_settings&#x27;, &#x27;twentyseventeen_video_controls&#x27; );
+</pre></details></body></html>

@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/lib/Conversion/Calculations.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/lib/Conversion/Calculations.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+final class NF_Conversion_Calculations implements NF_Conversion
+{
+    private $operations = array(
+        &#x27;add&#x27; =&gt; &#x27;+&#x27;,
+        &#x27;subtract&#x27; =&gt; &#x27;-&#x27;,
+        &#x27;multiply&#x27; =&gt; &#x27;*&#x27;,
+        &#x27;divide&#x27; =&gt; &#x27;/&#x27;
+    );
+    private $form = array();
+
+    private $tax_rate;
+
+    public function __construct( $form_data )
+    {
+        $this-&gt;form = $form_data;
+    }
+
+    public function run()
+    {
+        // Extract Calculations from Fields
+        foreach( $this-&gt;form[ &#x27;fields&#x27; ] as $key =&gt; $field ){
+
+            if( &#x27;tax&#x27; == $field[ &#x27;type&#x27; ] ){
+                $this-&gt;set_tax( $field[ &#x27;default_value&#x27; ] );
+                continue;
+            }
+
+            if( &#x27;calc&#x27; != $field[ &#x27;type&#x27; ] ) continue;
+
+            $calculation = array(
+                &#x27;order&#x27; =&gt; $key,
+                &#x27;name&#x27;  =&gt; $field[ &#x27;key&#x27; ],
+                &#x27;eq&#x27;    =&gt; &#x27;&#x27;,
+                &#x27;dec&#x27; =&gt; $field[ &#x27;calc_places&#x27; ]
+            );
+
+            switch( $field[ &#x27;calc_method&#x27; ] ){
+                case &#x27;eq&#x27;:
+                    $calculation[ &#x27;eq&#x27; ] = $field[ &#x27;calc_eq&#x27; ];
+                    break;
+                case &#x27;fields&#x27;:
+                    $calculation[ &#x27;eq&#x27; ] = trim( array_reduce( $field[ &#x27;calc&#x27; ], array( $this, &#x27;reduce_operations&#x27; ), &#x27;&#x27; ) );
+                    break;
+                case &#x27;auto&#x27;:
+                    $calculation[ &#x27;eq&#x27; ] = trim( array_reduce( $this-&gt;form[ &#x27;fields&#x27; ], array( $this, &#x27;reduce_auto_total&#x27; ), &#x27;&#x27; ) );
+                    break;
+            }
+
+            // Remove any leading `+`.
+            $calculation[ &#x27;eq&#x27; ] = ltrim( $calculation[ &#x27;eq&#x27; ], &#x27;+&#x27; );
+
+            // Handle opinionated &quot;Total&quot; calc and tax field.
+            if( &#x27;total&#x27; == $field[ &#x27;calc_name&#x27; ] &amp;&amp; isset( $this-&gt;tax_rate ) ){
+                $calculation[ &#x27;eq&#x27; ] = &quot;( {$calculation[ &#x27;eq&#x27; ]} ) * {$this-&gt;tax_rate}&quot;;
+            }
+
+            $this-&gt;form[ &#x27;settings&#x27; ][ &#x27;calculations&#x27; ][] = $calculation;
+        }
+
+        // Replace Field IDs with Merge Tags
+        if( isset( $this-&gt;form[ &#x27;settings&#x27; ][ &#x27;calculations&#x27; ] ) ) {
+            foreach ($this-&gt;form[&#x27;fields&#x27;] as $field) {
+
+                if( ! isset( $field[ &#x27;id&#x27; ] ) ) continue;
+
+                $search = &#x27;field_&#x27; . $field[&#x27;id&#x27;];
+                $replace = $this-&gt;merge_tag( $field );
+
+                foreach ($this-&gt;form[&#x27;settings&#x27;][&#x27;calculations&#x27;] as $key =&gt; $calculation) {
+                    $this-&gt;form[&#x27;settings&#x27;][&#x27;calculations&#x27;][ $key ][&#x27;eq&#x27;] = str_replace($search, $replace, $calculation[&#x27;eq&#x27;]);
+                }
+            }
+        }
+
+        // Convert Calc Fields to HTML Fields for displaying Calculations
+        foreach( $this-&gt;form[ &#x27;fields&#x27; ] as $key =&gt; $field ){
+
+            if( &#x27;tax&#x27; == $field[ &#x27;type&#x27; ] ){
+                $this-&gt;form[ &#x27;fields&#x27; ][ $key ][ &#x27;type&#x27; ] = &#x27;html&#x27;;
+                $this-&gt;form[ &#x27;fields&#x27; ][ $key ][ &#x27;default&#x27; ] = &quot;&lt;strong&gt;{$field[ &#x27;label&#x27; ]}&lt;/strong&gt;&lt;br /&gt; {$field[ &#x27;default_value&#x27; ]}&quot;;
+                continue;
+            }
+
+            if( &#x27;calc&#x27; != $field[ &#x27;type&#x27; ] ) continue;
+
+            $this-&gt;form[ &#x27;fields&#x27; ][ $key ][ &#x27;type&#x27; ] = &#x27;html&#x27;;
+
+            if( &#x27;html&#x27; == $field[ &#x27;calc_display_type&#x27; ] ){
+                // TODO: HTML Output fields seem to loose the label.
+                $search = &#x27;[ninja_forms_calc]&#x27;;
+                $replace = $this-&gt;merge_tag( $field );
+                $subject = $field[ &#x27;calc_display_html&#x27; ];
+                $this-&gt;form[ &#x27;fields&#x27; ][ $key ][ &#x27;default&#x27; ] = str_replace( $search, $replace, $subject );
+            } else {
+                $this-&gt;form[ &#x27;fields&#x27; ][ $key ][ &#x27;default&#x27; ] = &#x27;&lt;strong&gt;&#x27; . $field[ &#x27;label&#x27; ] . &#x27;&lt;/strong&gt;&lt;br /&gt;&#x27; . $this-&gt;merge_tag( $field );
+            }
+        }
+
+        return $this-&gt;form;
+    }
+
+    private function reduce_operations( $eq, $calc )
+    {
+        $operation = $calc[ &#x27;op&#x27; ];
+        return &#x27; &#x27; . $eq . $this-&gt;operations[ $operation ] . &#x27; field_&#x27; . $calc[ &#x27;field&#x27; ] . &#x27; &#x27;;
+    }
+
+    private function reduce_auto_total( $eq, $field )
+    {
+        if( ! isset( $field[ &#x27;calc_auto_include&#x27; ] ) || 1 != $field[ &#x27;calc_auto_include&#x27; ] ) return $eq;
+        return $eq . &#x27;+ {field:&#x27; . $field[ &#x27;key&#x27; ] . &#x27;:calc} &#x27;;
+    }
+
+    private function merge_tag( $field )
+    {
+        $tag = $field[ &#x27;key&#x27; ];
+        if( &#x27;calc&#x27; == $field[ &#x27;type&#x27; ] ){
+            return &#x27;{calc:&#x27; . $tag . &#x27;}&#x27;;
+        } else {
+            return &#x27;{field:&#x27; . $tag . &#x27;:calc}&#x27;;
+        }
+    }
+
+    /**
+     * Sets a float formatted tax rate.
+     * @param string|int|float $tax
+     *
+     * @return float|int
+     */
+    private function set_tax( $tax )
+    {
+        // ex 15% -&gt; 1.15
+        return $this-&gt;tax_rate = ( floatval( $tax ) + 100 ) / 100;
+    }
+}
+
+add_filter( &#x27;ninja_forms_after_upgrade_settings&#x27;, &#x27;ninja_forms_conversion_calculations&#x27; );
+function ninja_forms_conversion_calculations( $form_data ){
+    $conversion = new NF_Conversion_Calculations( $form_data );
+    return $conversion-&gt;run();
+}
+</pre></details></body></html>

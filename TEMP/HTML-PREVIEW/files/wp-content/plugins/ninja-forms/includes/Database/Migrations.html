@@ -1,0 +1,158 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/Migrations.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/Migrations.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_Database_Migrations
+{
+    protected $migrations = array();
+
+    public function __construct()
+    {
+        $this-&gt;migrations[ &#x27;forms&#x27; ]         = new NF_Database_Migrations_Forms();
+        $this-&gt;migrations[ &#x27;form_meta&#x27; ]     = new NF_Database_Migrations_FormMeta();
+        $this-&gt;migrations[ &#x27;fields&#x27; ]        = new NF_Database_Migrations_Fields();
+        $this-&gt;migrations[ &#x27;field_meta&#x27; ]    = new NF_Database_Migrations_FieldMeta();
+        $this-&gt;migrations[ &#x27;actions&#x27; ]       = new NF_Database_Migrations_Actions();
+        $this-&gt;migrations[ &#x27;action_meta&#x27; ]   = new NF_Database_Migrations_ActionMeta();
+        $this-&gt;migrations[ &#x27;objects&#x27; ]       = new NF_Database_Migrations_Objects();
+        $this-&gt;migrations[ &#x27;object_meta&#x27; ]   = new NF_Database_Migrations_ObjectMeta();
+        $this-&gt;migrations[ &#x27;relationships&#x27; ] = new NF_Database_Migrations_Relationships();
+        $this-&gt;migrations[ &#x27;settings&#x27; ]      = new NF_Database_Migrations_Settings();
+    }
+
+    public function migrate()
+    {
+        foreach( $this-&gt;migrations as $migration ){
+            $migration-&gt;_run();
+        }
+    }
+
+    public function nuke( $areYouSure = FALSE, $areYouReallySure = FALSE )
+    {
+        if( ! $areYouSure || ! $areYouReallySure ) return;
+
+        global $wpdb;
+
+        if( ! function_exists( &#x27;is_multisite&#x27; ) || ! is_multisite() ){
+            $this-&gt;_nuke();
+            return;
+        }
+
+        $blog_ids = $wpdb-&gt;get_col( &quot;SELECT blog_id FROM $wpdb-&gt;blogs&quot; );
+
+        foreach( $blog_ids as $blog_id ){
+            switch_to_blog( $blog_id );
+            $this-&gt;_nuke();
+            restore_current_blog(); // Call after EVERY switch_to_blog().
+        }
+    }
+
+    private function _nuke()
+    {
+        global $wpdb;
+
+        /* Drop THREE Tables */
+        foreach( $this-&gt;migrations as $migration ){
+            $migration-&gt;_drop();
+        }
+
+        /* Delete form caches */
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;nf_form_%&#x27;&quot; );
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;_transient_nf_form_%&#x27;&quot; );
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;_transient_timeout_nf_form_%&#x27;&quot; );
+    }
+
+    public function nuke_settings( $areYouSure = FALSE, $areYouReallySure = FALSE )
+    {
+        if( ! $areYouSure || ! $areYouReallySure ) return;
+
+        global $wpdb;
+
+        if( ! function_exists( &#x27;is_multisite&#x27; ) || ! is_multisite() ){
+            $this-&gt;_nuke_settings();
+            return;
+        }
+
+        $blog_ids = $wpdb-&gt;get_col( &quot;SELECT blog_id FROM $wpdb-&gt;blogs&quot; );
+
+        foreach( $blog_ids as $blog_id ){
+            switch_to_blog( $blog_id );
+            $this-&gt;_nuke_settings();
+            restore_current_blog(); // Call after EVERY switch_to_blog().
+        }
+    }
+
+    private function _nuke_settings()
+    {
+        global $wpdb;
+        /* Delete known options */
+        delete_option( &#x27;nf_admin_notice&#x27; );
+        delete_option( &#x27;ninja_forms_settings&#x27; );
+        delete_option( &#x27;ninja_forms_load_deprecated&#x27; );
+        delete_option( &#x27;ninja_forms_allow_tracking&#x27; );
+        delete_option( &#x27;ninja_forms_do_not_allow_tracking&#x27; );
+
+        /* Delete possible options */
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;wp_nf_%&#x27;&quot; );
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;ninja_forms_%&#x27;&quot; );
+
+        /* Delete background processing flags */
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;wp_nf_update_fields_%&#x27;&quot; );
+    }
+
+    public function nuke_deprecated(  $areYouSure = FALSE, $areYouReallySure = FALSE  )
+    {
+        if( ! $areYouSure || ! $areYouReallySure ) return;
+
+        global $wpdb;
+
+        if( ! function_exists( &#x27;is_multisite&#x27; ) || ! is_multisite() ){
+            $this-&gt;_nuke_deprecated();
+            return;
+        }
+
+        $blog_ids = $wpdb-&gt;get_col( &quot;SELECT blog_id FROM $wpdb-&gt;blogs&quot; );
+
+        foreach( $blog_ids as $blog_id ){
+            switch_to_blog( $blog_id );
+            $this-&gt;_nuke_deprecated();
+            restore_current_blog(); // Call after EVERY switch_to_blog().
+        }
+    }
+
+    private function _nuke_deprecated()
+    {
+        global $wpdb;
+
+        /* Drop Deprecated Tables (v2.9.x) */
+        $wpdb-&gt;query( &quot;DROP TABLE IF EXISTS `{$wpdb-&gt;prefix}nf_objectmeta`&quot; );
+        $wpdb-&gt;query( &quot;DROP TABLE IF EXISTS `{$wpdb-&gt;prefix}nf_objects`&quot; );
+        $wpdb-&gt;query( &quot;DROP TABLE IF EXISTS `{$wpdb-&gt;prefix}nf_relationships`&quot; );
+        $wpdb-&gt;query( &quot;DROP TABLE IF EXISTS `{$wpdb-&gt;prefix}ninja_forms_fav_fields`&quot; );
+        $wpdb-&gt;query( &quot;DROP TABLE IF EXISTS `{$wpdb-&gt;prefix}ninja_forms_fields`&quot; );
+
+        /* Delete Deprecated Options (v2.9.x) */
+        delete_option( &#x27;nf_upgrade_notice&#x27; );
+        delete_option( &#x27;nf_converted_subs&#x27; );
+        delete_option( &#x27;nf_converted_forms&#x27; );
+        delete_option( &#x27;nf_convert_subs_num&#x27; );
+        delete_option( &#x27;nf_convert_subs_step&#x27; );
+        delete_option( &#x27;nf_convert_subs_step&#x27; );
+        delete_option( &#x27;nf_email_fav_updated&#x27; );
+        delete_option( &#x27;nf_database_migrations&#x27; );
+        delete_option( &#x27;nf_converted_form_reset&#x27; );
+        delete_option( &#x27;nf_version_upgraded_from&#x27; );
+        delete_option( &#x27;nf_convert_forms_complete&#x27; );
+        delete_option( &#x27;nf_convert_notifications_forms&#x27; );
+        delete_option( &#x27;nf_convert_notifications_complete&#x27; );
+        delete_option( &#x27;nf_update_email_settings_complete&#x27; );
+
+        /* Delete Deprecarted Upgrade Options (v2.9.x) */
+        $wpdb-&gt;query( &quot;DELETE FROM `{$wpdb-&gt;options}` WHERE `option_name` LIKE &#x27;nf_upgrade_%&#x27;&quot; );
+
+        /* Maybe Remove Deprecated Scheduled Cron (v2.9.x) */
+        if( $timestamp = wp_next_scheduled( &#x27;ninja_forms_daily_action&#x27; ) ){
+            wp_unschedule_event( $timestamp, &#x27;ninja_forms_daily_action&#x27; );
+        }
+    }
+
+}
+</pre></details></body></html>

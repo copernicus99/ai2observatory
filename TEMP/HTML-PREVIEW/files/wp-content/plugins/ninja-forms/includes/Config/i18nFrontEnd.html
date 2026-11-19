@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/i18nFrontEnd.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/i18nFrontEnd.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+global $wp_locale;
+
+$date_format = Ninja_Forms()-&gt;get_setting( &#x27;date_format&#x27; );
+if( ! $date_format ) $date_format = get_option( &#x27;date_format&#x27; );
+
+return apply_filters( &#x27;ninja_forms_i18n_front_end&#x27;, array(
+
+    &#x27;ninjaForms&#x27;                            =&gt; __( &#x27;Ninja Forms&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;changeEmailErrorMsg&#x27;                   =&gt; __( &#x27;Please enter a valid email address!&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;changeDateErrorMsg&#x27;                   =&gt; __( &#x27;Please enter a valid date!&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;confirmFieldErrorMsg&#x27;                  =&gt; __( &#x27;These fields must match!&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldNumberNumMinError&#x27;                =&gt; __( &#x27;Number Min Error&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldNumberNumMaxError&#x27;                =&gt; __( &#x27;Number Max Error&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldNumberIncrementBy&#x27;                =&gt; __( &#x27;Please increment by &#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldTextareaRTEInsertLink&#x27;            =&gt; __( &#x27;Insert Link&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldTextareaRTEInsertMedia&#x27;           =&gt; __( &#x27;Insert Media&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fieldTextareaRTESelectAFile&#x27;           =&gt; __( &#x27;Select a file&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;formErrorsCorrectErrors&#x27;               =&gt; __( &#x27;Please correct errors before submitting this form.&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;validateRequiredField&#x27;                 =&gt; __( &#x27;This is a required field.&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;honeypotHoneypotError&#x27;                 =&gt; __( &#x27;Honeypot Error&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fileUploadOldCodeFileUploadInProgress&#x27; =&gt; __( &#x27;File Upload in Progress.&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;fileUploadOldCodeFileUpload&#x27;           =&gt; __( &#x27;FILE UPLOAD&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;currencySymbol&#x27;                        =&gt; Ninja_Forms()-&gt;get_setting( &#x27;currency_symbol&#x27; ),
+    &#x27;fieldsMarkedRequired&#x27;                  =&gt; sprintf( __( &#x27;Fields marked with an %s*%s are required&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;span class=&quot;ninja-forms-req-symbol&quot;&gt;&#x27;, &#x27;&lt;/span&gt;&#x27; ),
+    &#x27;thousands_sep&#x27;                         =&gt; $wp_locale-&gt;number_format[ &#x27;thousands_sep&#x27; ],
+    &#x27;decimal_point&#x27;                         =&gt; $wp_locale-&gt;number_format[ &#x27;decimal_point&#x27; ],
+    &#x27;dateFormat&#x27;                            =&gt; $date_format,
+    &#x27;startOfWeek&#x27;                           =&gt; get_option( &#x27;start_of_week&#x27; ),
+    &#x27;of&#x27;                                    =&gt; __( &#x27;of&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;previousMonth&#x27;                         =&gt; __( &#x27;Previous Month&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;nextMonth&#x27;                             =&gt; __( &#x27;Next Month&#x27;, &#x27;ninja-forms&#x27; ),
+    &#x27;months&#x27;                                =&gt; array(
+                                                __( &#x27;January&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;February&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;March&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;April&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;May&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;June&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;July&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;August&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;September&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;October&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;November&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;December&#x27;, &#x27;ninja-forms&#x27; )
+                                            ),
+    &#x27;monthsShort&#x27;                           =&gt; array(
+                                                __( &#x27;Jan&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Feb&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Mar&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Apr&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;May&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Jun&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Jul&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Aug&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Sep&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Oct&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Nov&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Dec&#x27;, &#x27;ninja-forms&#x27; ),
+                                            ),
+    &#x27;weekdays&#x27;                              =&gt; array(
+                                                __( &#x27;Sunday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Monday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Tuesday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Wednesday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Thursday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Friday&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Saturday&#x27;, &#x27;ninja-forms&#x27; ),
+                                            ),
+    &#x27;weekdaysShort&#x27;                         =&gt; array(
+                                                __( &#x27;Sun&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Mon&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Tue&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Wed&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Thu&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Fri&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Sat&#x27;, &#x27;ninja-forms&#x27; ),
+                                            ),
+    &#x27;weekdaysMin&#x27;                           =&gt; array(
+                                                __( &#x27;Su&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Mo&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Tu&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;We&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Th&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Fr&#x27;, &#x27;ninja-forms&#x27; ),
+                                                __( &#x27;Sa&#x27;, &#x27;ninja-forms&#x27; )
+                                            )
+));
+</pre></details></body></html>

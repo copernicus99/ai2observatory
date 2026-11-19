@@ -1,0 +1,152 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/spam.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/spam.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[req]&quot; value=&quot;1&quot;&gt;
+	&lt;p class=&quot;description description-wide&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code ninja-forms-field-label&quot; name=&quot;ninja_forms_field_[label]&quot; id=&quot;ninja_forms_field__label&quot; value=&quot;&quot;&gt;
+		&lt;/label&gt;
+	&lt;/p&gt;
+	&lt;p class=&quot;description description-wide&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat&quot; name=&quot;ninja_forms_field_[answer]&quot; id=&quot;&quot; value=&quot;&quot;&gt;
+		&lt;/label&gt;
+	&lt;/p&gt;
+	
+	&lt;input id=&quot;ninja_forms_field_&quot; name=&quot;ninja_forms_field_&quot; type=&quot;text&quot; class=&quot;&quot; value=&quot;&quot; rel=&quot;&quot; /&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_spam(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Anti-Spam&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_spam_display&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; false,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; false,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;display_label&#x27; =&gt; true,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_spam_pre_process&#x27;,
+		&#x27;process_field&#x27; =&gt; false,
+		&#x27;limit&#x27; =&gt; 1,
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;name&#x27; =&gt; &#x27;label&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Spam Question&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;width&#x27; =&gt; &#x27;wide&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;spam_answer&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Spam Answer&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;width&#x27; =&gt; &#x27;wide&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;,
+			),
+		),
+		&#x27;req&#x27; =&gt; true,
+	);
+
+	ninja_forms_register_field(&#x27;_spam&#x27;, $args);
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_spam&#x27;);
+
+function ninja_forms_field_spam_edit( $field_id, $data ){
+	if(isset($data[&#x27;label&#x27;])){
+		$question = $data[&#x27;label&#x27;];
+	}else{
+		$question = &#x27;&#x27;;
+	}
+
+	if(isset($data[&#x27;answer&#x27;])){
+		$answer = $data[&#x27;answer&#x27;];
+	}else{
+		$answer = &#x27;&#x27;;
+	}
+	?&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[req]&quot; value=&quot;1&quot;&gt;
+	&lt;p class=&quot;description description-wide&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;?php _e( &#x27;Spam Question&#x27; , &#x27;ninja-forms&#x27;); ?&gt;&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code ninja-forms-field-label&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[label]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_label&quot; value=&quot;&lt;?php echo stripslashes( $question );?&gt;&quot;&gt;
+		&lt;/label&gt;
+	&lt;/p&gt;
+	&lt;p class=&quot;description description-wide&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;?php _e( &#x27;Spam Answer&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[answer]&quot; id=&quot;&quot; value=&quot;&lt;?php echo $answer;?&gt;&quot;&gt;
+		&lt;/label&gt;
+	&lt;/p&gt;
+	&lt;?php
+}
+
+function ninja_forms_field_spam_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+	if(isset($data[&#x27;default_value&#x27;])){
+		$default_value = $data[&#x27;default_value&#x27;];
+	}else{
+		$default_value = &#x27;&#x27;;
+	}
+
+	if(isset($data[&#x27;show_field&#x27;])){
+		$show_field = $data[&#x27;show_field&#x27;];
+	}else{
+		$show_field = true;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+	if(isset($data[&#x27;label_pos&#x27;])){
+		$label_pos = $data[&#x27;label_pos&#x27;];
+	}else{
+		$label_pos = &quot;left&quot;;
+	}
+
+	if(isset($data[&#x27;label&#x27;])){
+		$label = $data[&#x27;label&#x27;];
+	}else{
+		$label = &#x27;&#x27;;
+	}
+
+	if($label_pos == &#x27;inside&#x27;){
+		$default_value = $label;
+	}
+
+	?&gt;
+	&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;text&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; /&gt;
+	&lt;?php
+
+}
+
+function ninja_forms_field_spam_pre_process( $field_id, $user_value ){
+	global $ninja_forms_processing;
+
+	$plugin_settings = nf_get_settings();
+	if(isset($plugin_settings[&#x27;spam_error&#x27;])){
+		$spam_error = __( $plugin_settings[&#x27;spam_error&#x27;], &#x27;ninja-forms&#x27; );
+	}
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_data = $field_row[&#x27;data&#x27;];
+	$spam_answer = $field_data[&#x27;spam_answer&#x27;];
+
+	$form_row = ninja_forms_get_form_by_field_id($field_id);
+	$form_id = $form_row[&#x27;id&#x27;];
+
+	if( $ninja_forms_processing-&gt;get_action() != &#x27;save&#x27; AND $ninja_forms_processing-&gt;get_action() != &#x27;mp_save&#x27; AND !isset($_POST[&#x27;_wp_login&#x27;]) AND $user_value != $spam_answer){
+		if( is_object( $ninja_forms_processing)){
+			if( $user_value != &#x27;&#x27; ){
+				$ninja_forms_processing-&gt;add_error(&#x27;spam-general&#x27;, $spam_error, &#x27;general&#x27;);
+				$ninja_forms_processing-&gt;add_error(&#x27;spam-&#x27;.$field_id, $spam_error, $field_id);				
+			}
+		}
+	}
+}</pre></details></body></html>

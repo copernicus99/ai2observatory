@@ -1,0 +1,286 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/display/form/confirm.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/display/form/confirm.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;div id=&quot;mp_confirm_msg&quot; class=&quot;ninja-forms-mp-confirm-msg&quot;&gt;&lt;/div&gt;
+			
+			&lt;input type=&quot;hidden&quot; name=&quot;_sub_id&quot; value=&quot;&quot;&gt;
+			
+								&lt;div class=&quot;&quot; style=&quot;&quot; id=&quot;ninja_forms_field__div_wrap&quot; data-visible=&quot;&quot;&gt;
+								
+								&lt;/div&gt;
+								
+			&lt;input type=&quot;hidden&quot; id=&quot;mp_confirm_page&quot; name=&quot;_mp_confirm&quot; value=&quot;1&quot;&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+/*
+ *
+ * Function that adds a filter to hide the form if the confirm-submit error has been set.
+ *
+ * @since 1.0.3
+ * @return void
+ */
+
+function ninja_forms_mp_confirm_page_check_visibility( $form_id ){
+	global $ninja_forms_processing;
+
+	if( is_object( $ninja_forms_processing ) ){
+		// Hide the form if the confirm-submit error is set.
+		if( $ninja_forms_processing-&gt;get_error( &#x27;confirm-submit&#x27; ) ){ // Check for the confirm error
+			// Add a filter to the form display that will hide the form.
+			add_filter( &#x27;ninja_forms_display_fields_wrap_visibility&#x27;, &#x27;ninja_forms_mp_hide_form&#x27;, 11, 2 );
+			// Add a filter to the breadcrumb display that will hide them.
+			add_filter( &#x27;ninja_forms_mp_display_breadcrumbs_visbility&#x27;, &#x27;ninja_forms_mp_hide_form&#x27;, 11, 2 );
+			// Add a filter to the page title display that will hide them.
+			add_filter( &#x27;ninja_forms_display_mp_page_title&#x27;, &#x27;ninja_forms_mp_hide_page_titles&#x27;, 10, 3 );
+			// Display the confirmation page.
+
+			$html = ninja_forms_return_echo( &#x27;ninja_forms_mp_output_confirm_page&#x27;, $form_id );
+			echo $html;
+
+			// Remove our original form fields from the page
+			remove_all_actions( &#x27;ninja_forms_display_before_fields&#x27; );
+			remove_all_actions( &#x27;ninja_forms_display_fields&#x27; );
+			remove_all_actions( &#x27;ninja_forms_display_after_fields&#x27; );
+
+			//$ninja_forms_processing-&gt;remove_error( &#x27;confirm-submit&#x27; );
+		}
+	}
+}
+
+if ( !is_admin() ) {
+	add_action( &#x27;ninja_forms_display_after_open_form_tag&#x27;, &#x27;ninja_forms_mp_confirm_page_check_visibility&#x27;, 7 );	
+}
+
+/*
+ *
+ * Function that outputs a hidden field to mark that our confirm page has been seen and agreed to. This function will only output if the form is set to submit via ajax.
+ *
+ * @since 1.0.3 
+ * @returns void
+ */
+
+function ninja_forms_mp_output_hidden_confirm( $form_id ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_data = $ninja_forms_loading-&gt;get_all_form_settings();
+	} else {
+		$form_data = $ninja_forms_processing-&gt;get_all_form_settings();
+	}
+
+	if ( isset( $form_data[&#x27;ajax&#x27;] ) AND $form_data[&#x27;ajax&#x27;] == 1 ) {
+		echo &#x27;&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_form_&#x27;.$form_id.&#x27;_mp_confirm&quot; name=&quot;_mp_confirm&quot; value=&quot;0&quot;&gt;&#x27;;
+	}
+}
+
+if ( !is_admin() ) {
+	add_action( &#x27;ninja_forms_display_close_form_tag&#x27;, &#x27;ninja_forms_mp_output_hidden_confirm&#x27;, 5 );	
+}
+
+/*
+ *
+ * Function that filters the form visibility and sets it to 0 so that the form will be hidden.
+ *
+ * @since 1.0.3
+ * @return $display
+ */
+
+function ninja_forms_mp_hide_form( $display, $form_id ){
+	return 0;
+}
+
+ /**
+  * Function that filters the page title visibility by returning an empty string.
+  * 
+  * @since 1.0.3
+  * @return $title
+  */
+
+function ninja_forms_mp_hide_page_titles( $title, $form_id, $current_page ){
+ 	return &#x27;&#x27;;
+}
+
+ /**
+  * Function that outputs the HTML of the confirm page.
+  *
+  * @since 1.0.3
+  * @return $output
+  */
+
+function ninja_forms_mp_output_confirm_page( $form_id ){
+ 	global $nf_mp_confirm_title, $ninja_forms_processing, $ninja_forms_fields;
+ 	// Get the pages for the current form.
+ 	$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+
+	if( is_array( $pages ) ){
+		if( is_object( $ninja_forms_processing ) ){
+			?&gt;
+			&lt;div id=&quot;mp_confirm_msg&quot; class=&quot;ninja-forms-mp-confirm-msg&quot;&gt;&lt;?php echo $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_confirm_msg&#x27; );?&gt;&lt;/div&gt;
+			&lt;?php
+		}else{
+			$html = &#x27;&#x27;;	
+		}
+		$current_page = $ninja_forms_processing-&gt;get_extra_value( &#x27;_current_page&#x27; );
+
+		// Run our two loading action hooks.
+		do_action( &#x27;ninja_forms_display_pre_init&#x27;, $form_id );
+		do_action( &#x27;ninja_forms_display_init&#x27;, $form_id );
+
+		if( is_object( $ninja_forms_processing)){
+			$sub_id = $ninja_forms_processing-&gt;get_form_setting(&#x27;sub_id&#x27;);
+		}else if(isset($_REQUEST[&#x27;sub_id&#x27;])){
+			$sub_id = $_REQUEST[&#x27;sub_id&#x27;];
+		}else{
+			$sub_id = &#x27;&#x27;;
+		}
+
+		// Output our sub ID
+		if( ! empty( $sub_id ) ){
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;_sub_id&quot; value=&quot;&lt;?php echo $sub_id;?&gt;&quot;&gt;
+			&lt;?php			
+		}
+
+		foreach ( $pages as $num =&gt; $vars ) {
+			if( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27;)  ){
+				$show = ninja_forms_mp_check_page_conditional( $form_id, $num );
+			} else {
+				$show = true;
+			}
+
+			//if ( $show ) {
+				$show_title = true;
+				if ( isset ( $vars[&#x27;page_title&#x27;] ) AND $vars[&#x27;page_title&#x27;] != &#x27;&#x27; ) {
+					$first_field = $vars[&#x27;first_field&#x27;];
+					$nf_mp_confirm_title[$first_field] = $vars[&#x27;page_title&#x27;];
+					add_action( &#x27;ninja_forms_display_before_field&#x27;, &#x27;ninja_forms_mp_output_confirm_page_titles&#x27;, 10.5, 2 );
+				}
+				foreach ( $vars[&#x27;fields&#x27;] as $field_id ) {
+					$field = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+					if ( $show ) {
+						$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, $num );
+					} else {
+						$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, 0 );
+					}
+					
+					if( isset( $ninja_forms_fields[$field[&#x27;type&#x27;]] ) ){
+						$field_type = $field[&#x27;type&#x27;];
+						$type = $ninja_forms_fields[$field[&#x27;type&#x27;]];
+
+						if(isset($field[&#x27;data&#x27;][&#x27;req&#x27;])){
+							$req = $field[&#x27;data&#x27;][&#x27;req&#x27;];
+						}else{
+							$req = &#x27;&#x27;;
+						}
+
+						$default_label_pos = $type[&#x27;default_label_pos&#x27;];
+						$display_wrap = $type[&#x27;display_wrap&#x27;];
+						$display_label = $type[&#x27;display_label&#x27;];
+						$sub_edit_function = $type[&#x27;sub_edit_function&#x27;];
+						$display_function = $type[&#x27;display_function&#x27;];
+
+						$process_field = $type[&#x27;process_field&#x27;];
+						$data = $field[&#x27;data&#x27;];
+
+
+						//These filters can be used to temporarily modify the settings of a field, i.e. default_value.
+						$data = apply_filters( &#x27;ninja_forms_field&#x27;, $data, $field_id );
+						//Check the show_field value of our $data array. If it is set to false, don&#x27;t output the field.
+						if(isset($data[&#x27;show_field&#x27;])){
+							$show_field = $data[&#x27;show_field&#x27;];
+						}else{
+							$show_field = true;
+						}
+						
+						if( isset( $data[&#x27;display_style&#x27;] ) ){
+							$display_style = $data[&#x27;display_style&#x27;];
+						}else{
+							$display_style = &#x27;&#x27;;
+						}
+
+						if ( $display_function != &#x27;&#x27; AND $show_field ) {
+							if ( isset( $data[&#x27;label_pos&#x27;] ) ) {
+									$label_pos = $data[&#x27;label_pos&#x27;];
+							}else{
+									$label_pos = &#x27;&#x27;;
+							}
+							if( $label_pos == &#x27;&#x27; ) {
+								$label_pos = $default_label_pos;
+							}
+
+							if( isset( $data[&#x27;visible&#x27;] ) ){
+								$visible = $data[&#x27;visible&#x27;];
+							}else{
+								$visible = true;
+							}
+
+
+							do_action( &#x27;ninja_forms_display_before_field&#x27;, $field_id, $data );
+							
+							//Check to see if display_wrap has been disabled. If it hasn&#x27;t, show the wrapping DIV.
+							if($display_wrap){
+								$field_wrap_class = ninja_forms_get_field_wrap_class($field_id);
+								$field_wrap_class = apply_filters( &#x27;ninja_forms_field_wrap_class&#x27;, $field_wrap_class, $field_id );
+								do_action( &#x27;ninja_forms_display_before_opening_field_wrap&#x27;, $field_id, $data );
+								?&gt;
+								&lt;div class=&quot;&lt;?php echo $field_wrap_class;?&gt;&quot; style=&quot;&lt;?php echo $display_style;?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_div_wrap&quot; data-visible=&quot;&lt;?php echo $visible;?&gt;&quot;&gt;
+								&lt;?php
+								do_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, $field_id, $data );
+							}
+
+							//Check to see if display_label has been disabled. If it hasn&#x27;t, show the label.
+							if( $display_label ){
+								if( $label_pos == &#x27;left&#x27; OR $label_pos == &#x27;above&#x27; ){ // Check the label position variable. If it is left or above, show the label.
+									do_action( &#x27;ninja_forms_display_before_field_label&#x27;, $field_id, $data );
+									do_action( &#x27;ninja_forms_display_field_label&#x27;, $field_id, $data );
+									do_action( &#x27;ninja_forms_display_after_field_label&#x27;, $field_id, $data );
+								}
+							}
+
+							//Check to see if there is a registered display function. If so, call it.
+							if($display_function != &#x27;&#x27;){
+
+								do_action( &#x27;ninja_forms_display_before_field_function&#x27;, $field_id, $data );
+								$arguments[&#x27;field_id&#x27;] = $field_id;
+								$arguments[&#x27;data&#x27;] = $data;
+								call_user_func_array($display_function, $arguments);
+								do_action( &#x27;ninja_forms_display_after_field_function&#x27;, $field_id, $data );
+								if( $label_pos == &#x27;left&#x27; OR $label_pos == &#x27;inside&#x27;){
+									do_action( &#x27;ninja_forms_display_field_help&#x27;, $field_id, $data );
+								}
+							}
+
+							//Check to see if display_label has been disabled. If it hasn&#x27;t, show the label.
+							if($display_label){
+								if($label_pos == &#x27;right&#x27; OR $label_pos == &#x27;below&#x27;){ // Check the label position variable. If it is right or below, show the label.
+									do_action( &#x27;ninja_forms_display_before_field_label&#x27;, $field_id, $data );
+									do_action( &#x27;ninja_forms_display_field_label&#x27;, $field_id, $data );
+									do_action( &#x27;ninja_forms_display_after_field_label&#x27;, $field_id, $data );
+								}
+							}
+
+							//Check to see if display_wrap has been disabled. If it hasn&#x27;t close the wrapping DIV
+							if($display_wrap){
+								do_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, $field_id, $data );
+								?&gt;
+								&lt;/div&gt;
+								&lt;?php
+								do_action( &#x27;ninja_forms_display_after_closing_field_wrap&#x27;, $field_id, $data );
+							}
+							do_action( &#x27;ninja_forms_display_after_field&#x27;, $field_id, $data );
+						}
+					}
+				}
+				$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, $current_page );
+		}
+			?&gt;
+			&lt;input type=&quot;hidden&quot; id=&quot;mp_confirm_page&quot; name=&quot;_mp_confirm&quot; value=&quot;1&quot;&gt;
+			&lt;?php
+	}
+}
+
+function ninja_forms_mp_output_confirm_page_titles( $field_id, $data ){
+	global $nf_mp_confirm_title, $ninja_forms_processing;
+
+	if ( isset ( $nf_mp_confirm_title[$field_id] ) ) {
+		echo apply_filters( &#x27;ninja_forms_mp_confirm_page_title&#x27;, &#x27;&lt;h4&gt;&#x27;.$nf_mp_confirm_title[$field_id].&#x27;&lt;/h4&gt;&#x27;, $field_id );
+	}
+}</pre></details></body></html>

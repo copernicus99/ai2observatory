@@ -1,0 +1,188 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Date.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Date.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_Date extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	private $date_format;
+
+	protected function set_name() {
+		$this-&gt;name = &#x27;date&#x27;;
+	}
+
+	protected function define_options() {
+		return array(
+			&#x27;date_format&#x27; =&gt; &#x27;wp_default&#x27;,
+		);
+	}
+
+	public function create_view() {
+
+		$setting = $this
+			-&gt;create_element( &#x27;text&#x27; )
+			-&gt;set_attribute( &#x27;placeholder&#x27;, $this-&gt;get_default() );
+
+		$view = new AC_View( array(
+			&#x27;setting&#x27;      =&gt; $setting,
+			&#x27;date_format&#x27;  =&gt; $this-&gt;get_date_format(),
+			&#x27;date_options&#x27; =&gt; $this-&gt;get_date_options(),
+			&#x27;label&#x27;        =&gt; __( &#x27;Date Format&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27;      =&gt; __( &#x27;This will determine how the date will be displayed.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		) );
+
+		$view-&gt;set_template( &#x27;settings/setting-date&#x27; );
+
+		return $view;
+	}
+
+	protected function get_html_label( $args ) {
+		$defaults = array(
+			&#x27;label&#x27;       =&gt; false,
+			&#x27;date_format&#x27; =&gt; false,
+			&#x27;description&#x27; =&gt; false,
+		);
+
+		$data = (object) wp_parse_args( $args, $defaults );
+
+		$label = &#x27;&#x27;;
+
+		if ( $data-&gt;label ) {
+			$label .= &#x27;&lt;span class=&quot;ac-setting-input-date__value&quot;&gt;&#x27; . $data-&gt;label . &#x27;&lt;/span&gt;&#x27;;
+		}
+		if ( $data-&gt;date_format ) {
+			$label .= &#x27;&lt;code&gt;&#x27; . $data-&gt;date_format . &#x27;&lt;/code&gt;&#x27;;
+		}
+		if ( $data-&gt;description ) {
+			$label .= &#x27;&lt;span class=&quot;ac-setting-input-date__more hidden&quot;&gt;&#x27; . $data-&gt;description . &#x27;&lt;/span&gt;&#x27;;
+		}
+
+		return $label;
+	}
+
+	protected function get_date_options() {
+
+		$options = array(
+			&#x27;diff&#x27; =&gt; $this-&gt;get_html_label( array(
+					&#x27;label&#x27;       =&gt; __( &#x27;Time Difference&#x27;, &#x27;codepress-admin-columns&#x27; ),
+					&#x27;description&#x27; =&gt; __( &#x27;The difference is returned in a human readable format.&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27; &lt;br/&gt;&#x27; . sprintf( __( &#x27;For example: %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;&quot;&#x27; . $this-&gt;format_human_time_diff( strtotime( &quot;-1 hour&quot; ) ) . &#x27;&quot; &#x27; . __( &#x27;or&#x27; ) . &#x27; &quot;&#x27; . $this-&gt;format_human_time_diff( strtotime( &quot;-2 days&quot; ) ) . &#x27;&quot;&#x27; ),
+				)
+			),
+		);
+
+		$default_args = array(
+			&#x27;label&#x27;       =&gt; __( &#x27;WordPress Date Format&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;date_format&#x27; =&gt; $this-&gt;get_wp_date_format(),
+		);
+
+		if ( current_user_can( &#x27;manage_options&#x27; ) ) {
+			$default_args[&#x27;description&#x27;] = sprintf( __( &#x27;The %s can be changed in %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), $default_args[&#x27;label&#x27;], ac_helper()-&gt;html-&gt;link( admin_url( &#x27;options-general.php&#x27; ) . &#x27;#date_format_custom_radio&#x27;, strtolower( __( &#x27;General Settings&#x27; ) ) ) );
+		}
+
+		$options[&#x27;wp_default&#x27;] = $this-&gt;get_html_label( $default_args );
+
+		$formats = array(
+			&#x27;j F Y&#x27;,
+			&#x27;Y-m-d&#x27;,
+			&#x27;m/d/Y&#x27;,
+			&#x27;d/m/Y&#x27;,
+		);
+
+		foreach ( $formats as $format ) {
+			$options[ $format ] = $this-&gt;get_html_label( array( &#x27;label&#x27; =&gt; date_i18n( $format ), &#x27;date_format&#x27; =&gt; $format ) );
+		}
+
+		$custom_label = $this-&gt;get_html_label( array(
+				&#x27;label&#x27;       =&gt; __( &#x27;Custom:&#x27;, &#x27;codepress-admin columns&#x27; ),
+				&#x27;description&#x27; =&gt; sprintf( __( &#x27;Learn more about %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), ac_helper()-&gt;html-&gt;link( &#x27;http://codex.wordpress.org/Formatting_Date_and_Time&#x27;, __( &#x27;date and time formatting&#x27;, &#x27;codepress-admin-columns&#x27; ) ), array( &#x27;target&#x27; =&gt; &#x27;_blank&#x27; ) ),
+			)
+		);
+		$custom_label .= &#x27;&lt;input type=&quot;text&quot; class=&quot;ac-setting-input-date__custom&quot; value=&quot;&#x27; . esc_attr( $this-&gt;get_date_format() ) . &#x27;&quot; disabled&gt;&#x27;;
+		$custom_label .= &#x27;&lt;span class=&quot;ac-setting-input-date__example&quot;&gt;&lt;/span&gt;&#x27;;
+
+		$options[&#x27;custom&#x27;] = $custom_label;
+
+		return $options;
+	}
+
+	private function get_wp_date_format() {
+		return get_option( &#x27;date_format&#x27; );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_date_format() {
+		return $this-&gt;date_format;
+	}
+
+	/**
+	 * @param mixed $date_format
+	 *
+	 * @return bool
+	 */
+	public function set_date_format( $date_format ) {
+		$this-&gt;date_format = trim( $date_format );
+
+		return true;
+	}
+
+	/**
+	 * @param string $date
+	 *
+	 * @return string
+	 */
+	public function format( $date, $original_value ) {
+		if ( ! $date || ! is_scalar( $date ) ) {
+			return false;
+		}
+
+		$date_format = $this-&gt;get_date_format();
+
+		if ( ! $date_format ) {
+			$date_format = $this-&gt;get_default();
+		}
+
+		$timestamp = strtotime( $date );
+
+		switch ( $date_format ) {
+
+			case &#x27;wp_default&#x27; :
+				$date = date_i18n( $this-&gt;get_wp_date_format(), $timestamp );
+
+				break;
+			case &#x27;diff&#x27; :
+				$date = $this-&gt;format_human_time_diff( $timestamp );
+
+				break;
+			default :
+
+				$date = date_i18n( $this-&gt;get_date_format(), $timestamp );
+		}
+
+		return $date;
+	}
+
+	/**
+	 * @param int $timestamp Unix time stamp
+	 *
+	 * @return string
+	 */
+	public function format_human_time_diff( $timestamp ) {
+		if ( ! $timestamp ) {
+			return false;
+		}
+
+		$tpl = __( &#x27;%s ago&#x27; );
+
+		if ( $timestamp &gt; current_time( &#x27;U&#x27; ) ) {
+			$tpl = __( &#x27;in %s&#x27;, &#x27;codepress-admin-columns&#x27; );
+		}
+
+		return sprintf( $tpl, human_time_diff( $timestamp ) );
+	}
+
+}
+</pre></details></body></html>

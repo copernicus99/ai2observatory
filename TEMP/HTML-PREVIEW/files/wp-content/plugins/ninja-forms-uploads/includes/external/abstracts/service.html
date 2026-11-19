@@ -1,0 +1,357 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/external/abstracts/service.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/external/abstracts/service.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class NF_FU_External_Abstracts_Service
+ */
+abstract class NF_FU_External_Abstracts_Service {
+
+	/**
+	 * @var array
+	 */
+	private static $instances = array();
+
+	/**
+	 * @var string
+	 */
+	public $file;
+
+	/**
+	 * @var array
+	 */
+	public $settings;
+
+	/**
+	 * @var string
+	 */
+	public $slug;
+
+	/**
+	 * @var string
+	 */
+	public $name;
+
+	/**
+	 * @var string
+	 */
+	protected $library_class;
+
+	/**
+	 * @var string
+	 */
+	protected $library_alias;
+
+	/**
+	 * @var string
+	 */
+	protected $library_file;
+
+	/**
+	 * @var Path to file being uploaded
+	 */
+	protected $upload_file;
+
+	/**
+	 * @var Path prefix to file on service
+	 */
+	protected $external_path;
+
+	/**
+	 * @var Filename of file on service
+	 */
+	protected $external_filename;
+
+	/**
+	 * @var array Ninja Form settings
+	 */
+	protected $nf_settings;
+	
+	/**
+	 * Main Plugin Instance
+	 *
+	 * Insures that only one instance of a service class exists in memory at any one
+	 * time.
+	 *
+	 * @return NF_FU_External_Abstracts_Service
+	 */
+	final public static function instance() {
+		$called_class = get_called_class();
+
+		if ( ! isset( self::$instances[ $called_class ] ) ) {
+			self::$instances[ $called_class ] = new $called_class();
+
+			$parts = explode( &#x27;_&#x27;, str_replace( &#x27;_Service&#x27;, &#x27;&#x27;, $called_class ) );
+			$slug  = strtolower( array_pop( $parts ) );
+
+			$reflector = new ReflectionClass( $called_class );
+
+			self::$instances[ $called_class ]-&gt;file          = $reflector-&gt;getFileName();
+			self::$instances[ $called_class ]-&gt;slug          = $slug;
+			self::$instances[ $called_class ]-&gt;library_alias = &#x27;NF_FU_Library_&#x27; . ucfirst( $slug );
+			
+			self::$instances[ $called_class ]-&gt;init();
+
+			spl_autoload_register( array( self::$instances[ $called_class ], &#x27;maybe_alias_library&#x27; ), true, true );
+		}
+
+		return self::$instances[ $called_class ];
+	}
+
+	/**
+	 * Get instance internally
+	 *
+	 * @return mixed
+	 */
+	protected static function get_instance() {
+		$called_class = get_called_class();
+
+		return self::$instances[ $called_class ];
+	}
+
+	/**
+	 * Do things on initialization
+	 */
+	protected function init() {
+		// Perfect for hooks and filter
+	}
+
+	/**
+	 * Maybe alias a library class and autoload it
+	 * so we don&#x27;t get clashes with other plugins using same class names
+	 *
+	 * @param $class
+	 */
+	public function maybe_alias_library( $class ) {
+		if ( 0 === strcasecmp( $class, self::get_instance()-&gt;library_alias ) ) {
+			if ( false !== self::get_instance()-&gt;library_file ) {
+				$this-&gt;alias_library();
+			}
+		}
+	}
+
+	/**
+	 * Load our library class
+	 */
+	protected function alias_library() {
+		$file = self::get_instance()-&gt;library_file;
+		if ( ! file_exists( self::get_instance()-&gt;library_file ) ) {
+			$file = dirname( NF_File_Uploads()-&gt;plugin_file_path ) . &#x27;/vendor/&#x27; . self::get_instance()-&gt;library_file;
+		}
+
+		require_once $file;
+
+		class_alias( self::get_instance()-&gt;library_class, self::get_instance()-&gt;library_alias );
+	}
+
+	/**
+	 * Get settings
+	 *
+	 * @return array
+	 */
+	public function get_settings() {
+		$config = dirname( self::get_instance()-&gt;file ) . &#x27;/config.php&#x27;;
+		if ( file_exists( dirname( self::get_instance()-&gt;file ) . &#x27;/config.php&#x27; ) ) {
+			return include $config;
+		}
+
+		return array();
+	}
+
+	/**
+	 * Load the service specific settings
+	 *
+	 * @return array
+	 */
+	public function load_settings() {
+		if ( is_null( $this-&gt;settings ) ) {
+
+			$plugin_settings = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_settings();
+			$settings        = $this-&gt;get_settings();
+
+			$this-&gt;settings = array();
+			foreach ( $settings as $key =&gt; $setting ) {
+				$default = isset( $setting[&#x27;default&#x27;] ) ? $setting[&#x27;default&#x27;] : &#x27;&#x27;;
+				$value   = isset( $plugin_settings[ $key ] ) ? $plugin_settings[ $key ] : $default;
+
+				$this-&gt;settings[ $key ] = $value;
+			}
+
+		}
+
+		return $this-&gt;settings;
+	}
+
+	/**
+	 * Get service name
+	 *
+	 * @return string
+	 */
+	public function get_name() {
+		$name = self::get_instance()-&gt;slug;
+		if ( ! is_null( self::get_instance()-&gt;name ) ) {
+			$name = self::get_instance()-&gt;name;
+		}
+
+		return $name;
+	}
+
+	/**
+	 * Get the external filename for a file
+	 *
+	 * @return string
+	 */
+	protected function get_filename_external() {
+		$original_filename = basename( $this-&gt;upload_file );
+		$filename          = time() . &#x27;-&#x27; . $original_filename;
+
+		return apply_filters( &#x27;ninja_forms_uploads_&#x27; . self::get_instance()-&gt;slug . &#x27;_filename&#x27;, $filename, $original_filename );
+	}
+
+	/**
+	 * Get path on service
+	 *
+	 * @return string
+	 */
+	protected abstract function get_path_setting();
+
+	/**
+	 * Get the external file path
+	 */
+	protected function get_external_path( $custom_path ) {
+		$path = $this-&gt;settings[ $this-&gt;get_path_setting() ];
+
+		$path = untrailingslashit( $path ) . &#x27;/&#x27; . untrailingslashit( $custom_path );
+
+		return apply_filters( &#x27;ninja_forms_uploads_&#x27; . $this-&gt;slug . &#x27;_path&#x27;, $this-&gt;prepare_path( $path ) );
+	}
+
+	/**
+	 * Prepare path
+	 *
+	 * @param string $path
+	 * @param string $suffix
+	 *
+	 * @return string
+	 */
+	protected function prepare_path( $path, $suffix = &#x27;/&#x27; ) {
+		$path = ltrim( $path, &#x27;/&#x27; );
+		$path = rtrim( $path, &#x27;/&#x27; );
+
+		if ( ! empty( $path ) ) {
+			$path .= $suffix;
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Upload the attachment to the service
+	 *
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public function process_upload( $data ) {
+		$this-&gt;load_settings();
+
+		$this-&gt;upload_file       = $data[&#x27;file_path&#x27;];
+		$custom_path = isset( $data[&#x27;custom_path&#x27;] ) ? $data[&#x27;custom_path&#x27;] : &#x27;&#x27;;
+		$this-&gt;external_path     = $this-&gt;get_external_path( $custom_path );
+		$this-&gt;external_filename = $this-&gt;get_filename_external(  );
+
+		$data = $this-&gt;upload_file( $data );
+
+		if ( false === $data ) {
+			return $data;
+		}
+
+		$data[&#x27;upload_location&#x27;]   = $this-&gt;slug;
+		$data[&#x27;external_path&#x27;]     = $this-&gt;external_path;
+		$data[&#x27;external_filename&#x27;] = $this-&gt;external_filename;
+
+		// Update uploads table
+		NF_File_Uploads()-&gt;model-&gt;update( $data[&#x27;upload_id&#x27;], $data );
+
+		return $data;
+	}
+
+	/**
+	 * Is the service compatible with the site?
+	 *
+	 * @return bool
+	 */
+	public function is_compatible() {
+		$missing_requirements = $this-&gt;get_missing_requirements();
+
+		return empty( $missing_requirements );
+	}
+
+	/**
+	 * Get the missing service requirements
+	 *
+	 * @return array|bool
+	 */
+	public function get_missing_requirements() {
+		$missing_requirements = array();
+
+		return $missing_requirements;
+	}
+
+	/**
+	 * Get notices for the service.
+	 *
+	 * @return array|bool
+	 */
+	public function get_notices() {
+		return array();
+	}
+
+	/**
+	 * Upload the file to the service
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	protected abstract function upload_file( $data );
+
+	/**
+	 * Get the service URL to the file
+	 *
+	 * @param string $filename
+	 * @param string $path
+	 * @param array  $data
+	 *
+	 * @return string
+	 */
+	public abstract function get_url( $filename, $path = &#x27;&#x27;, $data = array() );
+
+	/**
+	 * @param null|array $settings
+	 *
+	 * @return bool
+	 */
+	public abstract function is_connected( $settings = null );
+
+	/**
+	 * Protected constructor to prevent creating a new instance of the
+	 * class via the `new` operator from outside of this class.
+	 */
+	protected function __construct() {
+	}
+
+	/**
+	 * As this class is a singleton it should not be clone-able
+	 */
+	protected function __clone() {
+	}
+
+	/**
+	 * As this class is a singleton it should not be able to be unserialized
+	 */
+	protected function __wakeup() {
+	}
+}</pre></details></body></html>

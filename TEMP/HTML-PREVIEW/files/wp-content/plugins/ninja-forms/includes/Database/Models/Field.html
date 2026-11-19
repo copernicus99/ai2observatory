@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/Models/Field.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/Models/Field.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Database_Models_Field
+ */
+final class NF_Database_Models_Field extends NF_Abstracts_Model
+{
+    private $form_id = &#x27;&#x27;;
+
+    protected $_type = &#x27;field&#x27;;
+
+    protected $_table_name = &#x27;nf3_fields&#x27;;
+
+    protected $_meta_table_name = &#x27;nf3_field_meta&#x27;;
+
+    protected $_columns = array(
+        &#x27;label&#x27;,
+        &#x27;key&#x27;,
+        &#x27;parent_id&#x27;,
+        &#x27;type&#x27;,
+        &#x27;created_at&#x27;
+    );
+    public function __construct( $db, $id, $parent_id = &#x27;&#x27; )
+    {
+        parent::__construct( $db, $id, $parent_id );
+    }
+
+    public static function import( array $settings, $field_id = &#x27;&#x27;, $is_conversion = FALSE )
+    {
+        $settings = apply_filters( &#x27;ninja_forms_before_import_fields&#x27;, $settings );
+        $settings[ &#x27;saved&#x27; ] = 1;
+
+        if( $field_id &amp;&amp; $is_conversion ) {
+            $field = Ninja_Forms()-&gt;form()-&gt;field( $field_id )-&gt;get();
+        } else {
+            $field = Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+        }
+        $field-&gt;update_settings( $settings );
+        $field-&gt;save();
+    }
+
+} // End NF_Database_Models_Field
+</pre></details></body></html>

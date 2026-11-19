@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/integrations/postcreation/postcreation.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/integrations/postcreation/postcreation.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Integrations_PostCreation_PostCreation {
+
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_create_post_settings&#x27;, array( $this, &#x27;create_post_settings&#x27; ) );
+		add_action( &#x27;ninja_forms_create_post&#x27;, array( $this, &#x27;maybe_add_featured_image&#x27; ), 10, 4);
+	}
+
+	public function create_post_settings( $action_settings ) {
+		$action_settings[&#x27;featured_image&#x27;] = array(
+			&#x27;name&#x27;               =&gt; &#x27;featured_image&#x27;,
+			&#x27;type&#x27;               =&gt; &#x27;field-select&#x27;,
+			&#x27;field_value_format&#x27; =&gt; &#x27;key&#x27;,
+			&#x27;label&#x27;              =&gt; __( &#x27;Featured Image&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;width&#x27;              =&gt; &#x27;full&#x27;,
+			&#x27;group&#x27;              =&gt; &#x27;advanced&#x27;,
+			&#x27;field_types&#x27;        =&gt; array(
+				&#x27;file_upload&#x27;,
+			),
+			&#x27;field_filter&#x27;       =&gt; array(
+				&#x27;upload_multi_count&#x27; =&gt; 1,
+			),
+			&#x27;help&#x27; =&gt; __( &#x27;Single file upload fields only&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		);
+
+		return $action_settings;
+	}
+
+	public function maybe_add_featured_image( $post_id, $action_settings, $form_id, $form_data ) {
+		if ( empty( $action_settings[&#x27;featured_image&#x27; ] ) ) {
+			return;
+		}
+
+		$file_key = $action_settings[&#x27;featured_image&#x27; ];
+
+		$field = false;
+		foreach( $form_data[&#x27;fields&#x27;] as $form_field ) {
+			if ( $file_key === $form_field[&#x27;key&#x27;] ) {
+				$field = $form_field;
+
+				break;
+			}
+		}
+
+		if ( ! $field || empty( $field[&#x27;files&#x27;] ) ) {
+			return;
+		}
+
+		$file = $field[&#x27;files&#x27;][0][&#x27;data&#x27;];
+
+		if ( ! isset( $file[&#x27;attachment_id&#x27;] ) ) {
+			$attachment_id = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;create_attachment( $file[&#x27;file_path&#x27;], $file[&#x27;file_name&#x27;] );
+		} else {
+			$attachment_id = $file[&#x27;attachment_id&#x27;];
+		}
+
+		update_post_meta( $post_id, &#x27;_thumbnail_id&#x27;, $attachment_id );
+	}
+}</pre></details></body></html>

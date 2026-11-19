@@ -1,0 +1,1260 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Columns.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Columns.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+		&lt;div class=&quot;ac-admin&quot; data-type=&quot;&quot;&gt;
+			&lt;div class=&quot;main&quot;&gt;
+				&lt;div class=&quot;menu&quot;&gt;
+					&lt;form&gt;
+						
+						&lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;&quot;&gt;
+
+						&lt;select name=&quot;list_screen&quot; title=&quot;Select type&quot; id=&quot;ac_list_screen&quot;&gt;
+							
+								&lt;optgroup label=&quot;&quot;&gt;
+									
+										&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+									
+								&lt;/optgroup&gt;
+							
+						&lt;/select&gt;
+						&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+
+						
+							&lt;a href=&quot;&quot; class=&quot;page-title-action view-link&quot;&gt;&lt;/a&gt;
+						
+					&lt;/form&gt;
+				&lt;/div&gt;
+
+				
+
+			&lt;/div&gt;
+
+			&lt;div class=&quot;ac-right&quot;&gt;
+				&lt;div class=&quot;ac-right-inner&quot;&gt;
+
+					
+						&lt;div class=&quot;sidebox form-actions&quot;&gt;
+							
+							&lt;h3&gt;
+								&lt;span class=&quot;left&quot;&gt;&lt;/span&gt;
+								
+									&lt;span class=&quot;right contenttype&quot;&gt;&lt;/span&gt;
+								
+									&lt;span class=&quot;clear contenttype&quot;&gt;&lt;/span&gt;
+								
+							&lt;/h3&gt;
+
+							&lt;div class=&quot;form-update&quot;&gt;
+								&lt;a class=&quot;button-primary submit update&quot;&gt;&lt;/a&gt;
+								&lt;a class=&quot;button-primary submit save&quot;&gt;&lt;/a&gt;
+							&lt;/div&gt;
+
+							&lt;form class=&quot;form-reset&quot; method=&quot;post&quot;&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;list_screen&quot; value=&quot;&quot;/&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;layout&quot; value=&quot;&quot;/&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;cpac_action&quot; value=&quot;restore_by_type&quot;/&gt;
+
+								
+
+								
+								&lt;input class=&quot;reset-column-type&quot; type=&quot;submit&quot; value=&quot;&quot;&gt;
+								&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+							&lt;/form&gt;
+
+							
+
+						&lt;/div&gt;&lt;!--form-actions--&gt;
+					
+
+					
+
+					
+
+						
+
+						&lt;div class=&quot;sidebox&quot; id=&quot;ac-pro-version&quot;&gt;
+							&lt;div class=&quot;padding-box&quot;&gt;
+								&lt;h3&gt;
+									&lt;a href=&quot;&quot;&gt;
+										&amp;nbsp;&lt;span&gt;&lt;/span&gt;
+									&lt;/a&gt;
+								&lt;/h3&gt;
+
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;&lt;/p&gt;
+									&lt;ul class=&quot;features&quot;&gt;
+										
+											&lt;li&gt;
+												&lt;a href=&quot;&quot;&gt;&lt;/a&gt;
+											&lt;/li&gt;
+										
+
+									&lt;/ul&gt;
+
+									
+										&lt;strong&gt;&lt;/strong&gt;
+										&lt;ul&gt;
+											
+												&lt;li class=&quot;acp-integration&quot;&gt;
+													&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;
+												&lt;/li&gt;
+											
+										&lt;/ul&gt;
+									
+
+									&lt;p class=&quot;center&quot;&gt;
+										 &lt;sup&gt;$49&lt;/sup&gt;
+									&lt;/p&gt;
+									&lt;p class=&quot;center nopadding&quot;&gt;
+										
+											&lt;a target=&quot;_blank&quot; href=&quot;&quot; class=&quot;more&quot;&gt;
+												
+											&lt;/a&gt;
+										
+									&lt;/p&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+
+							
+
+								&lt;div class=&quot;padding-box ac-pro-deal&quot;&gt;
+									
+								&lt;/div&gt;
+
+							
+
+								&lt;div class=&quot;padding-box ac-pro-newsletter&quot;&gt;
+									&lt;h3&gt;
+										
+									&lt;/h3&gt;
+									&lt;div class=&quot;inside&quot;&gt;
+										&lt;p&gt;
+											
+										&lt;/p&gt;
+										
+										&lt;form method=&quot;post&quot; action=&quot;&quot; target=&quot;_blank&quot;&gt;
+											&lt;input name=&quot;action&quot; type=&quot;hidden&quot; value=&quot;mc_upgrade_pro&quot;&gt;
+											&lt;input name=&quot;EMAIL&quot; placeholder=&quot;&quot; value=&quot;&quot; required&gt;
+											&lt;input name=&quot;FNAME&quot; placeholder=&quot;&quot; required&gt;
+											&lt;input type=&quot;submit&quot; value=&quot;&quot; class=&quot;acp-button&quot;&gt;
+										&lt;/form&gt;
+									&lt;/div&gt;
+								&lt;/div&gt;
+
+							
+
+						&lt;/div&gt;
+
+						&lt;div class=&quot;sidebox&quot; id=&quot;direct-feedback&quot;&gt;
+							&lt;div id=&quot;feedback-choice&quot;&gt;
+								&lt;h3&gt;&lt;/h3&gt;
+
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;a href=&quot;#&quot; class=&quot;yes&quot;&gt;&lt;/a&gt;
+									&lt;a href=&quot;#&quot; class=&quot;no&quot;&gt;&lt;/a&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+							&lt;div id=&quot;feedback-support&quot;&gt;
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;
+										
+									&lt;/p&gt;
+									&lt;p&gt;
+										
+									&lt;/p&gt;
+									&lt;ul class=&quot;share&quot;&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-editor-help&quot;&gt;&lt;/div&gt; 
+											&lt;/a&gt;
+										&lt;/li&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;https://wordpress.org/support/plugin/codepress-admin-columns&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-wordpress&quot;&gt;&lt;/div&gt; 
+											&lt;/a&gt;
+										&lt;/li&gt;
+									&lt;/ul&gt;
+									&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+							&lt;div id=&quot;feedback-rate&quot;&gt;
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;
+										
+									&lt;/p&gt;
+									&lt;p&gt;
+										
+									&lt;/p&gt;
+									&lt;ul class=&quot;share&quot;&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;http://wordpress.org/support/view/plugin-reviews/codepress-admin-columns#postform&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-star-empty&quot;&gt;&lt;/div&gt; 
+											&lt;/a&gt;
+										&lt;/li&gt;
+
+										&lt;li&gt;
+											&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-twitter&quot;&gt;&lt;/div&gt; 
+											&lt;/a&gt;
+										&lt;/li&gt;
+
+										&lt;li&gt;
+											&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-cart&quot;&gt;&lt;/div&gt; 
+											&lt;/a&gt;
+										&lt;/li&gt;
+									&lt;/ul&gt;
+									&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+						&lt;/div&gt;
+
+					
+
+					&lt;div class=&quot;sidebox&quot; id=&quot;plugin-support&quot;&gt;
+						&lt;h3&gt;&lt;/h3&gt;
+
+						&lt;div class=&quot;inside&quot;&gt;
+							
+								&lt;p&gt;
+									
+								&lt;/p&gt;
+							
+							&lt;p&gt;
+								
+							&lt;/p&gt;
+						&lt;/div&gt;
+					&lt;/div&gt;&lt;!--plugin-support--&gt;
+
+				&lt;/div&gt;&lt;!--.ac-right-inner--&gt;
+			&lt;/div&gt;&lt;!--.ac-right--&gt;
+
+			&lt;div class=&quot;ac-left&quot;&gt;
+				
+					&lt;div class=&quot;notice notice-warning&quot;&gt;
+						&lt;p&gt;
+							
+						&lt;/p&gt;
+					&lt;/div&gt;
+				
+
+				
+
+				
+					&lt;div class=&quot;ac-notice notice-warning below-h2&quot;&gt;
+						&lt;p&gt;&lt;/p&gt;
+					&lt;/div&gt;
+				
+
+				&lt;div class=&quot;ac-boxes&quot;&gt;
+
+					&lt;div class=&quot;ac-columns&quot;&gt;
+						&lt;form method=&quot;post&quot; action=&quot;&quot;&gt;
+
+							&lt;input type=&quot;hidden&quot; name=&quot;list_screen&quot; value=&quot;&quot;/&gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;cpac_action&quot; value=&quot;update_by_type&quot;/&gt;
+
+							
+
+							
+						&lt;/form&gt;
+
+					&lt;/div&gt;
+
+					&lt;div class=&quot;column-footer&quot;&gt;
+						
+							&lt;div class=&quot;order-message&quot;&gt;
+								
+							&lt;/div&gt;
+							&lt;div class=&quot;button-container&quot;&gt;
+								
+									&lt;a class=&quot;clear-columns&quot; data-clear-columns&gt;&lt;/a&gt;
+								
+
+								&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+								&lt;a class=&quot;button-primary submit update&quot;&gt;&lt;/a&gt;
+								&lt;a class=&quot;button-primary submit save&quot;&gt;&lt;/a&gt;
+								&lt;a class=&quot;add_column button&quot;&gt;+ &lt;/a&gt;
+							&lt;/div&gt;
+						
+					&lt;/div&gt;
+
+				&lt;/div&gt;&lt;!--.ac-boxes--&gt;
+
+				
+
+			&lt;/div&gt;&lt;!--.ac-left--&gt;
+			&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+
+			&lt;div id=&quot;add-new-column-template&quot;&gt;
+				
+			&lt;/div&gt;
+
+		&lt;/div&gt;&lt;!--.ac-admin--&gt;
+
+		&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+
+		
+
+		&lt;div class=&quot;ac-column ac-&quot;
+				data-type=&quot;&quot;
+				data-original=&quot;&quot;
+				data-column-name=&quot;&quot;&gt;
+
+			&lt;div class=&quot;ac-column-header&quot;&gt;
+				&lt;table class=&quot;widefat&quot;&gt;
+					&lt;tbody&gt;
+					&lt;tr&gt;
+						&lt;td class=&quot;column_sort&quot;&gt;
+							&lt;span class=&quot;cpacicon-move&quot;&gt;&lt;/span&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_label&quot;&gt;
+							&lt;div class=&quot;inner&quot;&gt;
+								&lt;div class=&quot;meta&quot;&gt;
+									
+								&lt;/div&gt;
+								&lt;a class=&quot;toggle&quot; data-toggle=&quot;column&quot;&gt;
+									&lt;/a&gt;
+								&lt;a class=&quot;close-button&quot; data-toggle=&quot;column&quot;&gt;&lt;/a&gt;
+								
+									&lt;a class=&quot;clone-button&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+								
+								&lt;a class=&quot;remove-button&quot;&gt;&lt;/a&gt;
+							&lt;/div&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_type&quot;&gt;
+							&lt;div class=&quot;inner&quot; data-toggle=&quot;column&quot;&gt;
+								
+							&lt;/div&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_edit&quot; data-toggle=&quot;column&quot;&gt;
+						&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;/tbody&gt;
+				&lt;/table&gt;
+			&lt;/div&gt;
+
+			&lt;div class=&quot;ac-column-body&quot;&gt;
+				&lt;div class=&quot;ac-column-settings&quot;&gt;
+
+					
+
+					&lt;table class=&quot;ac-column-setting ac-column-setting-actions&quot;&gt;
+						&lt;tr&gt;
+							&lt;td class=&quot;col-label&quot;&gt;&lt;/td&gt;
+							&lt;td class=&quot;col-settings&quot;&gt;
+								&lt;p&gt;
+									&lt;a href=&quot;#&quot; class=&quot;close-button&quot; data-toggle=&quot;column&quot;&gt;&lt;/a&gt;
+									
+										&lt;a class=&quot;clone-button&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+									
+									&lt;a href=&quot;#&quot; class=&quot;remove-button&quot;&gt;&lt;/a&gt;
+								&lt;/p&gt;
+							&lt;/td&gt;
+						&lt;/tr&gt;
+
+					&lt;/table&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Admin_Page_Columns extends AC_Admin_Page {
+
+	const OPTION_CURRENT = &#x27;cpac_current_model&#x27;;
+
+	/**
+	 * @var array
+	 */
+	private $notices;
+
+	/**
+	 * @var AC_ListScreen
+	 */
+	private $current_list_screen;
+
+	public function __construct() {
+
+		$this-&gt;set_slug( &#x27;columns&#x27; )
+		     -&gt;set_label( __( &#x27;Admin Columns&#x27;, &#x27;codepress-admin-columns&#x27; ) )
+		     -&gt;set_default( true );
+
+		add_action( &#x27;current_screen&#x27;, array( $this, &#x27;set_current_list_screen&#x27; ) );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;handle_request&#x27; ) );
+		add_action( &#x27;admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+
+		// Ajax calls
+		add_action( &#x27;wp_ajax_ac_column_select&#x27;, array( $this, &#x27;ajax_column_select&#x27; ) );
+		add_action( &#x27;wp_ajax_ac_column_refresh&#x27;, array( $this, &#x27;ajax_column_refresh&#x27; ) );
+		add_action( &#x27;wp_ajax_ac_columns_save&#x27;, array( $this, &#x27;ajax_columns_save&#x27; ) );
+	}
+
+	/**
+	 * Admin scripts
+	 */
+	public function admin_scripts() {
+		if ( ! $this-&gt;is_current_screen() ) {
+			return;
+		}
+
+		$list_screen = $this-&gt;get_current_list_screen();
+
+		if ( ! $list_screen ) {
+			return;
+		}
+
+		$minified = AC()-&gt;minified();
+
+		// Width slider
+		wp_enqueue_style( &#x27;jquery-ui-lightness&#x27;, AC()-&gt;get_plugin_url() . &#x27;assets/ui-theme/jquery-ui-1.8.18.custom.css&#x27;, array(), AC()-&gt;get_version() );
+		wp_enqueue_script( &#x27;jquery-ui-slider&#x27; );
+
+		wp_enqueue_script( &#x27;ac-admin-page-columns&#x27;, AC()-&gt;get_plugin_url() . &quot;assets/js/admin-page-columns{$minified}.js&quot;, array(
+			&#x27;jquery&#x27;,
+			&#x27;dashboard&#x27;,
+			&#x27;jquery-ui-slider&#x27;,
+			&#x27;jquery-ui-sortable&#x27;,
+			&#x27;wp-pointer&#x27;,
+		), AC()-&gt;get_version() );
+
+		wp_enqueue_style( &#x27;ac-admin-page-columns-css&#x27;, AC()-&gt;get_plugin_url() . &#x27;assets/css/admin-page-columns&#x27; . AC()-&gt;minified() . &#x27;.css&#x27;, array(), AC()-&gt;get_version() );
+
+		wp_localize_script( &#x27;ac-admin-page-columns&#x27;, &#x27;AC&#x27;, array(
+			&#x27;_ajax_nonce&#x27;      =&gt; wp_create_nonce( &#x27;ac-settings&#x27; ),
+			&#x27;list_screen&#x27;      =&gt; $list_screen-&gt;get_key(),
+			&#x27;layout&#x27;           =&gt; $list_screen-&gt;get_layout_id(),
+			&#x27;original_columns&#x27; =&gt; $list_screen-&gt;get_original_columns(),
+			&#x27;i18n&#x27;             =&gt; array(
+				&#x27;clone&#x27; =&gt; __( &#x27;%s column is already present and can not be duplicated.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;error&#x27; =&gt; __( &#x27;Invalid response.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			),
+		) );
+
+		do_action( &#x27;ac/settings/scripts&#x27; );
+	}
+
+	public function set_layout_preference( $layout ) {
+		ac_helper()-&gt;user-&gt;update_meta_site( self::OPTION_CURRENT . &#x27;_layout&#x27;, $layout );
+	}
+
+	public function get_layout_preference() {
+		return ac_helper()-&gt;user-&gt;get_meta_site( self::OPTION_CURRENT . &#x27;_layout&#x27;, true );
+	}
+
+	private function get_first_list_screen() {
+		$list_screens = AC()-&gt;get_list_screens();
+
+		return reset( $list_screens );
+	}
+
+	public function set_current_list_screen() {
+		if ( ! AC()-&gt;user_can_manage_admin_columns() || ! $this-&gt;is_current_screen() ) {
+			return;
+		}
+
+		// User selected
+		$key = filter_input( INPUT_GET, &#x27;list_screen&#x27; );
+
+		// Preference
+		if ( ! $key ) {
+			$key = $this-&gt;get_list_screen_preference();
+		}
+
+		// First one
+		if ( ! $key ) {
+			$list_screens = AC()-&gt;get_list_screens();
+
+			reset( $list_screens );
+
+			$key = key( $list_screens );
+		}
+
+		$list_screen = AC()-&gt;get_list_screen( $key );
+
+		if ( ! $list_screen ) {
+			$list_screen = $this-&gt;get_first_list_screen();
+		}
+
+		// Load table headers
+		if ( ! $list_screen-&gt;get_original_columns() ) {
+			$this-&gt;set_original_table_headers( $list_screen );
+		}
+
+		$this-&gt;set_list_screen_preference( $list_screen-&gt;get_key() );
+
+		$this-&gt;current_list_screen = $list_screen;
+
+		do_action( &#x27;ac/settings/list_screen&#x27;, $list_screen );
+	}
+
+	/**
+	 * @return AC_ListScreen
+	 */
+	public function get_current_list_screen() {
+		return $this-&gt;current_list_screen;
+	}
+
+	/**
+	 * Populate the list screen with columns headers from WP_List_Table
+	 *
+	 * @see WP_List_Table::get_columns()
+	 *
+	 * @param AC_ListScreen $list_screen
+	 */
+	private function set_original_table_headers( AC_ListScreen $list_screen ) {
+		$list_screen-&gt;get_list_table();
+
+		$table_headers = (array) get_column_headers( $list_screen-&gt;get_screen_id() );
+
+		$list_screen-&gt;set_original_columns( $table_headers );
+	}
+
+	/**
+	 * Handle request
+	 */
+	public function handle_request() {
+		if ( ! AC()-&gt;user_can_manage_admin_columns() || ! $this-&gt;is_current_screen() ) {
+			return;
+		}
+
+		// Handle requests
+		switch ( filter_input( INPUT_POST, &#x27;cpac_action&#x27; ) ) {
+
+			case &#x27;restore_by_type&#x27; :
+				if ( $this-&gt;verify_nonce( &#x27;restore-type&#x27; ) ) {
+					$list_screen = AC()-&gt;get_list_screen( filter_input( INPUT_POST, &#x27;list_screen&#x27; ) );
+					$list_screen-&gt;set_layout_id( filter_input( INPUT_POST, &#x27;layout&#x27; ) );
+					$list_screen-&gt;delete();
+
+					$this-&gt;notice( sprintf( __( &#x27;Settings for %s restored successfully.&#x27;, &#x27;codepress-admin-columns&#x27; ), &quot;&lt;strong&gt;&quot; . esc_html( $this-&gt;get_list_screen_message_label( $list_screen ) ) . &quot;&lt;/strong&gt;&quot; ), &#x27;updated&#x27; );
+				}
+				break;
+		}
+
+		do_action( &#x27;ac/settings/handle_request&#x27;, $this );
+	}
+
+	/**
+	 * @since 3.0
+	 *
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return string $label
+	 */
+	private function get_list_screen_message_label( $list_screen ) {
+		return apply_filters( &#x27;ac/settings/list_screen_message_label&#x27;, $list_screen-&gt;get_label(), $list_screen );
+	}
+
+	/**
+	 * @param string $message Message body
+	 * @param string $type    Updated or error
+	 */
+	public function notice( $message, $type = &#x27;updated&#x27; ) {
+		$this-&gt;notices[] = &#x27;&lt;div class=&quot;ac-message inline &#x27; . esc_attr( $type ) . &#x27;&quot;&gt;&lt;p&gt;&#x27; . $message . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;;
+	}
+
+	/**
+	 * @param AC_Column $column
+	 *
+	 * @return string
+	 */
+	private function get_column_display( AC_Column $column ) {
+		ob_start();
+		$this-&gt;display_column( $column );
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Check is the ajax request is valid and user is allowed to make it
+	 *
+	 * @since 3.0
+	 * @return AC_ListScreen
+	 */
+	private function ajax_validate_request() {
+		check_ajax_referer( &#x27;ac-settings&#x27; );
+
+		if ( ! AC()-&gt;user_can_manage_admin_columns() ) {
+			wp_die();
+		}
+
+		$list_screen = AC()-&gt;get_list_screen( filter_input( INPUT_POST, &#x27;list_screen&#x27; ) );
+
+		if ( ! $list_screen ) {
+			wp_die();
+		}
+
+		$list_screen-&gt;set_layout_id( filter_input( INPUT_POST, &#x27;layout&#x27; ) );
+
+		// Load default headings
+		if ( ! $list_screen-&gt;get_stored_default_headings() ) {
+			$list_screen-&gt;set_original_columns( (array) filter_input( INPUT_POST, &#x27;original_columns&#x27;, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ) );
+		}
+
+		return $list_screen;
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return string
+	 */
+	private function get_error_message_visit_list_screen( $list_screen ) {
+		return sprintf( __( &#x27;Please visit the %s screen once to load all available columns&#x27;, &#x27;codepress-admin-columns&#x27; ), ac_helper()-&gt;html-&gt;link( $list_screen-&gt;get_screen_link(), $list_screen-&gt;get_label() ) );
+	}
+
+	/**
+	 * Display HTML markup for column type
+	 *
+	 * @since 3.0
+	 */
+	public function ajax_column_select() {
+		$list_screen = $this-&gt;ajax_validate_request();
+
+		$column = $list_screen-&gt;get_column_by_type( filter_input( INPUT_POST, &#x27;type&#x27; ) );
+
+		if ( ! $column ) {
+			wp_send_json_error( array(
+				&#x27;type&#x27;  =&gt; &#x27;message&#x27;,
+				&#x27;error&#x27; =&gt; $this-&gt;get_error_message_visit_list_screen( $list_screen ),
+			) );
+		}
+
+		$current_original_columns = (array) filter_input( INPUT_POST, &#x27;current_original_columns&#x27;, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+
+		// Not cloneable message
+		if ( in_array( $column-&gt;get_type(), $current_original_columns ) ) {
+			wp_send_json_error( array(
+				&#x27;type&#x27;  =&gt; &#x27;message&#x27;,
+				&#x27;error&#x27; =&gt; sprintf(
+					__( &#x27;%s column is already present and can not be duplicated.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+					&#x27;&lt;strong&gt;&#x27; . $column-&gt;get_label() . &#x27;&lt;/strong&gt;&#x27; ),
+			) );
+		}
+
+		// Placeholder message
+		if ( $column instanceof AC_Column_Placeholder ) {
+			wp_send_json_error( array(
+				&#x27;type&#x27;  =&gt; &#x27;message&#x27;,
+				&#x27;error&#x27; =&gt; $column-&gt;get_message(),
+			) );
+		}
+
+		wp_send_json_success( $this-&gt;get_column_display( $column ) );
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public function ajax_column_refresh() {
+		$list_screen = $this-&gt;ajax_validate_request();
+
+		$options = filter_input( INPUT_POST, &#x27;columns&#x27;, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$name = filter_input( INPUT_POST, &#x27;column_name&#x27; );
+
+		if ( empty( $options[ $name ] ) ) {
+			wp_die();
+		}
+
+		$settings = $options[ $name ];
+
+		$settings[&#x27;name&#x27;] = $name;
+
+		$column = $list_screen-&gt;create_column( $settings );
+
+		if ( ! $column ) {
+			wp_die();
+		}
+
+		wp_send_json_success( $this-&gt;get_column_display( $column ) );
+	}
+
+	/**
+	 * @since 2.5
+	 */
+	public function ajax_columns_save() {
+		$list_screen = $this-&gt;ajax_validate_request();
+
+		parse_str( $_POST[&#x27;data&#x27;], $formdata );
+
+		if ( ! isset( $formdata[&#x27;columns&#x27;] ) ) {
+			wp_send_json_error( array(
+					&#x27;type&#x27;    =&gt; &#x27;error&#x27;,
+					&#x27;message&#x27; =&gt; __( &#x27;You need at least one column&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				)
+			);
+		}
+
+		$result = $list_screen-&gt;store( $formdata[&#x27;columns&#x27;] );
+
+		$view_link = ac_helper()-&gt;html-&gt;link( $list_screen-&gt;get_screen_link(), sprintf( __( &#x27;View %s screen&#x27;, &#x27;codepress-admin-columns&#x27; ), $list_screen-&gt;get_label() ) );
+
+		if ( is_wp_error( $result ) ) {
+
+			if ( &#x27;same-settings&#x27; === $result-&gt;get_error_code() ) {
+				wp_send_json_error( array(
+						&#x27;type&#x27;    =&gt; &#x27;notice notice-warning&#x27;,
+						&#x27;message&#x27; =&gt; sprintf( __( &#x27;You are trying to store the same settings for %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), &quot;&lt;strong&gt;&quot; . $this-&gt;get_list_screen_message_label( $list_screen ) . &quot;&lt;/strong&gt;&quot; ) . &#x27; &#x27; . $view_link
+					)
+				);
+			}
+
+			wp_send_json_error( array(
+					&#x27;type&#x27;    =&gt; &#x27;error&#x27;,
+					&#x27;message&#x27; =&gt; $result-&gt;get_error_message(),
+				)
+			);
+		}
+
+		wp_send_json_success(
+			sprintf( __( &#x27;Settings for %s updated successfully.&#x27;, &#x27;codepress-admin-columns&#x27; ), &quot;&lt;strong&gt;&quot; . esc_html( $this-&gt;get_list_screen_message_label( $list_screen ) ) . &quot;&lt;/strong&gt;&quot; ) . &#x27; &#x27; . $view_link
+		);
+	}
+
+	private function display_notices() {
+		if ( $this-&gt;notices ) {
+			echo implode( $this-&gt;notices );
+		}
+	}
+
+	public function sort_by_label( $a, $b ) {
+		return strcmp( $a-&gt;label, $b-&gt;label );
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_grouped_list_screens() {
+		$list_screens = array();
+
+		foreach ( AC()-&gt;get_list_screens() as $list_screen ) {
+			$list_screens[ $list_screen-&gt;get_group() ][ $list_screen-&gt;get_key() ] = $list_screen-&gt;get_label();
+		}
+
+		$grouped = array();
+
+		foreach ( AC()-&gt;list_screen_groups()-&gt;get_groups_sorted() as $group ) {
+			$slug = $group[&#x27;slug&#x27;];
+
+			if ( empty( $list_screens[ $slug ] ) ) {
+				continue;
+			}
+
+			if ( ! isset( $grouped[ $slug ] ) ) {
+				$grouped[ $slug ][&#x27;title&#x27;] = $group[&#x27;label&#x27;];
+			}
+
+			natcasesort( $list_screens[ $slug ] );
+
+			$grouped[ $slug ][&#x27;options&#x27;] = $list_screens[ $slug ];
+
+			unset( $list_screens[ $slug ] );
+		}
+
+		return $grouped;
+	}
+
+	private function set_list_screen_preference( $list_screen_key ) {
+		ac_helper()-&gt;user-&gt;update_meta_site( self::OPTION_CURRENT, $list_screen_key );
+	}
+
+	private function get_list_screen_preference() {
+		return ac_helper()-&gt;user-&gt;get_meta_site( self::OPTION_CURRENT, true );
+	}
+
+	/**
+	 * @param string $main_label
+	 *
+	 * @return string
+	 */
+	private function get_truncated_side_label( $label, $mainlabel = &#x27;&#x27; ) {
+		if ( 34 &lt; ( strlen( $label ) + ( strlen( $mainlabel ) * 1.1 ) ) ) {
+			$label = substr( $label, 0, 34 - ( strlen( $mainlabel ) * 1.1 ) ) . &#x27;...&#x27;;
+		}
+
+		return $label;
+	}
+
+	/**
+	 * @return AC_Admin_Promo|false
+	 */
+	public function get_active_promotion() {
+		$classes = AC()-&gt;autoloader()-&gt;get_class_names_from_dir( AC()-&gt;get_plugin_dir() . &#x27;classes/Admin/Promo&#x27;, &#x27;AC_&#x27; );
+
+		foreach ( $classes as $class ) {
+
+			/* @var AC_Admin_Promo $promo */
+			$promo = new $class;
+
+			if ( $promo-&gt;is_active() ) {
+				return $promo;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return string
+	 */
+	private function get_read_only_message( AC_ListScreen $list_screen ) {
+		$message = sprintf( __( &#x27;The columns for %s are set up via PHP and can therefore not be edited.&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;&lt;strong&gt;&#x27; . esc_html( $list_screen-&gt;get_label() ) . &#x27;&lt;/strong&gt;&#x27; );
+
+		return apply_filters( &#x27;ac/read_only_message&#x27;, $message, $list_screen );
+	}
+
+	/**
+	 * Display
+	 */
+	public function display() {
+		$list_screen = $this-&gt;get_current_list_screen();
+
+		?&gt;
+
+		&lt;div class=&quot;ac-admin&lt;?php echo $list_screen-&gt;get_settings() ? &#x27; stored&#x27; : &#x27;&#x27;; ?&gt;&quot; data-type=&quot;&lt;?php echo esc_attr( $list_screen-&gt;get_key() ); ?&gt;&quot;&gt;
+			&lt;div class=&quot;main&quot;&gt;
+				&lt;div class=&quot;menu&quot;&gt;
+					&lt;form&gt;
+						&lt;?php $this-&gt;nonce_field( &#x27;select-list-screen&#x27; ); ?&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;&lt;?php echo esc_attr( AC_Admin::MENU_SLUG ); ?&gt;&quot;&gt;
+
+						&lt;select name=&quot;list_screen&quot; title=&quot;Select type&quot; id=&quot;ac_list_screen&quot;&gt;
+							&lt;?php foreach ( $this-&gt;get_grouped_list_screens() as $group ) : ?&gt;
+								&lt;optgroup label=&quot;&lt;?php echo esc_attr( $group[&#x27;title&#x27;] ); ?&gt;&quot;&gt;
+									&lt;?php foreach ( $group[&#x27;options&#x27;] as $key =&gt; $label ) : ?&gt;
+										&lt;option value=&quot;&lt;?php echo esc_attr( $key ); ?&gt;&quot; &lt;?php selected( $key, $list_screen-&gt;get_key() ); ?&gt;&gt;&lt;?php echo esc_html( $label ); ?&gt;&lt;/option&gt;
+									&lt;?php endforeach; ?&gt;
+								&lt;/optgroup&gt;
+							&lt;?php endforeach; ?&gt;
+						&lt;/select&gt;
+						&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+
+						&lt;?php if ( $link = $list_screen-&gt;get_screen_link() ) : ?&gt;
+							&lt;a href=&quot;&lt;?php echo esc_url( $link ); ?&gt;&quot; class=&quot;page-title-action view-link&quot;&gt;&lt;?php esc_html_e( &#x27;View&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+						&lt;?php endif; ?&gt;
+					&lt;/form&gt;
+				&lt;/div&gt;
+
+				&lt;?php do_action( &#x27;ac/settings/after_title&#x27;, $list_screen ); ?&gt;
+
+			&lt;/div&gt;
+
+			&lt;div class=&quot;ac-right&quot;&gt;
+				&lt;div class=&quot;ac-right-inner&quot;&gt;
+
+					&lt;?php if ( ! $list_screen-&gt;is_read_only() ) : ?&gt;
+						&lt;div class=&quot;sidebox form-actions&quot;&gt;
+							&lt;?php $mainlabel = __( &#x27;Store settings&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+							&lt;h3&gt;
+								&lt;span class=&quot;left&quot;&gt;&lt;?php echo esc_html( $mainlabel ); ?&gt;&lt;/span&gt;
+								&lt;?php if ( 18 &gt; strlen( $mainlabel ) &amp;&amp; ( $truncated_label = $this-&gt;get_truncated_side_label( $list_screen-&gt;get_label(), $mainlabel ) ) ) : ?&gt;
+									&lt;span class=&quot;right contenttype&quot;&gt;&lt;?php echo esc_html( $truncated_label ); ?&gt;&lt;/span&gt;
+								&lt;?php else : ?&gt;
+									&lt;span class=&quot;clear contenttype&quot;&gt;&lt;?php echo esc_html( $list_screen-&gt;get_label() ); ?&gt;&lt;/span&gt;
+								&lt;?php endif; ?&gt;
+							&lt;/h3&gt;
+
+							&lt;div class=&quot;form-update&quot;&gt;
+								&lt;a class=&quot;button-primary submit update&quot;&gt;&lt;?php _e( &#x27;Update&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;a class=&quot;button-primary submit save&quot;&gt;&lt;?php _e( &#x27;Save&#x27; ); ?&gt;&lt;/a&gt;
+							&lt;/div&gt;
+
+							&lt;form class=&quot;form-reset&quot; method=&quot;post&quot;&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;list_screen&quot; value=&quot;&lt;?php echo esc_attr( $list_screen-&gt;get_key() ); ?&gt;&quot;/&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;layout&quot; value=&quot;&lt;?php echo esc_attr( $list_screen-&gt;get_layout_id() ); ?&gt;&quot;/&gt;
+								&lt;input type=&quot;hidden&quot; name=&quot;cpac_action&quot; value=&quot;restore_by_type&quot;/&gt;
+
+								&lt;?php $this-&gt;nonce_field( &#x27;restore-type&#x27; ); ?&gt;
+
+								&lt;?php $onclick = AC()-&gt;use_delete_confirmation() ? &#x27; onclick=&quot;return confirm(\&#x27;&#x27; . esc_js( sprintf( __( &quot;Warning! The %s columns data will be deleted. This cannot be undone. &#x27;OK&#x27; to delete, &#x27;Cancel&#x27; to stop&quot;, &#x27;codepress-admin-columns&#x27; ), &quot;&#x27;&quot; . $this-&gt;get_list_screen_message_label( $list_screen ) . &quot;&#x27;&quot; ) ) . &#x27;\&#x27;);&quot;&#x27; : &#x27;&#x27;; ?&gt;
+								&lt;input class=&quot;reset-column-type&quot; type=&quot;submit&quot;&lt;?php echo $onclick; ?&gt; value=&quot;&lt;?php _e( &#x27;Restore columns&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&quot;&gt;
+								&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+							&lt;/form&gt;
+
+							&lt;?php do_action( &#x27;ac/settings/form_actions&#x27;, $this ); ?&gt;
+
+						&lt;/div&gt;&lt;!--form-actions--&gt;
+					&lt;?php endif; ?&gt;
+
+					&lt;?php do_action( &#x27;ac/settings/sidebox&#x27;, $list_screen ); ?&gt;
+
+					&lt;?php if ( apply_filters( &#x27;ac/show_banner&#x27;, true ) ) : ?&gt;
+
+						&lt;?php $active_promotion = $this-&gt;get_active_promotion(); ?&gt;
+
+						&lt;div class=&quot;sidebox&quot; id=&quot;ac-pro-version&quot;&gt;
+							&lt;div class=&quot;padding-box&quot;&gt;
+								&lt;h3&gt;
+									&lt;a href=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;banner&#x27;, &#x27;title&#x27; ) ); ?&gt;&quot;&gt;
+										&lt;?php _e( &#x27;Upgrade to&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&amp;nbsp;&lt;span&gt;&lt;?php _e( &#x27;Pro&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/span&gt;
+									&lt;/a&gt;
+								&lt;/h3&gt;
+
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;&lt;?php _e( &#x27;Take Admin Columns to the next level:&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/p&gt;
+									&lt;ul class=&quot;features&quot;&gt;
+										&lt;?php
+
+										$items = array(
+											&#x27;sorting&#x27;       =&gt; __( &#x27;Add sortable columns&#x27;, &#x27;codepress-admin-columns&#x27; ),
+											&#x27;filtering&#x27;     =&gt; __( &#x27;Add filterable columns&#x27;, &#x27;codepress-admin-columns&#x27; ),
+											&#x27;editing&#x27;       =&gt; __( &#x27;Edit your column content directly&#x27;, &#x27;codepress-admin-columns&#x27; ),
+											&#x27;column-sets&#x27;   =&gt; __( &#x27;Create multiple columns sets&#x27;, &#x27;codepress-admin-columns&#x27; ),
+											&#x27;import-export&#x27; =&gt; __( &#x27;Import &amp;amp; Export settings&#x27;, &#x27;codepress-admin-columns&#x27; ),
+										);
+
+										foreach ( $items as $utm_content =&gt; $label ) : ?&gt;
+											&lt;li&gt;
+												&lt;a href=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;banner&#x27;, &#x27;usp-&#x27; . $utm_content ) ); ?&gt;&quot;&gt;&lt;?php echo esc_html( $label ); ?&gt;&lt;/a&gt;
+											&lt;/li&gt;
+										&lt;?php endforeach; ?&gt;
+
+									&lt;/ul&gt;
+
+									&lt;?php if ( $promos = AC()-&gt;addons()-&gt;get_missing_addons() ) : ?&gt;
+										&lt;strong&gt;&lt;?php _e( &#x27;Extra Columns for:&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/strong&gt;
+										&lt;ul&gt;
+											&lt;?php foreach ( $promos as $addon ) : ?&gt;
+												&lt;li class=&quot;acp-integration&quot;&gt;
+													&lt;a href=&quot;&lt;?php echo esc_url( $addon-&gt;get_link() ); ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php $addon-&gt;display_promo(); ?&gt;&lt;/a&gt;
+												&lt;/li&gt;
+											&lt;?php endforeach; ?&gt;
+										&lt;/ul&gt;
+									&lt;?php endif; ?&gt;
+
+									&lt;p class=&quot;center&quot;&gt;
+										&lt;?php echo ac_helper()-&gt;html-&gt;link( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;banner&#x27; ), sprintf( __( &#x27;Prices starting from %s&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;$39.20&#x27; ), array( &#x27;class&#x27; =&gt; &#x27;ac-pro-prices&#x27; ) ); ?&gt; &lt;sup&gt;$49&lt;/sup&gt;
+									&lt;/p&gt;
+									&lt;p class=&quot;center nopadding&quot;&gt;
+										&lt;?php if ( ! $active_promotion ) : ?&gt;
+											&lt;a target=&quot;_blank&quot; href=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;banner&#x27; ) ); ?&gt;&quot; class=&quot;more&quot;&gt;
+												&lt;?php _e( &#x27;Learn more about Pro&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;?php endif; ?&gt;
+									&lt;/p&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+
+							&lt;?php if ( $active_promotion ) : ?&gt;
+
+								&lt;div class=&quot;padding-box ac-pro-deal&quot;&gt;
+									&lt;?php $active_promotion-&gt;display(); ?&gt;
+								&lt;/div&gt;
+
+							&lt;?php else : ?&gt;
+
+								&lt;div class=&quot;padding-box ac-pro-newsletter&quot;&gt;
+									&lt;h3&gt;
+										&lt;?php echo esc_html( sprintf( __( &#x27;Get %s Off!&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;20%&#x27; ) ); ?&gt;
+									&lt;/h3&gt;
+									&lt;div class=&quot;inside&quot;&gt;
+										&lt;p&gt;
+											&lt;?php echo esc_html( sprintf( __( &quot;Submit your email and we&#x27;ll send you a discount for %s off.&quot;, &#x27;codepress-admin-columns&#x27; ), &#x27;20%&#x27; ) ); ?&gt;
+										&lt;/p&gt;
+										&lt;?php
+										$user_data = get_userdata( get_current_user_id() );
+										?&gt;
+										&lt;form method=&quot;post&quot; action=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;send-coupon&#x27; ) ); ?&gt;&quot; target=&quot;_blank&quot;&gt;
+											&lt;input name=&quot;action&quot; type=&quot;hidden&quot; value=&quot;mc_upgrade_pro&quot;&gt;
+											&lt;input name=&quot;EMAIL&quot; placeholder=&quot;&lt;?php esc_attr_e( &quot;Your Email&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&quot; value=&quot;&lt;?php echo esc_attr( $user_data-&gt;user_email ); ?&gt;&quot; required&gt;
+											&lt;input name=&quot;FNAME&quot; placeholder=&quot;&lt;?php esc_attr_e( &quot;Your First Name&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&quot; required&gt;
+											&lt;input type=&quot;submit&quot; value=&quot;&lt;?php esc_attr_e( &quot;Send me the discount&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&quot; class=&quot;acp-button&quot;&gt;
+										&lt;/form&gt;
+									&lt;/div&gt;
+								&lt;/div&gt;
+
+							&lt;?php endif; ?&gt;
+
+						&lt;/div&gt;
+
+						&lt;div class=&quot;sidebox&quot; id=&quot;direct-feedback&quot;&gt;
+							&lt;div id=&quot;feedback-choice&quot;&gt;
+								&lt;h3&gt;&lt;?php _e( &#x27;Are you happy with Admin Columns?&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/h3&gt;
+
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;a href=&quot;#&quot; class=&quot;yes&quot;&gt;&lt;?php _e( &#x27;Yes&#x27; ); ?&gt;&lt;/a&gt;
+									&lt;a href=&quot;#&quot; class=&quot;no&quot;&gt;&lt;?php _e( &#x27;No&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+							&lt;div id=&quot;feedback-support&quot;&gt;
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;
+										&lt;?php _e( &quot;What&#x27;s wrong? Need help? Let us know!&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+									&lt;/p&gt;
+									&lt;p&gt;
+										&lt;?php _e( &#x27;Check out our extensive documentation, or you can open a support topic on WordPress.org!&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+									&lt;/p&gt;
+									&lt;ul class=&quot;share&quot;&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;documentation&#x27;, &#x27;feedback-docs-button&#x27; ) ); ?&gt;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-editor-help&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Docs&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;/li&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;https://wordpress.org/support/plugin/codepress-admin-columns&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-wordpress&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Forums&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;/li&gt;
+									&lt;/ul&gt;
+									&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+							&lt;div id=&quot;feedback-rate&quot;&gt;
+								&lt;div class=&quot;inside&quot;&gt;
+									&lt;p&gt;
+										&lt;?php _e( &quot;Woohoo! We&#x27;re glad to hear that!&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+									&lt;/p&gt;
+									&lt;p&gt;
+										&lt;?php _e( &#x27;We would really love it if you could show your appreciation by giving us a rating on WordPress.org or tweet about Admin Columns!&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+									&lt;/p&gt;
+									&lt;ul class=&quot;share&quot;&gt;
+										&lt;li&gt;
+											&lt;a href=&quot;http://wordpress.org/support/view/plugin-reviews/codepress-admin-columns#postform&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-star-empty&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Rate&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;/li&gt;
+
+										&lt;li&gt;
+											&lt;a href=&quot;&lt;?php echo esc_url( add_query_arg( array( &#x27;hashtags&#x27; =&gt; &#x27;admincolumns&#x27;, &#x27;text&#x27; =&gt; urlencode( __( &quot;I&#x27;m using Admin Columns for WordPress!&quot;, &#x27;codepress-admin-columns&#x27; ) ), &#x27;url&#x27; =&gt; urlencode( &#x27;http://wordpress.org/plugins/codepress-admin-columns/&#x27; ), &#x27;via&#x27; =&gt; ac_get_twitter_handle() ), &#x27;https://twitter.com/intent/tweet&#x27; ) ); ?&gt;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-twitter&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Tweet&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;/li&gt;
+
+										&lt;li&gt;
+											&lt;a href=&quot;&lt;?php echo esc_url( ac_get_site_utm_url( &#x27;upgrade-to-admin-columns-pro&#x27;, &#x27;feedback-purchase-button&#x27; ) ); ?&gt;&quot; target=&quot;_blank&quot;&gt;
+												&lt;div class=&quot;dashicons dashicons-cart&quot;&gt;&lt;/div&gt; &lt;?php _e( &#x27;Buy Pro&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+											&lt;/a&gt;
+										&lt;/li&gt;
+									&lt;/ul&gt;
+									&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+								&lt;/div&gt;
+							&lt;/div&gt;
+						&lt;/div&gt;
+
+					&lt;?php endif; ?&gt;
+
+					&lt;div class=&quot;sidebox&quot; id=&quot;plugin-support&quot;&gt;
+						&lt;h3&gt;&lt;?php _e( &#x27;Support&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/h3&gt;
+
+						&lt;div class=&quot;inside&quot;&gt;
+							&lt;?php if ( version_compare( get_bloginfo( &#x27;version&#x27; ), &#x27;3.2&#x27;, &#x27;&gt;&#x27; ) ) : ?&gt;
+								&lt;p&gt;
+									&lt;?php _e( &quot;Check the &lt;strong&gt;Help&lt;/strong&gt; section in the top-right screen.&quot;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+								&lt;/p&gt;
+							&lt;?php endif; ?&gt;
+							&lt;p&gt;
+								&lt;?php printf( __( &quot;For full documentation, bug reports, feature suggestions and other tips &lt;a href=&#x27;%s&#x27;&gt;visit the Admin Columns website&lt;/a&gt;&quot;, &#x27;codepress-admin-columns&#x27; ), ac_get_site_utm_url( &#x27;documentation&#x27;, &#x27;support&#x27; ) ); ?&gt;
+							&lt;/p&gt;
+						&lt;/div&gt;
+					&lt;/div&gt;&lt;!--plugin-support--&gt;
+
+				&lt;/div&gt;&lt;!--.ac-right-inner--&gt;
+			&lt;/div&gt;&lt;!--.ac-right--&gt;
+
+			&lt;div class=&quot;ac-left&quot;&gt;
+				&lt;?php if ( ! $list_screen-&gt;get_stored_default_headings() &amp;&amp; ! $list_screen-&gt;is_read_only() ) : ?&gt;
+					&lt;div class=&quot;notice notice-warning&quot;&gt;
+						&lt;p&gt;
+							&lt;?php echo $this-&gt;get_error_message_visit_list_screen( $list_screen ); ?&gt;
+						&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;?php endif ?&gt;
+
+				&lt;?php $this-&gt;display_notices(); ?&gt;
+
+				&lt;?php if ( $list_screen-&gt;is_read_only() ) : ?&gt;
+					&lt;div class=&quot;ac-notice notice-warning below-h2&quot;&gt;
+						&lt;p&gt;&lt;?php echo $this-&gt;get_read_only_message( $list_screen ); ?&gt;&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;?php endif; ?&gt;
+
+				&lt;div class=&quot;ac-boxes&lt;?php echo esc_attr( $list_screen-&gt;is_read_only() ? &#x27; disabled&#x27; : &#x27;&#x27; ); ?&gt;&quot;&gt;
+
+					&lt;div class=&quot;ac-columns&quot;&gt;
+						&lt;form method=&quot;post&quot; action=&quot;&lt;?php echo esc_attr( $this-&gt;get_link() ); ?&gt;&quot;&gt;
+
+							&lt;input type=&quot;hidden&quot; name=&quot;list_screen&quot; value=&quot;&lt;?php echo esc_attr( $list_screen-&gt;get_key() ); ?&gt;&quot;/&gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;cpac_action&quot; value=&quot;update_by_type&quot;/&gt;
+
+							&lt;?php $this-&gt;nonce_field( &#x27;update-type&#x27; ); ?&gt;
+
+							&lt;?php
+
+							/**
+							 * Columns
+							 */
+							foreach ( $list_screen-&gt;get_columns() as $column ) {
+								$this-&gt;display_column( $column );
+							}
+							?&gt;
+						&lt;/form&gt;
+
+					&lt;/div&gt;
+
+					&lt;div class=&quot;column-footer&quot;&gt;
+						&lt;?php if ( ! $list_screen-&gt;is_read_only() ) : ?&gt;
+							&lt;div class=&quot;order-message&quot;&gt;
+								&lt;?php _e( &#x27;Drag and drop to reorder&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+							&lt;/div&gt;
+							&lt;div class=&quot;button-container&quot;&gt;
+								&lt;?php
+
+								/**
+								 * Display a clear button below the column settings. The clear button removes all column settings from the current page.
+								 *
+								 * @since 3.0
+								 *
+								 * @param bool
+								 */
+								if ( apply_filters( &#x27;ac/enable_clear_columns_button&#x27;, false ) ) :
+									?&gt;
+									&lt;a class=&quot;clear-columns&quot; data-clear-columns&gt;&lt;?php _e( &#x27;Clear all columns &#x27;, &#x27;codepress-admin-columns&#x27; ) ?&gt;&lt;/a&gt;
+								&lt;?php endif; ?&gt;
+
+								&lt;span class=&quot;spinner&quot;&gt;&lt;/span&gt;
+								&lt;a class=&quot;button-primary submit update&quot;&gt;&lt;?php _e( &#x27;Update&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;a class=&quot;button-primary submit save&quot;&gt;&lt;?php _e( &#x27;Save&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;a class=&quot;add_column button&quot;&gt;+ &lt;?php _e( &#x27;Add Column&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+							&lt;/div&gt;
+						&lt;?php endif; ?&gt;
+					&lt;/div&gt;
+
+				&lt;/div&gt;&lt;!--.ac-boxes--&gt;
+
+				&lt;?php do_action( &#x27;ac/settings/after_columns&#x27;, $list_screen ); ?&gt;
+
+			&lt;/div&gt;&lt;!--.ac-left--&gt;
+			&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+
+			&lt;div id=&quot;add-new-column-template&quot;&gt;
+				&lt;?php $this-&gt;display_column_template( $list_screen ); ?&gt;
+			&lt;/div&gt;
+
+		&lt;/div&gt;&lt;!--.ac-admin--&gt;
+
+		&lt;div class=&quot;clear&quot;&gt;&lt;/div&gt;
+
+		&lt;?php
+	}
+
+	/**
+	 * Get first custom group column
+	 */
+	private function display_column_template( AC_ListScreen $list_screen ) {
+		$columns = array();
+
+		foreach ( $list_screen-&gt;get_column_types() as $column_type ) {
+			if ( &#x27;custom&#x27; === $column_type-&gt;get_group() ) {
+				$columns[ $column_type-&gt;get_label() ] = $column_type;
+			}
+		}
+
+		array_multisort( array_keys( $columns ), SORT_NATURAL, $columns );
+
+		/** @var AC_Column $column */
+		$column = array_shift( $columns );
+
+		$this-&gt;display_column( $column );
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public function display_column( AC_Column $column ) { ?&gt;
+
+		&lt;div class=&quot;ac-column ac-&lt;?php echo esc_attr( $column-&gt;get_type() ); ?&gt;&quot;
+				data-type=&quot;&lt;?php echo esc_attr( $column-&gt;get_type() ); ?&gt;&quot;
+				data-original=&quot;&lt;?php echo esc_attr( $column-&gt;is_original() ); ?&gt;&quot;
+				data-column-name=&quot;&lt;?php echo esc_attr( $column-&gt;get_name() ); ?&gt;&quot;&gt;
+
+			&lt;div class=&quot;ac-column-header&quot;&gt;
+				&lt;table class=&quot;widefat&quot;&gt;
+					&lt;tbody&gt;
+					&lt;tr&gt;
+						&lt;td class=&quot;column_sort&quot;&gt;
+							&lt;span class=&quot;cpacicon-move&quot;&gt;&lt;/span&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_label&quot;&gt;
+							&lt;div class=&quot;inner&quot;&gt;
+								&lt;div class=&quot;meta&quot;&gt;
+									&lt;?php
+
+									foreach ( $column-&gt;get_settings() as $setting ) {
+										if ( $setting instanceof AC_Settings_HeaderInterface ) {
+											echo $setting-&gt;render_header();
+										}
+									}
+
+									/**
+									 * Fires in the meta-element for column options, which is displayed right after the column label
+									 *
+									 * @since 2.0
+									 *
+									 * @param AC_Column $column_instance Column class instance
+									 */
+									do_action( &#x27;ac/column/header&#x27;, $column );
+
+									?&gt;
+								&lt;/div&gt;
+								&lt;a class=&quot;toggle&quot; data-toggle=&quot;column&quot;&gt;
+									&lt;?php echo $column-&gt;get_setting( &#x27;label&#x27; )-&gt;get_value(); // do not escape ?&gt;
+								&lt;/a&gt;
+								&lt;a class=&quot;edit-button&quot; data-toggle=&quot;column&quot;&gt;&lt;?php _e( &#x27;Edit&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;a class=&quot;close-button&quot; data-toggle=&quot;column&quot;&gt;&lt;?php _e( &#x27;Close&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;?php if ( ! $column-&gt;is_original() ) : ?&gt;
+									&lt;a class=&quot;clone-button&quot; href=&quot;#&quot;&gt;&lt;?php _e( &#x27;Clone&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;?php endif; ?&gt;
+								&lt;a class=&quot;remove-button&quot;&gt;&lt;?php _e( &#x27;Remove&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+							&lt;/div&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_type&quot;&gt;
+							&lt;div class=&quot;inner&quot; data-toggle=&quot;column&quot;&gt;
+								&lt;?php echo ac_helper()-&gt;html-&gt;strip_attributes( $column-&gt;get_label(), array( &#x27;style&#x27;, &#x27;class&#x27; ) ); ?&gt;
+							&lt;/div&gt;
+						&lt;/td&gt;
+						&lt;td class=&quot;column_edit&quot; data-toggle=&quot;column&quot;&gt;
+						&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;/tbody&gt;
+				&lt;/table&gt;
+			&lt;/div&gt;
+
+			&lt;div class=&quot;ac-column-body&quot;&gt;
+				&lt;div class=&quot;ac-column-settings&quot;&gt;
+
+					&lt;?php
+
+					foreach ( $column-&gt;get_settings() as $setting ) {
+						echo $setting-&gt;render() . &quot;\n&quot;;
+					}
+
+					?&gt;
+
+					&lt;table class=&quot;ac-column-setting ac-column-setting-actions&quot;&gt;
+						&lt;tr&gt;
+							&lt;td class=&quot;col-label&quot;&gt;&lt;/td&gt;
+							&lt;td class=&quot;col-settings&quot;&gt;
+								&lt;p&gt;
+									&lt;a href=&quot;#&quot; class=&quot;close-button&quot; data-toggle=&quot;column&quot;&gt;&lt;?php _e( &#x27;Close&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+									&lt;?php if ( ! $column-&gt;is_original() ) : ?&gt;
+										&lt;a class=&quot;clone-button&quot; href=&quot;#&quot;&gt;&lt;?php _e( &#x27;Clone&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+									&lt;?php endif; ?&gt;
+									&lt;a href=&quot;#&quot; class=&quot;remove-button&quot;&gt;&lt;?php _e( &#x27;Remove&#x27; ); ?&gt;&lt;/a&gt;
+								&lt;/p&gt;
+							&lt;/td&gt;
+						&lt;/tr&gt;
+
+					&lt;/table&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;?php
+	}
+
+}
+</pre></details></body></html>

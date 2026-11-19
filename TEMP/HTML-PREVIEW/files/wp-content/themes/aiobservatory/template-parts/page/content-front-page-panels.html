@@ -1,0 +1,122 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/template-parts/page/content-front-page-panels.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/template-parts/page/content-front-page-panels.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+&lt;article id=&quot;panel&quot;  &gt;
+
+	
+
+		&lt;div class=&quot;panel-image&quot; style=&quot;background-image: url();&quot;&gt;
+			&lt;div class=&quot;panel-image-prop&quot; style=&quot;padding-top: %&quot;&gt;&lt;/div&gt;
+		&lt;/div&gt;&lt;!-- .panel-image --&gt;
+
+	
+
+	&lt;div class=&quot;panel-content&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;header class=&quot;entry-header&quot;&gt;
+				
+
+				
+
+			&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+			&lt;div class=&quot;entry-content&quot;&gt;
+				
+			&lt;/div&gt;&lt;!-- .entry-content --&gt;
+
+			
+
+				
+
+		 		
+
+					&lt;div class=&quot;recent-posts&quot;&gt;
+
+						
+					&lt;/div&gt;&lt;!-- .recent-posts --&gt;
+				
+			
+
+		&lt;/div&gt;&lt;!-- .wrap --&gt;
+	&lt;/div&gt;&lt;!-- .panel-content --&gt;
+
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Template part for displaying pages on front page
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ * @version 1.0
+ */
+
+global $twentyseventeencounter;
+
+?&gt;
+
+&lt;article id=&quot;panel&lt;?php echo $twentyseventeencounter; ?&gt;&quot; &lt;?php post_class( &#x27;twentyseventeen-panel &#x27; ); ?&gt; &gt;
+
+	&lt;?php if ( has_post_thumbnail() ) :
+		$thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id( $post-&gt;ID ), &#x27;twentyseventeen-featured-image&#x27; );
+
+		// Calculate aspect ratio: h / w * 100%.
+		$ratio = $thumbnail[2] / $thumbnail[1] * 100;
+		?&gt;
+
+		&lt;div class=&quot;panel-image&quot; style=&quot;background-image: url(&lt;?php echo esc_url( $thumbnail[0] ); ?&gt;);&quot;&gt;
+			&lt;div class=&quot;panel-image-prop&quot; style=&quot;padding-top: &lt;?php echo esc_attr( $ratio ); ?&gt;%&quot;&gt;&lt;/div&gt;
+		&lt;/div&gt;&lt;!-- .panel-image --&gt;
+
+	&lt;?php endif; ?&gt;
+
+	&lt;div class=&quot;panel-content&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;header class=&quot;entry-header&quot;&gt;
+				&lt;?php the_title( &#x27;&lt;h2 class=&quot;entry-title&quot;&gt;&#x27;, &#x27;&lt;/h2&gt;&#x27; ); ?&gt;
+
+				&lt;?php twentyseventeen_edit_link( get_the_ID() ); ?&gt;
+
+			&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+			&lt;div class=&quot;entry-content&quot;&gt;
+				&lt;?php
+					/* translators: %s: Name of current post */
+					the_content( sprintf(
+						__( &#x27;Continue reading&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentyseventeen&#x27; ),
+						get_the_title()
+					) );
+				?&gt;
+			&lt;/div&gt;&lt;!-- .entry-content --&gt;
+
+			&lt;?php
+			// Show recent blog posts if is blog posts page (Note that get_option returns a string, so we&#x27;re casting the result as an int).
+			if ( get_the_ID() === (int) get_option( &#x27;page_for_posts&#x27; )  ) : ?&gt;
+
+				&lt;?php // Show four most recent posts.
+				$recent_posts = new WP_Query( array(
+					&#x27;posts_per_page&#x27;      =&gt; 3,
+					&#x27;post_status&#x27;         =&gt; &#x27;publish&#x27;,
+					&#x27;ignore_sticky_posts&#x27; =&gt; true,
+					&#x27;no_found_rows&#x27;       =&gt; true,
+				) );
+				?&gt;
+
+		 		&lt;?php if ( $recent_posts-&gt;have_posts() ) : ?&gt;
+
+					&lt;div class=&quot;recent-posts&quot;&gt;
+
+						&lt;?php
+						while ( $recent_posts-&gt;have_posts() ) : $recent_posts-&gt;the_post();
+							get_template_part( &#x27;template-parts/post/content&#x27;, &#x27;excerpt&#x27; );
+						endwhile;
+						wp_reset_postdata();
+						?&gt;
+					&lt;/div&gt;&lt;!-- .recent-posts --&gt;
+				&lt;?php endif; ?&gt;
+			&lt;?php endif; ?&gt;
+
+		&lt;/div&gt;&lt;!-- .wrap --&gt;
+	&lt;/div&gt;&lt;!-- .panel-content --&gt;
+
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+</pre></details></body></html>

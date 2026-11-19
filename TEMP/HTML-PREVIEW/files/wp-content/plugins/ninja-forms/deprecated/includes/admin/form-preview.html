@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/form-preview.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/form-preview.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_preview_form&#x27; );
+function ninja_forms_preview_form() {
+	global $ninja_forms_append_page_form_id;
+	if( ! empty ( $_REQUEST[&#x27;form_id&#x27;] ) AND ! empty ( $_REQUEST[&#x27;preview&#x27;] ) ) { //I
+		$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		$ninja_forms_append_page_form_id = array($form_id);
+		add_filter( &#x27;the_content&#x27;, &#x27;ninja_forms_append_to_page&#x27;, 9999 );		
+	}
+}
+
+function ninja_forms_preview_link( $form_id = &#x27;&#x27;, $echo = true ) {
+	if( $form_id == &#x27;&#x27; ){
+		if( isset( $_REQUEST[&#x27;form_id&#x27;] ) ){
+			$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		}else{
+			$form_id = &#x27;&#x27;;
+		}
+	}
+	$base = home_url();
+
+	$form_data = ninja_forms_get_form_by_id( $form_id );
+
+	$append_page = Ninja_Forms()-&gt;form( $form_id )-&gt;get_setting( &#x27;append_page&#x27; );
+
+	if ( empty( $append_page ) ) {
+		$opt =  nf_get_settings();
+		if ( isset ( $opt[&#x27;preview_id&#x27;] ) ) {
+			$page_id = $opt[&#x27;preview_id&#x27;];
+		} else {
+			$page_id = &#x27;&#x27;;
+		}
+	} else {
+		$page_id = $append_page;
+	}
+
+	if( $echo ){
+		$preview_link = &#x27;&lt;a target=&quot;_blank&quot; href=&quot;&#x27; . $base . &#x27;/?page_id=&#x27; . $page_id . &#x27;&amp;preview=true&amp;form_id=&#x27; . $form_id . &#x27;&quot;&gt;&#x27; . __( &#x27;Preview Form&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;;
+	}else{
+		$preview_link = $base . &#x27;/?page_id=&#x27; . $page_id . &#x27;&amp;preview=true&amp;form_id=&#x27; . $form_id;
+	}
+
+	return $preview_link;
+
+}</pre></details></body></html>

@@ -1,0 +1,281 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/lib/NF_VersionSwitcher.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/lib/NF_VersionSwitcher.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+final class NF_VersionSwitcher
+{
+    public function __construct()
+    {
+        $this-&gt;ajax_check();
+
+        add_action( &#x27;init&#x27;, array( $this, &#x27;version_bypass_check&#x27; ) );
+
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;listener&#x27; )  );
+
+        add_filter( &#x27;ninja_forms_admin_notices&#x27;, array( $this, &#x27;upgrade_complete_notice&#x27; ) );
+
+        if( defined( &#x27;NF_DEV&#x27; ) &amp;&amp; NF_DEV ) {
+            add_action(&#x27;admin_bar_menu&#x27;, array( $this, &#x27;admin_bar_menu&#x27;), 999);
+        }
+    }
+
+    public function ajax_check()
+    {
+        $nf2to3 = isset( $_POST[ &#x27;nf2to3&#x27; ] );
+        $doing_ajax = ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX );
+        if( $nf2to3 &amp;&amp; ! $doing_ajax ){
+            wp_die(
+                __( &#x27;You do not have permission.&#x27;, &#x27;ninja-forms&#x27; ),
+                __( &#x27;Permission Denied&#x27;, &#x27;ninja-forms&#x27; )
+            );
+        }
+    }
+
+    public function version_bypass_check()
+    {
+        if( ! isset( $_POST[ &#x27;nf2to3&#x27; ] ) ) return TRUE;
+
+        $capability = apply_filters( &#x27;ninja_forms_admin_version_bypass_capabilities&#x27;, &#x27;manage_options&#x27; );
+        $current_user_can = current_user_can( $capability );
+
+        if( $current_user_can ) return TRUE;
+
+        wp_die(
+            __( &#x27;You do not have permission.&#x27;, &#x27;ninja-forms&#x27; ),
+            __( &#x27;Permission Denied&#x27;, &#x27;ninja-forms&#x27; )
+        );
+    }
+
+    public function listener()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_version_switcher_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( isset( $_GET[ &#x27;nf-switcher&#x27; ] ) ){
+
+            $notice = &#x27;&#x27;;
+
+            switch( $_GET[ &#x27;nf-switcher&#x27; ] ){
+                case &#x27;upgrade&#x27;:
+                    update_option( &#x27;ninja_forms_load_deprecated&#x27;, FALSE );
+                    update_option( &#x27;ninja_forms_upgrade_complete&#x27;, true );
+                    do_action( &#x27;ninja_forms_upgrade&#x27; );
+                    $notice = &#x27;&amp;nf-upgrade=complete&#x27;;
+                    break;
+                case &#x27;rollback&#x27;:
+                    update_option( &#x27;ninja_forms_load_deprecated&#x27;, TRUE );
+                    update_option( &#x27;ninja_forms_upgrade_complete&#x27;, false );
+                    $this-&gt;rollback_activation();
+                    do_action( &#x27;ninja_forms_rollback&#x27; );
+                    $notice = &#x27;&amp;nf-rollback=complete&#x27;;
+                    break;
+            }
+
+            header( &#x27;Location: &#x27; . admin_url( &#x27;admin.php?page=ninja-forms&#x27; . $notice ) );
+        }
+    }
+
+    public function admin_bar_menu( $wp_admin_bar )
+    {
+        $args = array(
+            &#x27;id&#x27;    =&gt; &#x27;nf&#x27;,
+            &#x27;title&#x27; =&gt; __( &#x27;Ninja Forms Dev&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;href&#x27;  =&gt; &#x27;#&#x27;,
+        );
+        $wp_admin_bar-&gt;add_node( $args );
+        $args = array(
+            &#x27;id&#x27; =&gt; &#x27;nf_switcher&#x27;,
+            &#x27;href&#x27; =&gt; admin_url(),
+            &#x27;parent&#x27; =&gt; &#x27;nf&#x27;
+        );
+        if( ! get_option( &#x27;ninja_forms_load_deprecated&#x27; ) ) {
+            $args[ &#x27;title&#x27; ] = __( &#x27;DEBUG: Switch to 2.9.x&#x27;, &#x27;ninja-forms&#x27; );
+            $args[ &#x27;href&#x27; ] .= &#x27;?nf-switcher=rollback&#x27;;
+        } else {
+            $args[ &#x27;title&#x27; ] = __( &#x27;DEBUG: Switch to 3.0.x&#x27;, &#x27;ninja-forms&#x27; );
+            $args[ &#x27;href&#x27; ] .= &#x27;?nf-switcher=upgrade&#x27;;
+        }
+        $wp_admin_bar-&gt;add_node($args);
+    }
+
+    public function rollback_activation()
+    {
+        global $wpdb;
+
+        $table_name = $wpdb-&gt;prefix . &#x27;nf_objects&#x27;;
+
+        if( $wpdb-&gt;get_var( $wpdb-&gt;prepare( &quot;SHOW TABLES LIKE %s&quot;,  $table_name ) ) == $table_name ) return;
+
+        if ( ! is_multisite() ) { // This is a single-site activation.
+
+            require_once(ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27;);
+
+            if( ! defined( &#x27;NINJA_FORMS_FAV_FIELDS_TABLE_NAME&#x27; ) ){
+                define( &#x27;NINJA_FORMS_FAV_FIELDS_TABLE_NAME&#x27;, $wpdb-&gt;prefix . &#x27;ninja_forms_fav_fields&#x27; );
+            }
+
+            if( ! defined( &#x27;NINJA_FORMS_FIELDS_TABLE_NAME&#x27; ) ){
+                define( &#x27;NINJA_FORMS_FIELDS_TABLE_NAME&#x27;, $wpdb-&gt;prefix . &#x27;ninja_forms_fields&#x27; );
+            }
+
+            if( ! defined( &#x27;NF_OBJECT_META_TABLE_NAME&#x27; ) ){
+                define( &#x27;NF_OBJECT_META_TABLE_NAME&#x27;, $wpdb-&gt;prefix .&#x27;nf_objectmeta&#x27; );
+            }
+
+            if( ! defined( &#x27;NF_OBJECTS_TABLE_NAME&#x27; ) ){
+                define( &#x27;NF_OBJECTS_TABLE_NAME&#x27;, $wpdb-&gt;prefix .&#x27;nf_objects&#x27; );
+            }
+
+            if( ! defined( &#x27;NF_OBJECT_RELATIONSHIPS_TABLE_NAME&#x27; ) ){
+                define( &#x27;NF_OBJECT_RELATIONSHIPS_TABLE_NAME&#x27;, $wpdb-&gt;prefix .&#x27;nf_relationships&#x27; );
+            }
+
+            if( ! defined( &#x27;NF_PLUGIN_VERSION&#x27; ) ){
+                define( &#x27;NF_PLUGIN_VERSION&#x27;, Ninja_Forms::VERSION );
+            }
+
+            $opt = get_option( &#x27;ninja_forms_settings&#x27; );
+
+            $sql = &quot;CREATE TABLE IF NOT EXISTS &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; (
+		`id` int(11) NOT NULL AUTO_INCREMENT,
+		`row_type` int(11) NOT NULL,
+		`type` varchar(255) CHARACTER SET utf8 NOT NULL,
+		`order` int(11) NOT NULL,
+		`data` longtext CHARACTER SET utf8 NOT NULL,
+		`name` varchar(255) CHARACTER SET utf8 NOT NULL,
+		PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+            dbDelta($sql);
+
+            $state_dropdown = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;State Dropdown&#x27; ), ARRAY_A );
+            if( !isset($state_dropdown[&#x27;id&#x27;]) ){
+                $sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(2, 0, \&#x27;_list\&#x27;, 0, \&#x27;a:10:{s:5:\&quot;label\&quot;;s:14:\&quot;State Dropdown\&quot;;s:9:\&quot;label_pos\&quot;;s:4:\&quot;left\&quot;;s:9:\&quot;list_type\&quot;;s:8:\&quot;dropdown\&quot;;s:10:\&quot;multi_size\&quot;;s:1:\&quot;5\&quot;;s:15:\&quot;list_show_value\&quot;;s:1:\&quot;1\&quot;;s:4:\&quot;list\&quot;;a:1:{s:7:\&quot;options\&quot;;a:51:{i:0;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Alabama\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:1;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Alaska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:2;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Arizona\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AZ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:3;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Arkansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:4;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;California\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:5;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Colorado\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:6;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Connecticut\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:7;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Delaware\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:8;a:3:{s:5:\&quot;label\&quot;;s:20:\&quot;District of Columbia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:9;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Florida\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;FL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:10;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Georgia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;GA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:11;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Hawaii\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;HI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:12;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Idaho\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ID\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:13;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Illinois\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:14;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Indiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:15;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Iowa\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:16;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Kansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:17;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Kentucky\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:18;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Louisiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;LA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:19;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Maine\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ME\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:20;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Maryland\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:21;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;Massachusetts\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:22;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Michigan\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:23;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Minnesota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:24;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Mississippi\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:25;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Missouri\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:26;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Montana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:27;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Nebraska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:28;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Nevada\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:29;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;New Hampshire\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:30;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Jersey\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NJ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:31;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Mexico\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NM\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:32;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;New York\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:33;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;North Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:34;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;North Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ND\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:35;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Ohio\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:36;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Oklahoma\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:37;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Oregon\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:38;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Pennsylvania\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;PA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:39;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Rhode Island\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;RI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:40;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;South Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:41;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;South Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:42;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Tennessee\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:43;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Texas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TX\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:44;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Utah\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;UT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:45;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Vermont\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:46;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:47;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;Washington\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:48;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;West Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:49;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Wisconsin\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:50;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Wyoming\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}}}s:3:\&quot;req\&quot;;s:1:\&quot;0\&quot;;s:5:\&quot;class\&quot;;s:0:\&quot;\&quot;;s:9:\&quot;show_help\&quot;;s:1:\&quot;0\&quot;;s:9:\&quot;help_text\&quot;;s:0:\&quot;\&quot;;}\&#x27;, \&#x27;State Dropdown\&#x27;)&#x27;;
+                $wpdb-&gt;query($sql);
+            }
+
+            $anti_spam = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Anti-Spam&#x27; ), ARRAY_A );
+            if( !isset($anti_spam[&#x27;id&#x27;]) ){
+                $sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(3, 0, \&#x27;_spam\&#x27;, 0, \&#x27;a:6:{s:9:&quot;label_pos&quot;;s:4:&quot;left&quot;;s:5:&quot;label&quot;;s:18:&quot;Anti-Spam Question&quot;;s:6:&quot;answer&quot;;s:16:&quot;Anti-Spam Answer&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Anti-Spam\&#x27;)&#x27;;
+                $wpdb-&gt;query($sql);
+            }
+
+            $submit = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Submit&#x27; ), ARRAY_A );
+            if( !isset($submit[&#x27;id&#x27;]) ){
+                $sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(4, 0, \&#x27;_submit\&#x27;, 0, \&#x27;a:4:{s:5:\&quot;label\&quot;;s:6:\&quot;Submit\&quot;;s:5:\&quot;class\&quot;;s:0:\&quot;\&quot;;s:9:\&quot;show_help\&quot;;s:1:\&quot;0\&quot;;s:9:\&quot;help_text\&quot;;s:0:\&quot;\&quot;;}\&#x27;, \&#x27;Submit\&#x27;);&#x27;;
+                $wpdb-&gt;query($sql);
+            }
+
+            $sql = &quot;CREATE TABLE IF NOT EXISTS &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; (
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `form_id` int(11) NOT NULL,
+		  `type` varchar(255) CHARACTER SET utf8 NOT NULL,
+		  `order` int(11) NOT NULL,
+		  `data` longtext CHARACTER SET utf8 NOT NULL,
+		  `fav_id` int(11) DEFAULT NULL,
+		  `def_id` int(11) DEFAULT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8 ;&quot;;
+
+            dbDelta($sql);
+
+            /**
+             * Add our table structure for version 2.8.
+             */
+
+            // Create our object meta table
+            $sql = &quot;CREATE TABLE IF NOT EXISTS &quot;. NF_OBJECT_META_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `object_id` bigint(20) NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+            dbDelta( $sql );
+
+            // Create our object table
+            $sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECTS_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `type` varchar(255) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+            dbDelta( $sql );
+
+            // Create our object relationships table
+
+            $sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECT_RELATIONSHIPS_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `child_id` bigint(20) NOT NULL,
+		  `parent_id` bigint(20) NOT NULL,
+		  `child_type` varchar(255) NOT NULL,
+		  `parent_type` varchar(255) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+            dbDelta( $sql );
+
+            $title = apply_filters( &#x27;ninja_forms_preview_page_title&#x27;, &#x27;ninja_forms_preview_page&#x27; );
+            $preview_page = get_page_by_title( $title );
+            if( !$preview_page ) {
+                // Create preview page object
+                $preview_post = array(
+                    &#x27;post_title&#x27; =&gt; $title,
+                    &#x27;post_content&#x27; =&gt; &#x27;This is a preview of how this form will appear on your website&#x27;,
+                    &#x27;post_status&#x27; =&gt; &#x27;draft&#x27;,
+                    &#x27;post_type&#x27; =&gt; &#x27;page&#x27;
+                );
+
+                // Insert the page into the database
+                $page_id = wp_insert_post( $preview_post );
+            }else{
+                $page_id = $preview_page-&gt;ID;
+            }
+
+            $opt[&#x27;preview_id&#x27;] = $page_id;
+
+            $current_settings = get_option( &#x27;ninja_forms_settings&#x27;, false );
+
+            if ( ! $current_settings ) {
+                update_option( &#x27;nf_convert_notifications_complete&#x27;, true );
+                update_option( &#x27;nf_convert_subs_step&#x27;, &#x27;complete&#x27; );
+                update_option( &#x27;nf_upgrade_notice&#x27;, &#x27;closed&#x27; );
+                update_option( &#x27;nf_update_email_settings_complete&#x27;, true );
+                update_option( &#x27;nf_email_fav_updated&#x27;, true );
+                update_option( &#x27;nf_convert_forms_complete&#x27;, true );
+                update_option( &#x27;nf_database_migrations&#x27;, true );
+            }
+
+            update_option( &quot;ninja_forms_settings&quot;, $opt );
+            update_option( &#x27;ninja_forms_version&#x27;, &#x27;2.9.56.2&#x27; );
+
+        } else { // We&#x27;re network activating.
+            header( &#x27;Location: &#x27; . network_admin_url( &#x27;plugins.php?deactivate=true&amp;nf_action=network_activation_error&#x27; ) );
+            exit;
+        }
+
+    }
+
+    public function upgrade_complete_notice( $notices )
+    {
+        if( get_option( &#x27;ninja_forms_upgrade_complete&#x27;, false ) ){
+
+            // Persistance notice, until dismissed.
+            $notices[ &#x27;upgrade_compelte_notice&#x27; ] = array(
+                &#x27;title&#x27; =&gt; __( &#x27;How do I look?&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;msg&#x27; =&gt; __( &#x27;Your forms were upgraded. Take a look around and make sure everything looks right.&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;link&#x27; =&gt; &#x27;&lt;li&gt;&lt;span class=&quot;dashicons dashicons-welcome-learn-more&quot;&gt;&lt;/span&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/documentation/?utm_medium=plugin&amp;utm_source=admin-notice&amp;utm_campaign=Ninja+Forms+Upsell&amp;utm_content=Ninja+Forms+Docs&quot;&gt;&#x27; . __( &#x27;Learn More&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;span class=&quot;dashicons dashicons-sos&quot;&gt;&lt;/span&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/docs/rollback/&quot;&gt;&#x27; . __( &#x27;Something is wrong...&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+                            &lt;li&gt;&lt;span class=&quot;dashicons dashicons-thumbs-up&quot;&gt;&lt;/span&gt;&lt;a href=&quot;&#x27; . add_query_arg( array( &#x27;nf_admin_notice_ignore&#x27; =&gt; __( &#x27;upgrade_compelte_notice&#x27;, &#x27;ninja-forms&#x27; ) ) ) . &#x27;&quot;&gt;&#x27; . __( &#x27;Looks Good!&#x27; ,&#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;&#x27;,
+                &#x27;int&#x27; =&gt; 0,
+                &#x27;pages&#x27; =&gt; array( &#x27;ninja-forms&#x27; )
+            );
+        }
+        return $notices;
+    }
+
+}
+
+new NF_VersionSwitcher();
+</pre></details></body></html>

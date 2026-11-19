@@ -1,0 +1,146 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Meta.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Meta.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+abstract class AC_Settings_Column_Meta extends AC_Settings_Column {
+
+	/**
+	 * @var string
+	 */
+	private $field;
+
+	abstract protected function get_meta_keys();
+
+	protected function define_options() {
+		return array( &#x27;field&#x27; );
+	}
+
+	/**
+	 * @return AC_Settings_Form_Element_Select
+	 */
+	protected function get_setting_field() {
+		$setting = $this
+			-&gt;create_element( &#x27;select&#x27;, &#x27;field&#x27; )
+			-&gt;set_options( $this-&gt;group_keys( $this-&gt;get_cached_keys() ) )
+			-&gt;set_no_result( __( &#x27;No fields available.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+
+		return $setting;
+	}
+
+	/**
+	 * @return array|false
+	 */
+	protected function get_cached_keys() {
+		$keys = $this-&gt;get_cache();
+
+		if ( ! $keys ) {
+			$keys = $this-&gt;get_meta_keys();
+
+			$this-&gt;set_cache( $keys );
+		}
+
+		return $keys;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function get_cache_key() {
+		return $this-&gt;column-&gt;get_list_screen()-&gt;get_storage_key();
+	}
+
+	protected function get_cache_group() {
+		return &#x27;ac_settings_meta&#x27;;
+	}
+
+	/**
+	 * @return AC_View
+	 */
+	public function create_view() {
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Field&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $this-&gt;get_setting_field(),
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_field() {
+		return $this-&gt;field;
+	}
+
+	/**
+	 * @param string $field
+	 *
+	 * @return bool
+	 */
+	public function set_field( $field ) {
+		$this-&gt;field = $field;
+
+		return true;
+	}
+
+	/**
+	 * Get temp cache
+	 */
+	private function get_cache() {
+		wp_cache_get( $this-&gt;get_cache_key(), $this-&gt;get_cache_group() );
+	}
+
+	/**
+	 * @param array $data
+	 * @param int   $expire Seconds
+	 */
+	private function set_cache( $data, $expire = 15 ) {
+		wp_cache_add( $this-&gt;get_cache_key(), $data, $this-&gt;get_cache_group(), $expire );
+	}
+
+	private function group_keys( $keys ) {
+		if ( ! $keys ) {
+			return array();
+		}
+
+		$options = array(
+			&#x27;hidden&#x27; =&gt; array(
+				&#x27;title&#x27;   =&gt; __( &#x27;Hidden Custom Fields&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;options&#x27; =&gt; array(),
+			),
+			&#x27;public&#x27; =&gt; array(
+				&#x27;title&#x27;   =&gt; __( &#x27;Custom Fields&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;options&#x27; =&gt; array(),
+			),
+		);
+
+		foreach ( $keys as $field ) {
+			$group = 0 === strpos( $field[0], &#x27;_&#x27; ) ? &#x27;hidden&#x27; : &#x27;public&#x27;;
+
+			$options[ $group ][&#x27;options&#x27;][ $field ] = $field;
+		}
+
+		krsort( $options ); // public first
+
+		if ( empty( $options[&#x27;hidden&#x27;][&#x27;options&#x27;] ) ) {
+			unset( $options[&#x27;hidden&#x27;] );
+		}
+
+		if ( empty( $options[&#x27;public&#x27;][&#x27;options&#x27;] ) ) {
+			unset( $options[&#x27;public&#x27;] );
+		}
+
+		// Remove groups when there is only one group
+		if ( 1 === count( $options ) ) {
+			$options = array_pop( $options );
+
+			$options = $options[&#x27;options&#x27;];
+		}
+
+		return $options;
+	}
+
+}
+</pre></details></body></html>

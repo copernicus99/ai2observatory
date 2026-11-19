@@ -1,0 +1,154 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/deprecated-file-uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/deprecated-file-uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+global $wpdb;
+
+define(&quot;NINJA_FORMS_UPLOADS_DIR&quot;, dirname( __FILE__ ) );
+define(&quot;NINJA_FORMS_UPLOADS_URL&quot;, plugins_url().&quot;/&quot;.basename( dirname( NF_File_Uploads()-&gt;plugin_file_path ) ) . &#x27;/deprecated&#x27;  );
+define(&quot;NINJA_FORMS_UPLOADS_TABLE_NAME&quot;, $wpdb-&gt;prefix . &quot;ninja_forms_uploads&quot;);
+define(&quot;NINJA_FORMS_UPLOADS_VERSION&quot;, NF_File_Uploads()-&gt;plugin_version );
+define(&quot;NINJA_FORMS_UPLOADS_DEFAULT_LOCATION&quot;, &#x27;server&#x27; );
+
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/browse-uploads.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/sidebars/select-uploads.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/pages/ninja-forms-uploads/tabs/upload-settings/upload-settings.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/pages/ninja-forms-uploads/tabs/external-settings/external-settings.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/scripts.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/help.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/csv-filter.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/add-attachment-type.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/admin/upgrade-functions.php&quot;);
+
+
+// External location class loader
+require_once( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/external/external.php&#x27; );
+$external_dir = glob( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/external/*.php&#x27; );
+if ( $external_dir ) {
+	foreach ( $external_dir as $dir ) {
+		if ( basename( $dir, &#x27;.php&#x27; ) == &#x27;external&#x27; ) {
+			continue;
+		}
+		$external = NF_Upload_External::instance( $dir, true );
+	}
+}
+
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/pre-process.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/process.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/attach-image.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/shortcode-filter.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/post-meta-filter.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/processing/email-value-filter.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/deprecated.php&quot;);
+
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/scripts.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/display/mp-confirm-filter.php&quot;);
+
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/fields/file-uploads.php&quot;);
+
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/activation.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/ajax.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR.&quot;/includes/functions.php&quot;);
+
+
+//Add File Uploads to the admin menu
+add_action(&#x27;admin_menu&#x27;, &#x27;ninja_forms_add_upload_menu&#x27;, 99);
+function ninja_forms_add_upload_menu(){
+	$capabilities = &#x27;administrator&#x27;;
+	$capabilities = apply_filters( &#x27;ninja_forms_admin_menu_capabilities&#x27;, $capabilities );
+
+	$uploads = add_submenu_page(&quot;ninja-forms&quot;, &quot;File Uploads&quot;, &quot;File Uploads&quot;, $capabilities, &quot;ninja-forms-uploads&quot;, &quot;ninja_forms_admin&quot;);
+	add_action(&#x27;admin_print_styles-&#x27; . $uploads, &#x27;ninja_forms_admin_js&#x27;);
+	add_action(&#x27;admin_print_styles-&#x27; . $uploads, &#x27;ninja_forms_uploads_admin_js&#x27;);
+	add_action(&#x27;admin_print_styles-&#x27; . $uploads, &#x27;ninja_forms_admin_css&#x27;);
+}
+
+register_activation_hook( NF_File_Uploads()-&gt;plugin_file_path, &#x27;ninja_forms_uploads_activation&#x27; );
+
+$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+
+if( isset( $plugin_settings[&#x27;uploads_version&#x27;] ) ){
+	$current_version = $plugin_settings[&#x27;uploads_version&#x27;];
+}else{
+	$current_version = 0.4;
+}
+
+if( version_compare( $current_version, &#x27;0.5&#x27;, &#x27;&lt;&#x27; ) ){
+	ninja_forms_uploads_activation();
+}
+
+/**
+ * Load translations for add-on.
+ * First, look in WP_LANG_DIR subfolder, then fallback to add-on plugin folder.
+ */
+function ninja_forms_uploads_load_translations() {
+
+	/** Set our unique textdomain string */
+	$textdomain = &#x27;ninja-forms-uploads&#x27;;
+
+	/** The &#x27;plugin_locale&#x27; filter is also used by default in load_plugin_textdomain() */
+	$locale = apply_filters( &#x27;plugin_locale&#x27;, get_locale(), $textdomain );
+
+	/** Set filter for WordPress languages directory */
+	$wp_lang_dir = apply_filters(
+		&#x27;ninja_forms_uploads_wp_lang_dir&#x27;,
+		trailingslashit( WP_LANG_DIR ) . &#x27;ninja-forms-uploads/&#x27; . $textdomain . &#x27;-&#x27; . $locale . &#x27;.mo&#x27;
+	);
+
+	/** Translations: First, look in WordPress&#x27; &quot;languages&quot; folder = custom &amp; update-secure! */
+	load_textdomain( $textdomain, $wp_lang_dir );
+
+	/** Translations: Secondly, look in plugin&#x27;s &quot;lang&quot; folder = default */
+	$plugin_dir = trailingslashit( basename( dirname( NF_File_Uploads()-&gt;plugin_file_path ) ) );
+	$lang_dir = apply_filters( &#x27;ninja_forms_uploads_lang_dir&#x27;, $plugin_dir . &#x27;languages/&#x27; );
+	load_plugin_textdomain( $textdomain, FALSE, $lang_dir );
+
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_uploads_load_translations&#x27; );
+
+function nf_fu_load_externals() {
+	// External location class loader
+	require_once( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/external/external.php&#x27; );
+	$external_dir = glob( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/external/*.php&#x27; );
+	if ( $external_dir ) {
+		foreach ( $external_dir as $dir ) {
+			if ( basename( $dir, &#x27;.php&#x27; ) == &#x27;external&#x27; ) {
+				continue;
+			}
+			$external = NF_Upload_External::instance( $dir, true );
+		}
+		$external = NF_Upload_External::instance( $dir, true );
+	}
+}
+
+
+function nf_fu_pre_27() {
+	if ( defined( &#x27;NINJA_FORMS_VERSION&#x27; ) ) {
+		if ( version_compare( NINJA_FORMS_VERSION, &#x27;2.7&#x27; ) == -1 ) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return null;
+	}
+}
+
+//Save User Progress Table Column
+add_filter( &#x27;nf_sp_user_sub_table&#x27; , &#x27;nf_fu_sp_user_sub_table&#x27;, 10, 2 );
+function nf_fu_sp_user_sub_table( $user_value, $field_id ) {
+
+	$field = ninja_forms_get_field_by_id( $field_id );
+
+	if ( isset( $field[&#x27;type&#x27;] ) AND &#x27;_upload&#x27; == $field[&#x27;type&#x27;] ) {
+
+		$file_names = array();
+
+		foreach ( $user_value as $value ) {
+			$file_names[] = $value[&#x27;file_name&#x27;];
+		}
+
+		return implode( &#x27;, &#x27;, $file_names );
+	}
+
+	return $user_value;
+}</pre></details></body></html>

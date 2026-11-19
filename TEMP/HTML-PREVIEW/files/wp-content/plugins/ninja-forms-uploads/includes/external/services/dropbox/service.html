@@ -1,0 +1,242 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/external/services/dropbox/service.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/external/services/dropbox/service.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;a id=&quot;dropbox-disconnect&quot; href=&quot;&quot; class=&quot;button-secondary&quot;&gt;&lt;/a&gt;
+		
+			&lt;a id=&quot;dropbox-connect&quot; href=&quot;&quot; class=&quot;button-secondary&quot;&gt;&lt;/a&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+use Polevaultweb\WP_OAuth2\Dropbox_Client;
+use Polevaultweb\WP_OAuth2\WP_OAuth2;
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class NF_FU_External_Services_Dropbox_Service
+ */
+class NF_FU_External_Services_Dropbox_Service extends NF_FU_External_Abstracts_Service {
+
+	public $name = &#x27;Dropbox&#x27;;
+
+	protected $library_class = &#x27;PVW_Dropbox_API&#x27;;
+
+	protected $library_file = &#x27;polevaultweb/wp-dropbox-api/dropbox-api.php&#x27;;
+
+	protected $client;
+	protected $account_info_cache;
+
+	const CONSUMER_KEY = &#x27;g80jscev5iosghi&#x27;;
+	const CONSUMER_SECRET = &#x27;aHN5MHh0cnIzZ2prZDBp&#x27;;
+
+	/**
+	 * Wrapper to get access token.
+	 * If an OAuth2 token exists use it.
+	 * If an OAuth1 token/secret exists then use them to convert to OAuth2 token.
+	 *
+	 * @return bool|string
+	 */
+	public function get_access_token() {
+		$oauth2_token = WP_OAuth2::get_access_token( $this-&gt;slug );
+		if ( $oauth2_token ) {
+			return $oauth2_token;
+		}
+
+		$old_access_token = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_setting( &#x27;dropbox_access_token&#x27; );
+		if ( empty( $old_access_token ) ) {
+			return false;
+		}
+
+		$old_access_token_secret = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_setting( &#x27;dropbox_access_token_secret&#x27; );
+
+		$client = new NF_FU_Library_Dropbox();
+		$token  = $client-&gt;access_token_upgrade( self::CONSUMER_KEY, base64_decode( self::CONSUMER_SECRET ), $old_access_token, $old_access_token_secret );
+		if ( false === $token ) {
+			return false;
+		}
+
+		WP_OAuth2::set_access_token( $this-&gt;slug, $token );
+
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;remove_setting( &#x27;dropbox_access_token&#x27; );
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;remove_setting( &#x27;dropbox_access_token_secret&#x27; );
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;remove_setting( &#x27;dropbox_request_token&#x27; );
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;remove_setting( &#x27;dropbox_request_token_secret&#x27; );
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;remove_setting( &#x27;dropbox_oauth_state&#x27; );
+		NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;update_settings();
+
+		return $token;
+	}
+
+
+	/**
+	 * Get Dropbox API client instance
+	 *
+	 * @return PVW_Dropbox_API
+	 */
+	protected function get_client() {
+		if ( is_null( $this-&gt;client ) ) {
+			$token = $this-&gt;get_access_token();
+
+			$this-&gt;client = new NF_FU_Library_Dropbox( $token );
+		}
+
+		return $this-&gt;client;
+	}
+
+	/**
+	 * Has the account authorised our API app?
+	 *
+	 * @return bool
+	 */
+	public function is_authorized() {
+		return ( bool ) $this-&gt;get_account_info();
+	}
+
+	/**
+	 * Get the plugins page URL to return to.
+	 * 
+	 * @return string
+	 */
+	protected function get_callback_url() {
+		return NF_File_Uploads()-&gt;page-&gt;get_url( &#x27;external&#x27;, array(), false );
+	}
+
+	/**
+	 * Get the URL to authorise the app
+	 *
+	 * @return string
+	 */
+	public function get_authorize_url() {
+		$callback_url = $this-&gt;get_callback_url();
+		$oauth        = new Dropbox_Client( self::CONSUMER_KEY );
+
+		return $oauth-&gt;get_authorize_url( $callback_url );
+	}
+
+	public function get_account_info() {
+		if ( ! isset( $this-&gt;account_info_cache ) ) {
+			$response = $this-&gt;get_client()-&gt;get_account_info();
+			if ( $response ) {
+				$this-&gt;account_info_cache = $response;
+
+				return $response;
+			}
+
+			WP_OAuth2::disconnect( $this-&gt;slug );
+		}
+
+		return $this-&gt;account_info_cache;
+	}
+
+	public function connect_url() {
+		if ( $this-&gt;is_authorized() ) {
+			$url = WP_OAuth2::get_disconnect_url( $this-&gt;slug, $this-&gt;get_callback_url() );
+			?&gt;
+			&lt;a id=&quot;dropbox-disconnect&quot; href=&quot;&lt;?php echo $url; ?&gt;&quot; class=&quot;button-secondary&quot;&gt;&lt;?php _e( &#x27;Disconnect&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt;
+		&lt;?php } else {
+			$url = $this-&gt;get_authorize_url();
+			?&gt;
+			&lt;a id=&quot;dropbox-connect&quot; href=&quot;&lt;?php echo $url; ?&gt;&quot; class=&quot;button-secondary&quot;&gt;&lt;?php _e( &#x27;Connect&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt;
+			&lt;?php
+		}
+	}
+
+	/**
+	 * Dropbox requirements
+	 *
+	 * @return array
+	 */
+	public function get_missing_requirements() {
+		$missing_requirements = parent::get_missing_requirements();
+
+		if ( ! extension_loaded( &#x27;curl&#x27; ) ) {
+			$curl_link              = sprintf( &#x27;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&#x27;, &#x27;http://php.net/manual/en/curl.installation.php&#x27;, __( &#x27;Learn more&#x27;, &#x27;ninja-forms-upload&#x27; ) );
+			$missing_requirements[] = sprintf( __( &#x27;The cURL extension to be installed. Please ensure its installed and activated. %s.&#x27;, &#x27;ninja-forms-upload&#x27; ), $curl_link );
+		}
+
+		return $missing_requirements;
+	}
+
+	/**
+	 * Is the service connected?
+	 *
+	 * @param null|array $settings
+	 *
+	 * @return bool
+	 */
+	public function is_connected( $settings = null ) {
+		if ( ! WP_OAuth2::is_authorized( $this-&gt;slug ) ) {
+			return false;
+		}
+
+		if ( false === ( $authorised = get_transient( &#x27;nf_fu_dropbox_authorised&#x27; ) ) ) {
+			$authorised = $this-&gt;is_authorized();
+
+			set_transient( &#x27;nf_fu_dropbox_authorised&#x27;, $authorised, 60 * 60 * 5 );
+		}
+
+		return $authorised;
+	}
+
+	/**
+	 * Get path on Dropbox to upload to
+	 *
+	 * @return string
+	 */
+	protected function get_path_setting() {
+		return &#x27;dropbox_file_path&#x27;;
+	}
+	
+	/**
+	 * Upload the file to Dropbox
+	 *
+	 * @param array $data
+	 *
+	 * @return array|bool
+	 */
+	public function upload_file( $data ) {
+		if ( $this-&gt;external_filename === &#x27;&#x27; ) {
+			$this-&gt;external_filename = $this-&gt;remove_secret( $this-&gt;upload_file );
+		}
+
+		$retry_count = apply_filters( &#x27;ninja_forms_upload_dropbox_retry_count&#x27;, 3 );
+		$i           = 0;
+		while ( $i++ &lt; $retry_count ) {
+			$result = $this-&gt;get_client()-&gt;put_file( $this-&gt;upload_file, $this-&gt;external_filename, $this-&gt;external_path );
+			if ( $result ) {
+				return $data;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the Dropbox URL for the file
+	 *
+	 * @param string $filename
+	 * @param string $path
+	 * @param array  $data
+	 *
+	 * @return string
+	 */
+	public function get_url( $filename, $path = &#x27;&#x27;, $data = array() ) {
+		$response = $this-&gt;get_client()-&gt;get_url( $path . $filename );
+		if ( $response &amp;&amp; isset( $response-&gt;link ) ) {
+			return $response-&gt;link;
+		}
+
+		return admin_url();
+	}
+
+	protected function remove_secret( $file, $basename = true ) {
+		if ( preg_match( &#x27;/-nf-secret$/&#x27;, $file ) ) {
+			$file = substr( $file, 0, strrpos( $file, &#x27;.&#x27; ) );
+		}
+
+		if ( $basename ) {
+			return basename( $file );
+		}
+
+		return $file;
+	}
+}</pre></details></body></html>

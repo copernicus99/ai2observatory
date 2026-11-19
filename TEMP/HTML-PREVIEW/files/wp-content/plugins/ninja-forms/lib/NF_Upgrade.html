@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/lib/NF_Upgrade.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/lib/NF_Upgrade.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+add_action( &#x27;wp_ajax_ninja_forms_ajax_migrate_database&#x27;, &#x27;ninja_forms_ajax_migrate_database&#x27; );
+function ninja_forms_ajax_migrate_database(){
+    if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_upgrade_migrate_database_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+    $migrations = new NF_Database_Migrations();
+    $migrations-&gt;nuke( true, true );
+    $migrations-&gt;migrate();
+    echo json_encode( array( &#x27;migrate&#x27; =&gt; &#x27;true&#x27; ) );
+    wp_die();
+}
+
+add_action( &#x27;wp_ajax_ninja_forms_ajax_import_form&#x27;, &#x27;ninja_forms_ajax_import_form&#x27; );
+function ninja_forms_ajax_import_form(){
+    if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_upgrade_import_form_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+    $import = stripslashes( $_POST[ &#x27;import&#x27; ] );
+
+    $form_id = ( isset( $_POST[ &#x27;formID&#x27; ] ) ) ? absint( $_POST[ &#x27;formID&#x27; ] ) : &#x27;&#x27;;
+
+    delete_option( &#x27;nf_form_&#x27; . $form_id ); // Bust the cache.
+
+    Ninja_Forms()-&gt;form()-&gt;import_form( $import, TRUE, $form_id, TRUE );
+
+    if( isset( $_POST[ &#x27;flagged&#x27; ] ) &amp;&amp; $_POST[ &#x27;flagged&#x27; ] ){
+        $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+        $form-&gt;update_setting( &#x27;lock&#x27;, TRUE );
+        $form-&gt;save();
+    }
+
+    echo json_encode( array( &#x27;export&#x27; =&gt; $_POST[ &#x27;import&#x27; ], &#x27;import&#x27; =&gt; $import ) );
+    wp_die();
+}
+
+add_action( &#x27;wp_ajax_ninja_forms_ajax_import_fields&#x27;, &#x27;ninja_forms_ajax_import_fields&#x27; );
+function ninja_forms_ajax_import_fields(){
+    if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_upgrade_import_fields_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+    $fields = stripslashes( $_POST[ &#x27;fields&#x27; ] ); // TODO: How to sanitize serialized string?
+    $fields = maybe_unserialize( $fields );
+
+    foreach( $fields as $field ) {
+        Ninja_Forms()-&gt;form()-&gt;import_field( $field, $field[ &#x27;id&#x27; ], TRUE );
+    }
+
+    echo json_encode( array( &#x27;export&#x27; =&gt; $_POST[ &#x27;fields&#x27; ], &#x27;import&#x27; =&gt; $fields ) );
+    wp_die();
+}</pre></details></body></html>

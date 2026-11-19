@@ -1,0 +1,243 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/admin/controllers/uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/admin/controllers/uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Admin_Controllers_Uploads {
+
+	/**
+	 * @var string
+	 */
+	protected static $base_dir;
+
+	/**
+	 * @var string
+	 */
+	protected static $base_url;
+
+	/**
+	 * @var string
+	 */
+	protected static $tmp_dir;
+
+	/**
+	 * NF_FU_Admin_Controllers_Uploads constructor.
+	 */
+	public function __construct() {
+		add_action( &#x27;ninja_forms_after_submission&#x27;, array( $this, &#x27;remove_files_from_server&#x27;) );
+	}
+
+	/**
+	 * Remove the file from the server if the field is not to be saved to the server.
+	 * This happens on the latest hook possible after actions have been run.
+	 *
+	 * @param array $data
+	 */
+	public function remove_files_from_server( $data ) {
+		if ( ! isset( $data[&#x27;fields&#x27;] ) || ! is_array( $data[&#x27;fields&#x27;] ) ) {
+			return;
+		}
+
+		foreach( $data[&#x27;fields&#x27;] as $field ) {
+			if ( NF_FU_File_Uploads::TYPE !== $field[&#x27;type&#x27;] ) {
+				continue;
+			}
+
+			if ( ! isset( $field[&#x27;save_to_server&#x27;] ) ) {
+				continue;
+			}
+
+			if ( &quot;1&quot; == $field[&#x27;save_to_server&#x27;] ) {
+				continue;
+			}
+
+			if ( empty( $field[&#x27;value&#x27;] ) ) {
+				continue;
+			}
+
+			foreach ( $field[&#x27;value&#x27;] as $upload_id =&gt; $url ) {
+				$upload = $this-&gt;get( $upload_id );
+
+				$file_path = $upload-&gt;file_path;
+
+				if ( file_exists( $file_path ) ) {
+					// Delete local file
+					unlink( $file_path );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the base upload directory
+	 *
+	 * @return string
+	 */
+	public function get_base_dir() {
+		if ( is_null( self::$base_dir ) ) {
+			$base_upload_dir = wp_upload_dir();
+			$base_upload_dir = $base_upload_dir[&#x27;basedir&#x27;] . &#x27;/ninja-forms&#x27;;
+
+			wp_mkdir_p( $base_upload_dir );
+
+			self::$base_dir = $base_upload_dir;
+		}
+
+		return self::$base_dir;
+	}
+
+	/**
+	 * Get the URL base upload directory
+	 *
+	 * @return string
+	 */
+	public function get_base_url() {
+		if ( is_null( self::$base_url ) ) {
+			$base_upload_url = wp_upload_dir();
+			$base_upload_url = $base_upload_url[&#x27;baseurl&#x27;] . &#x27;/ninja-forms&#x27;;
+
+			self::$base_url = $base_upload_url;
+		}
+
+		return self::$base_url;
+
+	}
+
+	/**
+	 * Get the temp upload directory
+	 *
+	 * @return string
+	 */
+	public function get_temp_dir() {
+		if ( is_null( self::$tmp_dir ) ) {
+			$base_upload_dir = $this-&gt;get_base_dir();
+			$tmp_upload_dir  = $base_upload_dir . &#x27;/tmp&#x27;;
+
+			wp_mkdir_p( $tmp_upload_dir );
+			$this-&gt;maybe_create_tmp_htaccess( $tmp_upload_dir );
+
+			self::$tmp_dir = $tmp_upload_dir;
+		}
+
+		return self::$tmp_dir;
+	}
+
+	/**
+	 * Copy .htaccess file to tmp directory for security
+	 * https://github.com/blueimp/jQuery-File-Upload/wiki/Security#php
+	 *
+	 * @param string $tmp_upload_dir
+	 */
+	protected function maybe_create_tmp_htaccess( $tmp_upload_dir ) {
+		$dest = $tmp_upload_dir . &#x27;/.htaccess&#x27;;
+		if ( file_exists( $dest ) ) {
+			return;
+		}
+
+		$source = dirname( NF_File_Uploads()-&gt;plugin_file_path ) . &#x27;/includes/.htaccess.txt&#x27;;
+
+		@copy( $source, $dest );
+	}
+
+	/**
+	 * Get the file path for the temp file
+	 *
+	 * @param string $filename
+	 * @param bool   $temp Use temp path
+	 *
+	 * @return string
+	 */
+	public function get_path( $filename = &#x27;&#x27;, $temp = false ) {
+		$file_path = $temp ? $this-&gt;get_temp_dir() : $this-&gt;get_base_dir();
+
+		$field_id  = isset( $this-&gt;field_id ) ? $this-&gt;field_id : null;
+		$file_path = apply_filters( &#x27;ninja_forms_uploads_dir&#x27;, $file_path, $field_id );
+
+		return trailingslashit( $file_path ) . $filename;
+	}
+
+	/**
+	 * Get the URL of a file
+	 *
+	 * @param string $filename
+	 *
+	 * @return string
+	 */
+	public function get_url( $filename ) {
+		$field_id = isset( $this-&gt;field_id ) ? $this-&gt;field_id : null;
+		$file_url = apply_filters( &#x27;ninja_forms_uploads_url&#x27;, $this-&gt;get_base_url(), $field_id );
+
+		return trailingslashit( $file_url ) . $filename;
+	}
+
+	/**
+	 * Get a file upload from the table
+	 *
+	 * @param int $id
+	 *
+	 * @return object|false
+	 */
+	public function get( $id ) {
+		$upload = NF_File_Uploads()-&gt;model-&gt;get( $id );
+
+		if ( is_null( $upload ) ) {
+			return false;
+		}
+
+		$data = unserialize( $upload-&gt;data );
+
+		foreach ( $data as $key =&gt; $value ) {
+			$upload-&gt;$key = $value;
+		}
+
+		$upload-&gt;data = $data;
+
+		return $upload;
+	}
+
+	/**
+	 * Get the file URL for an upload
+	 * 
+	 * @param string $url
+	 * @param array $data
+	 *
+	 * @return string
+	 */
+	public function get_file_url( $url, $data ) {
+		return apply_filters( &#x27;ninja_forms_uploads_file_url&#x27;, $url, $data );
+	}
+
+	/**
+	 * Create attachment in media library from the file
+	 *
+	 * @param string      $file
+	 * @param null|string $file_name
+	 *
+	 * @return array
+	 */
+	public function create_attachment( $file, $file_name = null ) {
+		if ( is_null( $file_name ) ) {
+			$file_name = basename( $file );
+		}
+
+		require_once( ABSPATH . &#x27;wp-admin/includes/image.php&#x27; );
+		require_once( ABSPATH . &#x27;wp-admin/includes/media.php&#x27; );
+
+		$wp_filetype = wp_check_filetype( $file_name );
+		$attachment  = array(
+			&#x27;post_mime_type&#x27; =&gt; $wp_filetype[&#x27;type&#x27;],
+			&#x27;post_title&#x27;     =&gt; preg_replace( &#x27;/\.[^.]+$/&#x27;, &#x27;&#x27;, $file_name ),
+			&#x27;post_content&#x27;   =&gt; &#x27;&#x27;,
+			&#x27;post_status&#x27;    =&gt; &#x27;inherit&#x27;,
+		);
+
+		$attach_id = wp_insert_attachment( $attachment, $file );
+
+		$attach_data = wp_generate_attachment_metadata( $attach_id, $file );
+
+		$attach_data[&#x27;ninja_forms_upload_field&#x27;] = true;
+
+		wp_update_attachment_metadata( $attach_id, $attach_data );
+
+		return $attach_id;
+	}
+}</pre></details></body></html>

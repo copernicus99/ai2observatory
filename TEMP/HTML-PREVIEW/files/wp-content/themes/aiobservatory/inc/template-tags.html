@@ -1,0 +1,197 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/inc/template-tags.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/inc/template-tags.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Custom template tags for this theme
+ *
+ * Eventually, some of the functionality here could be replaced by core features.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+if ( ! function_exists( &#x27;twentyseventeen_posted_on&#x27; ) ) :
+/**
+ * Prints HTML with meta information for the current post-date/time and author.
+ */
+function twentyseventeen_posted_on() {
+
+	// Get the author name; wrap it in a link.
+	$byline = sprintf(
+		/* translators: %s: post author */
+		__( &#x27;by %s&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;&lt;span class=&quot;author vcard&quot;&gt;&lt;a class=&quot;url fn n&quot; href=&quot;&#x27; . esc_url( get_author_posts_url( get_the_author_meta( &#x27;ID&#x27; ) ) ) . &#x27;&quot;&gt;&#x27; . get_the_author() . &#x27;&lt;/a&gt;&lt;/span&gt;&#x27;
+	);
+
+	// Finally, let&#x27;s write all of this to the page.
+	echo &#x27;&lt;span class=&quot;posted-on&quot;&gt;&#x27; . twentyseventeen_time_link() . &#x27;&lt;/span&gt;&lt;span class=&quot;byline&quot;&gt; &#x27; . $byline . &#x27;&lt;/span&gt;&#x27;;
+}
+endif;
+
+
+if ( ! function_exists( &#x27;twentyseventeen_time_link&#x27; ) ) :
+/**
+ * Gets a nicely formatted string for the published date.
+ */
+function twentyseventeen_time_link() {
+	$time_string = &#x27;&lt;time class=&quot;entry-date published updated&quot; datetime=&quot;%1$s&quot;&gt;%2$s&lt;/time&gt;&#x27;;
+	if ( get_the_time( &#x27;U&#x27; ) !== get_the_modified_time( &#x27;U&#x27; ) ) {
+		$time_string = &#x27;&lt;time class=&quot;entry-date published&quot; datetime=&quot;%1$s&quot;&gt;%2$s&lt;/time&gt;&lt;time class=&quot;updated&quot; datetime=&quot;%3$s&quot;&gt;%4$s&lt;/time&gt;&#x27;;
+	}
+
+	$time_string = sprintf( $time_string,
+		get_the_date( DATE_W3C ),
+		get_the_date(),
+		get_the_modified_date( DATE_W3C ),
+		get_the_modified_date()
+	);
+
+	// Wrap the time string in a link, and preface it with &#x27;Posted on&#x27;.
+	return sprintf(
+		/* translators: %s: post date */
+		__( &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;Posted on&lt;/span&gt; %s&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;&lt;a href=&quot;&#x27; . esc_url( get_permalink() ) . &#x27;&quot; rel=&quot;bookmark&quot;&gt;&#x27; . $time_string . &#x27;&lt;/a&gt;&#x27;
+	);
+}
+endif;
+
+
+if ( ! function_exists( &#x27;twentyseventeen_entry_footer&#x27; ) ) :
+/**
+ * Prints HTML with meta information for the categories, tags and comments.
+ */
+function twentyseventeen_entry_footer() {
+
+	/* translators: used between list items, there is a space after the comma */
+	$separate_meta = __( &#x27;, &#x27;, &#x27;twentyseventeen&#x27; );
+
+	// Get Categories for posts.
+	$categories_list = get_the_category_list( $separate_meta );
+
+	// Get Tags for posts.
+	$tags_list = get_the_tag_list( &#x27;&#x27;, $separate_meta );
+
+	// We don&#x27;t want to output .entry-footer if it will be empty, so make sure its not.
+	if ( ( ( twentyseventeen_categorized_blog() &amp;&amp; $categories_list ) || $tags_list ) || get_edit_post_link() ) {
+
+		echo &#x27;&lt;footer class=&quot;entry-footer&quot;&gt;&#x27;;
+
+			if ( &#x27;post&#x27; === get_post_type() ) {
+				if ( ( $categories_list &amp;&amp; twentyseventeen_categorized_blog() ) || $tags_list ) {
+					echo &#x27;&lt;span class=&quot;cat-tags-links&quot;&gt;&#x27;;
+
+						// Make sure there&#x27;s more than one category before displaying.
+						if ( $categories_list &amp;&amp; twentyseventeen_categorized_blog() ) {
+							echo &#x27;&lt;span class=&quot;cat-links&quot;&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;folder-open&#x27; ) ) . &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Categories&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27; . $categories_list . &#x27;&lt;/span&gt;&#x27;;
+						}
+
+						if ( $tags_list ) {
+							echo &#x27;&lt;span class=&quot;tags-links&quot;&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;hashtag&#x27; ) ) . &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Tags&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27; . $tags_list . &#x27;&lt;/span&gt;&#x27;;
+						}
+
+					echo &#x27;&lt;/span&gt;&#x27;;
+				}
+			}
+
+			twentyseventeen_edit_link();
+
+		echo &#x27;&lt;/footer&gt; &lt;!-- .entry-footer --&gt;&#x27;;
+	}
+}
+endif;
+
+
+if ( ! function_exists( &#x27;twentyseventeen_edit_link&#x27; ) ) :
+/**
+ * Returns an accessibility-friendly link to edit a post or page.
+ *
+ * This also gives us a little context about what exactly we&#x27;re editing
+ * (post or page?) so that users understand a bit more where they are in terms
+ * of the template hierarchy and their content. Helpful when/if the single-page
+ * layout with multiple posts/pages shown gets confusing.
+ */
+function twentyseventeen_edit_link() {
+
+	$link = edit_post_link(
+		sprintf(
+			/* translators: %s: Name of current post */
+			__( &#x27;Edit&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentyseventeen&#x27; ),
+			get_the_title()
+		),
+		&#x27;&lt;span class=&quot;edit-link&quot;&gt;&#x27;,
+		&#x27;&lt;/span&gt;&#x27;
+	);
+
+	return $link;
+}
+endif;
+
+/**
+ * Display a front page section.
+ *
+ * @param $partial WP_Customize_Partial Partial associated with a selective refresh request.
+ * @param $id integer Front page section to display.
+ */
+function twentyseventeen_front_page_section( $partial = null, $id = 0 ) {
+	if ( is_a( $partial, &#x27;WP_Customize_Partial&#x27; ) ) {
+		// Find out the id and set it up during a selective refresh.
+		global $twentyseventeencounter;
+		$id = str_replace( &#x27;panel_&#x27;, &#x27;&#x27;, $partial-&gt;id );
+		$twentyseventeencounter = $id;
+	}
+
+	global $post; // Modify the global post object before setting up post data.
+	if ( get_theme_mod( &#x27;panel_&#x27; . $id ) ) {
+		global $post;
+		$post = get_post( get_theme_mod( &#x27;panel_&#x27; . $id ) );
+		setup_postdata( $post );
+		set_query_var( &#x27;panel&#x27;, $id );
+
+		get_template_part( &#x27;template-parts/page/content&#x27;, &#x27;front-page-panels&#x27; );
+
+		wp_reset_postdata();
+	} elseif ( is_customize_preview() ) {
+		// The output placeholder anchor.
+		echo &#x27;&lt;article class=&quot;panel-placeholder panel twentyseventeen-panel twentyseventeen-panel&#x27; . $id . &#x27;&quot; id=&quot;panel&#x27; . $id . &#x27;&quot;&gt;&lt;span class=&quot;twentyseventeen-panel-title&quot;&gt;&#x27; . sprintf( __( &#x27;Front Page Section %1$s Placeholder&#x27;, &#x27;twentyseventeen&#x27; ), $id ) . &#x27;&lt;/span&gt;&lt;/article&gt;&#x27;;
+	}
+}
+
+/**
+ * Returns true if a blog has more than 1 category.
+ *
+ * @return bool
+ */
+function twentyseventeen_categorized_blog() {
+	$category_count = get_transient( &#x27;twentyseventeen_categories&#x27; );
+
+	if ( false === $category_count ) {
+		// Create an array of all the categories that are attached to posts.
+		$categories = get_categories( array(
+			&#x27;fields&#x27;     =&gt; &#x27;ids&#x27;,
+			&#x27;hide_empty&#x27; =&gt; 1,
+			// We only need to know if there is more than one category.
+			&#x27;number&#x27;     =&gt; 2,
+		) );
+
+		// Count the number of categories that are attached to the posts.
+		$category_count = count( $categories );
+
+		set_transient( &#x27;twentyseventeen_categories&#x27;, $category_count );
+	}
+
+	return $category_count &gt; 1;
+}
+
+
+/**
+ * Flush out the transients used in twentyseventeen_categorized_blog.
+ */
+function twentyseventeen_category_transient_flusher() {
+	if ( defined( &#x27;DOING_AUTOSAVE&#x27; ) &amp;&amp; DOING_AUTOSAVE ) {
+		return;
+	}
+	// Like, beat it. Dig?
+	delete_transient( &#x27;twentyseventeen_categories&#x27; );
+}
+add_action( &#x27;edit_category&#x27;, &#x27;twentyseventeen_category_transient_flusher&#x27; );
+add_action( &#x27;save_post&#x27;,     &#x27;twentyseventeen_category_transient_flusher&#x27; );
+</pre></details></body></html>

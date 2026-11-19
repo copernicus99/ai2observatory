@@ -1,0 +1,95 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/Licenses.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/Licenses.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Admin_Menus_Licenses
+ */
+final class NF_Admin_Menus_Licenses
+{
+    private $licenses = array();
+
+    public function __construct()
+    {
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;register_licenses&#x27; ), 10 );
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;submit_listener&#x27;   ), 11 );
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;add_meta_boxes&#x27;    ), 12 );
+    }
+
+    public function submit_listener()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_license_update_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( ! isset( $_POST[ &#x27;ninja_forms_license&#x27; ] ) || ! $_POST[ &#x27;ninja_forms_license&#x27; ] ) return;
+
+        $key    = sanitize_text_field( $_POST[ &#x27;ninja_forms_license&#x27; ][ &#x27;key&#x27; ]    );
+        $name   = sanitize_text_field( $_POST[ &#x27;ninja_forms_license&#x27; ][ &#x27;name&#x27; ]   );
+        $action = sanitize_text_field( $_POST[ &#x27;ninja_forms_license&#x27; ][ &#x27;action&#x27; ] );
+
+        switch( $action ){
+            case &#x27;activate&#x27;:
+                $this-&gt;activate_license( $name, $key );
+                break;
+            case &#x27;deactivate&#x27;:
+                $this-&gt;deactivate_license( $name );
+                break;
+        }
+    }
+
+    public function register_licenses()
+    {
+        $this-&gt;licenses = apply_filters( &#x27;ninja_forms_settings_licenses_addons&#x27;, array() );
+    }
+
+    public function add_meta_boxes()
+    {
+        add_meta_box(
+            &#x27;nf_settings_licenses&#x27;,
+            __( &#x27;Add-On Licenses&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;display&#x27; ),
+            &#x27;nf_settings_licenses&#x27;
+        );
+    }
+
+    public function display()
+    {
+        $data = array();
+        foreach( $this-&gt;licenses as $license ){
+            $data[] = array(
+                &#x27;id&#x27; =&gt; $license-&gt;product_name,
+                &#x27;name&#x27; =&gt; $license-&gt;product_nice_name,
+                &#x27;version&#x27; =&gt; $license-&gt;version,
+                &#x27;is_valid&#x27; =&gt; $license-&gt;is_valid(),
+                &#x27;license&#x27; =&gt; $this-&gt;get_license( $license-&gt;product_name ),
+                &#x27;error&#x27; =&gt; Ninja_Forms()-&gt;get_setting( $license-&gt;product_name . &#x27;_license_error&#x27; ),
+            );
+        }
+
+        Ninja_Forms()-&gt;template( &#x27;admin-menu-settings-licenses.html.php&#x27;, array( &#x27;licenses&#x27; =&gt; $data ) );
+    }
+
+    private function get_license( $name )
+    {
+        return Ninja_Forms()-&gt;get_setting( $name . &#x27;_license&#x27; );
+    }
+
+    private function activate_license( $name, $key )
+    {
+        foreach( $this-&gt;licenses as $license ){
+
+            if( $name != $license-&gt;product_name ) continue;
+
+            $license-&gt;activate_license( $key );
+        }
+    }
+
+    private function deactivate_license( $name )
+    {
+        foreach( $this-&gt;licenses as $license ){
+
+            if( $name != $license-&gt;product_name ) continue;
+
+            $license-&gt;deactivate_license();
+        }
+    }
+
+} // End Class NF_Admin_Menus_Licenses
+</pre></details></body></html>

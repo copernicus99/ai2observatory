@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Display/Preview.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Display/Preview.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Display_Preview
+ */
+final class NF_Display_Preview
+{
+    protected $form_id = &#x27;&#x27;;
+
+    public function __construct()
+    {
+        if ( ! isset( $_GET[&#x27;nf_preview_form&#x27;] ) ) return;
+
+        $this-&gt;_form_id = $_GET[&#x27;nf_preview_form&#x27;];
+
+        add_action( &#x27;pre_get_posts&#x27;, array( $this, &#x27;pre_get_posts&#x27; ) );
+
+        add_filter(&#x27;the_title&#x27;, array( $this, &#x27;the_title&#x27; ) );
+        remove_filter( &#x27;the_content&#x27;, &#x27;wpautop&#x27; );
+        remove_filter( &#x27;the_excerpt&#x27;, &#x27;wpautop&#x27; );
+        add_filter(&#x27;the_content&#x27;, array( $this, &#x27;the_content&#x27; ), 9001 );
+        add_filter(&#x27;get_the_excerpt&#x27;, array( $this, &#x27;the_content&#x27; ) );
+        add_filter(&#x27;template_include&#x27;, array( $this, &#x27;template_include&#x27; ) );
+        add_filter(&#x27;post_thumbnail_html&#x27;, array( $this, &#x27;post_thumbnail_html&#x27; ) );
+    }
+
+    public function pre_get_posts( $query )
+    {
+		$query-&gt;set( &#x27;posts_per_page&#x27;, 1 );
+    }
+
+    /**
+     * @return string
+     */
+    function the_title( $title )
+    {
+        if( ! in_the_loop() ) return $title;
+
+        $form_title = Ninja_Forms()-&gt;form( $this-&gt;_form_id )-&gt;get()-&gt;get_setting( &#x27;title&#x27; );
+
+        return $form_title . &quot; &quot; . __( &#x27;Preview&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    /**
+     * @return string
+     */
+    function the_content()
+    {
+        if ( ! is_user_logged_in() ) return __( &#x27;You must be logged in to preview a form.&#x27;, &#x27;ninja-forms&#x27; );
+
+        // takes into account if we are trying to preview a non-published form
+        $tmp_id_test = explode( &#x27;-&#x27;, $this-&gt;_form_id );
+
+        // if only 1 element, then is it numeric
+	    if( 1 === count( $tmp_id_test) &amp;&amp; ! is_numeric( $tmp_id_test[ 0 ] ) ) {
+		    return __( &#x27;You must provide a valid form ID.&#x27;, &#x27;ninja-forms&#x27; );
+	    }
+	    // if 2 array elements, is the first equal to &#x27;tmp&#x27; and the second numeric
+	    elseif ( ( 2 === count( $tmp_id_test )
+	                 &amp;&amp; (&#x27;tmp&#x27; != $tmp_id_test[ 0 ]
+                     || ! is_numeric( $tmp_id_test[ 1 ] ) ) ) ) {
+		    return __( &#x27;You must provide a valid form ID.&#x27;, &#x27;ninja-forms&#x27; );
+	    }
+
+        return do_shortcode( &quot;[nf_preview id=&#x27;{$this-&gt;_form_id}&#x27;]&quot; );
+    }
+
+    /**
+     * @return string
+     */
+    function template_include()
+    {
+        return locate_template( array( &#x27;page.php&#x27;, &#x27;single.php&#x27;, &#x27;index.php&#x27; ) );
+    }
+
+    function post_thumbnail_html() {
+    	return &#x27;&#x27;;
+    }
+
+} // END CLASS NF_Display_Preview
+</pre></details></body></html>

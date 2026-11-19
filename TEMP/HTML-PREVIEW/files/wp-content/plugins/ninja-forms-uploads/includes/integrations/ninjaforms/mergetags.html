@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/mergetags.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/mergetags.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Integrations_NinjaForms_MergeTags {
+
+	/**
+	 * NF_FU_Integrations_NinjaForms_MergeTags constructor.
+	 */
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_merge_tag_value_&#x27; . NF_FU_File_Uploads::TYPE, array( $this, &#x27;merge_tag_value&#x27; ), 10, 2 );
+		add_filter( &#x27;ninja_forms_submission_actions&#x27;, array( $this, &#x27;update_all_mergetags&#x27; ), 10, 3 );
+		add_action( &#x27;ninja_forms_uploads_external_action_post_process&#x27;, array( $this, &#x27;update_mergetags_for_external&#x27; ), 10, 2 );
+	}
+
+	/**
+	 * Update all mergetags with cleaned values.
+	 *
+	 * @param array $actions
+	 *
+	 * @return array
+	 */
+	public function update_all_mergetags( $actions, $form_cache, $form_data ) {
+		if ( ! isset( $form_data[&#x27;fields&#x27;] ) ) {
+			return $actions;
+		}
+
+		foreach ( $form_data[&#x27;fields&#x27;] as $field ) {
+			if ( NF_FU_File_Uploads::TYPE !== $field[&#x27;type&#x27;] ) {
+				continue;
+			}
+
+			if ( ! isset( $field[&#x27;files&#x27;] ) || empty( $field[&#x27;files&#x27;] ) ) {
+				continue;
+			}
+
+			// Update Mergetags
+			$this-&gt;update_mergetags( $field, $this-&gt;get_default_tags() );
+		}
+
+		return $actions;
+	}
+
+	/**
+	 * Format the file URLs to links using the filename as link text
+	 *
+	 * @param string $value
+	 * @param array  $field
+	 *
+	 * @return string
+	 */
+	public function merge_tag_value( $value, $field ) {
+		if ( is_null( $value ) ) {
+			return $value;
+		}
+
+		if ( ! isset( $field[&#x27;files&#x27;] ) || empty( $field[&#x27;files&#x27;] ) ) {
+			return &#x27;&#x27;;
+		}
+
+		$values = $this-&gt;get_values( $field );
+
+		return $values[&#x27;html&#x27;];
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function get_default_tags() {
+		return array(
+			&#x27;default&#x27; =&gt; &#x27;html&#x27;,
+			&#x27;plain&#x27;   =&gt; &#x27;plain&#x27;,
+			&#x27;embed&#x27;   =&gt; &#x27;embed&#x27;,
+			&#x27;link&#x27;    =&gt; &#x27;link&#x27;,
+			&#x27;url&#x27;     =&gt; &#x27;url&#x27;,
+		);
+	}
+	/**
+	 * Update mergetag(s) value
+	 *
+	 * @param array $field
+	 * @param array $tags Array keyed on field suffix (&#x27;default&#x27; for normal field), and value as the type of value, eg.
+	 *                    html or plain
+	 */
+	protected function update_mergetags( $field, $tags = array() ) {
+		$all_merge_tags = Ninja_Forms()-&gt;merge_tags;
+
+		if ( ! isset( $all_merge_tags[&#x27;fields&#x27;] ) ) {
+			return;
+		}
+
+		$values = $this-&gt;get_values( $field );
+
+		$field[&#x27;value&#x27;] = $values[&#x27;html&#x27;];
+		$all_merge_tags[&#x27;fields&#x27;]-&gt;add_field( $field );
+
+		foreach ( $tags as $type =&gt; $value_type ) {
+			$tag    = &#x27;_&#x27; . $type;
+			$suffix = &#x27;:&#x27; . $type;
+			if ( &#x27;default&#x27; === $type ) {
+				$tag    = &#x27;&#x27;;
+				$suffix = &#x27;&#x27;;
+			}
+
+			$value = isset( $values[ $value_type ] ) ? $values[ $value_type ] : $values[&#x27;plain&#x27;];
+			$all_merge_tags[&#x27;fields&#x27;]-&gt;add( &#x27;field_&#x27; . $field[&#x27;key&#x27;] . $tag, $field[&#x27;key&#x27;], &quot;{field:{$field[&#x27;key&#x27;]}{$suffix}}&quot;, $value );
+		}
+
+		// Save merge tags
+		Ninja_Forms()-&gt;merge_tags = $all_merge_tags;
+	}
+
+	/**
+	 * Get the formatted value sets for the mergetag value.
+	 *
+	 * @param array $field
+	 *
+	 * @return array
+	 */
+	protected function get_values( $field ) {
+		$values = array();
+		foreach ( $field[&#x27;files&#x27;] as $file ) {
+			$upload = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get( $file[&#x27;data&#x27;][&#x27;upload_id&#x27;] );
+
+			if ( false === $upload ) {
+				continue;
+			}
+
+			$file_url = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_file_url( $upload-&gt;file_url, $upload-&gt;data );
+
+			$values[&#x27;html&#x27;][]  = sprintf( &#x27;&lt;a href=&quot;%s&quot; target=&quot;_blank&quot;&gt;%s&lt;/a&gt;&#x27;, $file_url, $upload-&gt;file_name );
+			$values[&#x27;link&#x27;][]  = sprintf( &#x27;&lt;a href=&quot;%s&quot; target=&quot;_blank&quot;&gt;%s&lt;/a&gt;&#x27;, $file_url, $upload-&gt;file_name );
+			$values[&#x27;embed&#x27;][] = sprintf( &#x27;&lt;img src=&quot;%s&quot;&gt;&#x27;, $file_url );
+			$values[&#x27;url&#x27;][]   = $file_url;
+			$values[&#x27;plain&#x27;][] = $file_url;
+		}
+
+		if ( isset( $values[&#x27;html&#x27;] ) ) {
+			$values[&#x27;html&#x27;] = implode( &#x27;&lt;br&gt;&#x27;, $values[&#x27;html&#x27;] );
+		}
+		if ( isset( $values[&#x27;link&#x27;] ) ) {
+			$values[&#x27;link&#x27;] = implode( &#x27;&lt;br&gt;&#x27;, $values[&#x27;link&#x27;] );
+		}
+		if ( isset( $values[&#x27;embed&#x27;] ) ) {
+			$values[&#x27;embed&#x27;] = implode( &#x27;&lt;br&gt;&#x27;, $values[&#x27;embed&#x27;] );
+		}
+
+		if ( isset( $values[&#x27;plain&#x27;] ) ) {
+			$values[&#x27;plain&#x27;] = implode( &#x27;,&#x27;, $values[&#x27;plain&#x27;] );
+		}
+		if ( isset( $values[&#x27;url&#x27;] ) ) {
+			$values[&#x27;url&#x27;] = implode( &#x27;,&#x27;, $values[&#x27;url&#x27;] );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Update mergetags with external service URL values
+	 *
+	 * @param array  $field
+	 * @param string $service
+	 */
+	public function update_mergetags_for_external( $field, $service ) {
+		$tags = array(
+			$service            =&gt; &#x27;html&#x27;,
+			$service . &#x27;_plain&#x27; =&gt; &#x27;plain&#x27;,
+		);
+
+		$tags = array_merge( $tags, $this-&gt;get_default_tags() );
+
+		$this-&gt;update_mergetags( $field, $tags );
+	}
+}</pre></details></body></html>

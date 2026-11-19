@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/scripts.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/scripts.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_uploads_display_js_css&#x27; );
+function ninja_forms_register_uploads_display_js_css(){
+	add_action( &#x27;ninja_forms_display_js&#x27;, &#x27;ninja_forms_upload_display_js&#x27;, 10, 2 );
+}
+
+function ninja_forms_upload_display_js( $form_id ){
+	if( !is_admin() ){
+		$fields = ninja_forms_get_fields_by_form_id( $form_id );
+		$output = false;
+		$multi = false;
+		foreach( $fields as $field ){
+			if( $field[&#x27;type&#x27;] == &#x27;_upload&#x27; ){
+				if( !$output ){
+					$output = true;
+				}			
+				if( !$multi &amp;&amp; isset($field[&#x27;data&#x27;][&#x27;upload_multi&#x27;]) &amp;&amp; $field[&#x27;data&#x27;][&#x27;upload_multi&#x27;] == 1 ){
+					$multi = true;
+				}
+			}
+		}
+
+		if( $output ){
+			if ( defined( &#x27;NINJA_FORMS_JS_DEBUG&#x27; ) &amp;&amp; NINJA_FORMS_JS_DEBUG ) {
+				$suffix = &#x27;&#x27;;
+				$src = &#x27;dev&#x27;;
+			} else {
+				$suffix = &#x27;.min&#x27;;
+				$src = &#x27;min&#x27;;
+			}
+
+			wp_enqueue_script( &#x27;ninja-forms-uploads-display&#x27;,
+				NINJA_FORMS_UPLOADS_URL .&#x27;/js/&#x27; . $src . &#x27;/ninja-forms-uploads-display&#x27; .$suffix .&#x27;.js&#x27;,
+				array( &#x27;jquery&#x27;, &#x27;ninja-forms-display&#x27; ) );
+			if( $multi ){
+				wp_enqueue_script( &#x27;jquery-multi-file&#x27;,
+					NINJA_FORMS_UPLOADS_URL .&#x27;/js/min/jquery.MultiFile.pack.js&#x27;,
+					array( &#x27;jquery&#x27; ) );
+				wp_localize_script( &#x27;ninja-forms-uploads-display&#x27;, &#x27;ninja_forms_uploads_settings&#x27;, array( &#x27;delete&#x27; =&gt; __( &#x27;Really delete this item?&#x27;, &#x27;ninja-forms-uploads&#x27; ) ) );
+			}
+		}
+	}
+}</pre></details></body></html>

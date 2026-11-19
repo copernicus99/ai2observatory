@@ -1,0 +1,127 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/Extension.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/Extension.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*************************************************************/
+// This class is not intended to be extended directly,
+// but rather should be used as a boilerplate for an
+// extension plugin base file.
+// This file, if included or required, will immediately exit.
+// TODO: Remove this header before use.
+exit;
+/*************************************************************/
+
+/**
+ * Class NF_Abstracts_Extension
+ */
+final class NF_Abstracts_Extension
+{
+    /**
+     * @since 3.0
+     */
+    const VERSION = &#x27;&#x27;;
+
+    /**
+     * @var NF_Abstracts_Extension
+     * @since 3.0
+     */
+    private static $instance;
+
+    /**
+     * Plugin Directory
+     *
+     * @since 3.0
+     * @var string $dir
+     */
+    public static $dir = &#x27;&#x27;;
+
+    /**
+     * Plugin URL
+     *
+     * @since 3.0
+     * @var string $url
+     */
+    public static $url = &#x27;&#x27;;
+
+    /**
+     * Form Fields
+     *
+     * @since 3.0
+     * @var array
+     */
+    public $fields = array();
+
+    /**
+     * Form Actions
+     *
+     * @since 3.0
+     * @var array
+     */
+    public $actions = array();
+
+    protected $autoloader_prefix = &#x27;&#x27;;
+
+    /**
+     * Main Plugin Instance
+     *
+     * Insures that only one instance of a plugin class exists in memory at any one
+     * time. Also prevents needing to define globals all over the place.
+     *
+     * @since 3.0
+     * @static
+     * @staticvar array $instance
+     * @return Plugin Highlander Instance
+     */
+    public static function instance()
+    {
+        if (!isset(self::$instance) &amp;&amp; !(self::$instance instanceof NF_Abstracts_Extension)) {
+            self::$instance = new NF_Abstracts_Extension();
+
+            self::$dir = plugin_dir_path(__FILE__);
+
+            self::$url = plugin_dir_url(__FILE__);
+
+            /*
+             * Register our autoloader
+             */
+            spl_autoload_register(array(self::$instance, &#x27;autoloader&#x27;));
+        }
+    }
+
+    public function autoloader( $class_name )
+    {
+        if( class_exists( $class_name ) ) return;
+
+        if( ! $this-&gt;autoloader_prefix ) {
+            $class = explode( &#x27;_&#x27;, __CLASS__ );
+            $this-&gt;autoloader_prefix = $class[ 0 ];
+        }
+
+        if ( false !== strpos( $class_name, $this-&gt;autoloader_prefix ) ) {
+            $class_name = str_replace($this-&gt;autoloader_prefix, &#x27;&#x27;, $class_name);
+            $classes_dir = realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . &#x27;includes&#x27; . DIRECTORY_SEPARATOR;
+            $class_file = str_replace(&#x27;_&#x27;, DIRECTORY_SEPARATOR, $class_name) . &#x27;.php&#x27;;
+            if (file_exists($classes_dir . $class_file)) {
+                require_once $classes_dir . $class_file;
+            }
+        }
+    }
+}
+
+/**
+ * The main function responsible for returning The Highlander Plugin
+ * Instance to functions everywhere.
+ *
+ * Use this function like you would a global variable, except without needing
+ * to declare the global.
+ *
+ * Example: &lt;?php $nf = NF_Abstracts_Extension(); ?&gt;
+ *
+ * @since 3.0
+ * @return Plugin Highlander Instance
+ */
+function NF_Abstracts_Extension()
+{
+    return NF_Abstracts_Extension::instance();
+}
+
+NF_Abstracts_Extension();
+</pre></details></body></html>

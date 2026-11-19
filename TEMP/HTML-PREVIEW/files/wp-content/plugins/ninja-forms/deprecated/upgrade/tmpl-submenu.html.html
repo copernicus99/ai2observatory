@@ -1,0 +1,279 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/upgrade/tmpl-submenu.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/upgrade/tmpl-submenu.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;img class=&quot;nf-logo&quot; src=&quot;&quot;&gt;
+&lt;div class=&quot;nf-upgrade&quot;&gt;
+    &lt;h1&gt;Ninja Forms THREE is Here!&lt;/h1&gt;
+
+    &lt;p&gt;You are only moments away from the biggest thing to ever happen to the WordPress form building experience.&lt;/p&gt;
+
+    &lt;p&gt;Ninja Forms THREE is the most &lt;em&gt;intuitive&lt;/em&gt;, &lt;em&gt;powerful&lt;/em&gt;, and &lt;em&gt;enjoyable&lt;/em&gt; form builder you will ever use.&lt;/p&gt;
+
+    &lt;img src=&quot;images/ninja-forms-three.png&quot; /&gt;
+
+    &lt;h2&gt;Before you update, we want to make you aware of a few &lt;strong&gt;very important points:&lt;/strong&gt;&lt;/h2&gt;
+
+    &lt;ol&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-welcome-widgets-menus&quot;&gt;&lt;/span&gt;&lt;strong&gt;This is completely new form building experience&lt;/strong&gt;
+                &lt;br /&gt;The Ninja Forms 3.0 form builder looks nothing like what you&#x27;re used to currently. We&#x27;ve spent considerable resources to improve this over all experience, but we want you to be prepared for the difference.
+            &lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-admin-page&quot;&gt;&lt;/span&gt;&lt;strong&gt;&lt;a href=&#x27;https://ninjaforms.com/documentation/&#x27;&gt;Our documentation has been updated to assist through this change&lt;/a&gt;&lt;/strong&gt;
+                &lt;br /&gt;Ninja Forms documentation has been completely reworked in preparation of Ninja Forms 3.0. We will continue to invest time and energy to improve this resource.
+            &lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-smiley&quot;&gt;&lt;/span&gt;&lt;strong&gt;&lt;a href=&#x27;https://ninjaforms.com/contact/&#x27;&gt;We are here if you have any questions&lt;/a&gt;&lt;/strong&gt;
+                &lt;br /&gt;This is a big change. We&#x27;ve tested everything. And yet we know that things happen and questions arise. Don&#x27;t hesitate to reach out to us during your transition to THREE.
+            &lt;/p&gt;
+        &lt;/li&gt;
+    &lt;/ol&gt;
+
+    &lt;hr&gt;
+
+    &lt;div id=&quot;nfUpgradeApp&quot;&gt;
+
+    &lt;/div&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-test&quot;&gt;
+        Test
+    &lt;/script&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-table&quot;&gt;
+
+        &lt;h2&gt;{{ data.title }}&lt;/h2&gt;
+
+        &lt;!--{{{ data.legend }}}--&gt;
+
+        &lt;table&gt;
+            &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;# _.each( data.headers, function( header ) { #&gt;
+                &lt;th&gt;{{header}}&lt;/th&gt;
+                &lt;# }); #&gt;
+            &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+
+                &lt;# _.each( data.rows, function( row ) { #&gt;
+                    &lt;# if( ! row.title ) { return; } #&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;{{row.title}}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;span class=&quot;dashicons dashicons-{{row.icon}}&quot;&gt;&lt;/span&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;# }); #&gt;
+
+                &lt;# if( &#x27;checking&#x27; == data.step &amp;&amp; ! data.readyToConvert ) { #&gt;
+                &lt;tr&gt;
+                    &lt;td colspan=&quot;2&quot; style=&quot;text-align: center;&quot;&gt;&lt;span class=&quot;dashicons dashicons-update&quot;&gt;&lt;/span&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;# } #&gt;
+
+            &lt;/tbody&gt;
+
+        &lt;/table&gt;
+
+        &lt;# if( &#x27;undefined&#x27; != typeof data.showSupportLink &amp;&amp; data.showSupportLink ) { #&gt;
+            &lt;div style=&quot;text-align: center;&quot;&gt;
+                There was an error converting one or more of your forms.&lt;br /&gt;
+                Please contact &lt;a href=&quot;http://ninjaforms.com/contact/&quot;&gt;support&lt;/a&gt;.
+            &lt;/div&gt;
+        &lt;# } #&gt;
+
+        &lt;# if( &#x27;checking&#x27; == data.step &amp;&amp; data.readyToConvert ) { #&gt;
+            &lt;button class=&quot;nf-upgrade-button js-nfUpgrade-startConversion&quot;&gt;{{data.next}}&lt;/button&gt;
+        &lt;# } #&gt;
+    &lt;/script&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-legend&quot;&gt;
+        &lt;span class=&quot;dashicons dashicons-yes&quot;&gt;&lt;/span&gt; = {{data.no_issues_detected}}
+        &amp;nbsp;
+        &lt;span class=&quot;dashicons dashicons-flag&quot;&gt;&lt;/span&gt; = {{data.will_need_attention}}
+    &lt;/script&gt;
+
+&lt;!--    &lt;hr /&gt;--&gt;
+&lt;!----&gt;
+&lt;!--    &lt;div id=&quot;nfThreeFormCheck&quot;&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;h2&gt;Form Upgrade Compatibility&lt;/h2&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        --&gt;"></iframe><details><summary>Complete original source</summary><pre>&lt;img class=&quot;nf-logo&quot; src=&quot;&lt;?php echo NF_PLUGIN_URL . &#x27;images/nf-logo.png&#x27;; ?&gt;&quot;&gt;
+&lt;div class=&quot;nf-upgrade&quot;&gt;
+    &lt;h1&gt;Ninja Forms THREE is Here!&lt;/h1&gt;
+
+    &lt;p&gt;You are only moments away from the biggest thing to ever happen to the WordPress form building experience.&lt;/p&gt;
+
+    &lt;p&gt;Ninja Forms THREE is the most &lt;em&gt;intuitive&lt;/em&gt;, &lt;em&gt;powerful&lt;/em&gt;, and &lt;em&gt;enjoyable&lt;/em&gt; form builder you will ever use.&lt;/p&gt;
+
+    &lt;img src=&quot;&lt;?php echo NF_PLUGIN_URL; ?&gt;images/ninja-forms-three.png&quot; /&gt;
+
+    &lt;h2&gt;Before you update, we want to make you aware of a few &lt;strong&gt;very important points:&lt;/strong&gt;&lt;/h2&gt;
+
+    &lt;ol&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-welcome-widgets-menus&quot;&gt;&lt;/span&gt;&lt;strong&gt;This is completely new form building experience&lt;/strong&gt;
+                &lt;br /&gt;The Ninja Forms 3.0 form builder looks nothing like what you&#x27;re used to currently. We&#x27;ve spent considerable resources to improve this over all experience, but we want you to be prepared for the difference.
+            &lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-admin-page&quot;&gt;&lt;/span&gt;&lt;strong&gt;&lt;a href=&#x27;https://ninjaforms.com/documentation/&#x27;&gt;Our documentation has been updated to assist through this change&lt;/a&gt;&lt;/strong&gt;
+                &lt;br /&gt;Ninja Forms documentation has been completely reworked in preparation of Ninja Forms 3.0. We will continue to invest time and energy to improve this resource.
+            &lt;/p&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+            &lt;p&gt;
+                &lt;span class=&quot;dashicons dashicons-smiley&quot;&gt;&lt;/span&gt;&lt;strong&gt;&lt;a href=&#x27;https://ninjaforms.com/contact/&#x27;&gt;We are here if you have any questions&lt;/a&gt;&lt;/strong&gt;
+                &lt;br /&gt;This is a big change. We&#x27;ve tested everything. And yet we know that things happen and questions arise. Don&#x27;t hesitate to reach out to us during your transition to THREE.
+            &lt;/p&gt;
+        &lt;/li&gt;
+    &lt;/ol&gt;
+
+    &lt;hr&gt;
+
+    &lt;div id=&quot;nfUpgradeApp&quot;&gt;
+
+    &lt;/div&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-test&quot;&gt;
+        Test
+    &lt;/script&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-table&quot;&gt;
+
+        &lt;h2&gt;{{ data.title }}&lt;/h2&gt;
+
+        &lt;!--{{{ data.legend }}}--&gt;
+
+        &lt;table&gt;
+            &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;# _.each( data.headers, function( header ) { #&gt;
+                &lt;th&gt;{{header}}&lt;/th&gt;
+                &lt;# }); #&gt;
+            &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+
+                &lt;# _.each( data.rows, function( row ) { #&gt;
+                    &lt;# if( ! row.title ) { return; } #&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;{{row.title}}&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;span class=&quot;dashicons dashicons-{{row.icon}}&quot;&gt;&lt;/span&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;# }); #&gt;
+
+                &lt;# if( &#x27;checking&#x27; == data.step &amp;&amp; ! data.readyToConvert ) { #&gt;
+                &lt;tr&gt;
+                    &lt;td colspan=&quot;2&quot; style=&quot;text-align: center;&quot;&gt;&lt;span class=&quot;dashicons dashicons-update&quot;&gt;&lt;/span&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;# } #&gt;
+
+            &lt;/tbody&gt;
+
+        &lt;/table&gt;
+
+        &lt;# if( &#x27;undefined&#x27; != typeof data.showSupportLink &amp;&amp; data.showSupportLink ) { #&gt;
+            &lt;div style=&quot;text-align: center;&quot;&gt;
+                There was an error converting one or more of your forms.&lt;br /&gt;
+                Please contact &lt;a href=&quot;http://ninjaforms.com/contact/&quot;&gt;support&lt;/a&gt;.
+            &lt;/div&gt;
+        &lt;# } #&gt;
+
+        &lt;# if( &#x27;checking&#x27; == data.step &amp;&amp; data.readyToConvert ) { #&gt;
+            &lt;button class=&quot;nf-upgrade-button js-nfUpgrade-startConversion&quot;&gt;{{data.next}}&lt;/button&gt;
+        &lt;# } #&gt;
+    &lt;/script&gt;
+
+    &lt;script type=&quot;text/html&quot; id=&quot;tmpl-legend&quot;&gt;
+        &lt;span class=&quot;dashicons dashicons-yes&quot;&gt;&lt;/span&gt; = {{data.no_issues_detected}}
+        &amp;nbsp;
+        &lt;span class=&quot;dashicons dashicons-flag&quot;&gt;&lt;/span&gt; = {{data.will_need_attention}}
+    &lt;/script&gt;
+
+&lt;!--    &lt;hr /&gt;--&gt;
+&lt;!----&gt;
+&lt;!--    &lt;div id=&quot;nfThreeFormCheck&quot;&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;h2&gt;Form Upgrade Compatibility&lt;/h2&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        --&gt;&lt;?php //$no_issues_detected  = __( &#x27;No Issues Detected&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+&lt;!--        --&gt;&lt;?php //$will_need_attention = __( &#x27;Will Need Attention&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+&lt;!--        &lt;span class=&quot;dashicons dashicons-yes&quot;&gt;&lt;/span&gt; = --&gt;&lt;?php //echo $no_issues_detected; ?&gt;&lt;!-- &amp;nbsp; &lt;span class=&quot;dashicons dashicons-flag&quot;&gt;&lt;/span&gt; = --&gt;&lt;?php //echo $will_need_attention; ?&gt;
+&lt;!----&gt;
+&lt;!--        &lt;table id=&quot;nfThreeFormCheckTable&quot;&gt;--&gt;
+&lt;!--            &lt;thead&gt;--&gt;
+&lt;!--            &lt;tr&gt;--&gt;
+&lt;!--                &lt;th&gt;ID#&lt;/th&gt;--&gt;
+&lt;!--                &lt;th&gt;Title&lt;/th&gt;--&gt;
+&lt;!--                &lt;th&gt;Status&lt;/th&gt;--&gt;
+&lt;!--            &lt;/tr&gt;--&gt;
+&lt;!--            &lt;/thead&gt;--&gt;
+&lt;!--            &lt;tbody&gt;--&gt;
+&lt;!--            &lt;tr id=&quot;nfThreeFormCheckEmptyRow&quot;&gt;--&gt;
+&lt;!--                &lt;td colspan=&quot;3&quot; style=&quot;text-align: center;&quot;&gt;--&gt;
+&lt;!--                    &lt;span class=&quot;dashicons dashicons-update spin&quot;&gt;&lt;/span&gt;--&gt;
+&lt;!--                    &lt;div class=&quot;progress-bar--wrapper&quot;&gt;--&gt;
+&lt;!--                        &lt;div class=&quot;progress-bar&quot;&gt;&lt;/div&gt;--&gt;
+&lt;!--                    &lt;/div&gt;--&gt;
+&lt;!--                &lt;/td&gt;--&gt;
+&lt;!--            &lt;/tr&gt;--&gt;
+&lt;!--            &lt;/tbody&gt;--&gt;
+&lt;!--        &lt;/table&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;button id=&quot;goNinjaGo&quot; class=&quot;button go-ninja-go&quot;&gt;--&gt;&lt;?php //echo __( &#x27;Upgrade Forms&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;!--&lt;/button&gt;--&gt;
+&lt;!----&gt;
+&lt;!--    &lt;/div&gt;--&gt;
+&lt;!----&gt;
+&lt;!--    &lt;div id=&quot;nfThreeFormConvert&quot;&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;h2&gt;Upgrading Forms&lt;/h2&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;table id=&quot;nfThreeFormConvertTable&quot;&gt;--&gt;
+&lt;!--            &lt;thead&gt;--&gt;
+&lt;!--            &lt;tr&gt;--&gt;
+&lt;!--                &lt;th&gt;ID#&lt;/th&gt;--&gt;
+&lt;!--                &lt;th&gt;Title&lt;/th&gt;--&gt;
+&lt;!--                &lt;th&gt;Status&lt;/th&gt;--&gt;
+&lt;!--            &lt;/tr&gt;--&gt;
+&lt;!--            &lt;/thead&gt;--&gt;
+&lt;!--            &lt;tbody&gt;--&gt;
+&lt;!--                &lt;tr class=&quot;js-tmp-row&quot;&gt;--&gt;
+&lt;!--                    &lt;td colspan=&quot;3&quot; style=&quot;text-align: center;&quot;&gt;--&gt;
+&lt;!--                        &lt;span class=&quot;dashicons dashicons-update spin&quot;&gt;&lt;/span&gt;--&gt;
+&lt;!--                    &lt;/td&gt;--&gt;
+&lt;!--                &lt;/tr&gt;--&gt;
+&lt;!--            &lt;/tbody&gt;--&gt;
+&lt;!--        &lt;/table&gt;--&gt;
+&lt;!----&gt;
+&lt;!--        &lt;a href=&quot;--&gt;&lt;?php //echo admin_url( &#x27;admin.php?page=ninja-forms&amp;nf-switcher=upgrade&#x27; ); ?&gt;&lt;!--&quot; id=&quot;goToThree&quot;&gt;Go To Three&lt;/a&gt;--&gt;
+&lt;!----&gt;
+&lt;!--    &lt;/div&gt;--&gt;
+
+&lt;/div&gt;
+
+
+&lt;div id=&quot;optin-modal&quot; style=&quot;display:none;&quot;&gt;
+    &lt;h2&gt;Help make Ninja Forms better!&lt;/h2&gt;
+    &lt;p&gt;
+        If you agree, we&#x27;ll collect some server data and information about how you use Ninja Forms. 
+        &lt;em&gt;No submission data will be collected.&lt;/em&gt;
+        This data will help us troubleshoot errors and improve your Ninja Forms experience.
+    &lt;/p&gt;
+    &lt;p&gt;    
+        &lt;input id=&quot;optin-send-email&quot; type=&quot;checkbox&quot; checked=&quot;checked&quot;&gt; You can also occasionally send me an email about using Ninja Forms.
+    &lt;/p&gt;
+    &lt;span id=&quot;optin-spinner&quot; class=&quot;spinner&quot;&gt;&lt;/span&gt;
+    &lt;button id=&quot;optin&quot; class=&quot;button-primary&quot; style=&quot;margin-bottom: 10px; font-size: 16px;&quot;&gt;Yes, I want to make Ninja Forms better!&lt;/button&gt; &lt;button id=&quot;optout&quot; class=&quot;button-secondary&quot; style=&quot;margin-bottom: 10px;&quot;&gt;No, please don&#x27;t collect errors or other data.&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;div id=&quot;optin-thankyou&quot; style=&quot;display:none;&quot;&gt;
+    Thank you for opting in!
+&lt;/div&gt;</pre></details></body></html>

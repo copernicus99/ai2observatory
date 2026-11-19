@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/MergeTags/Calcs.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/MergeTags/Calcs.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_MergeTags_Calcs
+ */
+final class NF_MergeTags_Calcs extends NF_Abstracts_MergeTags
+{
+    protected $id = &#x27;calcs&#x27;;
+
+    protected $_default_group = FALSE;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this-&gt;title = __( &#x27;Calculations&#x27;, &#x27;ninja-forms&#x27; );
+        add_filter( &#x27;ninja_forms_calc_setting&#x27;,  array( $this, &#x27;replace&#x27; ) );
+    }
+
+    public function __call($name, $arguments)
+    {
+        return $this-&gt;merge_tags[ $name ][ &#x27;calc_value&#x27; ];
+    }
+
+    public function set_merge_tags( $key, $value, $round = 2 , $dec = &#x27;.&#x27;, $sep = &#x27;,&#x27;)
+    {
+        $callback = ( is_numeric( $key ) ) ? &#x27;calc_&#x27; . $key : $key;
+
+        try {
+            $value = str_replace($sep, &#x27;&#x27;, $value);
+            $value = str_replace($dec, &#x27;.&#x27;, $value);
+            $calculated_value = Ninja_Forms()-&gt;eos()-&gt;solve( $value );
+        } catch( Exception $e ){
+            $calculated_value = FALSE;
+        }
+
+        $this-&gt;merge_tags[ $callback ] = array(
+            &#x27;id&#x27; =&gt; $key,
+            &#x27;tag&#x27; =&gt; &quot;{calc:$key}&quot;,
+//            &#x27;label&#x27; =&gt; __( &#x27;&#x27;, &#x27;ninja_forms&#x27; ),
+            &#x27;callback&#x27; =&gt; $callback,
+            &#x27;calc_value&#x27; =&gt; number_format( $calculated_value, $round, &#x27;.&#x27;, &#x27;&#x27; )
+        );
+
+        $callback .= &#x27;2&#x27;;
+
+        $this-&gt;merge_tags[ $callback ] = array(
+            &#x27;id&#x27; =&gt; $key,
+            &#x27;tag&#x27; =&gt; &quot;{calc:$key:2}&quot;,
+//            &#x27;label&#x27; =&gt; __( &#x27;&#x27;, &#x27;ninja_forms&#x27; ),
+            &#x27;callback&#x27; =&gt; $callback,
+            &#x27;calc_value&#x27; =&gt; number_format( $calculated_value, 2, &#x27;.&#x27;, &#x27;&#x27; )
+        );
+    }
+    
+    public function get_calc_value( $key )
+    {
+        return $this-&gt;merge_tags[ $key ][ &#x27;calc_value&#x27; ];
+    }
+    
+    public function get_formatted_calc_value( $key, $round = 2, $dec = &#x27;.&#x27;, $sep = &#x27;,&#x27;)
+    {
+        return number_format( $this-&gt;merge_tags[ $key ][ &#x27;calc_value&#x27; ], $round, $dec, $sep );        
+    }
+
+} // END CLASS NF_MergeTags_Calcs
+</pre></details></body></html>

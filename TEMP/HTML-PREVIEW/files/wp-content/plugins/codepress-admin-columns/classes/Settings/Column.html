@@ -1,0 +1,375 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+abstract class AC_Settings_Column {
+
+	/**
+	 * A (short) reference to this setting
+	 *
+	 * @var string
+	 */
+	protected $name;
+
+	/**
+	 * The options this field manages (optionally with default values)
+	 *
+	 * @var array
+	 */
+	protected $options = array();
+
+	/**
+	 * @var AC_Column
+	 */
+	protected $column;
+
+	/**
+	 * Options that are set by the user and should not be overwritten with defaults
+	 *
+	 * @var array
+	 */
+	private $user_set = array();
+
+	/**
+	 * @param AC_Column $column
+	 */
+	public function __construct( AC_Column $column ) {
+		$this-&gt;column = $column;
+
+		$this-&gt;set_options();
+		$this-&gt;set_name();
+	}
+
+	/**
+	 * @see AC_Settings_Column::$options
+	 * @return array
+	 */
+	protected abstract function define_options();
+
+	/**
+	 * Create a string representation of this setting
+	 *
+	 * @return AC_View|false
+	 */
+	public abstract function create_view();
+
+	/**
+	 * Get settings that depend on this setting
+	 *
+	 * @return AC_Settings_Column[]
+	 */
+	public function get_dependent_settings() {
+		return array();
+	}
+
+	private function set_options() {
+		foreach ( $this-&gt;define_options() as $option =&gt; $value ) {
+			if ( is_numeric( $option ) ) {
+				$option = $value;
+				$value = null;
+			}
+
+			$this-&gt;set_option( $option, $value );
+			$this-&gt;set_default( $value, $option );
+		}
+	}
+
+	/**
+	 * Set an option and set value afterwards
+	 *
+	 * @param string $option
+	 * @param mixed  $value
+	 */
+	private function set_option( $option, $value = null ) {
+		$this-&gt;options[ $option ] = $value;
+	}
+
+	public function has_option( $option ) {
+		return array_key_exists( $option, $this-&gt;options );
+	}
+
+	/**
+	 * Get a managed option
+	 *
+	 * @param null|string $option
+	 *
+	 * @return false|string
+	 */
+	protected function get_default_option() {
+		reset( $this-&gt;options );
+
+		return key( $this-&gt;options );
+	}
+
+	/**
+	 * Return the value of all options
+	 *
+	 * @return array
+	 */
+	public function get_values() {
+		$values = array();
+
+		foreach ( array_keys( $this-&gt;options ) as $option ) {
+			$values[ $option ] = $this-&gt;get_value( $option );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Get value of this setting, optionally specified with a key
+	 *
+	 * Will return the value of the default option
+	 *
+	 * @param string|null $option
+	 *
+	 * @return string|array|int|bool
+	 */
+	public function get_value( $option = null ) {
+		if ( null === $option ) {
+			$option = $this-&gt;get_default_option();
+		}
+
+		if ( ! $this-&gt;has_option( $option ) ) {
+			return null;
+		}
+
+		$method = &#x27;get_&#x27; . $option;
+
+		if ( ! method_exists( $this, $method ) ) {
+			return null;
+		}
+
+		return $this-&gt;$method();
+	}
+
+	/**
+	 * Set the values of this setting
+	 *
+	 * @param array $options
+	 */
+	public function set_values( array $values ) {
+		foreach ( $values as $option =&gt; $value ) {
+			$this-&gt;set_value( $value, $option );
+		}
+	}
+
+	/**
+	 * Invoke the setter of the setting
+	 *
+	 * @param string|array|int|bool $value
+	 * @param string                $option
+	 *
+	 * @return bool
+	 */
+	private function invoke_option_setter( $option, $value ) {
+		$method = &#x27;set_&#x27; . $option;
+
+		if ( ! method_exists( $this, $method ) ) {
+			return false;
+		}
+
+		return $this-&gt;$method( $value );
+	}
+
+	/**
+	 * Set value of an option
+	 *
+	 * @param string|array|int|bool $value
+	 * @param string|null           $option
+	 *
+	 * @return bool
+	 */
+	public function set_value( $value, $option = null ) {
+		if ( null === $option ) {
+			$option = $this-&gt;get_default_option();
+		}
+
+		if ( ! $this-&gt;has_option( $option ) ) {
+			return false;
+		}
+
+		$result = $this-&gt;invoke_option_setter( $option, $value );
+
+		if ( $result ) {
+			$this-&gt;user_set[] = $option;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Set a default value unless option is loaded from settings
+	 *
+	 * @param string|array|int|bool $value
+	 * @param string|null           $option
+	 *
+	 * @return bool
+	 */
+	public function set_default( $value, $option = null ) {
+		if ( null === $option ) {
+			$option = $this-&gt;get_default_option();
+		}
+
+		if ( ! $this-&gt;has_option( $option ) ) {
+			return false;
+		}
+
+		$this-&gt;set_option( $option, $value );
+
+		// check if value is user set
+		if ( ! in_array( $option, $this-&gt;user_set ) ) {
+			$this-&gt;invoke_option_setter( $option, $value );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get the default value of an option if set
+	 *
+	 * @param string|null $option
+	 *
+	 * @return mixed
+	 */
+	public function get_default( $option = null ) {
+		if ( null === $option ) {
+			$option = $this-&gt;get_default_option();
+		}
+
+		return $this-&gt;has_option( $option ) ? $this-&gt;options[ $option ] : null;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_name() {
+		return $this-&gt;name;
+	}
+
+	/**
+	 * Default to self::get_default_option()
+	 */
+	protected function set_name() {
+		$this-&gt;name = $this-&gt;get_default_option();
+	}
+
+	/**
+	 * Add an element to this setting
+	 *
+	 * @param string      $type
+	 * @param string|null $name
+	 *
+	 * @return AC_Settings_Form_Element_Select|AC_Settings_Form_Element_Input|AC_Settings_Form_Element_Radio
+	 */
+	protected function create_element( $type, $name = null ) {
+		if ( null === $name ) {
+			$name = $this-&gt;get_default_option();
+		}
+
+		switch ( $type ) {
+
+			case &#x27;checkbox&#x27; :
+				$element = new AC_Settings_Form_Element_Checkbox( $name );
+
+				break;
+			case &#x27;radio&#x27; :
+				$element = new AC_Settings_Form_Element_Radio( $name );
+
+				break;
+			case &#x27;select&#x27; :
+				$element = new AC_Settings_Form_Element_Select( $name );
+
+				break;
+			default:
+				$element = new AC_Settings_Form_Element_Input( $name );
+				$element-&gt;set_type( $type );
+		}
+
+		$element-&gt;set_name( sprintf( &#x27;columns[%s][%s]&#x27;, $this-&gt;column-&gt;get_name(), $name ) );
+		$element-&gt;set_id( sprintf( &#x27;ac-%s-%s&#x27;, $this-&gt;column-&gt;get_name(), $name ) );
+		$element-&gt;add_class( &#x27;ac-setting-input_&#x27; . $name );
+
+		// try to set current value
+		$value = $this-&gt;get_value( $name );
+
+		if ( null !== $value ) {
+			$element-&gt;set_value( $value );
+		}
+
+		return $element;
+	}
+
+	/**
+	 * Render the output of self::create_header()
+	 *
+	 * @return false|string
+	 */
+	public function render_header() {
+		if ( ! ( $this instanceof AC_Settings_HeaderInterface ) ) {
+			return false;
+		}
+
+		/* @var AC_Settings_HeaderInterface $this */
+		$view = $this-&gt;create_header_view();
+
+		if ( ! ( $view instanceof AC_View ) ) {
+			return false;
+		}
+
+		if ( null == $view-&gt;get_template() ) {
+			$view-&gt;set_template( &#x27;settings/header&#x27; );
+		}
+
+		if ( null == $view-&gt;setting ) {
+			$view-&gt;set( &#x27;setting&#x27;, $this-&gt;get_name() );
+		}
+
+		return $view-&gt;render();
+	}
+
+	/**
+	 * Render the output of self::create_view()
+	 *
+	 * @return false|string
+	 */
+	public function render() {
+		$view = $this-&gt;create_view();
+
+		if ( ! ( $view instanceof AC_View ) ) {
+			return false;
+		}
+
+		$template = &#x27;settings/section&#x27;;
+
+		// set default template
+		if ( null === $view-&gt;get_template() ) {
+			$view-&gt;set_template( $template );
+		}
+
+		// set default name
+		if ( null === $view-&gt;get( &#x27;name&#x27; ) ) {
+			$view-&gt;set( &#x27;name&#x27;, $this-&gt;name );
+		}
+
+		// set default template for nested sections
+		foreach ( (array) $view-&gt;sections as $section ) {
+			if ( $section instanceof AC_View &amp;&amp; null === $section-&gt;get_template() ) {
+				$section-&gt;set_template( $template );
+			}
+		}
+
+		return $view-&gt;render();
+	}
+
+	public function __toString() {
+		return $this-&gt;render();
+	}
+
+	public function get_column() {
+		return $this-&gt;column;
+	}
+}
+</pre></details></body></html>

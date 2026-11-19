@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/label-settings/label-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/label-settings/label-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_tab_label_settings&#x27; );
+
+function ninja_forms_register_tab_label_settings(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Labels&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_label_settings&#x27;,
+	);
+	ninja_forms_register_tab( &#x27;label_settings&#x27;, $args );
+
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_label_settings_metabox&#x27; );
+
+function ninja_forms_register_label_settings_metabox(){
+
+	$args = array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;label_settings&#x27;,
+		&#x27;slug&#x27; =&gt; &#x27;label_labels&#x27;,
+		&#x27;title&#x27; =&gt; __( &#x27;Message Labels&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;settings&#x27; =&gt; array(
+			array(
+				&#x27;name&#x27; =&gt; &#x27;req_div_label&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Required Field Label&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help_text&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;req_field_symbol&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Required field symbol&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;req_error_label&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Error message given if all required fields are not completed&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;req_field_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Required Field Error&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+			 	&#x27;name&#x27; =&gt; &#x27;spam_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Anti-spam error message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+			 	&#x27;name&#x27; =&gt; &#x27;honeypot_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Honeypot error message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+			 	&#x27;name&#x27; =&gt; &#x27;timed_submit_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Timer error message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;javascript_error&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;JavaScript disabled error message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+			 	&#x27;name&#x27; =&gt; &#x27;invalid_email&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Please enter a valid email address&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;process_label&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Processing Submission Label&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;This message is shown inside the submit button whenever a user clicks &quot;submit&quot; to let them know it is processing.&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;password_mismatch&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Password Mismatch Label&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;This message is shown to a user when non-matching values are placed in the password field.&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+		),
+	);
+	ninja_forms_register_tab_metabox( $args );
+
+}
+
+function ninja_forms_save_label_settings( $data ){
+	$plugin_settings = nf_get_settings();
+	foreach( $data as $key =&gt; $val ){
+		$plugin_settings[$key] = $val;
+	}
+	update_option( &quot;ninja_forms_settings&quot;, $plugin_settings );
+	$update_msg = __( &#x27;Settings Saved&#x27;, &#x27;ninja-forms&#x27; );
+	return $update_msg;
+}</pre></details></body></html>

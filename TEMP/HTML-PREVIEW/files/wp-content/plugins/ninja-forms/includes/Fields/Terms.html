@@ -1,0 +1,199 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/Terms.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/Terms.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_Terms
+ */
+class NF_Fields_Terms extends NF_Fields_ListCheckbox
+{
+    protected $_name = &#x27;terms&#x27;;
+    protected $_type = &#x27;terms&#x27;;
+
+    protected $_nicename = &#x27;Terms List&#x27;;
+
+    protected $_section = &#x27;&#x27;;
+
+    protected $_icon = &#x27;tags&#x27;;
+
+    protected $_templates = array( &#x27;terms&#x27;, &#x27;listcheckbox&#x27; );
+
+    protected $_settings = array( &#x27;taxonomy&#x27;, &#x27;add_new_terms&#x27; );
+
+    protected $_settings_exclude = array( &#x27;required&#x27; );
+
+    protected $_excluded_taxonomies = array(
+        &#x27;post_format&#x27;
+    );
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Terms List&#x27;, &#x27;ninja-forms&#x27; );
+
+        // If we are on the ninja-forms page...
+        // OR we&#x27;re looking at nf_sub post types...
+        // OR we&#x27;re editing a single post...
+        if ( ( ! empty( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; &#x27;ninja-forms&#x27; == $_GET[ &#x27;page&#x27; ] ) ||
+           ( ! empty( $_GET[ &#x27;post_type&#x27; ] ) &amp;&amp; &#x27;nf_sub&#x27; == $_GET[ &#x27;post_type&#x27; ] ) ||
+           isset( $_GET[ &#x27;post&#x27; ] ) ) {
+            // Initiate the termslist.
+            add_action( &#x27;admin_init&#x27;, array( $this, &#x27;init_settings&#x27; ) );
+        }
+
+        add_filter( &#x27;ninja_forms_display_field&#x27;, array( $this, &#x27;active_taxonomy_field_check&#x27; ) );
+        add_filter( &#x27;ninja_forms_localize_field_&#x27; . $this-&gt;_type, array( $this, &#x27;add_term_options&#x27; ) );
+        add_filter( &#x27;ninja_forms_localize_field_&#x27; . $this-&gt;_type . &#x27;_preview&#x27;, array( $this, &#x27;add_term_options&#x27; ) );
+
+        add_filter( &#x27;ninja_forms_merge_tag_value_&#x27; . $this-&gt;_type, array( $this, &#x27;merge_tag_value&#x27; ), 10, 2 );
+
+        $this-&gt;_settings[ &#x27;options&#x27; ][ &#x27;group&#x27; ] = &#x27;&#x27;;
+    }
+
+    public function process( $field, $data )
+    {
+        return $data;
+    }
+
+    public function init_settings()
+    {
+        $term_settings = array();
+        $taxonomies = get_taxonomies( array( &#x27;public&#x27; =&gt; true ), &#x27;objects&#x27; );
+        foreach( $taxonomies as $name =&gt; $taxonomy ){
+
+            $tax_term_settings = array();
+
+            if( in_array( $name, $this-&gt;_excluded_taxonomies ) ) continue;
+
+            $this-&gt;_settings[ &#x27;taxonomy&#x27; ][ &#x27;options&#x27; ][] = array(
+                &#x27;label&#x27; =&gt; $taxonomy-&gt;labels-&gt;name,
+                &#x27;value&#x27; =&gt; $name
+            );
+
+            $terms = get_terms( $name, array( &#x27;hide_empty&#x27; =&gt; false ) );
+
+            foreach( $terms as $term ){
+
+                // Check the slug instead of term_id to ensure we ONLY remove &#x27;uncategorized&#x27;.
+                if( &#x27;uncategorized&#x27; == $term-&gt;slug ) continue;
+
+                $tax_term_settings[] =  array(
+                    &#x27;name&#x27; =&gt; &#x27;taxonomy_term_&#x27; . $term-&gt;term_id,
+                    &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+                    &#x27;label&#x27; =&gt; $term-&gt;name . &#x27; (&#x27; . $term-&gt;count .&#x27;)&#x27;,
+                    &#x27;width&#x27; =&gt; &#x27;one-third&#x27;,
+                    &#x27;deps&#x27; =&gt; array(
+                        &#x27;taxonomy&#x27; =&gt; $name
+                    ),
+                );
+            }
+
+            if( empty( $tax_term_settings ) ){
+                $tax_term_settings[] =  array(
+                    &#x27;name&#x27; =&gt; $name . &#x27;_no_terms&#x27;,
+                    &#x27;type&#x27; =&gt; &#x27;html&#x27;,
+                    &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                    &#x27;value&#x27; =&gt; sprintf( __( &#x27;No available terms for this taxonomy. %sAdd a term%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;&#x27; . admin_url( &quot;edit-tags.php?taxonomy=$name&quot; ) . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; ),
+                    &#x27;deps&#x27; =&gt; array(
+                        &#x27;taxonomy&#x27; =&gt; $name
+                    )
+                );
+            }
+
+            $term_settings = array_merge( $term_settings, $tax_term_settings );
+
+        }
+
+        $term_settings[] =  array(
+            &#x27;name&#x27; =&gt; &#x27;_no_taxonomy&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;html&#x27;,
+            &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+            &#x27;value&#x27; =&gt; __( &#x27;No taxonomy selected.&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;deps&#x27; =&gt; array(
+                &#x27;taxonomy&#x27; =&gt; &#x27;&#x27;
+            )
+        );
+
+        $this-&gt;_settings[ &#x27;taxonomy_terms&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;taxonomy_terms&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+            &#x27;label&#x27; =&gt; __( &#x27;Available Terms&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+            &#x27;settings&#x27; =&gt; $term_settings
+        );
+    }
+
+    public function active_taxonomy_field_check( $field )
+    {
+        if( $this-&gt;_type != $field-&gt;get_setting( &#x27;type&#x27; ) ) return $field;
+
+        $taxonomy = $field-&gt;get_setting( &#x27;taxonomy&#x27; );
+
+        if( ! taxonomy_exists( $taxonomy ) ) return FALSE;
+
+        return $field;
+    }
+
+    public function add_term_options( $field )
+    {
+        $settings = ( is_object( $field ) ) ? $field-&gt;get_settings() : $field[ &#x27;settings&#x27; ];
+
+        $settings[ &#x27;options&#x27; ] = array();
+
+        if( isset( $settings[ &#x27;taxonomy&#x27; ] ) &amp;&amp; $settings[ &#x27;taxonomy&#x27; ] ){
+
+            $terms = get_terms( $settings[ &#x27;taxonomy&#x27; ], array( &#x27;hide_empty&#x27; =&gt; false ) );
+
+            if( ! is_wp_error( $terms ) ){
+                foreach( $terms as $term ) {
+
+                    if( ! isset( $settings[ &#x27;taxonomy_term_&#x27; . $term-&gt;term_id ] ) ) continue;
+                    if( ! $settings[ &#x27;taxonomy_term_&#x27; . $term-&gt;term_id ] ) continue;
+
+                    $settings[&#x27;options&#x27;][] = array(
+                        &#x27;label&#x27; =&gt; $term-&gt;name,
+                        &#x27;value&#x27; =&gt; $term-&gt;term_id,
+                        &#x27;calc&#x27; =&gt; &#x27;&#x27;,
+                        &#x27;selected&#x27; =&gt; 0,
+                        &#x27;order&#x27; =&gt; 0
+                    );
+                }
+            }
+        }
+
+        if( is_object( $field ) ) {
+            $field-&gt;update_settings( $settings );
+        } else {
+            $field[ &#x27;settings&#x27; ] = $settings;
+        }
+
+        return $field;
+    }
+
+    public function merge_tag_value( $value, $field )
+    {
+        $terms = explode( &#x27;,&#x27;, $value );
+        if( ! is_array( $terms ) ) {
+            $term = get_term_by( &#x27;id&#x27;, $value, $field[ &#x27;taxonomy&#x27; ] );
+            if( $term ) {
+                return $term-&gt;name;
+            } else {
+                return $value;
+            }
+        }
+
+        $term_names = array();
+        foreach( $terms as $term_id ){
+            $term = get_term_by( &#x27;id&#x27;, $term_id, $field[ &#x27;taxonomy&#x27; ] );
+            $term_names[] = ( $term ) ? $term-&gt;name : $term_id; // If the term is `false`, fallback to the term_id.
+        }
+
+        return implode( &#x27;,&#x27;, $term_names );
+    }
+
+    public function get_parent_type()
+    {
+        return &#x27;listcheckbox&#x27;;
+    }
+}
+</pre></details></body></html>

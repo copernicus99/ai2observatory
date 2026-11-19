@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/form/sub-limit.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/form/sub-limit.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Function that checks the current sub count and updates the loading class if neccesary.
+ * @param  $string $form_id
+ * @since 2.5
+ * @return void
+ */
+function nf_check_sub_limit( $form_id ) {
+    global $ninja_forms_loading;
+
+    if ( ! isset( $ninja_forms_loading ) )
+        return false;
+
+    $sub_limit = $ninja_forms_loading-&gt;get_form_setting( &#x27;sub_limit_number&#x27; );
+
+    if ( !$sub_limit or empty ( $sub_limit ) )
+        return false;
+
+    $args = array(
+        &#x27;form_id&#x27; =&gt; $form_id,
+        &#x27;action&#x27;  =&gt; &#x27;submit&#x27;,
+    );
+    $sub_count = ninja_forms_get_sub_count( $args );
+
+    if ( $sub_count &gt;= $sub_limit ) {
+        $ninja_forms_loading-&gt;update_form_setting( &#x27;sub_limit_reached&#x27;, true );
+    }
+
+}
+add_action( &#x27;ninja_forms_display_init&#x27;, &#x27;nf_check_sub_limit&#x27; );
+
+/**
+ * Function that filters the display variable and returns false if sub limit has been reached.
+ * @param  bool $display
+ * @param  string $form_id
+ * @since 2.5
+ * @return string $display
+ */
+function nf_sub_limit_display_filter( $display, $form_id ) {
+    global $ninja_forms_loading;
+
+    if ( ! isset( $ninja_forms_loading ) )
+        return $display;
+
+    if ( $ninja_forms_loading-&gt;get_form_setting( &#x27;sub_limit_reached&#x27; ) ) {
+        $display = 0;
+    }
+    return $display;
+}
+add_filter( &#x27;ninja_forms_display_show_form&#x27;, &#x27;nf_sub_limit_display_filter&#x27;, 10, 2 );
+
+/**
+ * Function that echoes the sub limit reached message if necessary.
+ * @param  string $form_id
+ * @since 2.5
+ * @return void
+ */
+function nf_sub_limit_display_msg( $form_id ) {
+    global $ninja_forms_loading;
+
+    if ( ! isset( $ninja_forms_loading ) )
+        return false;
+
+    if ( $ninja_forms_loading-&gt;get_form_setting( &#x27;sub_limit_reached&#x27; ) ) {
+        $msg = $ninja_forms_loading-&gt;get_form_setting( &#x27;sub_limit_msg&#x27; );
+        $msg = wpautop( $msg );
+        $msg = do_shortcode( $msg );
+        $msg = &#x27;&lt;div class=&quot;sub-limit-reached-msg&quot;&gt;&#x27; . $msg . &#x27;&lt;/div&gt;&#x27;;
+        $msg = apply_filters( &#x27;nf_sub_limit_reached_msg&#x27;, $msg, $form_id );
+        echo $msg;
+    }
+
+}
+add_action( &#x27;ninja_forms_display_user_not_logged_in&#x27;, &#x27;nf_sub_limit_display_msg&#x27; );
+</pre></details></body></html>

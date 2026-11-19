@@ -1,0 +1,556 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/fields/file-uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/fields/file-uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[upload_multi]&quot; value=&quot;0&quot;&gt;
+		&lt;input type=&quot;checkbox&quot; id=&quot;field__upload_multi&quot; name=&quot;ninja_forms_field_[upload_multi]&quot; value=&quot;1&quot; class=&quot;ninja-forms-upload-multi&quot; &gt;
+		&lt;label for=&quot;field__upload_multi&quot;&gt;
+			
+		&lt;/label&gt;
+	&lt;/div&gt;
+
+	&lt;div class=&quot;description description-thin&quot; style=&quot;&quot; id=&quot;field__upload_multi_count_label&quot;&gt;
+		&lt;label for=&quot;field__upload_multi_count&quot;&gt;
+			&lt;input type=&quot;text&quot; id=&quot;field__upload_multi_count&quot; name=&quot;ninja_forms_field_[upload_multi_count]&quot; value=&quot;&quot; class=&quot;widefat&quot;&gt;
+			&lt;br /&gt;
+		&lt;/label&gt;
+	&lt;/div&gt;
+	
+				&lt;ul style=&quot;list-style:none;&quot;&gt;
+				
+					&lt;li id=&quot;ninja_forms_file_upload___li&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][user_file_name]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_name]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_path]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_url]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][complete]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][changed]&quot; value=&quot;0&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][upload_id]&quot; value=&quot;&quot;&gt;
+
+						&lt;a href=&quot;#&quot; class=&quot;ninja-forms-delete-file-upload&quot; id=&quot;ninja_forms_delete_file_upload__&quot;&gt;X&lt;/a&gt; -
+						&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt; - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_change_file_upload__&quot; class=&quot;ninja-forms-change-file-upload&quot;&gt;&lt;/a&gt;
+						&lt;span id=&quot;ninja_forms_file_upload__&quot; style=&quot;display:none;&quot;&gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&quot;&gt;
+							&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_[]&quot; id=&quot;ninja_forms_field_-&quot; rel=&quot;&quot; &gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[]&quot; value=&quot;&quot;  rel=&quot;&quot; &gt;
+						&lt;/span&gt;
+
+					&lt;/li&gt;
+					
+					&lt;li&gt;
+					
+						&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_[new][]&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; maxlength=&quot;&quot;  rel=&quot;&quot; &gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[new][]&quot; value=&quot;&quot;  rel=&quot;&quot; &gt;
+					&lt;li&gt;
+				&lt;/ul&gt;
+				
+				&lt;ul style=&quot;list-style:none;&quot;&gt;
+				
+					&lt;li&gt;
+						&lt;div&gt;
+							&lt;a href=&quot;&quot;&gt;&lt;/a&gt;
+						&lt;/div&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][user_file_name]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_name]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_path]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][file_url]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][complete]&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][changed]&quot; value=&quot;0&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_[][upload_id]&quot; value=&quot;&quot;&gt;
+					&lt;/li&gt;
+					&lt;li&gt;
+						
+
+
+						&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&quot;&gt;
+						&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_[]&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; maxlength=&quot;&quot;  rel=&quot;&quot; &gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[]&quot; value=&quot;&quot;  rel=&quot;&quot; &gt;
+					&lt;/li&gt;
+					
+				&lt;/ul&gt;
+				
+
+		&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&quot;&gt;
+		&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_[new][]&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; maxlength=&quot;&quot;  rel=&quot;&quot; &gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[new][]&quot; value=&quot;&quot;  rel=&quot;&quot; &gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[]&quot; value=&quot;&quot; rel=&quot;&quot;&gt;
+		
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][user_file_name]&quot; value=&quot;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][file_name]&quot; value=&quot;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][file_path]&quot; value=&quot;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][complete]&quot; value=&quot;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][changed]&quot; value=&quot;0&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][upload_id]&quot; value=&quot;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][][file_url]&quot; value=&quot;&quot;&gt;
+			
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[][][upload_location]&quot; value=&quot;&quot;&gt;
+			
+			
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[][][external_path]&quot; value=&quot;&quot;&gt;
+			
+			
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[][][external_filename]&quot; value=&quot;&quot;&gt;
+			
+
+			&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt; &lt;input type=&quot;text&quot; value=&quot;&quot;&gt;
+			&lt;br /&gt;
+			
+					&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;
+					&lt;br /&gt;
+					"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+//Register the Upload field
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_upload&#x27;);
+
+function ninja_forms_register_field_upload(){
+	$args = array(
+		&#x27;name&#x27; =&gt; &#x27;File Upload&#x27;, //Required - This is the name that will appear on the add field button.
+		&#x27;edit_options&#x27; =&gt; array( //Optional - An array of options to show within the field edit &lt;li&gt;. Should be an array of arrays.
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;, //What type of input should this be?
+				&#x27;name&#x27; =&gt; &#x27;upload_types&#x27;, //What should it be named. This should always be a programmatic name, not a label.
+				&#x27;label&#x27; =&gt; &#x27;&lt;strong&gt;&#x27; . __(&#x27;Allowed File Types&#x27;, &#x27;ninja-forms-uploads&#x27;) . &#x27;&lt;/strong&gt;&lt;br/&gt;&#x27; . __(&#x27;Comma Separated List of allowed file types. An empty list means all file types are accepted. (i.e. .jpg, .gif, .png, .pdf) This is not fool-proof and can be tricked, please remember that there is always a danger in allowing users to upload files.&#x27;, &#x27;ninja-forms-uploads&#x27;), //Label to be shown before the option.
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;, //Additional classes to be added to the input element.
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;upload_rename&#x27;,
+				&#x27;label&#x27; =&gt; &#x27;&lt;strong&gt;&#x27; . __(&#x27;Rename Uploaded File&#x27;, &#x27;ninja-forms-uploads&#x27;) . &#x27;&lt;/strong&gt;&lt;br /&gt;&#x27; . __(&#x27;Advanced renaming options. If you do not want to rename the files, leave this box blank&#x27;, &#x27;ninja-forms-uploads&#x27;).&#x27; &lt;a href=&quot;#&quot; class=&quot;ninja-forms-rename-help&quot;&gt;&#x27; . __(&#x27;Get help renaming files&#x27;, &#x27;ninja-forms-uploads&#x27;) . &#x27;&lt;/a&gt;&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;,
+			),
+			array(
+				&#x27;type&#x27; 		=&gt; &#x27;select&#x27;,
+				&#x27;name&#x27; 		=&gt; &#x27;upload_location&#x27;,
+				&#x27;label&#x27; 	=&gt; __(&#x27;Select where to store the uploaded files&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;options&#x27; 	=&gt; apply_filters(
+					&#x27;ninja_forms_upload_locations&#x27;,
+					array(
+						array (
+							&#x27;value&#x27; =&gt; NINJA_FORMS_UPLOADS_DEFAULT_LOCATION,
+							&#x27;name&#x27; =&gt; __( &#x27;Server&#x27;, &#x27;ninja-forms-uploads&#x27; )
+						),
+						array (
+							&#x27;value&#x27; =&gt; &#x27;none&#x27;,
+							&#x27;name&#x27; =&gt; __( &#x27;None&#x27;, &#x27;ninja-forms-uploads&#x27; )
+						)
+					)
+				),
+				&#x27;default_value&#x27;	=&gt; NINJA_FORMS_UPLOADS_DEFAULT_LOCATION
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;media_library&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Add this file to the WordPress Media Library?&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			),
+
+		),
+		&#x27;edit_function&#x27; =&gt; &#x27;ninja_forms_field_upload_edit&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_upload_display&#x27;, //Required - This function will be called to create output when a user accesses a form containing this element.
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;, //Optional
+		&#x27;edit_label&#x27; =&gt; true, //True or False
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_upload_pre_process&#x27;,
+		&#x27;edit_sub_pre_process&#x27; =&gt; &#x27;ninja_forms_field_upload_pre_process&#x27;,
+		&#x27;process&#x27; =&gt; &#x27;ninja_forms_field_upload_process&#x27;,
+		&#x27;edit_sub_value&#x27; =&gt; &#x27;nf_field_upload_edit_sub_value&#x27;,
+		&#x27;sub_table_value&#x27; =&gt; &#x27;nf_field_upload_sub_table_value&#x27;,
+		&#x27;req_validation&#x27; =&gt; &#x27;ninja_forms_field_upload_req_validation&#x27;,
+	);
+
+	$form_row = array();
+
+	if ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX &amp;&amp; isset ( $_REQUEST[&#x27;field_id&#x27;] ) ) {
+		$form_row = ninja_forms_get_form_by_field_id( $_REQUEST[&#x27;field_id&#x27;] );
+	} else if ( isset( $_REQUEST[&#x27;form_id&#x27;] ) ) {
+		$form_id = $_REQUEST[&#x27;form_id&#x27;];
+		$form_row = ninja_forms_get_form_by_id( $form_id );
+	}
+
+	$form_data = isset ( $form_row[&#x27;data&#x27;] ) ? $form_row[&#x27;data&#x27;] : array();
+	if( isset( $form_data[&#x27;create_post&#x27;] ) AND $form_data[&#x27;create_post&#x27;] == 1 ){
+		$option = array(
+			&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+			&#x27;name&#x27; =&gt; &#x27;featured_image&#x27;,
+			&#x27;label&#x27; =&gt; __( &#x27;Set as featured image for the Post.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;class&#x27; =&gt; &#x27;ninja-forms-upload-multi&#x27;,
+			&#x27;width&#x27; =&gt; &#x27;wide&#x27;,
+		);
+		array_push( $args[&#x27;edit_options&#x27;], $option );
+	}
+
+	if( function_exists( &#x27;ninja_forms_register_field&#x27; ) ){
+		ninja_forms_register_field(&#x27;_upload&#x27;, $args);
+	}
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_field_upload_register_filters&#x27; );
+function ninja_forms_field_upload_register_filters(){
+	add_filter(&#x27;ninja_forms_view_sub_td&#x27;, &#x27;ninja_forms_field_upload_sub_td&#x27;, 10, 2);
+}
+
+function ninja_forms_field_upload_default_value($data, $field_id){
+	global $ninja_forms_processing;
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	if($field_type == &#x27;_upload&#x27;){
+		if( is_object( $ninja_forms_processing) AND $ninja_forms_processing-&gt;get_form_setting(&#x27;doing_save&#x27;)){
+			$current_val = $ninja_forms_processing-&gt;get_field_value($field_id);
+			$data[&#x27;default_value&#x27;] = $current_val;
+		}
+	}
+	return $data;
+}
+
+function ninja_forms_field_upload_edit($field_id, $data){
+	if(isset($data[&#x27;upload_multi&#x27;])){
+		$upload_multi = $data[&#x27;upload_multi&#x27;];
+	}else{
+		$upload_multi = &#x27;&#x27;;
+	}
+	if(isset($data[&#x27;upload_multi_count&#x27;])){
+		$upload_multi_count = $data[&#x27;upload_multi_count&#x27;];
+	}else{
+		$upload_multi_count = &#x27;&#x27;;
+	}
+
+	?&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[upload_multi]&quot; value=&quot;0&quot;&gt;
+		&lt;input type=&quot;checkbox&quot; id=&quot;field_&lt;?php echo $field_id;?&gt;_upload_multi&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[upload_multi]&quot; value=&quot;1&quot; class=&quot;ninja-forms-upload-multi&quot; &lt;?php checked($upload_multi, 1);?&gt;&gt;
+		&lt;label for=&quot;field_&lt;?php echo $field_id;?&gt;_upload_multi&quot;&gt;
+			&lt;?php _e( &#x27;Allow the user to upload multiple files.&#x27; , &#x27;ninja-forms-uploads&#x27;); ?&gt;
+		&lt;/label&gt;
+	&lt;/div&gt;
+
+	&lt;div class=&quot;description description-thin&quot; style=&quot;&quot; id=&quot;field_&lt;?php echo $field_id;?&gt;_upload_multi_count_label&quot;&gt;
+		&lt;label for=&quot;field_&lt;?php echo $field_id;?&gt;_upload_multi_count&quot;&gt;
+			&lt;input type=&quot;text&quot; id=&quot;field_&lt;?php echo $field_id;?&gt;_upload_multi_count&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[upload_multi_count]&quot; value=&quot;&lt;?php echo $upload_multi_count;?&gt;&quot; class=&quot;widefat&quot;&gt;
+			&lt;?php _e( &#x27;How many files can be uploaded?&#x27; , &#x27;ninja-forms-uploads&#x27;); ?&gt;&lt;br /&gt;
+		&lt;/label&gt;
+	&lt;/div&gt;
+	&lt;?php
+}
+
+/**
+ * This is the main display function that will be called on the front-end when a user is filling out a form.
+ *
+ * @param int $field_id - ID number of the field that is currently being displayed.
+ * @param array $data - array of field data as it has been processed to this point.
+ */
+
+function ninja_forms_field_upload_display( $field_id, $data ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	$plugin_settings = get_option(&#x27;ninja_forms_settings&#x27;);
+	if(isset($plugin_settings[&#x27;max_filesize&#x27;])){
+		$max_filesize = $plugin_settings[&#x27;max_filesize&#x27;] * 1048576;
+	}else{
+		$max_filesize = 2097152;
+	}
+
+	if(isset($data[&#x27;upload_multi&#x27;]) AND $data[&#x27;upload_multi&#x27;] == 1){
+		$upload_multi = &#x27;multi&#x27;;
+	}else{
+		$upload_multi = &#x27;&#x27;;
+	}
+
+	if(isset($data[&#x27;upload_multi_count&#x27;])){
+		$upload_multi_count = $data[&#x27;upload_multi_count&#x27;];
+	}else{
+		$upload_multi_count = &#x27;&#x27;;
+	}
+
+
+	$user_file_name = &#x27;&#x27;;
+	$file_name = &#x27;&#x27;;
+	$file_path = &#x27;&#x27;;
+	$file_url = &#x27;&#x27;;
+	$prefill = false;
+
+	if( is_object( $ninja_forms_processing) AND $ninja_forms_processing-&gt;get_error(&#x27;upload_&#x27;.$field_id)){
+		$field_error = true;
+	}else{
+		$field_error = false;
+	}
+
+	$user_value = &#x27;&#x27;;
+
+	if(isset($data[&#x27;default_value&#x27;]) AND !empty($data[&#x27;default_value&#x27;])){
+		$user_value = $data[&#x27;default_value&#x27;];
+		$prefill = true;
+	}else if( is_object( $ninja_forms_processing) AND $ninja_forms_processing-&gt;get_field_value($field_id) AND $ninja_forms_processing-&gt;get_all_errors()){
+		$user_value = $ninja_forms_processing-&gt;get_field_value($field_id);
+		$prefill = true;
+	}
+
+	if ( is_array ( $user_value ) ) {
+		$tmp = false;
+		foreach( $user_value as $key =&gt; $val ) {
+			if ( isset ( $val[&#x27;file_name&#x27;] ) and !empty ( $val[&#x27;file_name&#x27;] ) ) {
+				$tmp = true;
+			}
+		}
+		if ( !$tmp ) {
+			$prefill = false;
+		}		
+	} else if ( is_string ( $user_value ) ) {
+		$filename = basename( $user_value );
+		$tmp_array = array(
+			ninja_forms_random_string(5) =&gt; array(
+				&#x27;complete&#x27; =&gt; 1,
+				&#x27;user_file_name&#x27; =&gt; $filename,
+				&#x27;file_name&#x27; =&gt; $filename,
+				&#x27;file_url&#x27; =&gt; $user_value,
+			),
+		);
+		$user_value = $tmp_array;
+	}
+
+	//var_dump ( $user_value );
+
+	if(count($user_value) &gt; 1){
+		$str_label = __(&#x27;Files&#x27;, &#x27;ninja-forms-uploads&#x27;);
+	}else{
+		$str_label = __(&#x27;File&#x27;, &#x27;ninja-forms-uploads&#x27;);
+	}
+
+	if( $prefill AND !$field_error ){
+
+		// Loop through our files array and allow the user to replace each on individually.
+		// This code outputs a different file input field for each. Every field is also accompanied by hidden inputs.
+		if( is_array( $user_value ) AND !empty( $user_value ) ){
+			if( $upload_multi == &#x27;multi&#x27;){
+				?&gt;
+				&lt;ul style=&quot;list-style:none;&quot;&gt;
+				&lt;?php
+				foreach( $user_value as $key =&gt; $val ){
+					if( isset( $val[&#x27;complete&#x27;] ) ){
+						$complete = $val[&#x27;complete&#x27;];
+					}else{
+						$complete = 1;
+					}
+					
+					if ( !isset ( $val[&#x27;upload_id&#x27;] ) ) {
+						$val[&#x27;upload_id&#x27;] = &#x27;&#x27;;
+					}
+
+					// Output the accompanying file data that will be accessible in the extra_values during processing.
+					?&gt;
+					&lt;li id=&quot;ninja_forms_file_upload_&lt;?php echo $field_id;?&gt;_&lt;?php echo $key;?&gt;_li&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][user_file_name]&quot; value=&quot;&lt;?php echo $val[&#x27;user_file_name&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_name]&quot; value=&quot;&lt;?php echo $val[&#x27;file_name&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_path]&quot; value=&quot;&lt;?php echo $val[&#x27;file_path&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_url]&quot; value=&quot;&lt;?php echo $val[&#x27;file_url&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][complete]&quot; value=&quot;&lt;?php echo $complete;?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][changed]&quot; value=&quot;0&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][upload_id]&quot; value=&quot;&lt;?php echo $val[&#x27;upload_id&#x27;];?&gt;&quot;&gt;
+
+						&lt;a href=&quot;#&quot; class=&quot;ninja-forms-delete-file-upload&quot; id=&quot;ninja_forms_delete_file_upload_&lt;?php echo $field_id;?&gt;_&lt;?php echo $key;?&gt;&quot;&gt;X&lt;/a&gt; -
+						&lt;a href=&quot;&lt;?php echo $val[&#x27;file_url&#x27;];?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php echo $val[&#x27;user_file_name&#x27;];?&gt;&lt;/a&gt; - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_change_file_upload_&lt;?php echo $field_id;?&gt;_&lt;?php echo $key;?&gt;&quot; class=&quot;ninja-forms-change-file-upload&quot;&gt;&lt;?php _e(&#x27;Change This File&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/a&gt;
+						&lt;span id=&quot;ninja_forms_file_upload_&lt;?php echo $field_id;?&gt;_&lt;?php echo $key;?&gt;&quot; style=&quot;display:none;&quot;&gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&lt;?php echo $max_filesize;?&gt;&quot;&gt;
+							&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;-&lt;?php echo $key;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+							&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;]&quot; value=&quot;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+						&lt;/span&gt;
+
+					&lt;/li&gt;
+					&lt;?php
+				}
+					?&gt;
+					&lt;li&gt;
+					&lt;?php
+						_e( &#x27;New Upload&#x27;, &#x27;ninja-forms-uploads&#x27; );
+						echo &#x27;:&#x27;;
+						?&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&lt;?php echo $max_filesize;?&gt;&quot;&gt;
+						&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[new][]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $upload_multi;?&gt;&quot; maxlength=&quot;&lt;?php echo $upload_multi_count;?&gt;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[new][]&quot; value=&quot;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+					&lt;li&gt;
+				&lt;/ul&gt;
+				&lt;?php
+			}else{
+				?&gt;
+				&lt;ul style=&quot;list-style:none;&quot;&gt;
+				&lt;?php
+
+				foreach( $user_value as $key =&gt; $val ){
+					if( isset( $val[&#x27;complete&#x27;] ) ){
+						$complete = $val[&#x27;complete&#x27;];
+					}else{
+						$complete = 1;
+					}
+					if ( isset ( $val[&#x27;upload_id&#x27;] ) ) {
+						$upload_id = $val[&#x27;upload_id&#x27;];
+					} else {
+						$upload_id = &#x27;&#x27;;
+					}
+					?&gt;
+					&lt;li&gt;
+						&lt;div&gt;
+							&lt;a href=&quot;&lt;?php echo $val[&#x27;file_url&#x27;];?&gt;&quot;&gt;&lt;?php echo $val[&#x27;user_file_name&#x27;];?&gt;&lt;/a&gt;
+						&lt;/div&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][user_file_name]&quot; value=&quot;&lt;?php echo $val[&#x27;user_file_name&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_name]&quot; value=&quot;&lt;?php echo $val[&#x27;file_name&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_path]&quot; value=&quot;&lt;?php echo $val[&#x27;file_path&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][file_url]&quot; value=&quot;&lt;?php echo $val[&#x27;file_url&#x27;];?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][complete]&quot; value=&quot;&lt;?php echo $complete;?&gt;&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][changed]&quot; value=&quot;0&quot;&gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;_upload_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;][upload_id]&quot; value=&quot;&lt;?php echo $upload_id;?&gt;&quot;&gt;
+					&lt;/li&gt;
+					&lt;li&gt;
+						&lt;?php
+
+						_e( &#x27;Change Upload&#x27;, &#x27;ninja-forms-uploads&#x27; );
+						echo &#x27;:&#x27;;
+						?&gt;
+
+
+						&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&lt;?php echo $max_filesize;?&gt;&quot;&gt;
+						&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $upload_multi;?&gt;&quot; maxlength=&quot;&lt;?php echo $upload_multi_count;?&gt;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+						&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[&lt;?php echo $key;?&gt;]&quot; value=&quot;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+					&lt;/li&gt;
+					&lt;?php
+				}
+				?&gt;
+				&lt;/ul&gt;
+				&lt;?php
+			}
+		}
+	}else{
+		?&gt;
+
+		&lt;input type=&quot;hidden&quot; name=&quot;MAX_FILE_SIZE&quot; value=&quot;&lt;?php echo $max_filesize;?&gt;&quot;&gt;
+		&lt;input type=&quot;file&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[new][]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $upload_multi;?&gt;&quot; maxlength=&quot;&lt;?php echo $upload_multi_count;?&gt;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[new][]&quot; value=&quot;&quot;  rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[]&quot; value=&quot;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+		&lt;?php
+	}
+}
+
+/**
+ * Output our field on the edit submission page
+ *
+ * @since 1.3.4
+ * @return void
+ */
+function nf_field_upload_edit_sub_value( $field_id, $user_value ) {
+	if ( is_array ( $user_value ) &amp;&amp; ! empty ( $user_value ) ) {
+		$user_value = NF_File_Uploads()-&gt;normalize_submission_value( $user_value );
+		foreach ( $user_value as $key =&gt; $file ) {
+			$file_url = ninja_forms_upload_file_url( $file );
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][user_file_name]&quot; value=&quot;&lt;?php echo $file[&#x27;user_file_name&#x27;];?&gt;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][file_name]&quot; value=&quot;&lt;?php echo $file[&#x27;file_name&#x27;];?&gt;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][file_path]&quot; value=&quot;&lt;?php echo $file[&#x27;file_path&#x27;];?&gt;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][complete]&quot; value=&quot;&lt;?php echo $file[&#x27;complete&#x27;];?&gt;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][changed]&quot; value=&quot;0&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][upload_id]&quot; value=&quot;&lt;?php echo $file[&#x27;upload_id&#x27;];?&gt;&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][file_url]&quot; value=&quot;&lt;?php echo $file[&#x27;file_url&#x27;];?&gt;&quot;&gt;
+			&lt;?php if( isset( $file[&#x27;upload_location&#x27;] ) ) : ?&gt;
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][upload_location]&quot; value=&quot;&lt;?php echo $file[&#x27;upload_location&#x27;];?&gt;&quot;&gt;
+			&lt;?php endif; ?&gt;
+			&lt;?php if( isset( $file[&#x27;external_path&#x27;] ) ) : ?&gt;
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][external_path]&quot; value=&quot;&lt;?php echo $file[&#x27;external_path&#x27;];?&gt;&quot;&gt;
+			&lt;?php endif; ?&gt;
+			&lt;?php if( isset( $file[&#x27;external_filename&#x27;] ) ) : ?&gt;
+				&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][&lt;?php echo $key;?&gt;][external_filename]&quot; value=&quot;&lt;?php echo $file[&#x27;external_filename&#x27;];?&gt;&quot;&gt;
+			&lt;?php endif; ?&gt;
+
+			&lt;a href=&quot;&lt;?php echo $file_url; ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php _e( &#x27;View&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt; &lt;input type=&quot;text&quot; value=&quot;&lt;?php echo $file_url; ?&gt;&quot;&gt;
+			&lt;br /&gt;
+			&lt;?php
+		}
+	}
+}
+
+/**
+ * Filter the user value for editing submissions with a file upload field.
+ *
+ * @since 1.3.4
+ * @return array $user_value
+ */
+function nf_field_upload_filter_edit_sub_value( $user_value, $field_id, $sub_id ) {
+	$form_id = Ninja_Forms()-&gt;sub( $sub_id )-&gt;form_id;
+	if ( isset ( Ninja_Forms()-&gt;form( $form_id )-&gt;fields[ $field_id ][&#x27;type&#x27;] ) &amp;&amp; Ninja_Forms()-&gt;form( $form_id )-&gt;fields[ $field_id ][&#x27;type&#x27;] == &#x27;_upload&#x27; ) {
+		if ( is_array ( $user_value ) ) {
+			$user_value = NF_File_Uploads()-&gt;normalize_submission_value( $user_value );
+				foreach ( $user_value as $key =&gt; $file ) {
+				if ( empty ( $user_value[ $key ][&#x27;file_url&#x27;] ) ) {
+					unset ( $user_value[ $key ] );
+				}
+			}
+		}
+	}
+
+	return $user_value;
+}
+
+add_filter( &#x27;nf_edit_sub_user_value&#x27;, &#x27;nf_field_upload_filter_edit_sub_value&#x27;, 10, 3 );
+
+/**
+ * Filter the user value for the submissions table.
+ *
+ * @since 1.3.4
+ * @return void
+ */
+function nf_field_upload_sub_table_value( $field_id, $user_value, $field ) {
+	if ( $field[&#x27;type&#x27;] == &#x27;_upload&#x27; ) {
+		if ( is_array ( $user_value ) &amp;&amp; ! empty ( $user_value ) ) {
+			$x = 0;
+			$user_value = NF_File_Uploads()-&gt;normalize_submission_value( $user_value );
+			foreach ( $user_value as $key =&gt; $file ) {
+				if ( $x &gt; 4 ) {
+					break;
+				}
+				$file_url = ninja_forms_upload_file_url( $file );
+				if ( isset ( $file[&#x27;file_url&#x27;] ) ) {
+					?&gt;
+					&lt;a href=&quot;&lt;?php echo $file_url; ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php echo basename( $file[&#x27;file_url&#x27;] ); ?&gt;&lt;/a&gt;
+					&lt;br /&gt;
+					&lt;?php					
+				}
+
+				$x++;
+			}
+		}
+	}
+}
+
+/**
+ * Filter our submission editing table if we are using the front-end editor extension
+ *
+ * @since 1.3.4
+ * @return string $link
+ */
+function nf_field_upload_fee_sub_table( $user_value, $field_id, $field_row ) {
+	if ( $field_row[&#x27;type&#x27;] == &#x27;_upload&#x27; ) {
+		if ( is_array ( $user_value ) &amp;&amp; ! empty ( $user_value ) ) {
+			$x = 0;
+			$return = &#x27;&#x27;;
+			foreach ( $user_value as $key =&gt; $file ) {
+				if ( $x &gt; 4 ) {
+					break;
+				}
+				$file_url = ninja_forms_upload_file_url( $file );
+				$return .= &#x27;&lt;a href=&quot;&#x27; . $file_url . &#x27;&quot; target=&quot;_blank&quot;&gt;&#x27; . basename( $file[&#x27;file_url&#x27;] ) . &#x27;&lt;/a&gt;&lt;br /&gt;&#x27;;
+				$x++;
+			}
+			$user_value = $return;
+		}
+	}
+	
+	return $user_value;
+}
+
+add_filter( &#x27;nf_edit_sub_table_value&#x27;, &#x27;nf_field_upload_fee_sub_table&#x27;, 10, 3 );</pre></details></body></html>

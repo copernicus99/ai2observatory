@@ -1,0 +1,95 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Collection.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Collection.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class AC_Collection
+ *
+ * Used to hold values from the same type
+ */
+class AC_Collection
+	implements Iterator {
+
+	/**
+	 * @var array
+	 */
+	protected $items;
+
+	public function __construct( array $items = array() ) {
+		$this-&gt;items = $items;
+	}
+
+	public function all() {
+		return $this-&gt;items;
+	}
+
+	public function has( $key ) {
+		return isset( $this-&gt;items[ $key ] );
+	}
+
+	public function put( $key, $value ) {
+		$this-&gt;items[ $key ] = $value;
+
+		return $this;
+	}
+
+	public function push( $value ) {
+		$this-&gt;items[] = $value;
+	}
+
+	public function get( $key, $default = null ) {
+		if ( $this-&gt;has( $key ) ) {
+			return $this-&gt;items[ $key ];
+		}
+
+		return $default;
+	}
+
+	public function __get( $key ) {
+		return $this-&gt;get( $key );
+	}
+
+	public function rewind() {
+		reset( $this-&gt;items );
+	}
+
+	public function current() {
+		return current( $this-&gt;items );
+	}
+
+	public function key() {
+		return key( $this-&gt;items );
+	}
+
+	public function next() {
+		return next( $this-&gt;items );
+	}
+
+	public function valid() {
+		$key = $this-&gt;key();
+
+		return ( $key !== null &amp;&amp; $key !== false );
+	}
+
+	/**
+	 * Filter collection items
+	 *
+	 * @return AC_Collection
+	 */
+	public function filter() {
+		return new AC_Collection( ac_helper()-&gt;array-&gt;filter( $this-&gt;items ) );
+	}
+
+	/**
+	 * @param string $glue
+	 *
+	 * @return string
+	 */
+	public function implode( $glue = &#x27;&#x27; ) {
+		return implode( $glue, $this-&gt;items );
+	}
+
+}
+</pre></details></body></html>

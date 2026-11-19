@@ -1,0 +1,299 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/EDD_SL_Plugin_Updater.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/EDD_SL_Plugin_Updater.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+// uncomment this line for testing
+//set_site_transient( &#x27;update_plugins&#x27;, null );
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Allows plugins to use their own update API.
+ *
+ * @author Pippin Williamson
+ * @version 1.6.5
+ */
+class EDD_SL_Plugin_Updater {
+    private $api_url     = &#x27;&#x27;;
+    private $api_data    = array();
+    private $name        = &#x27;&#x27;;
+    private $slug        = &#x27;&#x27;;
+    private $version     = &#x27;&#x27;;
+    private $wp_override = false;
+    /**
+     * Class constructor.
+     *
+     * @uses plugin_basename()
+     * @uses hook()
+     *
+     * @param string  $_api_url     The URL pointing to the custom API endpoint.
+     * @param string  $_plugin_file Path to the plugin file.
+     * @param array   $_api_data    Optional data to send with API calls.
+     */
+    public function __construct( $_api_url, $_plugin_file, $_api_data = null ) {
+        global $edd_plugin_data;
+        $this-&gt;api_url     = trailingslashit( $_api_url );
+        $this-&gt;api_data    = $_api_data;
+        $this-&gt;name        = plugin_basename( $_plugin_file );
+        $this-&gt;slug        = basename( $_plugin_file, &#x27;.php&#x27; );
+        $this-&gt;version     = $_api_data[&#x27;version&#x27;];
+        $this-&gt;wp_override = isset( $_api_data[&#x27;wp_override&#x27;] ) ? (bool) $_api_data[&#x27;wp_override&#x27;] : false;
+        $edd_plugin_data[ $this-&gt;slug ] = $this-&gt;api_data;
+        // Set up hooks.
+        $this-&gt;init();
+    }
+    /**
+     * Set up WordPress filters to hook into WP&#x27;s update process.
+     *
+     * @uses add_filter()
+     *
+     * @return void
+     */
+    public function init() {
+        add_filter( &#x27;pre_set_site_transient_update_plugins&#x27;, array( $this, &#x27;check_update&#x27; ) );
+        add_filter( &#x27;plugins_api&#x27;, array( $this, &#x27;plugins_api_filter&#x27; ), 10, 3 );
+        remove_action( &#x27;after_plugin_row_&#x27; . $this-&gt;name, &#x27;wp_plugin_update_row&#x27;, 10 );
+        add_action( &#x27;after_plugin_row_&#x27; . $this-&gt;name, array( $this, &#x27;show_update_notification&#x27; ), 10, 2 );
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;show_changelog&#x27; ) );
+    }
+    /**
+     * Check for Updates at the defined API endpoint and modify the update array.
+     *
+     * This function dives into the update API just when WordPress creates its update array,
+     * then adds a custom API call and injects the custom plugin data retrieved from the API.
+     * It is reassembled from parts of the native WordPress plugin update code.
+     * See wp-includes/update.php line 121 for the original wp_update_plugins() function.
+     *
+     * @uses api_request()
+     *
+     * @param array   $_transient_data Update array build by WordPress.
+     * @return array Modified update array with custom plugin data.
+     */
+    public function check_update( $_transient_data ) {
+        global $pagenow;
+        if ( ! is_object( $_transient_data ) ) {
+            $_transient_data = new stdClass;
+        }
+        if ( &#x27;plugins.php&#x27; == $pagenow &amp;&amp; is_multisite() ) {
+            return $_transient_data;
+        }
+        if ( ! empty( $_transient_data-&gt;response ) &amp;&amp; ! empty( $_transient_data-&gt;response[ $this-&gt;name ] ) &amp;&amp; false === $this-&gt;wp_override ) {
+            return $_transient_data;
+        }
+        $version_info = $this-&gt;api_request( &#x27;plugin_latest_version&#x27;, array( &#x27;slug&#x27; =&gt; $this-&gt;slug ) );
+        if ( false !== $version_info &amp;&amp; is_object( $version_info ) &amp;&amp; isset( $version_info-&gt;new_version ) ) {
+            if ( version_compare( $this-&gt;version, $version_info-&gt;new_version, &#x27;&lt;&#x27; ) ) {
+                $_transient_data-&gt;response[ $this-&gt;name ] = $version_info;
+            }
+            $_transient_data-&gt;last_checked           = current_time( &#x27;timestamp&#x27; );
+            $_transient_data-&gt;checked[ $this-&gt;name ] = $this-&gt;version;
+        }
+        return $_transient_data;
+    }
+    /**
+     * show update nofication row -- needed for multisite subsites, because WP won&#x27;t tell you otherwise!
+     *
+     * @param string  $file
+     * @param array   $plugin
+     */
+    public function show_update_notification( $file, $plugin ) {
+        if ( is_network_admin() ) {
+            return;
+        }
+        if( ! current_user_can( &#x27;update_plugins&#x27; ) ) {
+            return;
+        }
+        if( ! is_multisite() ) {
+            return;
+        }
+        if ( $this-&gt;name != $file ) {
+            return;
+        }
+        // Remove our filter on the site transient
+        remove_filter( &#x27;pre_set_site_transient_update_plugins&#x27;, array( $this, &#x27;check_update&#x27; ), 10 );
+        $update_cache = get_site_transient( &#x27;update_plugins&#x27; );
+        $update_cache = is_object( $update_cache ) ? $update_cache : new stdClass();
+        if ( empty( $update_cache-&gt;response ) || empty( $update_cache-&gt;response[ $this-&gt;name ] ) ) {
+            $cache_key    = md5( &#x27;edd_plugin_&#x27; . sanitize_key( $this-&gt;name ) . &#x27;_version_info&#x27; );
+            $version_info = get_transient( $cache_key );
+            if( false === $version_info ) {
+                $version_info = $this-&gt;api_request( &#x27;plugin_latest_version&#x27;, array( &#x27;slug&#x27; =&gt; $this-&gt;slug ) );
+                set_transient( $cache_key, $version_info, 3600 );
+            }
+            if( ! is_object( $version_info ) ) {
+                return;
+            }
+            if( version_compare( $this-&gt;version, $version_info-&gt;new_version, &#x27;&lt;&#x27; ) ) {
+                $update_cache-&gt;response[ $this-&gt;name ] = $version_info;
+            }
+            $update_cache-&gt;last_checked = current_time( &#x27;timestamp&#x27; );
+            $update_cache-&gt;checked[ $this-&gt;name ] = $this-&gt;version;
+            set_site_transient( &#x27;update_plugins&#x27;, $update_cache );
+        } else {
+            $version_info = $update_cache-&gt;response[ $this-&gt;name ];
+        }
+        // Restore our filter
+        add_filter( &#x27;pre_set_site_transient_update_plugins&#x27;, array( $this, &#x27;check_update&#x27; ) );
+        if ( ! empty( $update_cache-&gt;response[ $this-&gt;name ] ) &amp;&amp; version_compare( $this-&gt;version, $version_info-&gt;new_version, &#x27;&lt;&#x27; ) ) {
+            // build a plugin list row, with update notification
+            $wp_list_table = _get_list_table( &#x27;WP_Plugins_List_Table&#x27; );
+            # &lt;tr class=&quot;plugin-update-tr&quot;&gt;&lt;td colspan=&quot;&#x27; . $wp_list_table-&gt;get_column_count() . &#x27;&quot; class=&quot;plugin-update colspanchange&quot;&gt;
+            echo &#x27;&lt;tr class=&quot;plugin-update-tr&quot; id=&quot;&#x27; . $this-&gt;slug . &#x27;-update&quot; data-slug=&quot;&#x27; . $this-&gt;slug . &#x27;&quot; data-plugin=&quot;&#x27; . $this-&gt;slug . &#x27;/&#x27; . $file . &#x27;&quot;&gt;&#x27;;
+            echo &#x27;&lt;td colspan=&quot;3&quot; class=&quot;plugin-update colspanchange&quot;&gt;&#x27;;
+            echo &#x27;&lt;div class=&quot;update-message notice inline notice-warning notice-alt&quot;&gt;&#x27;;
+            $changelog_link = self_admin_url( &#x27;index.php?edd_sl_action=view_plugin_changelog&amp;plugin=&#x27; . $this-&gt;name . &#x27;&amp;slug=&#x27; . $this-&gt;slug . &#x27;&amp;TB_iframe=true&amp;width=772&amp;height=911&#x27; );
+            if ( empty( $version_info-&gt;download_link ) ) {
+                printf(
+                    __( &#x27;There is a new version of %1$s available. %2$sView version %3$s details%4$s.&#x27;, &#x27;easy-digital-downloads&#x27; ),
+                    esc_html( $version_info-&gt;name ),
+                    &#x27;&lt;a target=&quot;_blank&quot; class=&quot;thickbox&quot; href=&quot;&#x27; . esc_url( $changelog_link ) . &#x27;&quot;&gt;&#x27;,
+                    esc_html( $version_info-&gt;new_version ),
+                    &#x27;&lt;/a&gt;&#x27;
+                );
+            } else {
+                printf(
+                    __( &#x27;There is a new version of %1$s available. %2$sView version %3$s details%4$s or %5$supdate now%6$s.&#x27;, &#x27;easy-digital-downloads&#x27; ),
+                    esc_html( $version_info-&gt;name ),
+                    &#x27;&lt;a target=&quot;_blank&quot; class=&quot;thickbox&quot; href=&quot;&#x27; . esc_url( $changelog_link ) . &#x27;&quot;&gt;&#x27;,
+                    esc_html( $version_info-&gt;new_version ),
+                    &#x27;&lt;/a&gt;&#x27;,
+                    &#x27;&lt;a href=&quot;&#x27; . esc_url( wp_nonce_url( self_admin_url( &#x27;update.php?action=upgrade-plugin&amp;plugin=&#x27; ) . $this-&gt;name, &#x27;upgrade-plugin_&#x27; . $this-&gt;name ) ) .&#x27;&quot;&gt;&#x27;,
+                    &#x27;&lt;/a&gt;&#x27;
+                );
+            }
+            do_action( &quot;in_plugin_update_message-{$file}&quot;, $plugin, $version_info );
+            echo &#x27;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&#x27;;
+        }
+    }
+    /**
+     * Updates information on the &quot;View version x.x details&quot; page with custom data.
+     *
+     * @uses api_request()
+     *
+     * @param mixed   $_data
+     * @param string  $_action
+     * @param object  $_args
+     * @return object $_data
+     */
+    public function plugins_api_filter( $_data, $_action = &#x27;&#x27;, $_args = null ) {
+        if ( $_action != &#x27;plugin_information&#x27; ) {
+            return $_data;
+        }
+        if ( ! isset( $_args-&gt;slug ) || ( $_args-&gt;slug != $this-&gt;slug ) ) {
+            return $_data;
+        }
+        $to_send = array(
+            &#x27;slug&#x27;   =&gt; $this-&gt;slug,
+            &#x27;is_ssl&#x27; =&gt; is_ssl(),
+            &#x27;fields&#x27; =&gt; array(
+                &#x27;banners&#x27; =&gt; false, // These will be supported soon hopefully
+                &#x27;reviews&#x27; =&gt; false
+            )
+        );
+        $cache_key = &#x27;edd_api_request_&#x27; . substr( md5( serialize( $this-&gt;slug ) ), 0, 15 );
+        //Get the transient where we store the api request for this plugin for 24 hours
+        $edd_api_request_transient = get_site_transient( $cache_key );
+        //If we have no transient-saved value, run the API, set a fresh transient with the API value, and return that value too right now.
+        if ( empty( $edd_api_request_transient ) ){
+            $api_response = $this-&gt;api_request( &#x27;plugin_information&#x27;, $to_send );
+            //Expires in 1 day
+            set_site_transient( $cache_key, $api_response, DAY_IN_SECONDS );
+            if ( false !== $api_response ) {
+                $_data = $api_response;
+            }
+        }
+        return $_data;
+    }
+    /**
+     * Disable SSL verification in order to prevent download update failures
+     *
+     * @param array   $args
+     * @param string  $url
+     * @return object $array
+     */
+    public function http_request_args( $args, $url ) {
+        // If it is an https request and we are performing a package download, disable ssl verification
+        if ( strpos( $url, &#x27;https://&#x27; ) !== false &amp;&amp; strpos( $url, &#x27;edd_action=package_download&#x27; ) ) {
+            $args[&#x27;sslverify&#x27;] = false;
+        }
+        return $args;
+    }
+    /**
+     * Calls the API and, if successfull, returns the object delivered by the API.
+     *
+     * @uses get_bloginfo()
+     * @uses wp_remote_post()
+     * @uses is_wp_error()
+     *
+     * @param string  $_action The requested action.
+     * @param array   $_data   Parameters for the API action.
+     * @return false|object
+     */
+    private function api_request( $_action, $_data ) {
+        global $wp_version;
+        $data = array_merge( $this-&gt;api_data, $_data );
+        if ( $data[&#x27;slug&#x27;] != $this-&gt;slug ) {
+            return;
+        }
+        if( $this-&gt;api_url == trailingslashit (home_url() ) ) {
+            return false; // Don&#x27;t allow a plugin to ping itself
+        }
+        $api_params = array(
+            &#x27;edd_action&#x27; =&gt; &#x27;get_version&#x27;,
+            &#x27;license&#x27;    =&gt; ! empty( $data[&#x27;license&#x27;] ) ? $data[&#x27;license&#x27;] : &#x27;&#x27;,
+            &#x27;item_name&#x27;  =&gt; isset( $data[&#x27;item_name&#x27;] ) ? $data[&#x27;item_name&#x27;] : false,
+            &#x27;item_id&#x27;    =&gt; isset( $data[&#x27;item_id&#x27;] ) ? $data[&#x27;item_id&#x27;] : false,
+            &#x27;slug&#x27;       =&gt; $data[&#x27;slug&#x27;],
+            &#x27;author&#x27;     =&gt; $data[&#x27;author&#x27;],
+            &#x27;url&#x27;        =&gt; home_url()
+        );
+        $request = wp_remote_post( $this-&gt;api_url, array( &#x27;timeout&#x27; =&gt; 15, &#x27;sslverify&#x27; =&gt; false, &#x27;body&#x27; =&gt; $api_params ) );
+        if ( ! is_wp_error( $request ) ) {
+            $request = json_decode( wp_remote_retrieve_body( $request ) );
+        }
+        if ( $request &amp;&amp; isset( $request-&gt;sections ) ) {
+            $request-&gt;sections = maybe_unserialize( $request-&gt;sections );
+        } else {
+            $request = false;
+        }
+        return $request;
+    }
+    public function show_changelog() {
+        global $edd_plugin_data;
+        if( empty( $_REQUEST[&#x27;edd_sl_action&#x27;] ) || &#x27;view_plugin_changelog&#x27; != $_REQUEST[&#x27;edd_sl_action&#x27;] ) {
+            return;
+        }
+        if( empty( $_REQUEST[&#x27;plugin&#x27;] ) ) {
+            return;
+        }
+        if( empty( $_REQUEST[&#x27;slug&#x27;] ) ) {
+            return;
+        }
+        if( ! current_user_can( &#x27;update_plugins&#x27; ) ) {
+            wp_die( __( &#x27;You do not have permission to install plugin updates&#x27;, &#x27;easy-digital-downloads&#x27; ), __( &#x27;Error&#x27;, &#x27;easy-digital-downloads&#x27; ), array( &#x27;response&#x27; =&gt; 403 ) );
+        }
+        $data         = $edd_plugin_data[ $_REQUEST[&#x27;slug&#x27;] ];
+        $cache_key    = md5( &#x27;edd_plugin_&#x27; . sanitize_key( $_REQUEST[&#x27;plugin&#x27;] ) . &#x27;_version_info&#x27; );
+        $version_info = get_transient( $cache_key );
+        if( false === $version_info ) {
+            $api_params = array(
+                &#x27;edd_action&#x27; =&gt; &#x27;get_version&#x27;,
+                &#x27;item_name&#x27;  =&gt; isset( $data[&#x27;item_name&#x27;] ) ? $data[&#x27;item_name&#x27;] : false,
+                &#x27;item_id&#x27;    =&gt; isset( $data[&#x27;item_id&#x27;] ) ? $data[&#x27;item_id&#x27;] : false,
+                &#x27;slug&#x27;       =&gt; $_REQUEST[&#x27;slug&#x27;],
+                &#x27;author&#x27;     =&gt; $data[&#x27;author&#x27;],
+                &#x27;url&#x27;        =&gt; home_url()
+            );
+            $request = wp_remote_post( $this-&gt;api_url, array( &#x27;timeout&#x27; =&gt; 15, &#x27;sslverify&#x27; =&gt; false, &#x27;body&#x27; =&gt; $api_params ) );
+            if ( ! is_wp_error( $request ) ) {
+                $version_info = json_decode( wp_remote_retrieve_body( $request ) );
+            }
+            if ( ! empty( $version_info ) &amp;&amp; isset( $version_info-&gt;sections ) ) {
+                $version_info-&gt;sections = maybe_unserialize( $version_info-&gt;sections );
+            } else {
+                $version_info = false;
+            }
+            set_transient( $cache_key, $version_info, 3600 );
+        }
+        if( ! empty( $version_info ) &amp;&amp; isset( $version_info-&gt;sections[&#x27;changelog&#x27;] ) ) {
+            echo &#x27;&lt;div style=&quot;background:#fff;padding:10px;&quot;&gt;&#x27; . $version_info-&gt;sections[&#x27;changelog&#x27;] . &#x27;&lt;/div&gt;&#x27;;
+        }
+        exit;
+    }
+}</pre></details></body></html>

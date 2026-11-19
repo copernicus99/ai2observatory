@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/PluginSettingsAdvanced.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/PluginSettingsAdvanced.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_plugin_settings_advanced&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete on Uninstall
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;delete_on_uninstall&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;delete_on_uninstall&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;html&#x27;,
+        &#x27;html&#x27;  =&gt; &#x27;&lt;button type=&quot;button&quot; id=&quot;delete_on_uninstall&quot; href=&quot;&quot; class=&quot;button&quot;&gt;&#x27; .
+                   __(	&#x27;Delete All Data&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/button&gt;&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Remove ALL Ninja Forms data upon uninstall?&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; sprintf( __( &#x27;If this button is checked, ALL Ninja Forms data will be removed from the database and the Ninja Forms plug-in will be deactivated. %sAll form and submission data will be unrecoverable.%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;span class=&quot;nf-nuke-warning&quot;&gt;&#x27;, &#x27;&lt;/span&gt;&#x27; ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Prompt for Delete on Uninstall
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;delete_prompt&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;delete_prompt&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;prompt&#x27;,
+        &#x27;desc&#x27;  =&gt; __( &#x27;This setting will COMPLETELY remove anything Ninja Forms related upon plugin deletion. This includes SUBMISSIONS and FORMS. It cannot be undone.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Disable Admin Notices
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;disable_admin_notices&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;disable_admin_notices&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;checkbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Disable Admin Notices&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; __( &#x27;Never see an admin notice on the dashboard from Ninja Forms. Uncheck to see them again.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     |--------------------------------------------------------------------------
+     | Tracking Opt-in
+     |--------------------------------------------------------------------------
+     */
+
+    &#x27;allow_tracking&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;allow_tracking&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;checkbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Allow Tracking&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; __( &#x27;If you opt-in, some data about your installation of Ninja Forms will be sent to NinjaForms.com (this does NOT include your submissions).&#x27;, &#x27;ninja-forms&#x27; )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Opinionated Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;opinionated_styles&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;opinionated_styles&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Opinionated Styles&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;None&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Light&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;light&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Dark&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;dark&#x27;,
+            ),
+        ),
+        &#x27;desc&#x27;  =&gt; __( &#x27;Use default Ninja Forms styling conventions.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;value&#x27; =&gt; &#x27;&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rollback to v2.9.x
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;rollback&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;rollback&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;html&#x27;,
+        &#x27;html&#x27; =&gt; &#x27;&lt;a id=&quot;nfRollback&quot; href=&quot;&#x27; . admin_url( &#x27;admin.php?page=ninja-forms&amp;nf-switcher=rollback&#x27; ) . &#x27;&quot; class=&quot;button&quot;&gt;&#x27; . __( &#x27;Rollback&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Rollback to v2.9.x&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; __( &#x27;Rollback to the most recent 2.9.x release.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&lt;div style=&quot;color: red&quot;&gt;&#x27; . __( &#x27;IMPORTANT: All 3.0 data will be removed.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&#x27; . __( &#x27;Please export any forms or submissions you do not want to be lost during this process.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/div&gt;&#x27;,
+    ),
+
+));
+</pre></details></body></html>

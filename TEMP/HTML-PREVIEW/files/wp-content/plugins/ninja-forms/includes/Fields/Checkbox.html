@@ -1,0 +1,176 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/Checkbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/Checkbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_Checkbox
+ */
+class NF_Fields_Checkbox extends NF_Abstracts_Input
+{
+    protected $_name = &#x27;checkbox&#x27;;
+
+    protected $_nicename = &#x27;Checkbox&#x27;;
+
+    protected $_section = &#x27;common&#x27;;
+
+    protected $_icon = &#x27;check-square-o&#x27;;
+
+    protected $_type = &#x27;checkbox&#x27;;
+
+    protected $_templates = &#x27;checkbox&#x27;;
+
+    protected $_test_value = 0;
+
+    protected $_settings =  array( &#x27;checkbox_default_value&#x27;, &#x27;checkbox_values&#x27;, &#x27;checked_calc_value&#x27;, &#x27;unchecked_calc_value&#x27; );
+
+    protected $_settings_exclude = array( &#x27;default&#x27;, &#x27;placeholder&#x27;, &#x27;input_limit_set&#x27; );
+
+    /**
+     * NF_Fields_Checkbox constructor.
+     * @since 3.0
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Single Checkbox&#x27;, &#x27;ninja-forms&#x27; );
+
+        $this-&gt;_settings[ &#x27;label_pos&#x27; ][ &#x27;value&#x27; ] = &#x27;right&#x27;;
+
+        add_filter( &#x27;ninja_forms_custom_columns&#x27;, array( $this, &#x27;custom_columns&#x27; ), 10, 2 );
+
+        add_filter( &#x27;ninja_forms_merge_tag_value_&#x27; . $this-&gt;_name, array( $this, &#x27;filter_merge_tag_value&#x27; ), 10, 2 );
+        add_filter( &#x27;ninja_forms_merge_tag_calc_value_&#x27; . $this-&gt;_name, array( $this, &#x27;filter_merge_tag_value_calc&#x27; ), 10, 2 );
+        add_filter( &#x27;ninja_forms_subs_export_field_value_&#x27; . $this-&gt;_type, array( $this, &#x27;export_value&#x27; ), 10, 2 );
+    }
+
+    /**
+     * Admin Form Element
+     * Display the checkbox on the edit submissions area.
+     * @since 3.0
+     *
+     * @param $id Field ID.
+     * @param $value Field value.
+     * @return string HTML used for display of checkbox.
+     */
+    public function admin_form_element( $id, $value )
+    {
+        // If the checkboxes value is 1 or on...
+        if( &#x27;on&#x27; == $value || 1 == $value ) {
+            // ...this variable to checked.
+            $checked = &#x27;checked&#x27;;
+        } else {
+            // ...else leave the variable empty.
+            $checked = &#x27;&#x27;;
+        }
+
+        // Return HTML to be output to the submission edit page.
+        return &quot;&lt;input type=&#x27;hidden&#x27; name=&#x27;fields[$id]&#x27; value=&#x27;0&#x27; &gt;
+                &lt;input type=&#x27;checkbox&#x27; name=&#x27;fields[$id]&#x27; id=&#x27;&#x27; $checked&gt;&quot;;
+    }
+
+    /**
+     * Custom Columns
+     * Creates what is displayed in the columns on the submissions page.
+     * @since 3.0
+     *
+     * @param $value checkbox value
+     * @param $field field model.
+     * @return $value string|void
+     */
+    public function custom_columns( $value, $field )
+    {
+        // If the field type is equal to checkbox...
+        if( &#x27;checkbox&#x27; == $field-&gt;get_setting( &#x27;type&#x27; ) ) {
+            // Backwards compatibility check for the new checked value setting.
+            if( null == $field-&gt;get_setting( &#x27;checked_value&#x27; ) &amp;&amp; 1 == $value || &#x27;on&#x27; == $value ) {
+                return __( &#x27;Checked&#x27;, &#x27;ninja-forms&#x27; );
+            } elseif( null == $field-&gt;get_setting( &#x27;unchecked_value&#x27; ) &amp;&amp; 0 == $value ) {
+                return __( &#x27;Unchecked&#x27;, &#x27;ninja-forms&#x27;);
+            }
+
+            // If the field value is set to 1....
+            if( 1 == $value || &#x27;on&#x27; == $value) {
+                // Set the value to the checked value setting.
+                $value = $field-&gt;get_setting( &#x27;checked_value&#x27; );
+            } else {
+                // Else set the value to the unchecked value setting.
+                $value = $field-&gt;get_setting( &#x27;unchecked_value&#x27; );
+            }
+        }
+        return $value;
+    }
+
+    /**
+     * Filter Merge Tag Value
+     * This is what provides the merge tag with the fields value.
+     * @since 3.0
+     *
+     * @param $value Field value
+     * @param $field field model
+     * @return string|void
+     */
+    public function filter_merge_tag_value( $value, $field )
+    {
+        // If value is true, return checked value setting.
+        if( $value ) return $field[ &#x27;settings&#x27; ][ &#x27;checked_value&#x27; ];
+        // Else return unchecked value setting.
+        return $field[ &#x27;settings&#x27; ][ &#x27;unchecked_value&#x27; ];;
+    }
+
+    /**
+     * Filter Merge Tag Value Calc
+     * Provides the calculation value when the merge tag is used.
+     * @since 3.0
+     *
+     * @param $value checkbox value
+     * @param $field field model
+     * @return $field
+     */
+    public function filter_merge_tag_value_calc( $value, $field )
+    {
+        // If value is equal to 1...
+        if ( 1 == $value ) {
+            // ...return the checked calc value of the field model.
+            return $field[ &#x27;checked_calc_value&#x27; ];
+        } else {
+            // ...else return the unchecked calc value of the field model.
+            return $field[ &#x27;unchecked_calc_value&#x27; ];
+        }
+    }
+
+    /**
+     * Export Value
+     * Determines the value to send to submission export.
+     * @since 3.0
+     *
+     * @param $value checkbox field value
+     * @param $field checkbox field model
+     * @return string|void
+     */
+    public function export_value( $value, $field )
+    {
+        // If value is equal to checked or unchecked return the value
+        if ( __( &#x27;checked&#x27;, &#x27;ninja-forms&#x27; ) == $value ||
+            __( &#x27;unchecked&#x27;, &#x27;ninja-forms&#x27; ) == $value ) return $value;
+
+        // Creating settings variables for our check.
+        $checked_setting    = $field-&gt;get_setting( &#x27;checked_value&#x27; );
+        $unchecked_setting  = $field-&gt;get_setting( &#x27;unchecked_value&#x27; );
+
+        // If the the value and check to see if we have checked and unchecked settings...
+        if ( 1 == $value &amp;&amp; ! empty( $checked_setting ) ) {
+            // ...if we do return checked setting
+            return $checked_setting;
+        } elseif ( 0 == $value &amp;&amp; ! empty( $unchecked_setting ) ) {
+            // ...else return unchecked setting.
+            return $unchecked_setting;
+        /*
+         * These checks are for checkbox fields that were created before version 3.2.7.
+         */
+        } elseif ( 1 == $value  ) {
+            return __( &#x27;checked&#x27;, &#x27;ninja-forms&#x27; );
+        } elseif ( 0 == $value ) {
+            return __( &#x27;unchecked&#x27;, &#x27;ninja-forms&#x27; );
+        }
+    }
+}
+</pre></details></body></html>

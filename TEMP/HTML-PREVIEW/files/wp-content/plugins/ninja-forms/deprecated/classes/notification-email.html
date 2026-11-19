@@ -1,0 +1,508 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/notification-email.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/notification-email.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-from_name&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[from_name]&quot; type=&quot;text&quot; id=&quot;settings-from_name&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;0&quot; data-key=&quot;from_name&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-from_address&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[from_address]&quot; type=&quot;text&quot; id=&quot;settings-from_address&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;1&quot; data-key=&quot;from_address&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-to&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[to]&quot; type=&quot;text&quot; id=&quot;settings-to&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;0&quot; data-key=&quot;to&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_subject&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[email_subject]&quot; type=&quot;text&quot; id=&quot;settings-email_subject&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;0&quot; data-key=&quot;email_subject&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_message&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-attachments&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;ul&gt;
+					
+						&lt;li&gt;
+							&lt;input name=&quot;settings[]&quot; type=&quot;hidden&quot; value=&quot;0&quot;&gt;
+							&lt;input name=&quot;settings[]&quot; type=&quot;checkbox&quot; id=&quot;settings-&quot; value=&quot;1&quot; /&gt;
+							&lt;label for=&quot;settings-&quot;&gt;&lt;/label&gt;
+						&lt;/li&gt;
+
+						
+				&lt;/ul&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;a href=&quot;#&quot; id=&quot;toggle_email_advanced&quot;&gt;&lt;/a&gt;&lt;/th&gt;
+		&lt;/tr&gt;
+		&lt;tbody id=&quot;email_advanced&quot; style=&quot;display:none;&quot;&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_format&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;select name=&quot;settings[email_format]&quot; id=&quot;settings-email_format&quot; data-key=&quot;email_format&quot;/&gt;
+						&lt;option value=&quot;html&quot; &gt;&lt;/option&gt;
+						&lt;option value=&quot;plain&quot; &gt;&lt;/option&gt;
+					&lt;/select&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-reply_to&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[reply_to]&quot; type=&quot;text&quot; id=&quot;settings-reply_to&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;1&quot; data-key=&quot;reply_to&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-cc&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[cc]&quot; type=&quot;text&quot; id=&quot;settings-cc&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;0&quot; data-key=&quot;cc&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-bcc&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[bcc]&quot; type=&quot;text&quot; id=&quot;settings-bcc&quot; value=&quot;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&quot; data-token-limit=&quot;0&quot; data-key=&quot;bcc&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/tbody&gt;
+		
+
+		&lt;script type=&quot;text/javascript&quot;&gt;
+				nf_notifications.tokens[&#x27;from_name&#x27;] = ;
+				nf_notifications.tokens[&#x27;from_address&#x27;] = ;
+				nf_notifications.tokens[&#x27;reply_to&#x27;] = ;
+				nf_notifications.tokens[&#x27;to&#x27;] = ;
+				nf_notifications.tokens[&#x27;cc&#x27;] = ;
+				nf_notifications.tokens[&#x27;bcc&#x27;] = ;
+				nf_notifications.tokens[&#x27;email_subject&#x27;] = ;
+		&lt;/script&gt;
+
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Class for our email notification type.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Notifications
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.8
+*/
+
+class NF_Notification_Email extends NF_Notification_Base_Type
+{
+
+	/**
+	 * Get things rolling
+	 */
+	function __construct() {
+		$this-&gt;name = __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	/**
+	 * Output our edit screen
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function edit_screen( $id = &#x27;&#x27; ) {
+		$form_id = ( &#x27;&#x27; != $id ) ? Ninja_Forms()-&gt;notification( $id )-&gt;form_id : &#x27;&#x27;;
+
+		if ( $id == &#x27;&#x27; ) {
+			$email_format = &#x27;html&#x27;;
+			$from_name = get_bloginfo( &#x27;name&#x27; );
+			$from_address = get_bloginfo( &#x27;admin_email&#x27; );
+			$reply_to = &#x27;&#x27;;
+			$to = &#x27;&#x27;;
+			$cc = &#x27;&#x27;;
+			$bcc = &#x27;&#x27;;
+			$email_subject = &#x27;&#x27;;
+			$email_message = &#x27;&#x27;;
+		} else {
+			$email_format = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;email_format&#x27; );
+			$from_name = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;from_name&#x27; );
+			$from_address = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;from_address&#x27; );
+			$reply_to = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;reply_to&#x27; );
+			$to = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;to&#x27; );
+			$cc = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;cc&#x27; );
+			$bcc = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;bcc&#x27; );
+			$email_subject = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;email_subject&#x27; );
+			$email_message = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;email_message&#x27; );
+		}
+
+		?&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-from_name&quot;&gt;&lt;?php _e( &#x27;From Name&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[from_name]&quot; type=&quot;text&quot; id=&quot;settings-from_name&quot; value=&quot;&lt;?php echo $from_name; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php _e( &#x27;Name or fields&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;0&quot; data-key=&quot;from_name&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;?php _e( &#x27;Email will appear to be from this name.&#x27;, &#x27;ninja-forms&#x27; ) ?&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-from_address&quot;&gt;&lt;?php _e( &#x27;From Address&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[from_address]&quot; type=&quot;text&quot; id=&quot;settings-from_address&quot; value=&quot;&lt;?php echo $from_address; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php _e( &#x27;One email address or field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;1&quot; data-key=&quot;from_address&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;?php _e( &#x27;Email will appear to be from this email address.&#x27;, &#x27;ninja-forms&#x27; ) ?&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-to&quot;&gt;&lt;?php _e( &#x27;To&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[to]&quot; type=&quot;text&quot; id=&quot;settings-to&quot; value=&quot;&lt;?php echo $to; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php _e( &#x27;Email addresses or search for a field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;0&quot; data-key=&quot;to&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;?php _e( &#x27;Who should this email be sent to?&#x27;, &#x27;ninja-forms&#x27; ) ?&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_subject&quot;&gt;&lt;?php _e( &#x27;Subject&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;input name=&quot;settings[email_subject]&quot; type=&quot;text&quot; id=&quot;settings-email_subject&quot; value=&quot;&lt;?php echo $email_subject; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php _e( &#x27;Subject Text or search for a field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;0&quot; data-key=&quot;email_subject&quot; data-type=&quot;all&quot; /&gt;
+				&lt;span class=&quot;howto&quot;&gt;&lt;?php _e( &#x27;This will be the subject of the email.&#x27;, &#x27;ninja-forms&#x27; ) ?&gt;&lt;/span&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_message&quot;&gt;&lt;?php _e( &#x27;Email Message&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;?php
+				$settings = array(
+					&#x27;textarea_name&#x27; =&gt; &#x27;settings[email_message]&#x27;,
+				);
+				wp_editor( $email_message, &#x27;email_message&#x27;, $settings );
+				?&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-attachments&quot;&gt;&lt;?php _e( &#x27;Attachments&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;ul&gt;
+					&lt;?php
+					$attachment_types = apply_filters( &#x27;nf_email_notification_attachment_types&#x27;,
+						array(
+							&#x27;attach_csv&#x27; =&gt; __( &#x27;Submission CSV&#x27;, &#x27;ninja-forms&#x27; ),
+						)
+					);
+
+					foreach ( $attachment_types as $slug =&gt; $nicename ) {
+						if ( &#x27;&#x27; == $id ) {
+							$current_setting = 0;
+						} else {
+							$current_setting = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( $slug );
+						}
+
+						?&gt;
+						&lt;li&gt;
+							&lt;input name=&quot;settings[&lt;?php echo $slug; ?&gt;]&quot; type=&quot;hidden&quot; value=&quot;0&quot;&gt;
+							&lt;input name=&quot;settings[&lt;?php echo $slug; ?&gt;]&quot; type=&quot;checkbox&quot; id=&quot;settings-&lt;?php echo $slug; ?&gt;&quot; value=&quot;1&quot; &lt;?php checked( $current_setting, 1 ); ?&gt;/&gt;
+							&lt;label for=&quot;settings-&lt;?php echo $slug; ?&gt;&quot;&gt;&lt;?php echo $nicename; ?&gt;&lt;/label&gt;
+						&lt;/li&gt;
+
+						&lt;?php
+					}
+					?&gt;
+				&lt;/ul&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;a href=&quot;#&quot; id=&quot;toggle_email_advanced&quot;&gt;&lt;?php _e( &#x27;Advanced Settings&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;&lt;/th&gt;
+		&lt;/tr&gt;
+		&lt;tbody id=&quot;email_advanced&quot; style=&quot;display:none;&quot;&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-email_format&quot;&gt;&lt;?php _e( &#x27;Format&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;select name=&quot;settings[email_format]&quot; id=&quot;settings-email_format&quot; data-key=&quot;email_format&quot;/&gt;
+						&lt;option value=&quot;html&quot; &lt;?php selected( $email_format, &#x27;html&#x27; ); ?&gt;&gt;&lt;?php _e( &#x27;HTML&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+						&lt;option value=&quot;plain&quot; &lt;?php selected( $email_format, &#x27;plain&#x27; ); ?&gt;&gt;&lt;?php _e( &#x27;Plain Text&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/option&gt;
+					&lt;/select&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-reply_to&quot;&gt;&lt;?php _e( &#x27;Reply To&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[reply_to]&quot; type=&quot;text&quot; id=&quot;settings-reply_to&quot; value=&quot;&lt;?php echo $reply_to; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php __( &#x27;One email address or field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;1&quot; data-key=&quot;reply_to&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-cc&quot;&gt;&lt;?php _e( &#x27;Cc&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[cc]&quot; type=&quot;text&quot; id=&quot;settings-cc&quot; value=&quot;&lt;?php echo $cc; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php __( &#x27;Email addresses or search for a field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;0&quot; data-key=&quot;cc&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+				&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-bcc&quot;&gt;&lt;?php _e( &#x27;Bcc&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+				&lt;td&gt;
+					&lt;input name=&quot;settings[bcc]&quot; type=&quot;text&quot; id=&quot;settings-bcc&quot; value=&quot;&lt;?php echo $bcc; ?&gt;&quot; class=&quot;nf-tokenize&quot; placeholder=&quot;&lt;?php __( &#x27;Email addresses or search for a field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; data-token-limit=&quot;0&quot; data-key=&quot;bcc&quot; data-type=&quot;all&quot; /&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/tbody&gt;
+		&lt;?php
+
+		do_action( &#x27;nf_email_notification_after_settings&#x27;, $id );
+
+		if ( &#x27;&#x27; != $form_id ) {
+			$from_name = $this-&gt;get_value( $id, &#x27;from_name&#x27;, $form_id );
+			$from_address = $this-&gt;get_value( $id, &#x27;from_address&#x27;, $form_id );
+			$reply_to = $this-&gt;get_value( $id, &#x27;reply_to&#x27;, $form_id );
+			$to = $this-&gt;get_value( $id, &#x27;to&#x27;, $form_id );
+			$cc = $this-&gt;get_value( $id, &#x27;cc&#x27;, $form_id );
+			$bcc = $this-&gt;get_value( $id, &#x27;bcc&#x27;, $form_id );
+			$email_subject = $this-&gt;get_value( $id, &#x27;email_subject&#x27;, $form_id );
+		} else {
+			$from_name = get_bloginfo( &#x27;name&#x27; );
+			$from_address = get_bloginfo( &#x27;admin_email&#x27; );
+			$reply_to = &#x27;&#x27;;
+			$to = &#x27;&#x27;;
+			$cc = &#x27;&#x27;;
+			$bcc = &#x27;&#x27;;
+			$email_subject = &#x27;&#x27;;
+		}
+
+		?&gt;
+
+		&lt;script type=&quot;text/javascript&quot;&gt;
+				nf_notifications.tokens[&#x27;from_name&#x27;] = &lt;?php echo json_encode( $from_name ); ?&gt;;
+				nf_notifications.tokens[&#x27;from_address&#x27;] = &lt;?php echo json_encode( $from_address ); ?&gt;;
+				nf_notifications.tokens[&#x27;reply_to&#x27;] = &lt;?php echo json_encode( $reply_to ); ?&gt;;
+				nf_notifications.tokens[&#x27;to&#x27;] = &lt;?php echo json_encode( $to ); ?&gt;;
+				nf_notifications.tokens[&#x27;cc&#x27;] = &lt;?php echo json_encode( $cc ); ?&gt;;
+				nf_notifications.tokens[&#x27;bcc&#x27;] = &lt;?php echo json_encode( $bcc ); ?&gt;;
+				nf_notifications.tokens[&#x27;email_subject&#x27;] = &lt;?php echo json_encode( $email_subject ); ?&gt;;
+		&lt;/script&gt;
+
+		&lt;?php
+	}
+
+	/**
+	 * Get our input value labels
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return string $label
+	 */
+	public function get_value( $id, $meta_key, $form_id ) {
+		$meta_value = nf_get_object_meta_value( $id, $meta_key );
+		$meta_value = explode( &#x27;`&#x27;, $meta_value );
+
+		$return = array();
+		foreach( $meta_value as $val ) {
+			if ( strpos( $val, &#x27;field_&#x27; ) !== false ) {
+				$val = str_replace( &#x27;field_&#x27;, &#x27;&#x27;, $val );
+				$label = nf_get_field_admin_label( $val, $form_id );
+				if ( strlen( $label ) &gt; 30 ) {
+					$label = substr( $label, 0, 30 );
+				}
+
+				$return[] = array( &#x27;value&#x27; =&gt; &#x27;field_&#x27; . $val, &#x27;label&#x27; =&gt; $label . &#x27; - ID: &#x27; . $val );
+			} else {
+				$return[] = array( &#x27;value&#x27; =&gt; $val, &#x27;label&#x27; =&gt; $val );
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Process our Email notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function process( $id ) {
+		global $ninja_forms_processing;
+
+		$form_id 		= $ninja_forms_processing-&gt;get_form_ID();
+		$form_title 	= $ninja_forms_processing-&gt;get_form_setting( &#x27;form_title&#x27; );
+
+		$email_format 	= Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;email_format&#x27; );
+		$attach_csv 	= Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;attach_csv&#x27; );
+
+		$from_name 		= $this-&gt;process_setting( $id, &#x27;from_name&#x27; );
+		$from_name 		= implode( &#x27; &#x27;, $from_name );
+
+		$from_address 	= $this-&gt;process_setting( $id, &#x27;from_address&#x27; );
+		$from_address 	= $from_address[0];
+
+		$reply_to 		= $this-&gt;process_setting( $id, &#x27;reply_to&#x27; );
+		$reply_to 		= $reply_to[0];
+		$to 			= $this-&gt;process_setting( $id, &#x27;to&#x27; );
+		$cc 			= $this-&gt;process_setting( $id, &#x27;cc&#x27; );
+//		$cc             = $cc[0];
+		$bcc 			= $this-&gt;process_setting( $id, &#x27;bcc&#x27; );
+//		$bcc 			= $bcc[0];
+
+		if ( empty ( $from_name ) )
+			$from_name = &#x27;WordPress&#x27;;
+
+		if ( empty ( $from_address ) ) {
+			$admin_email = get_bloginfo( &#x27;admin_email&#x27; );
+			$from_address = $admin_email;
+		}
+
+		$email_from 	= $from_name.&#x27; &lt;&#x27;.$from_address.&#x27;&gt;&#x27;;
+
+		$subject 		= $this-&gt;process_setting( $id, &#x27;email_subject&#x27; );
+		$subject 		= $this-&gt;flatten_array_recursive( &#x27; &#x27;, $subject );
+
+		if ( empty( $subject ) ) {
+			$subject = $form_title;
+		} elseif( is_array( $subject ) ){
+            $subject = implode( &#x27;,&#x27;, $subject );
+        }
+
+		$message 		= $this-&gt;process_setting( $id, &#x27;email_message&#x27; );
+		if ( is_array ( $message ) )
+			$message 	= $message[0];
+
+		if ( $email_format != &#x27;plain&#x27; )
+			$message = apply_filters( &#x27;ninja_forms_admin_email_message_wpautop&#x27;, wpautop( $message ) );
+
+		if ( empty ( $message ) )
+			$message 		= &#x27; &#x27;;
+
+		$headers = array();
+		$headers[] = &#x27;From: &#x27; . $email_from;
+
+		if( ! empty( $reply_to ) ) {
+			$headers[] = sprintf(&#x27;Reply-To: &quot;%s&quot; &lt;%s&gt;&#x27;, $from_name, $reply_to);
+		}
+		$headers[] = &#x27;Content-Type: text/&#x27; . $email_format;
+		$headers[] = &#x27;charset=utf-8&#x27;;
+
+		if ( ! empty( $cc ) ) {
+			foreach ($cc as $ccemail) {
+				if ( ! empty( $ccemail ) ) {
+					$headers[] = &#x27;Cc: &#x27; . $ccemail;
+				}
+			}
+		}
+
+		if ( ! empty( $bcc ) ) {
+			foreach ($bcc as $bccemail) {
+				if ( ! empty( $bccemail ) ) {
+					$headers[] = &#x27;Bcc: &#x27; . $bccemail;
+				}
+			}
+		}
+
+		$csv_attachment = &#x27;&#x27;;
+		$attachments = apply_filters( &#x27;nf_email_notification_attachments&#x27;, array(), $id );
+
+		// Check to see if we need to attach a CSV
+		if ( 1 == $attach_csv ) {
+			// Create our attachment
+
+			// Get our submission ID
+			$sub_id = $ninja_forms_processing-&gt;get_form_setting( &#x27;sub_id&#x27; );
+
+			// create CSV content
+			$csv_content = Ninja_Forms()-&gt;sub( $sub_id )-&gt;export( true );
+
+			$upload_dir = wp_upload_dir();
+			$path = trailingslashit( $upload_dir[&#x27;path&#x27;] );
+
+			// create temporary file
+			$path = tempnam( $path, &#x27;Sub&#x27; );
+			$temp_file = fopen( $path, &#x27;r+&#x27; );
+
+			// write to temp file
+			fwrite( $temp_file, $csv_content );
+			fclose( $temp_file );
+
+			// find the directory we will be using for the final file
+			$path = pathinfo( $path );
+			$dir = $path[&#x27;dirname&#x27;];
+			$basename = $path[&#x27;basename&#x27;];
+
+			// create name for file
+			$new_name = apply_filters( &#x27;ninja_forms_submission_csv_name&#x27;, &#x27;ninja-forms-submission&#x27; );
+
+			// remove a file if it already exists
+			if( file_exists( $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; ) ) {
+				unlink( $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; );
+			}
+
+			// move file
+			rename( $dir.&#x27;/&#x27;.$basename, $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27; );
+			$csv_attachment = $dir.&#x27;/&#x27;.$new_name.&#x27;.csv&#x27;;
+
+			$attachments[] = $csv_attachment;
+		}
+
+		if ( is_array( $to ) AND !empty( $to ) ){
+
+            $to = explode( &quot;,&quot;, $this-&gt;flatten_array_recursive( &#x27;,&#x27;, $to ) );
+
+			wp_mail( $to, $subject, $message, $headers, $attachments );
+		}
+
+		// Delete our admin CSV if one is present.
+		if ( file_exists( $csv_attachment ) ) {
+			//unlink ( $csv_attachment );
+		}
+	}
+
+    public function flatten_array_recursive( $glue = &#x27;,&#x27;, array $array = array() ) {
+
+        $return = array();
+
+        foreach ( $array as $value ) {
+
+            if ( is_array( $value ) ) {
+
+                $return[] = $this-&gt;flatten_array_recursive( $glue, $value );
+
+            } else {
+
+                $return[] = $value;
+
+            }
+
+        }
+
+        return implode( $glue, $return );
+
+    }
+
+	/**
+	 * Explode our settings by ` and extract each value.
+	 * Check to see if the setting is a field; if it is, assign the value.
+	 * Run shortcodes and return the result.
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return array $setting
+	 */
+	public function process_setting( $id, $setting, $html = 0 ) {
+
+		// save the setting name
+		$setting_name = $setting;
+
+		$format = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;email_format&#x27; );
+		if ( &#x27;html&#x27; == $format )
+			$html = 1;
+
+		// call parent process setting method
+		$setting = parent::process_setting( $id, $setting, $html );
+
+		// gotta keep the old filter in case anyone was using it.
+		return apply_filters( &#x27;nf_email_notification_process_setting&#x27;, $setting, $setting_name, $id );
+	}
+
+}
+
+return new NF_Notification_Email();
+</pre></details></body></html>

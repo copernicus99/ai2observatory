@@ -1,0 +1,134 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Width.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Width.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_Width extends AC_Settings_Column
+	implements AC_Settings_HeaderInterface {
+
+	/**
+	 * @var integer
+	 */
+	private $width;
+
+	/**
+	 * @var string
+	 */
+	private $width_unit;
+
+	protected function define_options() {
+		return array(
+			&#x27;width&#x27;,
+			&#x27;width_unit&#x27; =&gt; &#x27;%&#x27;,
+		);
+	}
+
+	private function get_valid_width_units() {
+		return array(
+			&#x27;%&#x27;  =&gt; &#x27;%&#x27;,
+			&#x27;px&#x27; =&gt; &#x27;px&#x27;,
+		);
+	}
+
+	private function is_valid_width_unit( $width_unit ) {
+		return array_key_exists( $width_unit, $this-&gt;get_valid_width_units() );
+	}
+
+	public function create_view() {
+		$width = $this-&gt;create_element( &#x27;text&#x27; )
+		              -&gt;set_attribute( &#x27;placeholder&#x27;, __( &#x27;Auto&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+
+		$unit = $this-&gt;create_element( &#x27;radio&#x27;, &#x27;width_unit&#x27; )
+		             -&gt;set_options( $this-&gt;get_valid_width_units() );
+
+		$section = new AC_View( array(
+			&#x27;width&#x27; =&gt; $width,
+			&#x27;unit&#x27;  =&gt; $unit,
+		) );
+		$section-&gt;set_template( &#x27;settings/setting-width&#x27; );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;    =&gt; __( &#x27;Width&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;sections&#x27; =&gt; array( $section ),
+		) );
+
+		return $view;
+	}
+
+	public function create_header_view() {
+
+		$view = new AC_View( array(
+			&#x27;title&#x27;   =&gt; __( &#x27;width&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;content&#x27; =&gt; $this-&gt;get_display_width(),
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_width() {
+		return $this-&gt;width;
+	}
+
+	/**
+	 * @param int $width
+	 *
+	 * @return bool
+	 */
+	public function set_width( $value ) {
+
+		// Backwards compatible for AC 2.9
+		if ( &#x27;&#x27; === $value ) {
+			$this-&gt;width = $value;
+
+			return true;
+		}
+
+		$value = absint( $value );
+
+		if ( $value &gt; 0 ) {
+			$this-&gt;width = $value;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_width_unit() {
+		return $this-&gt;width_unit;
+	}
+
+	/**
+	 * @param string $width_unit
+	 *
+	 * @return bool
+	 */
+	public function set_width_unit( $width_unit ) {
+		if ( ! $this-&gt;is_valid_width_unit( $width_unit ) ) {
+			return false;
+		}
+
+		$this-&gt;width_unit = $width_unit;
+
+		return true;
+	}
+
+	public function get_display_width() {
+		$value = false;
+
+		if ( $width = $this-&gt;get_width() ) {
+			$value = $width . $this-&gt;get_width_unit();
+		}
+
+		return $value;
+	}
+
+}
+</pre></details></body></html>

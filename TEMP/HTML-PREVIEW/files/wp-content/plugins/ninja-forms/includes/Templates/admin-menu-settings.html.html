@@ -1,0 +1,170 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-settings.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-settings.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div class=&quot;wrap&quot;&gt;
+
+    &lt;h1&gt;&lt;/h1&gt;
+
+    &lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+        
+            
+                &lt;span class=&quot;nav-tab nav-tab-active&quot;&gt;&lt;/span&gt;
+            
+                &lt;a href=&quot;&quot; target=&quot;&quot; class=&quot;nav-tab &quot;&gt;&lt;/a&gt;
+            
+        
+    &lt;/h2&gt;
+
+    &lt;div id=&quot;poststuff&quot;&gt;
+    
+
+        
+
+    
+        &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt;
+
+            
+                
+                    
+                    
+                
+            
+
+            
+                &lt;div id=&quot;ninja_forms_metabox__settings&quot; class=&quot;postbox&quot;&gt;
+                &lt;span class=&quot;item-controls&quot;&gt;
+                    &lt;a class=&quot;item-edit metabox-item-edit&quot; id=&quot;edit_id&quot; title=&quot;&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+                &lt;/span&gt;
+                    &lt;h3 class=&quot;hndle&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;/h3&gt;
+                    &lt;div class=&quot;inside&quot; style=&quot;&quot;&gt;
+                        &lt;table class=&quot;form-table&quot;&gt;
+                            &lt;tbody&gt;
+                            
+
+                            
+
+                            &lt;tr id=&quot;row_&quot;&gt;
+                                &lt;th scope=&quot;row&quot;&gt;
+                                    &lt;label for=&quot;&quot;&gt;&lt;/label&gt;
+                                &lt;/th&gt;
+                                &lt;td&gt;
+                                    
+                                    
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                            
+                        &lt;/table&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            
+
+            &lt;input type=&quot;hidden&quot; name=&quot;update_ninja_forms_settings&quot;&gt;
+            &lt;input type=&quot;submit&quot; class=&quot;button button-primary&quot; value=&quot;&quot;&gt;
+
+        &lt;/form&gt;
+    
+    &lt;/div&gt;
+
+&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div class=&quot;wrap&quot;&gt;
+
+    &lt;h1&gt;&lt;?php _e( &#x27;Settings&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/h1&gt;
+
+    &lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+        &lt;?php foreach( $tabs as $tab =&gt; $name ): ?&gt;
+            &lt;?php if( $tab == $active_tab ): ?&gt;
+                &lt;span class=&quot;nav-tab nav-tab-active&quot;&gt;&lt;?php echo $name ?&gt;&lt;/span&gt;
+            &lt;?php else: ?&gt;
+                &lt;a href=&quot;&lt;?php echo add_query_arg( &#x27;tab&#x27;, $tab );?&gt;&quot; target=&quot;&quot; class=&quot;nav-tab &quot;&gt;&lt;?php echo $name ?&gt;&lt;/a&gt;
+            &lt;?php endif; ?&gt;
+        &lt;?php endforeach; ?&gt;
+    &lt;/h2&gt;
+
+    &lt;div id=&quot;poststuff&quot;&gt;
+    &lt;?php if( &#x27;settings&#x27; != $active_tab ): ?&gt;
+
+        &lt;?php do_meta_boxes(&#x27;nf_settings_&#x27; . $active_tab, &#x27;advanced&#x27;, NULL ); ?&gt;
+
+    &lt;?php else: ?&gt;
+        &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt;
+
+            &lt;?php if( $errors ): ?&gt;
+                &lt;?php foreach( $errors as $error_id =&gt; $error ): ?&gt;
+                    &lt;?php $message = $error . &quot; &lt;a href=&#x27;#$error_id&#x27;&gt;&quot; . __( &#x27;Fix it.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;; ?&gt;
+                    &lt;?php Ninja_Forms::template( &#x27;admin-notice.html.php&#x27;, array( &#x27;class&#x27; =&gt; &#x27;error&#x27;, &#x27;message&#x27; =&gt; $message ) ); ?&gt;
+                &lt;?php endforeach; ?&gt;
+            &lt;?php endif; ?&gt;
+
+            &lt;?php foreach( $grouped_settings as $group =&gt; $settings ) : ?&gt;
+                &lt;div id=&quot;ninja_forms_metabox_&lt;?php echo $group; ?&gt;_settings&quot; class=&quot;postbox&quot;&gt;
+                &lt;span class=&quot;item-controls&quot;&gt;
+                    &lt;a class=&quot;item-edit metabox-item-edit&quot; id=&quot;edit_id&quot; title=&quot;&lt;?php _e( &#x27;Edit Menu Item&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;#&quot;&gt;&lt;?php _e( &#x27;Edit Menu Item&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+                &lt;/span&gt;
+                    &lt;h3 class=&quot;hndle&quot;&gt;&lt;span&gt;&lt;?php echo $groups[ $group ][ &#x27;label&#x27; ]; ?&gt;&lt;/span&gt;&lt;/h3&gt;
+                    &lt;div class=&quot;inside&quot; style=&quot;&quot;&gt;
+                        &lt;table class=&quot;form-table&quot;&gt;
+                            &lt;tbody&gt;
+                            &lt;?php foreach( $settings as $key =&gt; $setting ) : ?&gt;
+
+                            &lt;?php if( &#x27;prompt&#x27; == $setting[ &#x27;type&#x27; ] ) continue; ?&gt;
+
+                            &lt;tr id=&quot;row_&lt;?php echo $setting[ &#x27;id&#x27; ]; ?&gt;&quot;&gt;
+                                &lt;th scope=&quot;row&quot;&gt;
+                                    &lt;label for=&quot;&lt;?php echo $setting[ &#x27;id&#x27; ]; ?&gt;&quot;&gt;&lt;?php echo $setting[ &#x27;label&#x27; ]; ?&gt;&lt;/label&gt;
+                                &lt;/th&gt;
+                                &lt;td&gt;
+                                    &lt;?php
+                                    switch ( $setting[ &#x27;type&#x27; ] ) {
+                                        case &#x27;html&#x27;:
+                                            echo $setting[ &#x27;html&#x27;];
+                                            break;
+                                        case &#x27;desc&#x27; :
+                                            echo $setting[ &#x27;value&#x27; ];
+                                            break;
+                                        case &#x27;textbox&#x27; :
+                                            echo &quot;&lt;input type=&#x27;text&#x27; class=&#x27;code widefat&#x27; name=&#x27;{$setting[&#x27;id&#x27;]}&#x27; id=&#x27;{$setting[&#x27;id&#x27;]}&#x27; value=&#x27;{$setting[&#x27;value&#x27;]}&#x27;&gt;&quot;;
+                                            break;
+                                        case &#x27;password&#x27; :
+                                            echo &quot;&lt;input type=&#x27;password&#x27; class=&#x27;code widefat&#x27; name=&#x27;{$setting[&#x27;id&#x27;]}&#x27; id=&#x27;{$setting[&#x27;id&#x27;]}&#x27; value=&#x27;{$setting[&#x27;value&#x27;]}&#x27;&gt;&quot;;
+                                            break;		
+                                        case &#x27;checkbox&#x27; :
+                                            $checked = ( $setting[ &#x27;value&#x27; ] ) ? &#x27;checked&#x27; : &#x27;&#x27;;
+                                            echo &quot;&lt;input type=&#x27;hidden&#x27; name=&#x27;{$setting[&#x27;id&#x27;]}&#x27; value=&#x27;0&#x27;&gt;&quot;;
+                                            echo &quot;&lt;input type=&#x27;checkbox&#x27; name=&#x27;{$setting[&#x27;id&#x27;]}&#x27; value=&#x27;1&#x27; id=&#x27;{$setting[&#x27;id&#x27;]}&#x27; class=&#x27;widefat&#x27; $checked&gt;&quot;;
+                                            break;
+                                        case &#x27;select&#x27; :
+                                            echo &quot;&lt;select name=&#x27;{$setting[&#x27;id&#x27;]}&#x27; id=&#x27;{$setting[&#x27;id&#x27;]}&#x27;&gt;&quot;;
+                                            foreach( $setting[&#x27;options&#x27;] as $option ) {
+                                                $selected = ( $setting[&#x27;value&#x27;] == $option[&#x27;value&#x27;] ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27;;
+                                                echo &quot;&lt;option value=&#x27;{$option[&#x27;value&#x27;]}&#x27; {$selected}&gt;{$option[&#x27;label&#x27;]}&lt;/option&gt;&quot;;
+                                            }
+                                            echo &quot;&lt;/select&gt;&quot;;
+                                            break;
+                                    }
+                                    if( isset( $setting[ &#x27;desc&#x27; ] ) ) {
+                                        echo &quot;&lt;p class=&#x27;description&#x27;&gt;&quot; . $setting[ &#x27;desc&#x27; ] . &quot;&lt;/p&gt;&quot;;
+                                    }
+                                    ?&gt;
+                                    &lt;?php
+                                    if( isset( $setting[ &#x27;errors&#x27; ] ) ){
+                                        foreach( $setting[ &#x27;errors&#x27; ] as $error_id =&gt; $error ){
+                                            echo &quot;&lt;div id=&#x27;$error_id&#x27; class=&#x27;error&#x27;&gt;&lt;p&gt;$error&lt;/p&gt;&lt;/div&gt;&quot;;
+                                        }
+                                    }
+                                    ?&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                            &lt;/tbody&gt;
+                            &lt;?php endforeach; ?&gt;
+                        &lt;/table&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;?php endforeach; ?&gt;
+
+            &lt;input type=&quot;hidden&quot; name=&quot;update_ninja_forms_settings&quot;&gt;
+            &lt;input type=&quot;submit&quot; class=&quot;button button-primary&quot; value=&quot;&lt;?php echo $save_button_text; ?&gt;&quot;&gt;
+
+        &lt;/form&gt;
+    &lt;?php endif; ?&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+</pre></details></body></html>

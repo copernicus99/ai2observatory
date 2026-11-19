@@ -1,0 +1,113 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/template-parts/post/content-gallery.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/template-parts/post/content-gallery.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+&lt;article id=&quot;post-&quot; &gt;
+	
+	&lt;header class=&quot;entry-header&quot;&gt;
+		
+	&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+	
+		&lt;div class=&quot;post-thumbnail&quot;&gt;
+			&lt;a href=&quot;&quot;&gt;
+				
+			&lt;/a&gt;
+		&lt;/div&gt;&lt;!-- .post-thumbnail --&gt;
+	
+
+	&lt;div class=&quot;entry-content&quot;&gt;
+
+		
+
+	&lt;/div&gt;&lt;!-- .entry-content --&gt;
+
+	
+		
+	
+
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Template part for displaying gallery posts
+ *
+ * @link https://codex.wordpress.org/Template_Hierarchy
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ * @version 1.0
+ */
+?&gt;
+
+&lt;article id=&quot;post-&lt;?php the_ID(); ?&gt;&quot; &lt;?php post_class(); ?&gt;&gt;
+	&lt;?php
+		if ( is_sticky() &amp;&amp; is_home() ) :
+			echo twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;thumb-tack&#x27; ) );
+		endif;
+	?&gt;
+	&lt;header class=&quot;entry-header&quot;&gt;
+		&lt;?php
+			if ( &#x27;post&#x27; === get_post_type() ) :
+				echo &#x27;&lt;div class=&quot;entry-meta&quot;&gt;&#x27;;
+					if ( is_single() ) :
+						twentyseventeen_posted_on();
+					else :
+						echo twentyseventeen_time_link();
+						twentyseventeen_edit_link();
+					endif;
+				echo &#x27;&lt;/div&gt;&lt;!-- .entry-meta --&gt;&#x27;;
+			endif;
+
+			if ( is_single() ) {
+				the_title( &#x27;&lt;h1 class=&quot;entry-title&quot;&gt;&#x27;, &#x27;&lt;/h1&gt;&#x27; );
+			} else {
+				the_title( &#x27;&lt;h2 class=&quot;entry-title&quot;&gt;&lt;a href=&quot;&#x27; . esc_url( get_permalink() ) . &#x27;&quot; rel=&quot;bookmark&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&lt;/h2&gt;&#x27; );
+			}
+		?&gt;
+	&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+	&lt;?php if ( &#x27;&#x27; !== get_the_post_thumbnail() &amp;&amp; ! is_single() &amp;&amp; ! get_post_gallery() ) : ?&gt;
+		&lt;div class=&quot;post-thumbnail&quot;&gt;
+			&lt;a href=&quot;&lt;?php the_permalink(); ?&gt;&quot;&gt;
+				&lt;?php the_post_thumbnail( &#x27;twentyseventeen-featured-image&#x27; ); ?&gt;
+			&lt;/a&gt;
+		&lt;/div&gt;&lt;!-- .post-thumbnail --&gt;
+	&lt;?php endif; ?&gt;
+
+	&lt;div class=&quot;entry-content&quot;&gt;
+
+		&lt;?php if ( ! is_single() ) :
+
+			// If not a single post, highlight the gallery.
+			if ( get_post_gallery() ) :
+				echo &#x27;&lt;div class=&quot;entry-gallery&quot;&gt;&#x27;;
+					echo get_post_gallery();
+				echo &#x27;&lt;/div&gt;&#x27;;
+			endif;
+
+		endif;
+
+		if ( is_single() || ! get_post_gallery() ) :
+
+			/* translators: %s: Name of current post */
+			the_content( sprintf(
+				__( &#x27;Continue reading&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentyseventeen&#x27; ),
+				get_the_title()
+			) );
+
+			wp_link_pages( array(
+				&#x27;before&#x27;      =&gt; &#x27;&lt;div class=&quot;page-links&quot;&gt;&#x27; . __( &#x27;Pages:&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;after&#x27;       =&gt; &#x27;&lt;/div&gt;&#x27;,
+				&#x27;link_before&#x27; =&gt; &#x27;&lt;span class=&quot;page-number&quot;&gt;&#x27;,
+				&#x27;link_after&#x27;  =&gt; &#x27;&lt;/span&gt;&#x27;,
+			) );
+
+		endif; ?&gt;
+
+	&lt;/div&gt;&lt;!-- .entry-content --&gt;
+
+	&lt;?php if ( is_single() ) : ?&gt;
+		&lt;?php twentyseventeen_entry_footer(); ?&gt;
+	&lt;?php endif; ?&gt;
+
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+</pre></details></body></html>

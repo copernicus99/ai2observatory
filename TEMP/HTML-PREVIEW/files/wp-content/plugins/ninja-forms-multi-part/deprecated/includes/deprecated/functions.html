@@ -1,0 +1,228 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/*
+ *
+ * Function used to copy a page from the Field Settings tab. It is called via ajax.
+ *
+ * @since 1.0.3
+ * @returns void
+ */
+
+function ninja_forms_mp_copy_page(){
+	$form_id = $_REQUEST[&#x27;form_id&#x27;];
+	$fields = $_REQUEST[&#x27;field_data&#x27;];
+	$new_ids = array();
+
+	$order = 999;
+	foreach( $fields[0] as $f =&gt; $data ){
+		$data = serialize( $data );
+		$args = array( &#x27;type&#x27; =&gt; &#x27;_page_divider&#x27;, &#x27;data&#x27; =&gt; $data, &#x27;order&#x27; =&gt; $order, &#x27;fav_id&#x27; =&gt; 0, &#x27;def_id&#x27; =&gt; 0 );
+		$new_divider = ninja_forms_insert_field( $form_id, $args );
+		$new_html = ninja_forms_return_echo( &#x27;ninja_forms_edit_field&#x27;, $new_divider );
+		$new_ids[] = $new_divider;
+	}
+
+	unset( $fields[0] );
+
+	$new_fields = array();
+
+	foreach( $fields as $field ){
+		foreach( $field as $f =&gt; $data ){
+			$field_id = str_replace( &#x27;ninja_forms_field_&#x27;, &#x27;&#x27;, $f );
+			$field_row = ninja_forms_get_field_by_id( $field_id );
+			$field_type = $field_row[&#x27;type&#x27;];
+			if( isset( $field_row[&#x27;fav_id&#x27;] ) ){
+				$fav_id = $field_row[&#x27;fav_id&#x27;];
+			}else{
+				$fav_id = 0;
+			}
+			if( isset( $field_row[&#x27;def_id&#x27;] ) ){
+				$def_id = $field_row[&#x27;def_id&#x27;];
+			}else{
+				$def_id = 0;
+			}
+			$data = serialize( $data );
+			$args = array( &#x27;type&#x27; =&gt; $field_type, &#x27;data&#x27; =&gt; $data, &#x27;order&#x27; =&gt; $order, &#x27;fav_id&#x27; =&gt; $fav_id, &#x27;def_id&#x27; =&gt; $def_id );
+			$new_id = ninja_forms_insert_field( $form_id, $args );
+			$new_fields[ $field_id ] = $new_id;
+		}
+	}
+	
+	do_action( &#x27;nf_mp_copy_page&#x27;, $new_fields );	
+
+	foreach( $new_fields as $field_id ){
+		$new_html .= ninja_forms_return_echo( &#x27;ninja_forms_edit_field&#x27;, $field_id );
+	}
+
+	header(&quot;Content-type: application/json&quot;);
+	$array = array( &#x27;new_html&#x27; =&gt; $new_html, &#x27;new_ids&#x27; =&gt; $new_ids );
+	echo json_encode( $array );
+	die();
+}
+
+
+add_action( &#x27;wp_ajax_ninja_forms_mp_copy_page&#x27;, &#x27;ninja_forms_mp_copy_page&#x27; );
+
+function ninja_forms_mp_get_pages( $form_id = &#x27;&#x27; ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+	
+	$field_results = ninja_forms_get_fields_by_form_id( $form_id );
+
+	$pages = array();
+	$x = 0;
+	$y = 0;
+	$last_field = &#x27;&#x27;;
+	foreach( $field_results as $field ){
+
+		if( $field[&#x27;type&#x27;] == &#x27;_page_divider&#x27; ){
+			$x++;
+			$y = 0;
+			$pages[$x][&#x27;id&#x27;] = $field[&#x27;id&#x27;];
+			if ( isset ( $field[&#x27;data&#x27;][&#x27;page_name&#x27;] ) ) {
+				$page_name = $field[&#x27;data&#x27;][&#x27;page_name&#x27;];
+			} else {
+				$page_name = &#x27;&#x27;;
+			}
+			$pages[$x][&#x27;page_title&#x27;] = $page_name;
+
+		} else {
+			if ( $y == 0 ) {
+				if ( ! empty( $field[&#x27;type&#x27;] ) ) {
+					$pages[$x][&#x27;first_field&#x27;] = $field[&#x27;id&#x27;];
+					$y++;
+				}
+			}
+		}
+
+		if ( ! empty( $field[&#x27;type&#x27;] ) ) {
+			$pages[$x][&#x27;fields&#x27;][] = $field[&#x27;id&#x27;];
+		}
+
+		if ( isset ( $ninja_forms_loading ) ) {
+			$ninja_forms_loading-&gt;update_field_setting( $field[&#x27;id&#x27;], &#x27;page&#x27;, $x );
+		} else {
+			$ninja_forms_processing-&gt;update_field_setting( $field[&#x27;id&#x27;], &#x27;page&#x27;, $x );
+		}
+	}
+
+	foreach ( $pages as $num =&gt; $vars ) {
+		$last_field = end( $vars[&#x27;fields&#x27;] );
+		$pages[$num][&#x27;last_field&#x27;] = $last_field;
+	}
+
+	return $pages;
+}
+
+/*
+ *
+ * Function used to delete a page from the Field Settings tab. It is called via ajax.
+ *
+ * @since 1.0
+ * @returns void
+ */
+
+function ninja_forms_mp_delete_page(){
+	global $wpdb, $ninja_forms_fields;
+	$fields = $_REQUEST[&#x27;fields&#x27;];
+
+	if( is_array( $fields ) AND !empty( $fields ) ){
+		foreach( $fields as $field ){
+			$field_id = str_replace( &#x27;ninja_forms_field_&#x27;, &#x27;&#x27;, $field );
+			ninja_forms_delete_field( $field_id );
+		}
+	}
+	die();
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_mp_delete_page&#x27;, &#x27;ninja_forms_mp_delete_page&#x27;);
+
+
+
+function ninja_forms_mp_get_divider_by_page( $form_id, $current_page ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	} else {
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	}
+
+	$divider_id = $pages[$current_page][&#x27;id&#x27;];
+
+	return $divider_id;
+}
+
+function ninja_forms_mp_get_page_by_divider( $form_id, $field_id ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	} else {
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	}
+
+	$x = 1;
+	foreach ( $pages as $num =&gt; $vars ) {
+		if ( $vars[&#x27;id&#x27;] == $field_id ) {
+			$page_num = $x;
+			break;
+		}
+		$x++;
+	}
+
+	return $page_num;
+}
+
+function ninja_forms_mp_get_page_by_field_id( $field_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$page = $ninja_forms_loading-&gt;get_field_setting( $field_id, &#x27;page&#x27; );
+	} else {
+		$page = $ninja_forms_processing-&gt;get_field_setting( $field_id, &#x27;page&#x27; );
+	}
+
+	return $page;
+}
+
+/*
+ *
+ * Function that loops through our pages and adds an array with the pages information to our loading/processing classes.
+ *
+ * @since 1.2.6
+ * @return void
+ */
+
+function ninja_forms_mp_set_page_array( $form_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_id = $ninja_forms_loading-&gt;get_form_ID();
+	} else {
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	}
+
+	$pages = ninja_forms_mp_get_pages( $form_id );
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$ninja_forms_loading-&gt;update_form_setting( &#x27;mp_pages&#x27;, $pages );
+	} else {
+		$ninja_forms_processing-&gt;update_form_setting( &#x27;mp_pages&#x27;, $pages );
+	}
+}
+
+add_action( &#x27;ninja_forms_display_init&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27; );
+add_action( &#x27;ninja_forms_before_pre_process&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27; );
+add_action( &#x27;ninja_forms_edit_sub_pre_process&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27;, 3 );
+
+function ninja_forms_mp_new_form_add_page( $form_id, $data ){
+  if( $data[&#x27;multi_part&#x27;] == 1 ){
+    $args = array(
+      &#x27;type&#x27; =&gt; &#x27;_page_divider&#x27;,
+      &#x27;order&#x27; =&gt; -1,
+    );
+    ninja_forms_insert_field( $form_id, $args );
+  }
+}
+
+add_action( &#x27;ninja_forms_save_new_form_settings&#x27;, &#x27;ninja_forms_mp_new_form_add_page&#x27;, 10, 2 );
+add_action( &#x27;ninja_forms_save_form_settings&#x27;, &#x27;ninja_forms_mp_new_form_add_page&#x27;, 10, 2 );</pre></details></body></html>

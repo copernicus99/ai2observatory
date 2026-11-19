@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/fields-process.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/fields-process.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_fields_process&#x27;);
+function ninja_forms_register_fields_process(){
+	add_action(&#x27;ninja_forms_process&#x27;, &#x27;ninja_forms_fields_process&#x27;);
+}
+
+function ninja_forms_fields_process( $form_id ){
+	global $ninja_forms_fields, $ninja_forms_processing;
+	//Loop through the submitted form data and call each field&#x27;s processing function, if one exists.
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	$field_results = $ninja_forms_processing-&gt;get_all_fields();
+	if( is_array( $field_results ) AND !empty( $field_results ) ){
+		foreach( $field_results as $field_id =&gt; $user_value ){
+			$field = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			$field_id = $field[&#x27;id&#x27;];
+			$field_type = $field[&#x27;type&#x27;];
+			$field_data = $field[&#x27;data&#x27;];
+			if( isset( $ninja_forms_fields[$field_type] ) ){
+				$reg_field = $ninja_forms_fields[$field_type];
+				//if( $reg_field[&#x27;process_field&#x27;] ){
+					$process_function = $reg_field[&#x27;process&#x27;];
+					if($process_function != &#x27;&#x27;){
+						$arguments = array();
+						$arguments[&#x27;field_id&#x27;] = $field_id;
+						$user_value = apply_filters( &#x27;ninja_forms_field_process_user_value&#x27;, $user_value, $field_id );
+						$arguments[&#x27;user_value&#x27;] = $user_value;
+						call_user_func_array($process_function, $arguments);
+					}
+				//}
+			}
+		}
+	}
+}</pre></details></body></html>

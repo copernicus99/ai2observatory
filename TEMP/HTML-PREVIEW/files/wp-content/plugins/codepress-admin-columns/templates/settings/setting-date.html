@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/templates/settings/setting-date.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/templates/settings/setting-date.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+&lt;table class=&quot;ac-column-setting&quot; data-setting=&quot;&quot;&gt;
+    &lt;tr&gt;
+        &lt;td class=&quot;col-label&quot;&gt;
+            &lt;label for=&quot;&quot;&gt;
+				&lt;span class=&quot;label&quot;&gt;
+					
+				&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/td&gt;
+        &lt;td class=&quot;col-input&quot;&gt;
+            &lt;div class=&quot;ac-setting-input ac-setting-input-date&quot;&gt;
+                &lt;div class=&quot;radio-labels vertical&quot;&gt;
+
+					
+                        &lt;label&gt;
+                            &lt;input class=&quot;&quot; type=&quot;radio&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+							
+                        &lt;/label&gt;
+					
+
+                &lt;/div&gt;
+                &lt;p class=&quot;help-msg&quot;&gt;&lt;/p&gt;
+				&lt;input type=&quot;hidden&quot; class=&quot;ac-setting-input-date__value&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+?&gt;
+&lt;table class=&quot;ac-column-setting&lt;?php echo $this-&gt;name ? esc_attr( &#x27; ac-column-setting--&#x27; . $this-&gt;name ) : &#x27;&#x27;; ?&gt;&quot; data-setting=&quot;&lt;?php echo esc_attr( $this-&gt;name ); ?&gt;&quot;&gt;
+    &lt;tr&gt;
+        &lt;td class=&quot;col-label&quot;&gt;
+            &lt;label for=&quot;&lt;?php echo esc_attr( $this-&gt;for ); ?&gt;&quot;&gt;
+				&lt;span class=&quot;label&lt;?php echo esc_attr( $this-&gt;tooltip ? &#x27; tooltip&#x27; : &#x27;&#x27; ); ?&gt;&quot;&gt;
+					&lt;?php echo $this-&gt;label; ?&gt;
+				&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/td&gt;
+        &lt;td class=&quot;col-input&quot;&gt;
+            &lt;div class=&quot;ac-setting-input ac-setting-input-date&quot;&gt;
+                &lt;div class=&quot;radio-labels vertical&quot;&gt;
+
+					&lt;?php foreach ( $this-&gt;date_options as $value =&gt; $label ) : ?&gt;
+                        &lt;label&gt;
+                            &lt;input class=&quot;&lt;?php echo esc_attr( $value ); ?&gt;&quot; type=&quot;radio&quot; name=&quot;&lt;?php echo $this-&gt;setting-&gt;get_name(); ?&gt;&quot; value=&quot;&lt;?php echo esc_attr( $value ); ?&gt;&quot;&lt;?php checked( $this-&gt;date_format, $value ); ?&gt;&gt;
+							&lt;?php echo $label; ?&gt;
+                        &lt;/label&gt;
+					&lt;?php endforeach; ?&gt;
+
+                &lt;/div&gt;
+                &lt;p class=&quot;help-msg&quot;&gt;&lt;/p&gt;
+				&lt;input type=&quot;hidden&quot; class=&quot;ac-setting-input-date__value&quot; name=&quot;&lt;?php echo $this-&gt;setting-&gt;get_name(); ?&gt;&quot; value=&quot;&lt;?php echo $this-&gt;date_format; ?&gt;&quot;&gt;
+            &lt;/div&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+</pre></details></body></html>

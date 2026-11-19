@@ -1,0 +1,123 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/external/action.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/external/action.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class NF_FU_External_Action
+ */
+class NF_FU_External_Action extends NF_Abstracts_Action {
+
+	/**
+	 * @var string
+	 */
+	protected $_name = &#x27;file-upload-external&#x27;;
+
+	/**
+	 * @var array
+	 */
+	protected $_tags = array();
+
+	/**
+	 * @var string
+	 */
+	protected $_timing = &#x27;normal&#x27;;
+
+	/**
+	 * @var int
+	 */
+	protected $_priority = &#x27;9&#x27;;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		$this-&gt;_nicename = __( &#x27;External File Upload&#x27;, &#x27;ninja-forms-uploads&#x27; );
+
+		$this-&gt;build_settings();
+	}
+
+	/**
+	 * Load settings for the action
+	 */
+	protected function build_settings() {
+		$settings = array();
+		$external = NF_File_Uploads()-&gt;externals;
+		$services = $external-&gt;get_services();
+		foreach ( $services as $service ) {
+			if ( ! ( $instance = $external-&gt;get( $service, $services ) ) ) {
+				continue;
+			}
+
+			if ( $instance-&gt;is_compatible() &amp;&amp; $instance-&gt;is_connected() ) {
+
+				$settings[ &#x27;field_list_&#x27; . $service ] = array(
+					&#x27;name&#x27;        =&gt; &#x27;field_list_&#x27; . $service,
+					&#x27;type&#x27;        =&gt; &#x27;field-list&#x27;,
+					&#x27;label&#x27;       =&gt; $external-&gt;get( $service )-&gt;name,
+					&#x27;width&#x27;       =&gt; &#x27;full&#x27;,
+					&#x27;group&#x27;       =&gt; &#x27;primary&#x27;,
+					&#x27;field_types&#x27; =&gt; array( NF_FU_File_Uploads::TYPE ),
+					&#x27;settings&#x27;    =&gt; array(
+						array(
+							&#x27;name&#x27;  =&gt; &#x27;toggle&#x27;,
+							&#x27;type&#x27;  =&gt; &#x27;toggle&#x27;,
+							&#x27;label&#x27; =&gt; __( &#x27;Field&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+							&#x27;width&#x27; =&gt; &#x27;full&#x27;,
+						),
+					),
+				);
+			}
+		}
+
+		$this-&gt;_settings = array_merge( $this-&gt;_settings, $settings );
+	}
+
+	/**
+	 * Process the upload to the service for those files selected in the action
+	 *
+	 * @param array $action_settings
+	 * @param int   $form_id
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public function process( $action_settings, $form_id, $data ) {
+		$services = NF_File_Uploads()-&gt;externals-&gt;get_services();
+
+		foreach ( $data[&#x27;fields&#x27;] as $key =&gt; $field ) {
+			if ( NF_FU_File_Uploads::TYPE !== $field[&#x27;type&#x27;] ) {
+				continue;
+			}
+
+			if ( ! isset( $field[&#x27;files&#x27;] ) ||  empty( $field[&#x27;files&#x27;] )) {
+				continue;
+			}
+
+			foreach ( $services as $service ) {
+				$field_key = &#x27;field_list_&#x27; . $service . &#x27;-&#x27; . $field[&#x27;key&#x27;];
+
+				if ( ! isset( $action_settings[ $field_key ] ) || 1 != $action_settings[ $field_key ] ) {
+					continue;
+				}
+
+				foreach ( $field[&#x27;files&#x27;] as $files_key =&gt; $file ) {
+					if ( ! ( $instance = NF_File_Uploads()-&gt;externals-&gt;get( $service, $services ) ) ) {
+						continue;
+					}
+
+					$file[&#x27;data&#x27;] = $instance-&gt;process_upload( $file[&#x27;data&#x27;] );
+
+					$field[&#x27;files&#x27;][ $files_key ] = $file;
+				}
+
+				$data[&#x27;fields&#x27;][ $key ] = $field;
+
+				do_action( &#x27;ninja_forms_uploads_external_action_post_process&#x27;, $field, $service );
+			}
+		}
+
+		return $data;
+	}
+}</pre></details></body></html>

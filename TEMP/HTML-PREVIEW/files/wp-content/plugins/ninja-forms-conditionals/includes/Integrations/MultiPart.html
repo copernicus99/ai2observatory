@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/includes/Integrations/MultiPart.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/includes/Integrations/MultiPart.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+final class NF_ConditionalLogic_Integrations_MultiPart
+{
+    public function __construct()
+    {
+        add_filter( &#x27;ninja_forms_conditional_logic_triggers&#x27;, array( $this, &#x27;register_triggers&#x27; ), 10, 1 );
+        add_filter( &#x27;ninja_forms_conditional_logic_trigger_type_part&#x27;, array( $this, &#x27;get_part&#x27; ), 10, 2 );
+    }
+
+    public function register_triggers( $triggers )
+    {
+        $triggers[ &#x27;hide_part&#x27; ] = array(
+            &#x27;key&#x27;      =&gt; &#x27;hide_part&#x27;,
+            &#x27;label&#x27;    =&gt; __( &#x27;Hide Part&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+            &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Triggers_HidePart()
+        );
+
+        $triggers[ &#x27;show_part&#x27; ] = array(
+            &#x27;key&#x27;      =&gt; &#x27;show_part&#x27;,
+            &#x27;label&#x27;    =&gt; __( &#x27;Show Part&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+            &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Triggers_ShowPart()
+        );
+
+        return $triggers;
+    }
+
+    public function get_part( $key, $data )
+    {
+        $form = Ninja_Forms()-&gt;form( $data[&#x27;id&#x27;] )-&gt;get();
+
+        if( isset( $data[ &#x27;settings&#x27; ][ &#x27;is_preview&#x27; ] ) &amp;&amp; $data[ &#x27;settings&#x27; ][ &#x27;is_preview&#x27; ] ){
+            $form_settings = get_user_option( &#x27;nf_form_preview_&#x27; . $data[&#x27;form_id&#x27;] );
+            $form-&gt;update_settings( $form_settings );
+        }
+
+        $formContentData =  $form-&gt;get_setting( &#x27;formContentData&#x27; );
+
+        if( ! $formContentData ) return false;
+
+        $parts = array();
+        foreach( $formContentData as $content ){
+            if( &#x27;part&#x27; != $content[ &#x27;type&#x27; ] || $key != $content[ &#x27;key&#x27; ] ) continue;
+            array_push( $parts, $content );
+        }
+
+        if( ! is_array( $parts ) ) return false;
+
+        return array_shift( $parts );
+    }
+
+    public static function extract_field_keys( $part )
+    {
+        if( ! isset( $part[ &#x27;formContentData&#x27; ] ) ) return array();
+        $field_keys = array();
+        foreach( $part[ &#x27;formContentData&#x27; ] as $content ){
+            if( is_string( $content ) ){
+                array_push( $field_keys, $content );
+            } else {
+                $field_keys = array_merge($field_keys, self::extract_field_keys_from_layout( $content ) );
+            }
+        }
+        return $field_keys;
+    }
+
+    public static function extract_field_keys_from_layout( $content )
+    {
+        if( ! isset( $content[ &#x27;cells&#x27; ] ) ) return array();
+
+        $field_keys = array();
+        foreach( $content[ &#x27;cells&#x27; ] as $cell ){
+            if( ! isset( $cell[ &#x27;fields&#x27; ] ) ) continue;
+            $field_keys = array_merge( $field_keys, $cell[ &#x27;fields&#x27; ] );
+        }
+
+        return $field_keys;
+    }
+
+
+}
+</pre></details></body></html>

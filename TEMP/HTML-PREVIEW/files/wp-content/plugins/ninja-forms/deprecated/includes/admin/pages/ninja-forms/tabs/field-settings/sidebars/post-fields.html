@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/field-settings/sidebars/post-fields.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/field-settings/sidebars/post-fields.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+// For backwards compatibilty, make sure that this function doesn&#x27;t already exist.
+if ( !function_exists ( &#x27;ninja_forms_register_field_post_tags&#x27; ) ) {
+	function ninja_forms_register_sidebar_post_fields(){
+		$add_field = apply_filters( &#x27;ninja_forms_use_post_fields&#x27;, false );
+		if ( !$add_field )
+			return false;
+
+		if(isset($_REQUEST[&#x27;form_id&#x27;])){
+			$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		}else{
+			$form_id = &#x27;&#x27;;
+		}
+		if( function_exists( &#x27;ninja_forms_get_current_tab&#x27; ) ){
+			$current_tab = ninja_forms_get_current_tab();
+		}
+		if($form_id != &#x27;&#x27; AND $current_tab == &#x27;fields&#x27;){
+			$form_row = ninja_forms_get_form_by_id($form_id);
+			if(is_array($form_row) AND !empty($form_row)){
+				$form_data = $form_row[&#x27;data&#x27;];
+				if( isset( $form_data[&#x27;create_post&#x27;] ) ){
+					$create_post = $form_data[&#x27;create_post&#x27;];
+				}else{
+					$create_post = &#x27;&#x27;;
+				}
+				
+			}else{
+				$create_post = &#x27;&#x27;;
+			}
+		}else{
+			$create_post = &#x27;&#x27;;
+		}
+		$args = array(
+			&#x27;name&#x27; =&gt; &#x27;Post Creation Fields&#x27;,
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;builder&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_sidebar_display_fields&#x27;
+		);
+		if($create_post == 1){
+			if( function_exists( &#x27;ninja_forms_register_sidebar&#x27; ) ){
+				ninja_forms_register_sidebar(&#x27;post_fields&#x27;, $args);
+			}
+		}
+	}
+
+	add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_sidebar_post_fields&#x27; );
+}</pre></details></body></html>

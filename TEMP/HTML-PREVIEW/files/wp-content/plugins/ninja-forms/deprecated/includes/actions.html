@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/actions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/actions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Front-end Actions
+ *
+ * @package     Ninja Forms
+ * @subpackage  Functions
+ * @copyright   Copyright (c) 2014, WP Ninjas
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+ */
+
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Hooks NF actions, when present in the $_GET superglobal. Every nf_action
+ * present in $_GET is called using WordPress&#x27;s do_action function. These
+ * functions are called on init.
+ *
+ * @since 2.7
+ * @return void
+*/
+function nf_get_actions() {
+	if ( isset( $_GET[&#x27;nf_action&#x27;] ) ) {
+		do_action( &#x27;nf_&#x27; . $_GET[&#x27;nf_action&#x27;], $_GET );
+	}
+}
+add_action( &#x27;init&#x27;, &#x27;nf_get_actions&#x27;, 999 );
+
+/**
+ * Hooks NF actions, when present in the $_POST superglobal. Every nf_action
+ * present in $_POST is called using WordPress&#x27;s do_action function. These
+ * functions are called on init.
+ *
+ * @since 2.7
+ * @return void
+*/
+function nf_post_actions() {
+	if ( isset( $_POST[&#x27;nf_action&#x27;] ) ) {
+		do_action( &#x27;nf_&#x27; . $_POST[&#x27;nf_action&#x27;], $_POST );
+	}
+}
+add_action( &#x27;init&#x27;, &#x27;nf_post_actions&#x27;, 999 );</pre></details></body></html>

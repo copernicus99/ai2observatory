@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/display/field-class-filter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/display/field-class-filter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/* 
+ *
+ * Function that loops through all of our fields and adds a listner class if this field is referenced in another conditional.
+ *
+ * @since 1.2.1
+ * @return void
+ */
+
+function ninja_forms_conditionals_field_class_filter( $form_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	$field_results = ninja_forms_get_fields_by_form_id( $form_id );
+
+	foreach( $field_results as $field ){
+
+		if ( isset ( $field[&#x27;data&#x27;][&#x27;conditional&#x27;] ) ) {
+			$conditional = $field[&#x27;data&#x27;][&#x27;conditional&#x27;];
+		} else {
+			$conditional = &#x27;&#x27;;
+		}
+
+		if ( isset( $conditional ) AND is_array( $conditional ) ) {
+			foreach ( $conditional as $conditional ) {
+				if ( isset( $conditional[&#x27;cr&#x27;] ) AND is_array( $conditional[&#x27;cr&#x27;] ) ) {
+					foreach ( $conditional[&#x27;cr&#x27;] as $cr ) {
+						if ( isset ( $ninja_forms_loading ) ) {
+							$cr_field_class = $ninja_forms_loading-&gt;get_field_setting( $cr[&#x27;field&#x27;], &#x27;field_class&#x27; );
+						} else {
+							$cr_field_class = $ninja_forms_processing-&gt;get_field_setting( $cr[&#x27;field&#x27;], &#x27;field_class&#x27; );
+						}
+
+						if ( strpos ( $cr_field_class, &#x27;ninja-forms-field-conditional-listen&#x27; ) === false ) {
+							$cr_field_class .= &#x27; ninja-forms-field-conditional-listen &#x27;;
+						}
+
+						if ( isset ( $ninja_forms_loading ) ) {
+							$ninja_forms_loading-&gt;update_field_setting( $cr[&#x27;field&#x27;], &#x27;field_class&#x27;, $cr_field_class );
+						} else {
+							$ninja_forms_processing-&gt;update_field_setting( $cr[&#x27;field&#x27;], &#x27;field_class&#x27;, $cr_field_class );
+						}
+
+					}
+				}
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_display_init&#x27;, &#x27;ninja_forms_conditionals_field_class_filter&#x27;, 11, 2 );</pre></details></body></html>

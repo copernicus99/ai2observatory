@@ -1,0 +1,160 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/admin/menus/uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/admin/menus/uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+final class NF_FU_Admin_Menus_Uploads extends NF_Abstracts_Submenu {
+
+	public $parent_slug = &#x27;ninja-forms&#x27;;
+	public $menu_slug = &#x27;ninja-forms-uploads&#x27;;
+	public $priority = 14;
+	public $table;
+
+	/**
+	 * NF_FU_Admin_Menus_Uploads constructor.
+	 */
+	public function __construct() {
+		$this-&gt;page_title  = __( &#x27;File Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; );
+
+		parent::__construct();
+
+		if( isset( $_POST[ &#x27;update_ninja_forms_settings&#x27; ] ) ) {
+			$this-&gt;update_settings();
+		}
+
+		if ( ! defined( &#x27;DOING_AJAX&#x27; ) ) {
+			add_action( &#x27;admin_init&#x27;, array( &#x27;NF_FU_Admin_UploadsTable&#x27;, &#x27;process_bulk_action&#x27; ) );
+			add_action( &#x27;admin_init&#x27;, array( &#x27;NF_FU_Admin_UploadsTable&#x27;, &#x27;delete_upload&#x27; ) );
+			add_action( &#x27;admin_notices&#x27;, array( &#x27;NF_FU_Admin_UploadsTable&#x27;, &#x27;action_notices&#x27; ) );
+		}
+	}
+
+	/**
+	 * Get URL to the settings page
+	 *
+	 * @param string $tab
+	 * @param array  $args
+	 *
+	 * @param bool   $esc
+	 *
+	 * @return string
+	 */
+	public function get_url( $tab = &#x27;&#x27;, $args = array(), $esc = true ) {
+		$url = admin_url( &#x27;admin.php&#x27; );
+
+		$defaults = array(
+			&#x27;page&#x27; =&gt; $this-&gt;menu_slug,
+		);
+
+		if ( $tab ) {
+			$args[&#x27;tab&#x27;] = $tab;
+		}
+
+		$args = array_merge( $args, $defaults );
+
+		$url = add_query_arg( $args, $url );
+
+		if ( $esc ) {
+			$url = esc_url( $url );
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Get the tabs for the settings page
+	 * 
+	 * @return mixed|void
+	 */
+	protected function get_tabs() {
+		$tabs = array(
+			&#x27;browse&#x27;   =&gt; __( &#x27;Browser Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;settings&#x27; =&gt; __( &#x27;Upload Settings&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		);
+
+		return apply_filters( &#x27;ninja_forms_uploads_tabs&#x27;, $tabs );
+	}
+
+	/**
+	 * @param null $tabs
+	 *
+	 * @return mixed
+	 */
+	protected function get_active_tab( $tabs = null ) {
+		if ( is_null( $tabs ) ) {
+			$tabs = $this-&gt;get_tabs();
+		}
+		$tab_keys = array_keys( $tabs );
+
+		return ( isset( $_GET[&#x27;tab&#x27;] ) ) ? $_GET[&#x27;tab&#x27;] : reset( $tab_keys );
+	}
+
+	/**
+	 *
+	 */
+	public function display() {
+		$tabs = $this-&gt;get_tabs();
+		$active_tab = $this-&gt;get_active_tab( $tabs );
+		$save_button_text = __( &#x27;Save&#x27;, &#x27;ninja-forms-uploads&#x27;);
+
+		$table = false;
+		if ( &#x27;browse&#x27; === $active_tab ) {
+			wp_enqueue_script( &#x27;jquery-ui-datepicker&#x27; );
+			wp_enqueue_style( &#x27;jquery-ui-datepicker&#x27;, Ninja_Forms::$url . &#x27;deprecated/assets/css/jquery-ui-fresh.min.css&#x27; );
+			$table = new NF_FU_Admin_UploadsTable();
+			$table-&gt;prepare_items();
+		}
+
+		wp_enqueue_script( &#x27;postbox&#x27; );
+		wp_enqueue_script( &#x27;jquery-ui-draggable&#x27; );
+
+		wp_nonce_field( &#x27;closedpostboxes&#x27;, &#x27;closedpostboxesnonce&#x27;, false );
+		wp_nonce_field( &#x27;meta-box-order&#x27;, &#x27;meta-box-order-nonce&#x27;, false );
+
+		NF_File_Uploads()-&gt;template( &#x27;admin-menu-uploads.html&#x27;, compact( &#x27;tabs&#x27;, &#x27;active_tab&#x27;, &#x27;save_button_text&#x27;, &#x27;table&#x27; ) );
+	}
+
+	/**
+	 * Handle saving settings
+	 */
+	protected function update_settings() {
+		if ( ! isset( $_POST[&#x27;update_ninja_forms_settings&#x27;] ) ) {
+			return;
+		}
+
+		$plugin_settings = NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_settings();
+		$whitelist       = apply_filters( &#x27;ninja_forms_file_uploads_settings_whitelist&#x27;, NF_File_Uploads()-&gt;config( &#x27;settings-upload&#x27; ) ) ;
+
+		$updates = false;
+
+		foreach ( $whitelist as $key =&gt; $setting ) {
+			$value = filter_input( INPUT_POST, $key );
+			if ( ! isset( $value ) ) {
+				continue;
+			}
+
+			if ( isset( $plugin_settings[ $key ] ) &amp;&amp; $value === $plugin_settings[ $key ] ) {
+				continue;
+			}
+
+			if ( &#x27;max_filesize&#x27; === $key ) {
+				if ( $value &gt; preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, NF_FU_Helper::format_mb( ini_get( &#x27;upload_max_filesize&#x27; ) ) ) ) {
+					$value = preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, NF_FU_Helper::format_mb( ini_get( &#x27;upload_max_filesize&#x27; ) ) );
+				}
+				$value = preg_replace( &quot;/[^0-9]/&quot;, &quot;&quot;, $value );
+			}
+
+			if ( &#x27;custom_upload_dir&#x27; !== $key ) {
+				$value = sanitize_text_field( $value );
+			}
+
+			NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;set_setting( $key, $value );
+			$updates = true;
+		}
+
+		if ( $updates ) {
+			NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;update_settings();
+		}
+	}
+}
+
+</pre></details></body></html>

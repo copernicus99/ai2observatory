@@ -1,0 +1,425 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/ImportExport.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/ImportExport.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_ImportExport extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $menu_slug = &#x27;nf-import-export&#x27;;
+
+    public function __construct()
+    {
+        add_action( &#x27;init&#x27;, array( $this, &#x27;import_form_listener&#x27; ), 0 );
+        add_action( &#x27;init&#x27;, array( $this, &#x27;export_form_listener&#x27; ), 0 );
+
+        add_action( &#x27;init&#x27;, array( $this, &#x27;import_fields_listener&#x27; ), 0 );
+        add_action( &#x27;init&#x27;, array( $this, &#x27;export_fields_listener&#x27; ), 0 );
+
+        add_filter( &#x27;ninja_forms_before_import_fields&#x27;, array( $this, &#x27;import_fields_backwards_compatibility&#x27; ) );
+
+        parent::__construct();
+    }
+
+    public function get_page_title()
+    {
+        return __( &#x27;Import / Export&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    public function import_form_listener()
+    {
+        $capability = apply_filters( &#x27;ninja_forms_admin_import_export_capabilities&#x27;, &#x27;manage_options&#x27; );
+        $capability = apply_filters( &#x27;ninja_forms_admin_import_form_capabilities&#x27;,   $capability      );
+        if( ! current_user_can( $capability ) ) return;
+
+        if( ! isset( $_FILES[ &#x27;nf_import_form&#x27; ] ) || ! $_FILES[ &#x27;nf_import_form&#x27; ] ) return;
+
+        $this-&gt;upload_error_check( $_FILES[ &#x27;nf_import_form&#x27; ] );
+
+        $data = file_get_contents( $_FILES[ &#x27;nf_import_form&#x27; ][ &#x27;tmp_name&#x27; ] );
+
+        // Check to see if the user turned off UTF-8 encoding
+        $decode_utf8 = TRUE;
+        if( $_REQUEST[ &#x27;nf_import_form_turn_off_encoding&#x27; ] ) {
+        	$decode_utf8 = FALSE;
+        }
+
+        $import = Ninja_Forms()-&gt;form()-&gt;import_form( $data, $decode_utf8 );
+
+        if( ! $import ){
+            
+            $err_msg = &#x27;&#x27;;
+            if ( function_exists( &#x27;json_last_error_msg&#x27; ) ) {
+                $err_msg = json_last_error_msg();
+            }
+
+            wp_die(
+                __( &#x27;There uploaded file is not a valid format.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; &#x27; . $err_msg,
+                __( &#x27;Invalid Form Upload.&#x27;, &#x27;ninja-forms&#x27; )
+            );
+        }
+    }
+
+    public function export_form_listener()
+    {
+        $capability = apply_filters( &#x27;ninja_forms_admin_import_export_capabilities&#x27;, &#x27;manage_options&#x27; );
+        $capability = apply_filters( &#x27;ninja_forms_admin_export_form_capabilities&#x27;,   $capability      );
+        if( ! current_user_can( $capability ) ) return;
+
+        if( isset( $_REQUEST[ &#x27;nf_export_form&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;nf_export_form&#x27; ] ){
+            $form_id = $_REQUEST[ &#x27;nf_export_form&#x27; ];
+            Ninja_Forms()-&gt;form( $form_id )-&gt;export_form();
+        }
+    }
+
+    public function import_fields_listener()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_import_fields_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( ! isset( $_FILES[ &#x27;nf_import_fields&#x27; ] ) || ! $_FILES[ &#x27;nf_import_fields&#x27; ] ) return;
+
+        $this-&gt;upload_error_check( $_FILES[ &#x27;nf_import_fields&#x27; ] );
+
+        $import = file_get_contents( $_FILES[ &#x27;nf_import_fields&#x27; ][ &#x27;tmp_name&#x27; ] );
+
+        $fields = unserialize( $import );
+
+        foreach( $fields as $settings ){
+            Ninja_Forms()-&gt;form()-&gt;import_field( $settings );
+        }
+    }
+
+    public function export_fields_listener()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_admin_export_fields_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( isset( $_REQUEST[ &#x27;nf_export_fields&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;nf_export_fields&#x27; ] ){
+            $field_ids = $_REQUEST[ &#x27;nf_export_fields&#x27; ];
+
+            $fields = array();
+            foreach( $field_ids as $field_id ){
+                $field = Ninja_Forms()-&gt;form()-&gt;field( $field_id )-&gt;get();
+
+                $fields[] = $field-&gt;get_settings();
+            }
+
+            header(&quot;Content-type: application/csv&quot;);
+            header(&quot;Content-Disposition: attachment; filename=favorites-&quot; . time() . &quot;.nff&quot;);
+            header(&quot;Pragma: no-cache&quot;);
+            header(&quot;Expires: 0&quot;);
+
+            echo serialize( $fields );
+
+            die();
+        }
+    }
+
+
+    public function display()
+    {
+        $tabs = apply_filters( &#x27;ninja_forms_import_export_tabs&#x27;, array(
+            &#x27;forms&#x27; =&gt; __( &#x27;Form&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;favorite_fields&#x27; =&gt; __( &#x27;Favorite Fields&#x27;, &#x27;ninja-forms&#x27; )
+            )
+        );
+
+        $tab_keys = array_keys( $tabs );
+        $active_tab = ( isset( $_GET[ &#x27;tab&#x27; ] ) ) ? $_GET[ &#x27;tab&#x27; ] : reset( $tab_keys );
+
+        $this-&gt;add_meta_boxes();
+
+        wp_enqueue_script(&#x27;postbox&#x27;);
+        wp_enqueue_script(&#x27;jquery-ui-draggable&#x27;);
+
+	    wp_enqueue_style( &#x27;nf-admin-settings&#x27;, Ninja_Forms::$url . &#x27;assets/css/admin-settings.css&#x27; );
+
+        wp_nonce_field( &#x27;closedpostboxes&#x27;, &#x27;closedpostboxesnonce&#x27;, false );
+        wp_nonce_field( &#x27;meta-box-order&#x27;, &#x27;meta-box-order-nonce&#x27;, false );
+
+	    wp_register_script( &#x27;ninja_forms_admin_import_export&#x27;,
+		    Ninja_Forms::$url . &#x27;assets/js/admin-import-export.js&#x27;, array( &#x27;jquery&#x27; ), FALSE, TRUE );
+
+	    wp_enqueue_script( &#x27;ninja_forms_admin_import_export&#x27; );
+
+        Ninja_Forms::template( &#x27;admin-menu-import-export.html.php&#x27;, compact( &#x27;tabs&#x27;, &#x27;active_tab&#x27; ) );
+    }
+
+    public function add_meta_boxes()
+    {
+        /*
+         * Forms
+         */
+        add_meta_box(
+            &#x27;nf_import_export_forms_import&#x27;,
+            __( &#x27;Import Forms&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;template_import_forms&#x27; ),
+            &#x27;nf_import_export_forms&#x27;
+        );
+
+        add_meta_box(
+            &#x27;nf_import_export_forms_export&#x27;,
+            __( &#x27;Export Forms&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;template_export_forms&#x27; ),
+            &#x27;nf_import_export_forms&#x27;
+        );
+
+        /*
+         * FAVORITE FIELDS
+         */
+        add_meta_box(
+            &#x27;nf_import_export_favorite_fields_import&#x27;,
+            __( &#x27;Import Favorite Fields&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;template_import_favorite_fields&#x27; ),
+            &#x27;nf_import_export_favorite_fields&#x27;
+        );
+
+        add_meta_box(
+            &#x27;nf_import_export_favorite_fields_export&#x27;,
+            __( &#x27;Export Favorite Fields&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;template_export_favorite_fields&#x27; ),
+            &#x27;nf_import_export_favorite_fields&#x27;
+        );
+    }
+
+    public function template_import_forms()
+    {
+        Ninja_Forms::template( &#x27;admin-metabox-import-export-forms-import.html.php&#x27; );
+    }
+
+    public function template_export_forms()
+    {
+    	/**
+	     * we&#x27;re gonna create a new array so that we can select a form in the
+	     * export drop down based on a url parameter
+	     **/
+    	$formObjs = Ninja_Forms()-&gt;form()-&gt;get_forms();
+    	$forms = array();
+    	foreach( $formObjs as $form ) {
+    		$selected = &#x27;&#x27;;
+
+    		if( isset( $_REQUEST[ &#x27;exportFormId&#x27; ] )
+		        &amp;&amp; $form-&gt;get_id() == $_REQUEST[ &#x27;exportFormId&#x27; ] ) {
+    			$selected = &#x27;selected&#x27;;
+		    }
+    		$forms[] = array(
+    			&#x27;id&#x27; =&gt; $form-&gt;get_id(),
+			    &#x27;title&#x27; =&gt; $form-&gt;get_setting( &#x27;title&#x27; ),
+			    &#x27;selected&#x27; =&gt; $selected,
+		    );
+	    }
+
+        Ninja_Forms::template( &#x27;admin-metabox-import-export-forms-export.html.php&#x27;, compact( &#x27;forms&#x27; ) );
+    }
+
+    public function template_import_favorite_fields()
+    {
+        Ninja_Forms::template( &#x27;admin-metabox-import-export-favorite-fields-import.html.php&#x27; );
+    }
+
+    public function template_export_favorite_fields()
+    {
+        $fields = Ninja_Forms()-&gt;form()-&gt;get_fields( array( &#x27;saved&#x27; =&gt; 1) );
+        Ninja_Forms::template( &#x27;admin-metabox-import-export-favorite-fields-export.html.php&#x27;, compact( &#x27;fields&#x27; ) );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Backwards Compatibility
+    |--------------------------------------------------------------------------
+    */
+
+    public function import_fields_backwards_compatibility( $field )
+    {
+        //TODO: This was copied over. Instead need to abstract backwards compatibility for re-use.
+        // Flatten field settings array
+        if( isset( $field[ &#x27;data&#x27; ] ) ){
+            $field = array_merge( $field, $field[ &#x27;data&#x27; ] );
+            unset( $field[ &#x27;data&#x27; ] );
+        }
+
+        // Drop form_id in favor of parent_id, which is set by the form.
+        if( isset( $field[ &#x27;form_id&#x27; ] ) ){
+            unset( $field[ &#x27;form_id&#x27; ] );
+        }
+
+        // Remove `_` prefix from type setting
+        $field[ &#x27;type&#x27; ] = ltrim( $field[ &#x27;type&#x27; ], &#x27;_&#x27; );
+
+        // Type: `text` -&gt; `textbox`
+        if( &#x27;text&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;textbox&#x27;;
+        }
+
+        if( &#x27;submit&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;processing_label&#x27; ] = &#x27;Processing&#x27;;
+        }
+
+        if( &#x27;calc&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;note&#x27;;
+
+            if( isset( $field[ &#x27;calc_method&#x27; ] ) ) {
+
+                switch( $field[ &#x27;calc_method&#x27; ] ){
+                    case &#x27;eq&#x27;:
+                        $method = __( &#x27;Equation (Advanced)&#x27;, &#x27;ninja-forms&#x27; );
+                        break;
+                    case &#x27;fields&#x27;:
+                        $method = __( &#x27;Operations and Fields (Advanced)&#x27;, &#x27;ninja-forms&#x27; );
+                        break;
+                    case &#x27;auto&#x27;:
+                        $method = __( &#x27;Auto-Total Fields&#x27;, &#x27;ninja-forms&#x27; );
+                        break;
+                    default:
+                        $method = &#x27;&#x27;;
+                }
+                $field[&#x27;default&#x27;] = $method . &quot;\r\n&quot;;
+
+                if (&#x27;eq&#x27; == $field[&#x27;calc_method&#x27;] &amp;&amp; isset( $field[&#x27;calc_eq&#x27;] ) ) {
+                    $field[&#x27;default&#x27;] .= $field[&#x27;calc_eq&#x27;];
+                }
+
+                if (&#x27;fields&#x27; == $field[&#x27;calc_method&#x27;] &amp;&amp; isset( $field[&#x27;calc&#x27;] ) ) {
+                    // TODO: Support &#x27;operations and fields (advanced)&#x27; calculations.
+                }
+
+                if (&#x27;auto&#x27; == $field[&#x27;calc_method&#x27;] &amp;&amp; isset( $field[&#x27;calc&#x27;] ) ) {
+                    // TODO: Support &#x27;auto-totaling&#x27; calculations.
+                }
+            }
+
+            unset( $field[ &#x27;calc&#x27; ] );
+            unset( $field[ &#x27;calc_eq&#x27; ] );
+            unset( $field[ &#x27;calc_method&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;email&#x27; ] ) ){
+
+            if( &#x27;textbox&#x27; == $field[ &#x27;type&#x27; ] &amp;&amp; $field[ &#x27;email&#x27; ] ) {
+                $field[&#x27;type&#x27;] = &#x27;email&#x27;;
+            }
+            unset( $field[ &#x27;email&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;class&#x27; ] ) ){
+            $field[ &#x27;element_class&#x27; ] = $field[ &#x27;class&#x27; ];
+            unset( $field[ &#x27;class&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;req&#x27; ] ) ){
+            $field[ &#x27;required&#x27; ] = $field[ &#x27;req&#x27; ];
+            unset( $field[ &#x27;req&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;default_value_type&#x27; ] ) ){
+
+            /* User Data */
+            if( &#x27;_user_id&#x27; == $field[ &#x27;default_value_type&#x27; ] )           $field[ &#x27;default&#x27; ] = &#x27;{user:id}&#x27;;
+            if( &#x27;_user_email&#x27; == $field[ &#x27;default_value_type&#x27; ] )        $field[ &#x27;default&#x27; ] = &#x27;{user:email}&#x27;;
+            if( &#x27;_user_lastname&#x27; == $field[ &#x27;default_value_type&#x27; ] )     $field[ &#x27;default&#x27; ] = &#x27;{user:last_name}&#x27;;
+            if( &#x27;_user_firstname&#x27; == $field[ &#x27;default_value_type&#x27; ] )    $field[ &#x27;default&#x27; ] = &#x27;{user:first_name}&#x27;;
+            if( &#x27;_user_display_name&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{user:display_name}&#x27;;
+
+            /* Post Data */
+            if( &#x27;post_id&#x27; == $field[ &#x27;default_value_type&#x27; ] )    $field[ &#x27;default&#x27; ] = &#x27;{post:id}&#x27;;
+            if( &#x27;post_url&#x27; == $field[ &#x27;default_value_type&#x27; ] )   $field[ &#x27;default&#x27; ] = &#x27;{post:url}&#x27;;
+            if( &#x27;post_title&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{post:title}&#x27;;
+
+            /* System Data */
+            if( &#x27;today&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{system:date}&#x27;;
+
+            /* Miscellaneous */
+            if( &#x27;_custom&#x27; == $field[ &#x27;default_value_type&#x27; ] &amp;&amp; isset( $field[ &#x27;default_value&#x27; ] ) ){
+                $field[ &#x27;default&#x27; ] = $field[ &#x27;default_value&#x27; ];
+            }
+            if( &#x27;querystring&#x27; == $field[ &#x27;default_value_type&#x27; ] &amp;&amp; isset( $field[ &#x27;default_value&#x27; ] ) ){
+                $field[ &#x27;default&#x27; ] = &#x27;{&#x27; . $field[ &#x27;default_value&#x27; ] . &#x27;}&#x27;;
+            }
+
+            unset( $field[ &#x27;default_value&#x27; ] );
+            unset( $field[ &#x27;default_value_type&#x27; ] );
+        }
+
+        if( &#x27;list&#x27; == $field[ &#x27;type&#x27; ] ) {
+
+            if ( isset( $field[ &#x27;list_type&#x27; ] ) ) {
+
+                if (&#x27;dropdown&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listselect&#x27;;
+                }
+                if (&#x27;radio&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listradio&#x27;;
+                }
+                if (&#x27;checkbox&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listcheckbox&#x27;;
+                }
+                if (&#x27;multi&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listmultiselect&#x27;;
+                }
+            }
+
+            if( isset( $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ] ) ) {
+                $field[ &#x27;options&#x27; ] = $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ];
+                unset( $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ] );
+            }
+        }
+
+        // Convert `textbox` to other field types
+        foreach( array( &#x27;fist_name&#x27;, &#x27;last_name&#x27;, &#x27;user_zip&#x27;, &#x27;user_city&#x27;, &#x27;user_phone&#x27;, &#x27;user_email&#x27;, &#x27;user_address_1&#x27;, &#x27;user_address_2&#x27;, &#x27;datepicker&#x27; ) as $item ) {
+            if ( isset( $field[ $item ] ) &amp;&amp; $field[ $item ] ) {
+                $field[ &#x27;type&#x27; ] = str_replace( array( &#x27;_&#x27;, &#x27;user&#x27;, &#x27;1&#x27;, &#x27;2&#x27;, &#x27;picker&#x27; ), &#x27;&#x27;, $item );
+
+                unset( $field[ $item ] );
+            }
+        }
+
+        if( &#x27;timed_submit&#x27; == $field[ &#x27;type&#x27; ] ) {
+            $field[ &#x27;type&#x27; ] = &#x27;submit&#x27;;
+        }
+
+        return $field;
+    }
+
+    private function upload_error_check( $file )
+    {
+        if( ! $file[ &#x27;error&#x27; ] ) return;
+
+        switch ( $file[ &#x27;error&#x27; ] ) {
+            case UPLOAD_ERR_INI_SIZE:
+                $error_message = __( &#x27;The uploaded file exceeds the upload_max_filesize directive in php.ini.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $error_message = __( &#x27;The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $error_message = __( &#x27;The uploaded file was only partially uploaded.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $error_message = __( &#x27;No file was uploaded.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $error_message = __( &#x27;Missing a temporary folder.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $error_message = __( &#x27;Failed to write file to disk.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $error_message = __( &#x27;File upload stopped by extension.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            default:
+                $error_message = __( &#x27;Unknown upload error.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+        }
+
+        $args = array(
+            &#x27;title&#x27; =&gt; __( &#x27;File Upload Error&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;message&#x27; =&gt; $error_message,
+            &#x27;debug&#x27; =&gt; $file,
+        );
+        $message = Ninja_Forms()-&gt;template( &#x27;admin-wp-die.html.php&#x27;, $args );
+        wp_die( $message, $args[ &#x27;title&#x27; ], array( &#x27;back_link&#x27; =&gt; TRUE ) );
+    }
+
+    public function get_capability()
+    {
+        return apply_filters( &#x27;ninja_forms_admin_import_export_capabilities&#x27;, $this-&gt;capability );
+    }
+}
+</pre></details></body></html>

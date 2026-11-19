@@ -1,0 +1,292 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/OAuth/Consumer/ConsumerAbstract.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/OAuth/Consumer/ConsumerAbstract.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/**
+* Abstract OAuth consumer
+* @author Ben Tadiar &lt;ben@handcraftedbyben.co.uk&gt;
+* @link https://github.com/benthedesigner/dropbox
+* @package Dropbox\OAuth
+* @subpackage Consumer
+*/
+
+abstract class Dropbox_OAuth_Consumer_ConsumerAbstract
+{
+    // Dropbox web endpoint
+    const WEB_URL = &#x27;https://www.dropbox.com/1/&#x27;;
+
+    // OAuth flow methods
+    const REQUEST_TOKEN_METHOD = &#x27;oauth/request_token&#x27;;
+    const AUTHORISE_METHOD = &#x27;oauth/authorize&#x27;;
+    const ACCESS_TOKEN_METHOD = &#x27;oauth/access_token&#x27;;
+
+    /**
+     * Signature method, either PLAINTEXT or HMAC-SHA1
+     * @var string
+     */
+    private $sigMethod = &#x27;PLAINTEXT&#x27;;
+
+    /**
+     * Output file handle
+     * @var null|resource
+     */
+    protected $outFile = null;
+
+    /**
+     * Input file handle
+     * @var null|resource
+     */
+    protected $inFile = null;
+
+    /**
+     * OAuth token
+     * @var stdclass
+     */
+    private $token = null;
+
+    /**
+    * Acquire an unauthorised request token
+    * @link http://tools.ietf.org/html/rfc5849#section-2.1
+    * @return void
+    */
+    public function getRequestToken()
+    {
+        $url = Dropbox_API::API_URL . self::REQUEST_TOKEN_METHOD;
+        $response = $this-&gt;fetch(&#x27;POST&#x27;, $url, &#x27;&#x27;);
+
+        return $this-&gt;parseTokenString($response[&#x27;body&#x27;]);
+    }
+
+    /**
+    * Build the user authorisation URL
+    * @return string
+    */
+    public function getAuthoriseUrl( $callback_url )
+    {
+        // Prepare request parameters
+        $params = array(
+            &#x27;oauth_token&#x27; =&gt; $this-&gt;token-&gt;oauth_token,
+            &#x27;oauth_token_secret&#x27; =&gt; $this-&gt;token-&gt;oauth_token_secret,
+            &#x27;oauth_callback&#x27; =&gt; $callback_url,
+        );
+
+        // Build the URL and redirect the user
+        $query = &#x27;?&#x27; . http_build_query($params, &#x27;&#x27;, &#x27;&amp;&#x27;);
+        $url = self::WEB_URL . self::AUTHORISE_METHOD . $query;
+
+        return $url;
+    }
+
+    /**
+     * Acquire an access token
+     * Tokens acquired at this point should be stored to
+     * prevent having to request new tokens for each API call
+     * @link http://tools.ietf.org/html/rfc5849#section-2.3
+     */
+    public function getAccessToken()
+    {
+        // Get the signed request URL
+        $response = $this-&gt;fetch(&#x27;POST&#x27;, Dropbox_API::API_URL, self::ACCESS_TOKEN_METHOD);
+
+        return $this-&gt;parseTokenString($response[&#x27;body&#x27;]);
+    }
+
+    /**
+     * Generate signed request URL
+     * See inline comments for description
+     * @link http://tools.ietf.org/html/rfc5849#section-3.4
+     * @param  string $method     HTTP request method
+     * @param  string $url        API endpoint to send the request to
+     * @param  string $call       API call to send
+     * @param  array  $additional Additional parameters as an associative array
+     * @return array
+     */
+    protected function getSignedRequest($method, $url, $call, array $additional = array())
+    {
+        // Get the request/access token
+        $token = $this-&gt;token;
+        if (!$token) {
+            $token = new stdClass();
+            $token-&gt;oauth_token = null;
+            $token-&gt;oauth_token_secret = null;
+        }
+
+        // Generate a random string for the request
+        $nonce = md5(microtime(true) . uniqid(&#x27;&#x27;, true));
+
+        // Prepare the standard request parameters
+        $params = array(
+            &#x27;oauth_consumer_key&#x27; =&gt; $this-&gt;consumerKey,
+            &#x27;oauth_token&#x27; =&gt; $token-&gt;oauth_token,
+            &#x27;oauth_signature_method&#x27; =&gt; $this-&gt;sigMethod,
+            &#x27;oauth_version&#x27; =&gt; &#x27;1.0&#x27;,
+            // Generate nonce and timestamp if signature method is HMAC-SHA1
+            &#x27;oauth_timestamp&#x27; =&gt; ($this-&gt;sigMethod == &#x27;HMAC-SHA1&#x27;) ? time() : null,
+            &#x27;oauth_nonce&#x27; =&gt; ($this-&gt;sigMethod == &#x27;HMAC-SHA1&#x27;) ? $nonce : null,
+        );
+
+        // Merge with the additional request parameters
+        $params = array_merge($params, $additional);
+        ksort($params);
+
+        // URL encode each parameter to RFC3986 for use in the base string
+        $encoded = array();
+        foreach ($params as $param =&gt; $value) {
+            if ($value !== null) {
+                // If the value is a file upload (prefixed with @), replace it with
+                // the destination filename, the file path will be sent in POSTFIELDS
+                if (isset($value[0]) &amp;&amp; $value[0] === &#x27;@&#x27;) $value = $params[&#x27;filename&#x27;];
+                $encoded[] = $this-&gt;encode($param) . &#x27;=&#x27; . $this-&gt;encode($value);
+            } else {
+                unset($params[$param]);
+            }
+        }
+
+        // Build the first part of the string
+        $base = $method . &#x27;&amp;&#x27; . $this-&gt;encode($url . $call) . &#x27;&amp;&#x27;;
+
+        // Re-encode the encoded parameter string and append to $base
+        $base .= $this-&gt;encode(implode(&#x27;&amp;&#x27;, $encoded));
+
+        // Concatenate the secrets with an ampersand
+        $key = $this-&gt;consumerSecret . &#x27;&amp;&#x27; . $token-&gt;oauth_token_secret;
+
+        // Get the signature string based on signature method
+        $signature = $this-&gt;getSignature($base, $key);
+        $params[&#x27;oauth_signature&#x27;] = $signature;
+
+        // Build the signed request URL
+        $query = &#x27;?&#x27; . http_build_query($params, &#x27;&#x27;, &#x27;&amp;&#x27;);
+
+        return array(
+            &#x27;url&#x27; =&gt; $url . $call . $query,
+            &#x27;postfields&#x27; =&gt; $params,
+        );
+    }
+
+    /**
+     * Generate the oauth_signature for a request
+     * @param string $base Signature base string, used by HMAC-SHA1
+     * @param string $key  Concatenated consumer and token secrets
+     */
+    private function getSignature($base, $key)
+    {
+        switch ($this-&gt;sigMethod) {
+            case &#x27;PLAINTEXT&#x27;:
+                $signature = $key;
+                break;
+            case &#x27;HMAC-SHA1&#x27;:
+                $signature = base64_encode(hash_hmac(&#x27;sha1&#x27;, $base, $key, true));
+                break;
+        }
+
+        return $signature;
+    }
+
+    /**
+     * Set the token to use for OAuth requests
+     * @param stdtclass $token A key secret pair
+     */
+    public function setToken($token)
+    {
+        if (!is_object($token))
+            throw new Exception(&#x27;Token is invalid.&#x27;);
+
+        $this-&gt;token = $token;
+
+        return $this;
+    }
+
+    public function resetToken()
+    {
+        $token = new stdClass;
+        $token-&gt;oauth_token = false;
+        $token-&gt;oauth_token_secret = false;
+
+        $this-&gt;setToken($token);
+
+        return $this;
+    }
+
+    /**
+     * Set the OAuth signature method
+     * @param  string $method Either PLAINTEXT or HMAC-SHA1
+     * @return void
+     */
+    public function setSignatureMethod($method)
+    {
+        $method = strtoupper($method);
+
+        switch ($method) {
+            case &#x27;PLAINTEXT&#x27;:
+            case &#x27;HMAC-SHA1&#x27;:
+                $this-&gt;sigMethod = $method;
+                break;
+            default:
+                throw new Exception(&#x27;Unsupported signature method &#x27; . $method);
+        }
+    }
+
+    /**
+     * Set the output file
+     * @param resource Resource to stream response data to
+     * @return void
+     */
+    public function setOutFile($handle)
+    {
+        if (!is_resource($handle) || get_resource_type($handle) != &#x27;stream&#x27;) {
+            throw new Exception(&#x27;Outfile must be a stream resource&#x27;);
+        }
+        $this-&gt;outFile = $handle;
+    }
+
+    /**
+     * Set the input file
+     * @param resource Resource to read data from
+     * @return void
+     */
+    public function setInFile($handle)
+    {
+        if (!is_resource($handle) || get_resource_type($handle) != &#x27;stream&#x27;) {
+            throw new Exception(&#x27;Infile must be a stream resource&#x27;);
+        }
+        fseek($handle, 0);
+        $this-&gt;inFile = $handle;
+    }
+
+    /**
+    * Parse response parameters for a token into an object
+    * Dropbox returns tokens in the response parameters, and
+    * not a JSON encoded object as per other API requests
+    * @link http://oauth.net/core/1.0/#response_parameters
+    * @param string $response
+    * @return object stdClass
+    */
+    private function parseTokenString($response)
+    {
+        if (!$response)
+            throw new Exception(&#x27;Response cannot be null&#x27;);
+
+        $parts = explode(&#x27;&amp;&#x27;, $response);
+        $token = new stdClass();
+        foreach ($parts as $part) {
+            list($k, $v) = explode(&#x27;=&#x27;, $part, 2);
+            $k = strtolower($k);
+            $token-&gt;$k = $v;
+        }
+
+        return $token;
+    }
+
+    /**
+     * Encode a value to RFC3986
+     * This is a convenience method to decode ~ symbols encoded
+     * by rawurldecode. This will encode all characters except
+     * the unreserved set, ALPHA, DIGIT, &#x27;-&#x27;, &#x27;.&#x27;, &#x27;_&#x27;, &#x27;~&#x27;
+     * @link http://tools.ietf.org/html/rfc5849#section-3.6
+     * @param mixed $value
+     */
+    private function encode($value)
+    {
+        return str_replace(&#x27;%7E&#x27;, &#x27;~&#x27;, rawurlencode($value));
+    }
+}
+</pre></details></body></html>

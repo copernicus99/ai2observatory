@@ -1,0 +1,210 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;li class=&quot;mp-remove-page mp-operation&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;&lt;span class=&quot;dashicons dashicons-minus&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;spinner mp-operation-spinner&quot;&gt;&lt;/span&gt;&lt;/li&gt;
+	&lt;span id=&quot;mp-page-list&quot;&gt;
+	
+			&lt;li class=&quot; mp-page-nav&quot; data-page=&quot;&quot; id=&quot;ninja_forms_mp_page_&quot;&gt;&lt;/li&gt;
+			
+	&lt;/span&gt;
+	&lt;li class=&quot;mp-add-page mp-operation&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;&lt;span class=&quot;dashicons dashicons-plus&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;spinner mp-operation-spinner&quot;&gt;&lt;/span&gt;&lt;/li&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+function nf_mp_get_pages( $form_id = &#x27;&#x27; ){
+	global $ninja_forms_loading, $ninja_forms_processing, $ninja_forms_fields;
+	
+	$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+	$pages = array();
+	$x = 0;
+	$y = 0;
+	$last_field = &#x27;&#x27;;
+	foreach( $fields as $field ){
+
+		if( $field[&#x27;type&#x27;] == &#x27;_page_divider&#x27; ){
+			$x++;
+			$y = 0;
+			$pages[$x][&#x27;id&#x27;] = $field[&#x27;id&#x27;];
+			if ( isset ( $field[&#x27;data&#x27;][&#x27;label&#x27;] ) ) {
+				$page_name = $field[&#x27;data&#x27;][&#x27;label&#x27;];
+			} else {
+				$page_name = &#x27;&#x27;;
+			}
+			$pages[$x][&#x27;page_title&#x27;] = $page_name;
+			
+		} else {
+			if ( ! isset ( $ninja_forms_fields[ $field[&#x27;type&#x27;] ] ) )
+				continue;
+			// If we don&#x27;t have a divider, we still want to be on page 1.
+			if ( $x == 0 )
+				$x++;
+			if ( $y == 0 ) {
+				if ( ! empty( $field[&#x27;type&#x27;] ) ) {
+					$pages[$x][&#x27;first_field&#x27;] = $field[&#x27;id&#x27;];
+					$y++;
+				}
+			}
+		}
+
+		if ( ! empty( $field[&#x27;type&#x27;] ) ) {
+			$pages[$x][&#x27;fields&#x27;][] = $field[&#x27;id&#x27;];
+		}
+	
+		if ( isset ( $ninja_forms_loading ) ) {
+			$ninja_forms_loading-&gt;update_field_setting( $field[&#x27;id&#x27;], &#x27;page&#x27;, $x );
+		} else if ( isset ( $ninja_forms_processing ) ) {
+			$ninja_forms_processing-&gt;update_field_setting( $field[&#x27;id&#x27;], &#x27;page&#x27;, $x );
+		}
+	}
+
+	foreach ( $pages as $num =&gt; $vars ) {
+		$last_field = end( $vars[&#x27;fields&#x27;] );
+		$pages[$num][&#x27;last_field&#x27;] = $last_field;
+	}
+
+	return $pages;
+}
+
+function ninja_forms_mp_get_divider_by_page( $form_id, $current_page ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	} else {
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	}
+
+	$divider_id = $pages[$current_page][&#x27;id&#x27;];
+
+	return $divider_id;
+}
+
+function ninja_forms_mp_get_page_by_divider( $form_id, $field_id ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	} else {
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	}
+
+	$x = 1;
+	foreach ( $pages as $num =&gt; $vars ) {
+		if ( $vars[&#x27;id&#x27;] == $field_id ) {
+			$page_num = $x;
+			break;
+		}
+		$x++;
+	}
+
+	return $page_num;
+}
+
+function ninja_forms_mp_get_page_by_field_id( $field_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$page = $ninja_forms_loading-&gt;get_field_setting( $field_id, &#x27;page&#x27; );
+	} else {
+		$page = $ninja_forms_processing-&gt;get_field_setting( $field_id, &#x27;page&#x27; );
+	}
+
+	return $page;
+}
+
+/*
+ *
+ * Function that loops through our pages and adds an array with the pages information to our loading/processing classes.
+ *
+ * @since 1.2.6
+ * @return void
+ */
+
+function ninja_forms_mp_set_page_array( $form_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_id = $ninja_forms_loading-&gt;get_form_ID();
+	} else {
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	}
+
+	$pages = nf_mp_get_pages( $form_id );
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$ninja_forms_loading-&gt;update_form_setting( &#x27;mp_pages&#x27;, $pages );
+	} else {
+		$ninja_forms_processing-&gt;update_form_setting( &#x27;mp_pages&#x27;, $pages );
+	}
+}
+
+add_action( &#x27;ninja_forms_display_init&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27; );
+add_action( &#x27;ninja_forms_before_pre_process&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27; );
+add_action( &#x27;ninja_forms_edit_sub_pre_process&#x27;, &#x27;ninja_forms_mp_set_page_array&#x27;, 3 );
+
+/*
+ * Get a page count for a particular form.
+ *
+ * @since 1.3
+ * @return int $count - Number of pages in the given form
+ */
+
+function nf_mp_get_page_count( $form_id ) {
+	if ( empty ( $form_id ) )
+		return false;
+
+	$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+	$x = 0;
+	foreach ( $fields as $field ) {
+		if ( $field[&#x27;type&#x27;] == &#x27;_page_divider&#x27; ) {
+			$x++;
+		}
+	}
+
+	return $x;
+}
+
+/**
+ * Output our admin page nav &lt;li&gt;s given a form id.
+ * 
+ * @since 1.3
+ * @return void;
+ */
+function nf_mp_admin_page_nav( $form_id, $current_page = 1 ) {
+	$pages = nf_mp_get_pages( $form_id );
+	$page_count = nf_mp_get_page_count( $form_id );
+	$offset = 0;
+	?&gt;
+	&lt;li class=&quot;mp-remove-page mp-operation&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;&lt;span class=&quot;dashicons dashicons-minus&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;spinner mp-operation-spinner&quot;&gt;&lt;/span&gt;&lt;/li&gt;
+	&lt;span id=&quot;mp-page-list&quot;&gt;
+	&lt;?php
+	if( is_array( $pages ) &amp;&amp; !empty( $pages ) ){
+		foreach( $pages as $page =&gt; $data ){
+			if( $page == $current_page ){
+				$active = &#x27;active&#x27;;
+			}else{
+				$active = &#x27;&#x27;;
+			}
+			?&gt;
+			&lt;li class=&quot;&lt;?php echo $active;?&gt; mp-page-nav&quot; data-page=&quot;&lt;?php echo $page;?&gt;&quot; id=&quot;ninja_forms_mp_page_&lt;?php echo $page;?&gt;&quot;&gt;&lt;?php echo $page;?&gt;&lt;/li&gt;
+			&lt;?php
+		}
+	}
+	?&gt;
+	&lt;/span&gt;
+	&lt;li class=&quot;mp-add-page mp-operation&quot;&gt;&lt;span class=&quot;symbol&quot;&gt;&lt;span class=&quot;dashicons dashicons-plus&quot;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;spinner mp-operation-spinner&quot;&gt;&lt;/span&gt;&lt;/li&gt;
+	&lt;?php
+}
+
+/**
+ * Delete all page dividers in a given form.
+ *
+ * @since 1.3
+ * @return void
+ */
+function nf_mp_delete_dividers( $form_id ) {
+	$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+	foreach ( $fields as $field_id =&gt; $field ) {
+		if ( $field[&#x27;type&#x27;] == &#x27;_page_divider&#x27; ) {
+			ninja_forms_delete_field( $field_id );
+		}
+	}
+}</pre></details></body></html>

@@ -1,0 +1,73 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/ThirdParty/WPML.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/ThirdParty/WPML.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * WPML compatibility
+ */
+class AC_ThirdParty_WPML {
+
+	function __construct() {
+
+		// display correct flags on the overview screens
+		add_action( &#x27;ac/table/list_screen&#x27;, array( $this, &#x27;replace_flags&#x27; ) );
+
+		// enable the translation of the column labels
+		add_action( &#x27;wp_loaded&#x27;, array( $this, &#x27;register_column_labels&#x27; ), 99 );
+
+		// enable the WPML translation of column headings
+		add_filter( &#x27;ac/headings/label&#x27;, array( $this, &#x27;register_translated_label&#x27; ), 100 );
+	}
+
+	public function replace_flags( $list_screen ) {
+		if ( ! class_exists( &#x27;SitePress&#x27;, false ) ) {
+			return;
+		}
+
+		$settings = get_option( &#x27;icl_sitepress_settings&#x27; );
+
+		if ( ! isset( $settings[&#x27;custom_posts_sync_option&#x27;] ) ) {
+			return;
+		}
+		$post_types = (array) $settings[&#x27;custom_posts_sync_option&#x27;];
+		$post_types[&#x27;post&#x27;] = 1;
+		$post_types[&#x27;page&#x27;] = 1;
+		foreach ( $post_types as $post_type =&gt; $value ) {
+			if ( $value ) {
+				new AC_ThirdParty_WPMLColumn( $post_type );
+			}
+		}
+	}
+
+	// Create translatable column labels
+	public function register_column_labels() {
+		// don&#x27;t load this unless required by WPML
+		if ( ! isset( $_GET[&#x27;page&#x27;] ) || &#x27;wpml-string-translation/menu/string-translation.php&#x27; !== $_GET[&#x27;page&#x27;] ) {
+			return;
+		}
+
+		foreach ( AC()-&gt;get_list_screens() as $list_screen ) {
+			foreach ( $list_screen-&gt;get_settings() as $column_name =&gt; $options ) {
+				do_action( &#x27;wpml_register_single_string&#x27;, &#x27;Admin Columns&#x27;, $options[&#x27;label&#x27;], $options[&#x27;label&#x27;] );
+			}
+		}
+	}
+
+	/**
+	 * @param string $label
+	 * @param AC_Column $column
+	 *
+	 * @return string
+	 */
+	public function register_translated_label( $label ) {
+		if ( defined( &#x27;ICL_LANGUAGE_CODE&#x27; ) ) {
+			$label = apply_filters( &#x27;wpml_translate_single_string&#x27;, $label, &#x27;Admin Columns&#x27;, $label, ICL_LANGUAGE_CODE );
+		}
+
+		return $label;
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,106 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Templates/admin-metabox-sub-fields.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Templates/admin-metabox-sub-fields.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div id=&quot;nf-sub-fields&quot;&gt;
+
+    &lt;table class=&quot;nf-sub-custom-fields-table&quot;&gt;
+
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+
+        &lt;tbody&gt;
+        
+
+            
+            
+            
+            
+            
+
+            &lt;tr&gt;
+                &lt;td&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+
+        
+        &lt;/tbody&gt;
+
+    &lt;/table&gt;
+
+    &lt;!-- TODO: Move to Style Sheet --&gt;
+    &lt;style&gt;
+        .nf-sub-custom-fields-table {
+            width: 100%;
+            border-spacing: 0;
+        }
+        .nf-sub-custom-fields-table thead {
+            background-color: #f1f1f1;
+        }
+        .nf-sub-custom-fields-table thead th {
+            text-align: left;
+        }
+        .nf-sub-custom-fields-table th,
+        .nf-sub-custom-fields-table td {
+            padding: 10px 0 10px 10px;
+            vertical-align: top;
+        }
+        .nf-sub-custom-fields-table textarea {
+            height: 150px;
+        }
+    &lt;/style&gt;
+
+&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div id=&quot;nf-sub-fields&quot;&gt;
+
+    &lt;table class=&quot;nf-sub-custom-fields-table&quot;&gt;
+
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;&lt;?php _e( &#x27;Field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;?php _e( &#x27;Value&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+
+        &lt;tbody&gt;
+        &lt;?php foreach( $fields as $field ): ?&gt;
+
+            &lt;?php if( in_array( $field-&gt;get_setting( &#x27;type&#x27; ), $hidden_field_types ) ) continue; ?&gt;
+            &lt;?php if( ! isset( Ninja_Forms()-&gt;fields[ $field-&gt;get_setting( &#x27;type&#x27; ) ] ) ) continue; ?&gt;
+            
+            &lt;?php $field_class = Ninja_Forms()-&gt;fields[ $field-&gt;get_setting( &#x27;type&#x27; ) ]; ?&gt;
+            &lt;?php if( ! $field_class ) continue; ?&gt;
+
+            &lt;tr&gt;
+                &lt;td&gt;&lt;?php echo ( $field-&gt;get_setting( &#x27;admin_label&#x27; ) ) ? $field-&gt;get_setting( &#x27;admin_label&#x27; ) : $field-&gt;get_setting( &#x27;label&#x27; ) ; ?&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;?php echo $field_class-&gt;admin_form_element( $field-&gt;get_id(), $sub-&gt;get_field_value( $field-&gt;get_id() ) ); ?&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+
+        &lt;?php endforeach; ?&gt;
+        &lt;/tbody&gt;
+
+    &lt;/table&gt;
+
+    &lt;!-- TODO: Move to Style Sheet --&gt;
+    &lt;style&gt;
+        .nf-sub-custom-fields-table {
+            width: 100%;
+            border-spacing: 0;
+        }
+        .nf-sub-custom-fields-table thead {
+            background-color: #f1f1f1;
+        }
+        .nf-sub-custom-fields-table thead th {
+            text-align: left;
+        }
+        .nf-sub-custom-fields-table th,
+        .nf-sub-custom-fields-table td {
+            padding: 10px 0 10px 10px;
+            vertical-align: top;
+        }
+        .nf-sub-custom-fields-table textarea {
+            height: 150px;
+        }
+    &lt;/style&gt;
+
+&lt;/div&gt;</pre></details></body></html>

@@ -1,0 +1,471 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Meta/Query.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Meta/Query.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Meta_Query {
+
+	/**
+	 * @var WP_Meta_Query
+	 */
+	private $query;
+
+	/**
+	 * @var string
+	 */
+	private $sql;
+
+	/**
+	 * @var array
+	 */
+	private $select = array();
+
+	/**
+	 * @var string|false
+	 */
+	private $count = false;
+
+	/**
+	 * @var bool
+	 */
+	private $distinct = false;
+
+	/**
+	 * @var bool
+	 */
+	private $join = false;
+
+	/**
+	 * @var array
+	 */
+	private $join_where = array();
+
+	/**
+	 * @var array
+	 */
+	private $where = array();
+
+	/**
+	 * @var array
+	 */
+	private $group_by = array();
+
+	/**
+	 * @var array
+	 */
+	private $order_by = array();
+
+	/**
+	 * @param string $meta_type
+	 */
+	public function __construct( $meta_type ) {
+		$this-&gt;set_query( $meta_type );
+	}
+
+	/**
+	 * Add a single field or multiple comma separated
+	 *
+	 * @param string $field e.g. id or id, meta_value
+	 *
+	 * @return $this
+	 */
+	public function select( $field ) {
+		$fields = explode( &#x27;,&#x27;, $field );
+
+		foreach ( $fields as $field ) {
+			$this-&gt;select[] = trim( $field );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a COUNT clause AS count
+	 *
+	 * @param string $field
+	 *
+	 * @return $this
+	 */
+	public function count( $field ) {
+		$this-&gt;count = $field;
+
+		return $this;
+	}
+
+	/**
+	 * Group by an aggregated column.
+	 *
+	 * Supports: count
+	 *
+	 * @param string $field
+	 *
+	 * @return $this
+	 */
+	public function group_by( $field ) {
+		$this-&gt;group_by = $field;
+
+		return $this;
+	}
+
+	public function join( $type = &#x27;inner&#x27; ) {
+		$this-&gt;join = strtoupper( $type );
+
+		return $this;
+	}
+
+	public function left_join() {
+		return $this-&gt;join( &#x27;left&#x27; );
+	}
+
+	/**
+	 * @see get_where_clause()
+	 *
+	 * @return $this
+	 */
+	public function join_where( $field, $operator = null, $value = null, $boolean = &#x27;AND&#x27; ) {
+		// set default join
+		if ( ! $this-&gt;join ) {
+			$this-&gt;join();
+		}
+
+		$this-&gt;join_where[] = $this-&gt;get_where_clause( $field, $operator, $value, $boolean );
+
+		return $this;
+	}
+
+	public function order_by( $order_by, $order = &#x27;asc&#x27; ) {
+		$parts = explode( &#x27;,&#x27;, $order_by );
+
+		foreach ( $parts as $order_by ) {
+			$this-&gt;order_by[] = array(
+				&#x27;order_by&#x27; =&gt; trim( $order_by ),
+				&#x27;order&#x27;    =&gt; strtoupper( $order ),
+			);
+		}
+
+		return $this;
+	}
+
+	public function distinct() {
+		$this-&gt;distinct = true;
+
+		return $this;
+	}
+
+	/**
+	 * Set a where clause
+	 *
+	 * @param string|array $field
+	 * @param string $operator
+	 * @param string|int|array $value
+	 * @param string $type
+	 *
+	 * @return array
+	 */
+	private function get_where_clause( $field, $operator = null, $value = null, $boolean = &#x27;AND&#x27; ) {
+		// allows to omit operator
+		if ( null === $value ) {
+			$value = $operator;
+			$operator = &#x27;=&#x27;;
+		}
+
+		$where = array(
+			&#x27;nested&#x27;   =&gt; false,
+			&#x27;boolean&#x27;  =&gt; strtoupper( $boolean ),
+			&#x27;field&#x27;    =&gt; $field,
+			&#x27;operator&#x27; =&gt; strtoupper( $operator ),
+			&#x27;value&#x27;    =&gt; $value,
+		);
+
+		// set default join
+		if ( $field === &#x27;post_type&#x27; &amp;&amp; ! $this-&gt;join ) {
+			$this-&gt;join();
+		}
+
+		$nested = array();
+
+		if ( is_array( $field ) ) {
+			for ( $i = 0; $i &lt; count( $field ); $i++ ) {
+				$nested[] = array_pop( $this-&gt;where );
+			}
+		}
+
+		if ( $nested ) {
+			$where[&#x27;nested&#x27;] = true;
+			$where[&#x27;field&#x27;] = array_reverse( $nested );
+		}
+
+		return $where;
+	}
+
+	/**
+	 * @see get_where_clause()
+	 *
+	 * @return $this
+	 */
+	public function remove_where( $field, $operator = null, $value = null, $boolean = &#x27;AND&#x27; ) {
+		$where = $this-&gt;get_where_clause( $field, $operator, $value, $boolean );
+
+		foreach ( $this-&gt;where as $k =&gt; $v ) {
+			if ( $v == $where ) {
+				unset( $this-&gt;where[ $k ] );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @see get_where_clause()
+	 *
+	 * @return $this
+	 */
+	public function where( $field, $operator = null, $value = null, $boolean = &#x27;AND&#x27; ) {
+		$this-&gt;where[] = $this-&gt;get_where_clause( $field, $operator, $value, $boolean );
+
+		return $this;
+	}
+
+	/**
+	 * @see get_where_clause()
+	 *
+	 * @return $this
+	 */
+	public function or_where( $field, $operator = null, $value = null ) {
+		return $this-&gt;where( $field, $operator, $value, &#x27;OR&#x27; );
+	}
+
+	/**
+	 * @param array $in
+	 *
+	 * @return $this
+	 */
+	public function where_in( array $in ) {
+		return $this-&gt;where( &#x27;id&#x27;, &#x27;in&#x27;, $in );
+	}
+
+	public function where_is_null( $field ) {
+		return $this-&gt;where( $field, &#x27;&#x27;, &#x27;IS NULL&#x27; );
+	}
+
+	public function where_post_type( $post_type ) {
+		return $this-&gt;where( &#x27;post_type&#x27;, &#x27;=&#x27;, $post_type );
+	}
+
+	private function parse_field( $field ) {
+		switch ( $field ) {
+			case &#x27;id&#x27;:
+				$field = $this-&gt;join ? &#x27;pt.&#x27; . $this-&gt;query-&gt;primary_id_column : &#x27;mt&#x27; . $this-&gt;query-&gt;meta_id_column;
+
+				break;
+			case &#x27;meta_key&#x27;:
+			case &#x27;meta_value&#x27;:
+				$field = &#x27;mt.&#x27; . $field;
+
+				break;
+			case &#x27;taxonomy&#x27;:
+			case &#x27;post_type&#x27;:
+				$field = &#x27;pt.&#x27; . $field;
+
+				break;
+		}
+
+		return $field;
+	}
+
+	private function parse_where( $where, $clauses ) {
+		global $wpdb;
+
+		foreach ( $clauses as $clause ) {
+
+			if ( $clause[&#x27;nested&#x27;] ) {
+				$clause[&#x27;field&#x27;][0][&#x27;boolean&#x27;] = null;
+
+				$where .= sprintf( &#x27; %s ( %s ) &#x27;, $clause[&#x27;boolean&#x27;], $this-&gt;parse_where( &#x27;&#x27;, $clause[&#x27;field&#x27;] ) );
+			} else {
+				switch ( $clause[&#x27;operator&#x27;] ) {
+					case &#x27;IN&#x27;:
+						$clause[&#x27;value&#x27;] = sprintf( &#x27; ( %s ) &#x27;, implode( &#x27;, &#x27;, array_map( &#x27;intval&#x27;, $clause[&#x27;value&#x27;] ) ) );
+
+						break;
+					default:
+						$valid_raw = array( &#x27;IS NULL&#x27;, &#x27;IS NOT NULL&#x27; );
+
+						if ( ! in_array( $clause[&#x27;value&#x27;], $valid_raw ) ) {
+							$clause[&#x27;value&#x27;] = $wpdb-&gt;prepare( &#x27;%s&#x27;, $clause[&#x27;value&#x27;] );
+						}
+				}
+
+				$clause[&#x27;field&#x27;] = $this-&gt;parse_field( $clause[&#x27;field&#x27;] );
+
+				$where .= implode( &#x27; &#x27;, $clause );
+			}
+
+		}
+
+		return $where;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get() {
+		global $wpdb;
+
+		if ( ! $this-&gt;query ) {
+			return array();
+		}
+
+		// parse SELECT
+		$select = &#x27;SELECT &#x27;;
+		$select .= $this-&gt;distinct ? &#x27;DISTINCT &#x27; : &#x27;&#x27;;
+
+		if ( empty( $this-&gt;select ) ) {
+			$this-&gt;select( &#x27;id&#x27; );
+		}
+
+		$fields = array();
+
+		foreach ( $this-&gt;select as $field ) {
+			$parsed = $this-&gt;parse_field( $field );
+
+			// output &#x27;id&#x27; in the results
+			if ( &#x27;id&#x27; === $field ) {
+				$parsed .= &#x27; AS id&#x27;;
+			}
+
+			$fields[] = $parsed;
+		}
+
+		if ( $this-&gt;count ) {
+			$fields[] = sprintf( &#x27;COUNT(%s) AS count&#x27;, $this-&gt;parse_field( $this-&gt;count ) );
+		}
+
+		$select .= implode( &#x27;, &#x27;, $fields );
+
+		// parse FROM
+		$from_tpl = &#x27; FROM %s AS %s&#x27;;
+
+		$from = sprintf( $from_tpl, $this-&gt;query-&gt;meta_table, &#x27;mt&#x27; );
+		$join = &#x27;&#x27;;
+
+		if ( $this-&gt;join ) {
+			$from = sprintf( $from_tpl, $this-&gt;query-&gt;primary_table, &#x27;pt&#x27; );
+			$join = sprintf( &#x27; %s JOIN %s AS mt ON mt.%s = pt.%s %s&#x27;,
+				$this-&gt;join,
+				$this-&gt;query-&gt;meta_table,
+				$this-&gt;query-&gt;meta_id_column,
+				$this-&gt;query-&gt;primary_id_column,
+				$this-&gt;parse_where( &#x27;&#x27;, $this-&gt;join_where )
+			);
+		}
+
+		// parse WHERE
+		$where = $this-&gt;parse_where( &#x27; WHERE 1=1&#x27;, $this-&gt;where );
+
+		// parse GROUP BY
+		$group_by = &#x27;&#x27;;
+
+		if ( $this-&gt;group_by ) {
+			$group_by = &#x27; GROUP BY &#x27; . $this-&gt;parse_field( $this-&gt;group_by );
+		}
+
+		// parse ORDER BY
+		$order_by = &#x27;&#x27;;
+
+		if ( ! empty( $this-&gt;order_by ) ) {
+			$order_by_clauses = array();
+
+			foreach ( $this-&gt;order_by as $order_by_clause ) {
+				$order_by_clauses[] = $this-&gt;parse_field( $order_by_clause[&#x27;order_by&#x27;] ) . &#x27; &#x27; . $order_by_clause[&#x27;order&#x27;];
+			}
+
+			$order_by = &#x27; ORDER BY &#x27; . implode( &#x27;, &#x27;, $order_by_clauses );
+		}
+
+		// build query and store it
+		$sql = $select . $from . $join . $where . $group_by . $order_by;
+
+		$this-&gt;set_sql( $sql );
+
+		$results = $wpdb-&gt;get_results( $sql );
+
+		if ( ! is_array( $results ) ) {
+			return array();
+		}
+
+		$return = $results;
+
+		if ( count( $fields ) === 1 ) {
+			$return = array();
+			$field = $this-&gt;select[0];
+
+			foreach ( $results as $result ) {
+				$return[] = $result-&gt;$field;
+			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Return last sql that was queries
+	 *
+	 * @return string
+	 */
+	public function get_sql() {
+		$sql = preg_replace( &#x27;/ +/&#x27;, &#x27; &#x27;, $this-&gt;sql );
+		$sql = preg_replace( &#x27;/(SELECT|FROM|LEFT|INNER|WHERE|(AND|OR) \(|(AND|OR) (?!\()|ORDER BY|GROUP BY)/&#x27;, &quot;\n$1&quot;, $sql );
+
+		return $sql . &quot;\n&quot;;
+	}
+
+	private function set_sql( $sql ) {
+		$this-&gt;sql = $sql;
+	}
+
+	/**
+	 * @return WP_Meta_Query
+	 */
+	public function get_query() {
+		return $this-&gt;query;
+	}
+
+	private function set_query( $type ) {
+		global $wpdb;
+
+		switch ( $type ) {
+			case &#x27;user&#x27;:
+				$table = $wpdb-&gt;users;
+				$id = &#x27;ID&#x27;;
+
+				break;
+			case &#x27;comment&#x27;:
+				$table = $wpdb-&gt;comments;
+				$id = &#x27;comment_ID&#x27;;
+
+				break;
+			case &#x27;post&#x27;:
+				$table = $wpdb-&gt;posts;
+				$id = &#x27;ID&#x27;;
+
+				break;
+			case &#x27;term&#x27;:
+				$table = $wpdb-&gt;terms;
+				$id = &#x27;term_id&#x27;;
+
+				break;
+
+			default:
+				return false;
+		}
+
+		$this-&gt;query = new WP_Meta_Query();
+		$this-&gt;query-&gt;get_sql( $type, $table, $id );
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/textarea.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/textarea.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;textarea name=&quot;ninja_forms_field_&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; rel=&quot;&quot; data-input-limit=&quot;&quot; data-input-limit-type=&quot;&quot; data-input-limit-msg=&quot;&quot;&gt;&lt;/textarea&gt;
+		
+	&lt;textarea name=&quot;fields[]&quot;&gt;&lt;/textarea&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_textarea(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Textarea&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;textarea&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;default_value&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;width&#x27; =&gt; &#x27;wide&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;textarea_rte&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Show Rich Text Editor&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;textarea_media&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Show Media Upload Button&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;disable_rte_mobile&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Disable Rich Text Editor on Mobile&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_textarea_display&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;textarea&#x27;,
+			),
+		),
+		&#x27;edit_sub_value&#x27; =&gt; &#x27;nf_field_textarea_edit_sub_value&#x27;,
+		&#x27;pre_process&#x27;	=&gt; &#x27;nf_field_textarea_pre_process&#x27;,
+	);
+
+	ninja_forms_register_field(&#x27;_textarea&#x27;, $args);
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_textarea&#x27;);
+
+function ninja_forms_field_textarea_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+	if(isset($data[&#x27;default_value&#x27;])){
+		$default_value = $data[&#x27;default_value&#x27;];
+	}else{
+		$default_value = &#x27;&#x27;;
+	}
+
+	$default_value = htmlspecialchars_decode( $default_value );
+
+	if(isset($data[&#x27;textarea_rte&#x27;])){
+		$textarea_rte = $data[&#x27;textarea_rte&#x27;];
+	}else{
+		$textarea_rte = 0;
+	}
+
+	if( isset ( $data[&#x27;textarea_media&#x27;] ) AND $data[&#x27;textarea_media&#x27;] == 1 ){
+		$textarea_media = true;
+	}else{
+		$textarea_media = false;
+	}
+
+	if ( isset( $data[&#x27;disable_rte_mobile&#x27;] ) AND 1 == $data[&#x27;disable_rte_mobile&#x27;] AND wp_is_mobile() ) {
+		$textarea_rte = 0;
+	}
+
+	if( isset( $data[&#x27;input_limit&#x27;] ) ){
+		$input_limit = $data[&#x27;input_limit&#x27;];
+	}else{
+		$input_limit = &#x27;&#x27;;
+	}
+
+	if( isset( $data[&#x27;input_limit_type&#x27;] ) ){
+		$input_limit_type = $data[&#x27;input_limit_type&#x27;];
+	}else{
+		$input_limit_type = &#x27;&#x27;;
+	}
+
+	if( isset( $data[&#x27;input_limit_msg&#x27;] ) ){
+		$input_limit_msg = $data[&#x27;input_limit_msg&#x27;];
+	}else{
+		$input_limit_msg = &#x27;&#x27;;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+
+	$default_value = filter_var( $default_value, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES );
+	$default_value = filter_var( $default_value, FILTER_SANITIZE_SPECIAL_CHARS );
+
+	if($textarea_rte == 1){
+		$settings = array( &#x27;media_buttons&#x27; =&gt; $textarea_media );
+		$args = apply_filters( &#x27;ninja_forms_textarea_rte&#x27;, $settings );
+		wp_editor( $default_value, &#x27;ninja_forms_field_&#x27;.$field_id, $args );
+	}else{
+		?&gt;
+		&lt;textarea name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; data-input-limit=&quot;&lt;?php echo $input_limit;?&gt;&quot; data-input-limit-type=&quot;&lt;?php echo $input_limit_type;?&gt;&quot; data-input-limit-msg=&quot;&lt;?php echo $input_limit_msg;?&gt;&quot;&gt;&lt;?php echo $default_value;?&gt;&lt;/textarea&gt;
+		&lt;?php
+	}
+}
+
+/**
+ * Edit submission value output function
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_textarea_edit_sub_value( $field_id, $user_value ) {
+	?&gt;
+	&lt;textarea name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot;&gt;&lt;?php echo $user_value; ?&gt;&lt;/textarea&gt;
+	&lt;?php
+}
+
+/**
+ * Make sure we strip nested script tags from our values
+ *
+ * @since  2.9.19
+ * @return  void
+ */
+function nf_field_textarea_pre_process( $field_id, $user_value ) {
+	global $ninja_forms_processing;
+
+	if( is_string( $user_value ) ) {
+		while (false !== strpos($user_value, &#x27;&amp;lt;script&#x27;)
+			|| false !== strpos($user_value, &#x27;&lt;script&#x27;)
+			|| false !== strpos($user_value, &#x27;&amp;lt;/script&#x27;)
+			|| false !== strpos($user_value, &#x27;&lt;/script&#x27;)
+			|| false !== strpos($user_value, &#x27;&lt;textarea&#x27;)
+			|| false !== strpos($user_value, &#x27;&amp;lt;textarea&#x27;)
+			|| false !== strpos($user_value, &#x27;&lt;/textarea&#x27;)
+			|| false !== strpos($user_value, &#x27;&amp;lt;/textarea&#x27;)
+		) {
+
+			$user_value = str_replace(&#x27;&amp;lt;script&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&lt;script&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&amp;lt;/script&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&lt;/script&#x27;, &#x27;&#x27;, $user_value);
+
+			$user_value = str_replace(&#x27;&amp;lt;textarea&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&lt;textarea&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&amp;lt;/textarea&#x27;, &#x27;&#x27;, $user_value);
+			$user_value = str_replace(&#x27;&lt;/textarea&#x27;, &#x27;&#x27;, $user_value);
+		}
+	}
+
+	$ninja_forms_processing-&gt;update_field_value( $field_id, $user_value );
+}
+</pre></details></body></html>

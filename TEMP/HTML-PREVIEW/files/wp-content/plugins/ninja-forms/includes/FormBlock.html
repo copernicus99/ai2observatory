@@ -1,0 +1,217 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/FormBlock.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/FormBlock.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;style media=&quot;screen&quot;&gt;
+				#wpadminbar {
+					display: none;
+				}
+				#nf-form--cont {
+					z-index: 9001;
+					position: fixed;
+					top: 0; left: 0;
+					width: 100vw;
+					height: 100vh;
+					background-color: white;
+					/* overflow-x: hidden; */
+				}
+			&lt;/style&gt;
+			&lt;script type=&quot;text/javascript&quot;&gt;
+				jQuery(document).on( &#x27;nfFormReady&#x27;, function(){
+					var frameEl = window.frameElement;
+
+					// get the form element
+					var $form = jQuery(&quot;#nf-form--cont&quot;);
+					// get the height of the form
+					var height = $form.find( &#x27;.ninja-forms-form-wrap&#x27; ).outerHeight(true);
+
+					if (frameEl) {
+						// add 75 to height b/c the submit button was missing
+						frameEl.height = height + 75;
+					}
+				});
+			&lt;/script&gt;
+			
+		&lt;style media=&quot;screen&quot;&gt;
+			.iframe-container {
+				position: relative;
+			}
+			.iframe-overlay {
+				position: absolute;
+				top: 0; right: 0; bottom: 0; left: 0;
+			}
+		&lt;/style&gt;
+		&lt;div class=&quot;iframe-container&quot;&gt;
+			&lt;div class=&quot;iframe-overlay&quot;&gt;&lt;/div&gt;
+			&lt;iframe
+				id=&quot;idIframe&quot;
+				src=&quot;/?nf_preview_form=1&amp;nf_iframe&quot;
+				frameborder=&quot;0&quot;
+				width=&quot;100%&quot;
+				onload=&quot;iframeLoaded()&quot;
+			&gt;&lt;/iframe&gt;
+		&lt;/div&gt;
+		&lt;script type=&quot;text/javascript&quot;&gt;
+			function iframeLoaded() {
+				var iFrameID = document.getElementById(&#x27;idIframe&#x27;);
+				if(iFrameID) {
+					var target = iFrameID.contentWindow.document.getElementById(&#x27;nf-form-1-cont&#x27;);
+
+					// here you can make the height, I delete it first, then I make it again
+					iFrameID.height = &quot;&quot;;
+					// set initial iFrame height
+					iFrameID.height = target.scrollHeight;
+				}
+			}
+		&lt;/script&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Adds Ninja Forms widget.
+ */
+class NF_FormBlock {
+	/**
+	 * Register widget with WordPress.
+	 */
+	public function __construct() {
+		add_action( &#x27;ninja_forms_loaded&#x27;, array($this, &#x27;nf_form_block_load&#x27; ) );
+		// load the preview information and form
+		add_action( &#x27;wp_head&#x27;, array( $this, &#x27;load_preview_data&#x27; ) );
+		// load the iframe containing the iframe
+//		add_action( &#x27;init&#x27;, array( $this, &#x27;load_preview_iframe&#x27; ) );
+	}
+
+	function nf_form_block_load() {
+		// wait for Gutenberg to enqueue it&#x27;s block assets
+		add_action( &#x27;enqueue_block_editor_assets&#x27;, array ( $this, &#x27;nf_form_block&#x27; ) );
+	}
+
+	function nf_form_block() {
+
+		$js_dir  = Ninja_Forms::$url . &#x27;assets/js/min/&#x27;;
+		$css_dir = Ninja_Forms::$url . &#x27;assets/css/&#x27;;
+
+		// Once we have Gutenberg block javascript, we can enqueue our assets
+		wp_register_script(
+			&#x27;ninja-forms-block&#x27;,
+			$js_dir . &#x27;block.js&#x27;,
+			array( &#x27;wp-blocks&#x27;, &#x27;wp-i18n&#x27;, &#x27;wp-element&#x27;, &#x27;underscore&#x27; )
+		);
+
+		wp_register_style(
+			&#x27;ninja-forms-block-style&#x27;,
+			$css_dir . &#x27;nf-form-block-style.css&#x27;,
+			array( &#x27;wp-edit-blocks&#x27; )
+		);
+		wp_register_style(
+			&#x27;ninja-forms-block-editor&#x27;,
+			$css_dir . &#x27;nf-form-block-editor.css&#x27;,
+			array( &#x27;wp-edit-blocks&#x27;, &#x27;form-blocks-style&#x27; )
+		);
+
+		/**
+		 * we need to get our forms so that the block can build a dropdown
+		 * with the forms
+		 * */
+		wp_enqueue_script( &#x27;ninja-forms-block&#x27; );
+
+		$forms = array();
+
+		foreach( Ninja_Forms()-&gt;form()-&gt;get_forms() as $form ){
+			$forms[] = array (
+				&#x27;value&#x27; =&gt; $form-&gt;get_id(),
+				&#x27;label&#x27; =&gt; $form-&gt;get_setting( &#x27;title&#x27; ),
+			);
+		}
+
+		$block_logo = NF_PLUGIN_URL . &#x27;assets/img/nf-logo-dashboard.png&#x27;;
+		$thumbnail_logo = NF_PLUGIN_URL . &#x27;assets/img/ninja-forms-app-header-logo.png&#x27;;
+
+		wp_localize_script( &#x27;ninja-forms-block&#x27;, &#x27;ninjaFormsBlock&#x27;, array(
+			&#x27;forms&#x27; =&gt; $forms,
+			&#x27;siteUrl&#x27; =&gt; get_site_url(),
+			&#x27;block_logo&#x27;     =&gt; $block_logo,
+			&#x27;thumbnail_logo&#x27; =&gt; $thumbnail_logo
+		) );
+		wp_enqueue_style( &#x27;ninja-forms-block-style&#x27; );
+		wp_enqueue_style( &#x27;ninja-forms-block-editor&#x27; );
+	}
+
+	public function load_preview_data() {
+		// check for preview and iframe get parameters
+		if( isset( $_GET[ &#x27;nf_preview_form&#x27; ] ) &amp;&amp; isset( $_GET[ &#x27;nf_iframe&#x27; ] ) ){
+			$form_id = intval( $_GET[ &#x27;nf_preview_form&#x27; ] );
+			// Style below: update width and height for particular form
+			?&gt;
+			&lt;style media=&quot;screen&quot;&gt;
+				#wpadminbar {
+					display: none;
+				}
+				#nf-form-&lt;?php echo $form_id; ?&gt;-cont {
+					z-index: 9001;
+					position: fixed;
+					top: 0; left: 0;
+					width: 100vw;
+					height: 100vh;
+					background-color: white;
+					/* overflow-x: hidden; */
+				}
+			&lt;/style&gt;
+			&lt;script type=&quot;text/javascript&quot;&gt;
+				jQuery(document).on( &#x27;nfFormReady&#x27;, function(){
+					var frameEl = window.frameElement;
+
+					// get the form element
+					var $form = jQuery(&quot;#nf-form-&lt;?php echo $form_id; ?&gt;-cont&quot;);
+					// get the height of the form
+					var height = $form.find( &#x27;.ninja-forms-form-wrap&#x27; ).outerHeight(true);
+
+					if (frameEl) {
+						// add 75 to height b/c the submit button was missing
+						frameEl.height = height + 75;
+					}
+				});
+			&lt;/script&gt;
+			&lt;?php
+		}
+
+	}
+
+	public function load_preview_iframe() {
+		if( ! isset( $_GET[ &#x27;form_preview_iframe&#x27; ] ) ) return;
+
+		// Style below: set styling for iframe
+		?&gt;
+		&lt;style media=&quot;screen&quot;&gt;
+			.iframe-container {
+				position: relative;
+			}
+			.iframe-overlay {
+				position: absolute;
+				top: 0; right: 0; bottom: 0; left: 0;
+			}
+		&lt;/style&gt;
+		&lt;div class=&quot;iframe-container&quot;&gt;
+			&lt;div class=&quot;iframe-overlay&quot;&gt;&lt;/div&gt;
+			&lt;iframe
+				id=&quot;idIframe&quot;
+				src=&quot;/?nf_preview_form=1&amp;nf_iframe&quot;
+				frameborder=&quot;0&quot;
+				width=&quot;100%&quot;
+				onload=&quot;iframeLoaded()&quot;
+			&gt;&lt;/iframe&gt;
+		&lt;/div&gt;
+		&lt;script type=&quot;text/javascript&quot;&gt;
+			function iframeLoaded() {
+				var iFrameID = document.getElementById(&#x27;idIframe&#x27;);
+				if(iFrameID) {
+					var target = iFrameID.contentWindow.document.getElementById(&#x27;nf-form-1-cont&#x27;);
+
+					// here you can make the height, I delete it first, then I make it again
+					iFrameID.height = &quot;&quot;;
+					// set initial iFrame height
+					iFrameID.height = target.scrollHeight;
+				}
+			}
+		&lt;/script&gt;
+		&lt;?php
+		exit();
+	}
+}
+</pre></details></body></html>

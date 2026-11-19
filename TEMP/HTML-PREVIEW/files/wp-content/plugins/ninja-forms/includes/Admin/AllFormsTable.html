@@ -1,0 +1,298 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/AllFormsTable.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/AllFormsTable.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! class_exists( &#x27;WP_List_Table&#x27; ) ){
+
+    if( file_exists( ABSPATH . &#x27;wp-admin/includes/class-wp-list-table.php&#x27; ) ) {
+
+        require_once(ABSPATH . &#x27;wp-admin/includes/class-wp-list-table.php&#x27;);
+    } else {
+
+        //TODO: Load local wp-list-table-class.php
+    }
+}
+
+class NF_Admin_AllFormsTable extends WP_List_Table
+{
+    /** Class constructor */
+    public function __construct() {
+
+        parent::__construct( array(
+            &#x27;singular&#x27; =&gt; __( &#x27;Form&#x27;, &#x27;ninja-forms&#x27; ), //singular name of the listed records
+            &#x27;plural&#x27;   =&gt; __( &#x27;Forms&#x27;, &#x27;ninja-forms&#x27; ), //plural name of the listed records
+            &#x27;ajax&#x27;     =&gt; false //should this table support ajax?
+        ) );
+    }
+
+    public function no_items() {
+        _e( &#x27;No forms found.&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    /**
+     * Prepare the items for the table to process
+     *
+     * @return Void
+     */
+    public function prepare_items()
+    {
+
+        wp_enqueue_script( &#x27;nf-all-forms&#x27;, Ninja_Forms::$url . &#x27;assets/js/all-forms.js&#x27; );
+        wp_localize_script( &#x27;nf-all-forms&#x27;, &#x27;nfi18n&#x27;, array(
+            &#x27;confirm_delete&#x27; =&gt; __( &#x27;Really Delete This Form? This will remove all fields and submission data. Recovery is not possible.&#x27;, &#x27;ninja-forms&#x27; ),
+        ) );
+
+        $columns = $this-&gt;get_columns();
+        $hidden = $this-&gt;get_hidden_columns();
+        $sortable = $this-&gt;get_sortable_columns();
+
+        $data = $this-&gt;table_data();
+        usort( $data, array( &amp;$this, &#x27;sort_data&#x27; ) );
+
+        $perPage = 20;
+        $currentPage = $this-&gt;get_pagenum();
+        $totalItems = count($data);
+
+        $this-&gt;set_pagination_args( array(
+            &#x27;total_items&#x27; =&gt; $totalItems,
+            &#x27;per_page&#x27;    =&gt; $perPage
+        ) );
+
+        $data = array_slice($data,(($currentPage-1)*$perPage),$perPage);
+
+        $this-&gt;_column_headers = array($columns, $hidden, $sortable);
+        $this-&gt;items = $data;
+    }
+
+    /**
+     * Override the parent columns method. Defines the columns to use in your listing table
+     *
+     * @return Array
+     */
+    public function get_columns()
+    {
+        $columns = array(
+            &#x27;cb&#x27;        =&gt; &#x27;&lt;input type=&quot;checkbox&quot; /&gt;&#x27;,
+            &#x27;title&#x27;     =&gt; __( &#x27;Form Title&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;shortcode&#x27; =&gt; __( &#x27;Shortcode&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;date&#x27;      =&gt; __( &#x27;Created&#x27;, &#x27;ninja-forms&#x27; )
+        );
+
+        return $columns;
+    }
+
+    /**
+     * Define which columns are hidden
+     *
+     * @return Array
+     */
+    public function get_hidden_columns()
+    {
+        return array();
+    }
+
+    /**
+     * Define the sortable columns
+     *
+     * @return Array
+     */
+    public function get_sortable_columns()
+    {
+        return array(
+            &#x27;title&#x27; =&gt; array( __( &#x27;title&#x27;, &#x27;ninja-forms&#x27; ),   TRUE ),
+            &#x27;date&#x27;  =&gt; array( __( &#x27;date&#x27;, &#x27;ninja-forms&#x27; ), TRUE ),
+        );
+    }
+
+    /**
+     * Get the table data
+     *
+     * @return Array
+     */
+    private function table_data()
+    {
+        $data = array();
+
+        $forms = Ninja_Forms()-&gt;form()-&gt;get_forms();
+
+        foreach( $forms as $form ){
+
+             $data[] = array(
+                 &#x27;id&#x27;        =&gt; $form-&gt;get_id(),
+                 &#x27;title&#x27;     =&gt; $form-&gt;get_setting( &#x27;title&#x27; ),
+                 &#x27;shortcode&#x27; =&gt; apply_filters ( &#x27;ninja_forms_form_list_shortcode&#x27;,&#x27;[ninja_form id=&#x27; . $form-&gt;get_id() . &#x27;]&#x27;, $form-&gt;get_id() ),
+                 &#x27;date&#x27;      =&gt; $form-&gt;get_setting( &#x27;created_at&#x27; )
+             );
+        }
+
+        return $data;
+    }
+
+    /**
+     * Define what data to show on each column of the table
+     *
+     * @param  Array $item        Data
+     * @param  String $column_name - Current column name
+     *
+     * @return Mixed
+     */
+    public function column_default( $item, $column_name )
+    {
+        switch( $column_name ) {
+            case &#x27;title&#x27;:
+            case &#x27;shortcode&#x27;:
+            case &#x27;date&#x27;:
+                return $item[ $column_name ];
+
+            default:
+                return print_r( $item, true ) ;
+        }
+    }
+
+    /**
+     * Allows you to sort the data by the variables set in the $_GET
+     *
+     * @return Mixed
+     */
+    private function sort_data( $a, $b )
+    {
+        // Set defaults
+        $orderby = &#x27;id&#x27;;
+        $order = &#x27;asc&#x27;;
+
+        // If orderby is set, use this as the sort column
+        if(!empty($_GET[&#x27;orderby&#x27;]))
+        {
+            $orderby = $_GET[&#x27;orderby&#x27;];
+        }
+
+        // If order is set use this as the order
+        if(!empty($_GET[&#x27;order&#x27;]))
+        {
+            $order = $_GET[&#x27;order&#x27;];
+        }
+
+
+        $result = strnatcmp( $a[$orderby], $b[$orderby] );
+
+        if($order === &#x27;asc&#x27;)
+        {
+            return $result;
+        }
+
+        return -$result;
+    }
+
+    function column_cb( $item )
+    {
+        return sprintf(
+            &#x27;&lt;input type=&quot;checkbox&quot; name=&quot;bulk-delete[]&quot; value=&quot;%s&quot; /&gt;&#x27;, $item[&#x27;id&#x27;]
+        );
+    }
+
+    function column_title( $item )
+    {
+        $title = $item[ &#x27;title&#x27; ];
+        $edit_url = add_query_arg( &#x27;form_id&#x27;, $item[ &#x27;id&#x27; ], admin_url( &#x27;admin.php?page=ninja-forms&#x27;) );
+        $delete_url = add_query_arg( array( &#x27;action&#x27; =&gt; &#x27;delete&#x27;, &#x27;id&#x27; =&gt; $item[ &#x27;id&#x27; ], &#x27;_wpnonce&#x27; =&gt; wp_create_nonce( &#x27;nf_delete_form&#x27; )));
+        $duplicate_url = add_query_arg( array( &#x27;action&#x27; =&gt; &#x27;duplicate&#x27;, &#x27;id&#x27; =&gt; $item[ &#x27;id&#x27; ], &#x27;_wpnonce&#x27; =&gt; wp_create_nonce( &#x27;nf_duplicate_form&#x27; )));
+        $preview_url = add_query_arg( &#x27;nf_preview_form&#x27;, $item[ &#x27;id&#x27; ], site_url() );
+        $submissions_url = add_query_arg( &#x27;form_id&#x27;, $item[ &#x27;id&#x27; ], admin_url( &#x27;edit.php?post_status=all&amp;post_type=nf_sub&#x27;) );
+
+        $form = Ninja_Forms()-&gt;form( $item[ &#x27;id&#x27; ] )-&gt;get();
+        $locked = $form-&gt;get_setting( &#x27;lock&#x27; );
+
+        Ninja_Forms::template( &#x27;admin-menu-all-forms-column-title.html.php&#x27;, compact( &#x27;title&#x27;, &#x27;edit_url&#x27;, &#x27;delete_url&#x27;, &#x27;duplicate_url&#x27;, &#x27;preview_url&#x27;, &#x27;submissions_url&#x27;, &#x27;locked&#x27; ) );
+    }
+
+    public function single_row( $item )
+    {
+        $form = Ninja_Forms()-&gt;form( $item[ &#x27;id&#x27; ] )-&gt;get();
+        echo &#x27;&lt;tr&gt;&#x27;;
+        $this-&gt;single_row_columns( $item );
+        echo &#x27;&lt;/tr&gt;&#x27;;
+    }
+
+    /**
+     * Returns an associative array containing the bulk action
+     *
+     * @return array
+     */
+    public function get_bulk_actions()
+    {
+        $actions = array(
+            &#x27;bulk-delete&#x27; =&gt; __( &#x27;Delete&#x27;, &#x27;ninja-forms&#x27; )
+        );
+
+        return $actions;
+    }
+
+    public static function process_bulk_action()
+    {
+        if( ! isset( $_GET[ &#x27;page&#x27; ] ) || &#x27;ninja-forms&#x27; != $_GET[ &#x27;page&#x27; ] ) return;
+
+        if ( isset( $_REQUEST[ &#x27;action&#x27; ] ) &amp;&amp; &#x27;duplicate&#x27; === $_REQUEST[ &#x27;action&#x27; ] ) {
+
+            // In our file that handles the request, verify the nonce.
+            $nonce = esc_attr( $_REQUEST[&#x27;_wpnonce&#x27;] );
+
+            if ( ! wp_verify_nonce( $nonce, &#x27;nf_duplicate_form&#x27; ) ) {
+                die( __( &#x27;Go get a life, script kiddies&#x27;, &#x27;ninja-forms&#x27; ) );
+            }
+            else {
+                NF_Database_Models_Form::duplicate( absint( $_GET[&#x27;id&#x27;] ) );
+            }
+
+            wp_redirect( admin_url( &#x27;admin.php?page=ninja-forms&#x27; ) );
+            exit;
+        }
+
+        if ( isset( $_REQUEST[ &#x27;action&#x27; ] ) &amp;&amp; &#x27;delete&#x27; === $_REQUEST[ &#x27;action&#x27; ] ) {
+
+            // In our file that handles the request, verify the nonce.
+            $nonce = esc_attr( $_REQUEST[&#x27;_wpnonce&#x27;] );
+
+            if ( ! wp_verify_nonce( $nonce, &#x27;nf_delete_form&#x27; ) ) {
+                die( __( &#x27;Go get a life, script kiddies&#x27;, &#x27;ninja-forms&#x27; ) );
+            }
+            else {
+                self::delete_item( absint( $_GET[&#x27;id&#x27;] ) );
+            }
+
+            wp_redirect( admin_url( &#x27;admin.php?page=ninja-forms&#x27; ) );
+            exit;
+        }
+
+        // If the delete bulk action is triggered
+        if ( ( isset( $_POST[&#x27;action&#x27;] ) &amp;&amp; $_POST[&#x27;action&#x27;] == &#x27;bulk-delete&#x27; )
+            || ( isset( $_POST[&#x27;action2&#x27;] ) &amp;&amp; $_POST[&#x27;action2&#x27;] == &#x27;bulk-delete&#x27; )
+        ) {
+
+            // In our file that handles the request, verify the nonce.
+            $nonce = esc_attr( $_REQUEST[&#x27;_wpnonce&#x27;] );
+
+            if ( ! wp_verify_nonce( $nonce, &#x27;bulk-forms&#x27; ) ) {
+                die( __( &#x27;Go get a life, script kiddies&#x27;, &#x27;ninja-forms&#x27; ) );
+            }
+
+            if( isset( $_POST[ &#x27;bulk-delete&#x27; ] ) ) {
+                $delete_ids = esc_sql($_POST[&#x27;bulk-delete&#x27;]);
+
+                // loop over the array of record IDs and delete them
+                foreach ($delete_ids as $id) {
+
+                    self::delete_item(absint($id));
+                }
+            }
+
+            wp_redirect( admin_url( &#x27;admin.php?page=ninja-forms&#x27; ) );
+            exit;
+        }
+    }
+
+    public static function delete_item( $id )
+    {
+        $form = Ninja_Forms()-&gt;form( $id )-&gt;get();
+        $form-&gt;delete();
+    }
+
+} // END CLASS NF_Admin_AllFormsTable
+</pre></details></body></html>

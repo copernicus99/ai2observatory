@@ -1,0 +1,342 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/libraries/class-wp-session.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/libraries/class-wp-session.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * WordPress session managment.
+ *
+ * Standardizes WordPress session data using database-backed options for storage.
+ * for storing user session information.
+ *
+ * @package WordPress
+ * @subpackage Session
+ * @since   3.7.0
+ */
+
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+* MODIFICATIONS
+*
+* - Remove `set_cooke()` from constructor
+* - Give `set_cookie()` public access
+* - Manually call `set_cookie()` on form submission
+*/
+
+/**
+ * WordPress Session class for managing user session data.
+ *
+ * @package WordPress
+ * @since   3.7.0
+ */
+final class WP_Session extends Recursive_ArrayAccess implements Iterator, Countable {
+	/**
+	 * ID of the current session.
+	 *
+	 * @var string
+	 */
+	public $session_id;
+
+	/**
+	 * Unix timestamp when session expires.
+	 *
+	 * @var int
+	 */
+	protected $expires;
+
+	/**
+	 * Unix timestamp indicating when the expiration time needs to be reset.
+	 *
+	 * @var int
+	 */
+	protected $exp_variant;
+
+	/**
+	 * Singleton instance.
+	 *
+	 * @var bool|WP_Session
+	 */
+	private static $instance = false;
+
+	/**
+	 * Retrieve the current session instance.
+	 *
+	 * @param bool $session_id Session ID from which to populate data.
+	 *
+	 * @return bool|WP_Session
+	 */
+	public static function get_instance() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Default constructor.
+	 * Will rebuild the session collection from the given session ID if it exists. Otherwise, will
+	 * create a new session with that ID.
+	 *
+	 * @param $session_id
+	 * @uses apply_filters Calls `wp_session_expiration` to determine how long until sessions expire.
+	 */
+	protected function __construct() {
+		if ( isset( $_COOKIE[WP_SESSION_COOKIE] ) ) {
+			$cookie = stripslashes( $_COOKIE[WP_SESSION_COOKIE] );
+			$cookie_crumbs = explode( &#x27;||&#x27;, $cookie );
+
+			if( $this-&gt;is_valid_md5( $cookie_crumbs[0] ) ){
+				$this-&gt;session_id = $cookie_crumbs[0];
+			} else {
+				$this-&gt;session_id = $this-&gt;regenerate_id();
+			}
+
+			$this-&gt;expires = $cookie_crumbs[1];
+			$this-&gt;exp_variant = $cookie_crumbs[2];
+
+			// Update the session expiration if we&#x27;re past the variant time
+			if ( time() &gt; $this-&gt;exp_variant ) {
+				$this-&gt;set_expiration();
+				delete_option( &quot;_wp_session_expires_{$this-&gt;session_id}&quot; );
+				add_option( &quot;_wp_session_expires_{$this-&gt;session_id}&quot;, $this-&gt;expires, &#x27;&#x27;, &#x27;no&#x27; );
+			}
+		} else {
+			$this-&gt;session_id = $this-&gt;generate_id();
+			$this-&gt;set_expiration();
+		}
+
+		$this-&gt;read_data();
+
+		/*
+		 * Only set the cookie manually, on form submission.
+		 */
+		//$this-&gt;set_cookie();
+
+	}
+
+	/**
+	 * Set both the expiration time and the expiration variant.
+	 *
+	 * If the current time is below the variant, we don&#x27;t update the session&#x27;s expiration time. If it&#x27;s
+	 * greater than the variant, then we update the expiration time in the database.  This prevents
+	 * writing to the database on every page load for active sessions and only updates the expiration
+	 * time if we&#x27;re nearing when the session actually expires.
+	 *
+	 * By default, the expiration time is set to 30 minutes.
+	 * By default, the expiration variant is set to 24 minutes.
+	 *
+	 * As a result, the session expiration time - at a maximum - will only be written to the database once
+	 * every 24 minutes.  After 30 minutes, the session will have been expired. No cookie will be sent by
+	 * the browser, and the old session will be queued for deletion by the garbage collector.
+	 *
+	 * @uses apply_filters Calls `wp_session_expiration_variant` to get the max update window for session data.
+	 * @uses apply_filters Calls `wp_session_expiration` to get the standard expiration time for sessions.
+	 */
+	protected function set_expiration() {
+		$this-&gt;exp_variant = time() + (int) apply_filters( &#x27;wp_session_expiration_variant&#x27;, 24 * 60 );
+		$this-&gt;expires = time() + (int) apply_filters( &#x27;wp_session_expiration&#x27;, 30 * 60 );
+	}
+
+	/**
+	 * Set the session cookie
+	 *
+	 * IMPORTANT: Made public
+	 */
+	public function set_cookie() {
+		@setcookie( WP_SESSION_COOKIE, $this-&gt;session_id . &#x27;||&#x27; . $this-&gt;expires . &#x27;||&#x27; . $this-&gt;exp_variant , $this-&gt;expires, COOKIEPATH, COOKIE_DOMAIN );
+	}
+
+	/**
+	 * Generate a cryptographically strong unique ID for the session token.
+	 *
+	 * @return string
+	 */
+	protected function generate_id() {
+		require_once( ABSPATH . &#x27;wp-includes/class-phpass.php&#x27;);
+		$hasher = new PasswordHash( 8, false );
+
+		return md5( $hasher-&gt;get_random_bytes( 32 ) );
+	}
+
+	/**
+	 * Read data from a transient for the current session.
+	 *
+	 * Automatically resets the expiration time for the session transient to some time in the future.
+	 *
+	 * @return array
+	 */
+	protected function read_data() {
+		$this-&gt;container = get_option( &quot;_wp_session_{$this-&gt;session_id}&quot;, array() );
+
+		return $this-&gt;container;
+	}
+
+	/**
+	 * Write the data from the current session to the data storage system.
+	 */
+	public function write_data() {
+		$option_key = &quot;_wp_session_{$this-&gt;session_id}&quot;;
+
+		// Only write the collection to the DB if it&#x27;s changed.
+		if ( $this-&gt;dirty ) {
+			if ( false === get_option( $option_key ) ) {
+				add_option( &quot;_wp_session_{$this-&gt;session_id}&quot;, $this-&gt;container, &#x27;&#x27;, &#x27;no&#x27; );
+				add_option( &quot;_wp_session_expires_{$this-&gt;session_id}&quot;, $this-&gt;expires, &#x27;&#x27;, &#x27;no&#x27; );
+			} else {
+				delete_option( &quot;_wp_session_{$this-&gt;session_id}&quot; );
+				add_option( &quot;_wp_session_{$this-&gt;session_id}&quot;, $this-&gt;container, &#x27;&#x27;, &#x27;no&#x27; );
+			}
+		}
+	}
+
+	/**
+	 * Output the current container contents as a JSON-encoded string.
+	 *
+	 * @return string
+	 */
+	public function json_out() {
+		return json_encode( $this-&gt;container );
+	}
+
+	/**
+	 * Decodes a JSON string and, if the object is an array, overwrites the session container with its contents.
+	 *
+	 * @param string $data
+	 *
+	 * @return bool
+	 */
+	public function json_in( $data ) {
+		$array = json_decode( $data );
+
+		if ( is_array( $array ) ) {
+			$this-&gt;container = $array;
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Regenerate the current session&#x27;s ID.
+	 *
+	 * @param bool $delete_old Flag whether or not to delete the old session data from the server.
+	 */
+	public function regenerate_id( $delete_old = false ) {
+		if ( $delete_old ) {
+			delete_option( &quot;_wp_session_{$this-&gt;session_id}&quot; );
+		}
+
+		$this-&gt;session_id = $this-&gt;generate_id();
+
+		$this-&gt;set_cookie();
+	}
+
+	/**
+	 * Check if a session has been initialized.
+	 *
+	 * @return bool
+	 */
+	public function session_started() {
+		return !!self::$instance;
+	}
+
+	/**
+	 * Return the read-only cache expiration value.
+	 *
+	 * @return int
+	 */
+	public function cache_expiration() {
+		return $this-&gt;expires;
+	}
+
+	/**
+	 * Flushes all session variables.
+	 */
+	public function reset() {
+		$this-&gt;container = array();
+	}
+
+	/**
+	 * Checks if is valid md5 string
+	 *
+	 * @param string $md5
+	 * @return int
+	 */
+	protected function is_valid_md5( $md5 = &#x27;&#x27; ){
+		return preg_match( &#x27;/^[a-f0-9]{32}$/&#x27;, $md5 );
+	}
+
+	/*****************************************************************/
+	/*                     Iterator Implementation                   */
+	/*****************************************************************/
+
+	/**
+	 * Current position of the array.
+	 *
+	 * @link http://php.net/manual/en/iterator.current.php
+	 *
+	 * @return mixed
+	 */
+	public function current() {
+		return current( $this-&gt;container );
+	}
+
+	/**
+	 * Key of the current element.
+	 *
+	 * @link http://php.net/manual/en/iterator.key.php
+	 *
+	 * @return mixed
+	 */
+	public function key() {
+		return key( $this-&gt;container );
+	}
+
+	/**
+	 * Move the internal point of the container array to the next item
+	 *
+	 * @link http://php.net/manual/en/iterator.next.php
+	 *
+	 * @return void
+	 */
+	public function next() {
+		next( $this-&gt;container );
+	}
+
+	/**
+	 * Rewind the internal point of the container array.
+	 *
+	 * @link http://php.net/manual/en/iterator.rewind.php
+	 *
+	 * @return void
+	 */
+	public function rewind() {
+		reset( $this-&gt;container );
+	}
+
+	/**
+	 * Is the current key valid?
+	 *
+	 * @link http://php.net/manual/en/iterator.rewind.php
+	 *
+	 * @return bool
+	 */
+	public function valid() {
+		return $this-&gt;offsetExists( $this-&gt;key() );
+	}
+
+	/*****************************************************************/
+	/*                    Countable Implementation                   */
+	/*****************************************************************/
+
+	/**
+	 * Get the count of elements in the container array.
+	 *
+	 * @link http://php.net/manual/en/countable.count.php
+	 *
+	 * @return int
+	 */
+	public function count() {
+		return count( $this-&gt;container );
+	}
+}
+</pre></details></body></html>

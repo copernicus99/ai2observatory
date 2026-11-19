@@ -1,0 +1,120 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/notices.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/notices.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Notices page to house all of the admin notices for Core
+ *
+ * Can be simply used be adding another line into the nf_admin_notices() function
+ *
+ * The class NF_Notices in notices-class.php can be extended to create more advanced notices to include triggered events
+ *
+ * @since 2.9
+ */
+
+function nf_admin_notices( $notices ) {
+
+    if( ! ninja_forms_three_addons_check() || ( ninja_forms_three_addons_version_check() &amp;&amp; ninja_forms_three_addons_check() ) ){
+
+
+        /*
+         * Upgrade Now
+         */
+        $upgrade_link = admin_url( &#x27;admin.php?page=ninja-forms-three&#x27; );
+        $notice = array(
+            &#x27;title&#x27; =&gt; __( &#x27;Upgrade to Ninja Forms THREE&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;link&#x27; =&gt; &#x27;&#x27;,
+            &#x27;int&#x27; =&gt; 0,
+            &#x27;blacklist&#x27; =&gt; array( &#x27;ninja-forms&#x27;, &#x27;ninja-forms-three&#x27; ),
+        );
+        if ( ! get_option( &#x27;ninja_forms_has_invalid_addons&#x27; ) ) {
+            $notice[ &#x27;msg&#x27; ] = sprintf( __( &#x27;You are eligible to upgrade to Ninja Forms THREE! %sUpgrade Now%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a target=&quot;_blank&quot; href=&quot;&#x27; . $upgrade_link . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; );
+        } else {
+            if ( ! function_exists( &#x27;get_plugins&#x27; ) ) {
+                // Require the core file.
+                require_once ABSPATH . &#x27;wp-admin/includes/plugin.php&#x27;;
+            }
+            // Get a list of plugins.
+            $plugins = get_plugins();
+            $not_ours = array();
+            // For each plugin...
+            foreach( $plugins as $plugin =&gt; $data ){
+                // If this isn&#x27;t Ninja Forms Core...
+                // AND If it includes a ninja-forms prefix...
+                if ( &#x27;ninja-forms/ninja-forms.php&#x27; != $plugin &amp;&amp; 0 === strncmp( $plugin, &#x27;ninja-forms-&#x27;, 12 ) ){
+                    // Get the plugin slug.
+                    $slug = explode( &#x27;/&#x27;, $plugin );
+                    // If the plugin is not active...
+                    // Exit early.
+                    if ( ! is_plugin_active( $plugin ) ) continue;
+                    // If the plugin is not in our list...
+                    if ( ! ninja_forms_valid_slug( $slug[ 0 ] ) ) {
+                        // Add it onto our array of data
+                        $not_ours[ $plugin ] = $data;
+                    }
+                }
+            }
+            $display = sprintf( __( &#x27;You are eligible to upgrade to Ninja Forms THREE! However, the following plugins are not compatible with Ninja Forms THREE and could lead to issues with the upgrade process.%sPlease deactivate and remove the following before attempting to upgrade:%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;br /&gt;&#x27;, &#x27;&lt;br /&gt;&#x27; );
+            foreach( $not_ours as $plugin ) {
+                $display .= __( $plugin[ &#x27;Name&#x27; ], $plugin[ &#x27;TextDomain&#x27; ] ) . &#x27;, &#x27;;
+            }
+            $display = substr( $display, 0, strlen( $display ) - 2 );
+            $notice[ &#x27;msg&#x27; ] = $display;
+            $notice[ &#x27;blacklist&#x27; ] = array( &#x27;ninja-forms-three&#x27; );
+        }
+        $notices[&#x27;three_upgrade&#x27;] = $notice;
+    } else {
+
+        /*
+         * THREE is Coming!
+         */
+        $three_info = add_query_arg( array( &#x27;nf_admin_notice_ignore&#x27; =&gt; &#x27;three_info&#x27; ) );
+        $three_link = nf_aff_link( &#x27;https://ninjaforms.com/three/?utm_medium=plugin&amp;utm_source=admin-notice&amp;utm_campaign=Ninja+Forms+THREE&amp;utm_content=Learn+More&#x27; );
+        $notices[&#x27;three_info&#x27;] = array(
+            &#x27;title&#x27; =&gt; __( &#x27;THREE is coming!&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;msg&#x27; =&gt; sprintf( __( &#x27;A major update is coming to Ninja Forms. %sLearn more about new features, backwards compatibility, and more Frequently Asked Questions.%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a target=&quot;_blank&quot; href=&quot;&#x27; . $three_link . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; ),
+            &#x27;link&#x27; =&gt; &#x27;&#x27;,
+            &#x27;int&#x27; =&gt; 0,
+            &#x27;blacklist&#x27; =&gt; array( &#x27;ninja-forms&#x27;, &#x27;ninja-forms-three&#x27; ),
+        );
+
+    }
+
+
+
+    $one_week_support = add_query_arg( array( &#x27;nf_admin_notice_ignore&#x27; =&gt; &#x27;one_week_support&#x27; ) );
+    $support_link = nf_aff_link( &#x27;https://ninjaforms.com/contact/?utm_medium=plugin&amp;utm_source=admin-notice&amp;utm_campaign=Ninja+Forms+Upsell&amp;utm_content=Ninja+Forms+Support&#x27; );
+    $support_docs_link = nf_aff_link( &#x27;http://docs.ninjaforms.com/?utm_medium=plugin&amp;utm_source=admin-notice&amp;utm_campaign=Ninja+Forms+Upsell&amp;utm_content=Ninja+Forms+Docs&#x27; );
+    $notices[&#x27;one_week_support&#x27;] = array(
+        &#x27;title&#x27; =&gt; __( &#x27;How\&#x27;s It Going?&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;msg&#x27; =&gt; __( &#x27;Thank you for using Ninja Forms! We hope that you\&#x27;ve found everything you need, but if you have any questions:&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;link&#x27; =&gt; &#x27;&lt;li&gt;&lt;span class=&quot;dashicons dashicons-media-text&quot;&gt;&lt;/span&gt;&lt;a target=&quot;_blank&quot; href=&quot;&#x27; . $support_docs_link . &#x27;&quot;&gt;&#x27; . __( &#x27;Check out our documentation&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;span class=&quot;dashicons dashicons-sos&quot;&gt;&lt;/span&gt;&lt;a target=&quot;_blank&quot; href=&quot;&#x27; . $support_link . &#x27;&quot;&gt;&#x27; . __( &#x27;Get Some Help&#x27; ,&#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+                    &lt;li&gt;&lt;span class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/span&gt;&lt;a href=&quot;&#x27; . $one_week_support . &#x27;&quot;&gt;&#x27; . __( &#x27;Dismiss&#x27; ,&#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;&#x27;,
+        &#x27;int&#x27; =&gt; 7,
+        &#x27;blacklist&#x27; =&gt; array( &#x27;ninja-forms-three&#x27; ),
+    );
+
+//    $two_week_review_ignore = add_query_arg( array( &#x27;nf_admin_notice_ignore&#x27; =&gt; &#x27;two_week_review&#x27; ) );
+//    $two_week_review_temp = add_query_arg( array( &#x27;nf_admin_notice_temp_ignore&#x27; =&gt; &#x27;two_week_review&#x27;, &#x27;int&#x27; =&gt; 14 ) );
+//    $notices[&#x27;two_week_review&#x27;] = array(
+//        &#x27;title&#x27; =&gt; __( &#x27;Leave A Review?&#x27;, &#x27;ninja-forms&#x27; ),
+//        &#x27;msg&#x27; =&gt; __( &#x27;We hope you\&#x27;ve enjoyed using Ninja Forms! Would you consider leaving us a review on WordPress.org?&#x27;, &#x27;ninja-forms&#x27; ),
+//        &#x27;link&#x27; =&gt; &#x27;&lt;li&gt; &lt;span class=&quot;dashicons dashicons-smiley&quot;&gt;&lt;/span&gt;&lt;a href=&quot;&#x27; . $two_week_review_ignore . &#x27;&quot;&gt; &#x27; . __( &#x27;I\&#x27;ve already left a review&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+//                    &lt;li&gt;&lt;span class=&quot;dashicons dashicons-calendar-alt&quot;&gt;&lt;/span&gt;&lt;a href=&quot;&#x27; . $two_week_review_temp . &#x27;&quot;&gt;&#x27; . __( &#x27;Maybe Later&#x27; ,&#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;
+//                    &lt;li&gt;&lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;&lt;a href=&quot;http://wordpress.org/support/view/plugin-reviews/ninja-forms?filter=5&quot; target=&quot;_blank&quot;&gt;&#x27; . __( &#x27;Sure! I\&#x27;d love to!&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/li&gt;&#x27;,
+//        &#x27;int&#x27; =&gt; 14
+//    );
+
+
+    return $notices;
+}
+// This function is used to hold all of the basic notices
+// Date format accepts most formats but can get confused so preferred methods are m/d/Y or d-m-Y
+
+add_filter( &#x27;nf_admin_notices&#x27;, &#x27;nf_admin_notices&#x27; );
+
+// Require any files that contain class extensions for NF_Notices
+require_once( NF_PLUGIN_DIR . &#x27;classes/notices-multipart.php&#x27; );
+
+// Require any files that contain class extensions for NF_Notices
+require_once( NF_PLUGIN_DIR . &#x27;classes/notices-save-progress.php&#x27; );
+</pre></details></body></html>

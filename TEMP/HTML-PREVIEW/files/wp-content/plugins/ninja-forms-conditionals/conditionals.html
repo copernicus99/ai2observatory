@@ -1,0 +1,360 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/conditionals.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/conditionals.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/*
+ * Plugin Name: Ninja Forms - Conditional Logic
+ * Plugin URI: https://ninjaforms.com/extensions/conditional-logic/
+ * Description: Conditional form logic add-on for Ninja Forms.
+ * Version: 3.0.17
+ * Author: The WP Ninjas
+ * Author URI: https://ninjaforms.com
+ * Text Domain: ninja-forms-conditionals
+ * Domain Path: /lang/
+ */
+
+if( ! class_exists( &#x27;NF_ConditionalLogic_Conversion&#x27;, false ) ) {
+    require_once &#x27;lib/conversion.php&#x27;;
+}
+
+if( version_compare( get_option( &#x27;ninja_forms_version&#x27;, &#x27;0.0.0&#x27; ), &#x27;3&#x27;, &#x27;&lt;&#x27; ) || get_option( &#x27;ninja_forms_load_deprecated&#x27;, FALSE ) ) {
+
+    if( ! defined( &#x27;NINJA_FORMS_CON_DIR&#x27; ) ){
+        define(&quot;NINJA_FORMS_CON_DIR&quot;, plugin_dir_path(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    if( ! defined( &#x27;NINJA_FORMS_CON_URL&#x27; ) ) {
+        define(&quot;NINJA_FORMS_CON_URL&quot;, plugin_dir_url(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    if( ! defined( &#x27;NINJA_FORMS_CON_VERSION&#x27; ) ) {
+        define(&quot;NINJA_FORMS_CON_VERSION&quot;, &quot;3.0.17&quot;);
+    }
+
+    include &#x27;deprecated/conditionals.php&#x27;;
+
+} else {
+
+    if( class_exists( &#x27;NF_ConditionalLogic&#x27;, false ) ) return;
+    /**
+     * Class NF_ConditionalLogic
+     */
+    final class NF_ConditionalLogic
+    {
+        const VERSION = &#x27;3.0.17&#x27;;
+        const SLUG    = &#x27;conditional-logic&#x27;;
+        const NAME    = &#x27;Conditional Logic&#x27;;
+        const AUTHOR  = &#x27;The WP Ninjas&#x27;;
+        const PREFIX  = &#x27;NF_ConditionalLogic&#x27;;
+
+        /**
+         * Condition Triggers
+         *
+         * @since 3.0
+         * @var array
+         */
+        public $triggers = array();
+
+        /**
+         * Condition Comparators
+         *
+         * @since 3.0
+         * @var array
+         */
+        public $comparators = array();
+
+        /**
+         * Integrations
+         *
+         * @since 3.0
+         * @var array
+         */
+        public $integrations = array();
+
+        /**
+         * NF_ConditionalLogic constructor.
+         */
+        public function __construct()
+        {
+            // WordPress Hooks
+            add_action( &#x27;init&#x27;, array( $this, &#x27;init&#x27; ) );
+            add_action( &#x27;admin_init&#x27;, array( $this, &#x27;setup_license&#x27; ) );
+
+            // Ninja Forms Hooks
+            add_action( &#x27;ninja_forms_loaded&#x27;, array( $this, &#x27;setup_admin&#x27; ) );
+
+            // Ninja Forms Admin Hooks
+            add_filter( &#x27;ninja_forms_field_settings_groups&#x27;, array( $this, &#x27;register_settings_groups&#x27; ) );
+            add_filter( &#x27;ninja_forms_action_settings&#x27;, array( $this, &#x27;register_action_settings&#x27; ) );
+            add_filter( &#x27;ninja_forms_actions_settings_all&#x27;, array( $this, &#x27;action_settings_all&#x27; ) );
+            add_filter( &#x27;nf_admin_enqueue_scripts&#x27;, array( $this, &#x27;builder_scripts&#x27; ) );
+            add_action( &#x27;ninja_forms_builder_templates&#x27;, array( $this, &#x27;builder_templates&#x27; ) );
+
+            /*
+             * Add action conditions to the form conditions localised data
+             */
+            add_filter( &#x27;ninja_forms_display_form_settings&#x27;, array( $this, &#x27;localize_action_conditions&#x27; ), 10, 2 );
+        }
+
+        public function init()
+        {
+            new NF_ConditionalLogic_Submission();
+
+            self::$instance-&gt;integrations = array(
+                new NF_ConditionalLogic_Integrations_MultiPart()
+            );
+
+            self::$instance-&gt;triggers = NF_ConditionalLogic::config( &#x27;Triggers&#x27; );
+            self::$instance-&gt;comparators = NF_ConditionalLogic::config( &#x27;Comparators&#x27; );
+        }
+
+        public function setup_admin()
+        {
+            if( ! is_admin() ) return;
+
+            new NF_ConditionalLogic_Admin_Settings();
+        }
+
+        public function register_settings_groups( $settings_groups )
+        {
+            return array_merge( $settings_groups, self::config( &#x27;ActionSettingsGroups&#x27; ) );
+        }
+
+        public function register_action_settings( $action_settings )
+        {
+            return array_merge( $action_settings, self::config( &#x27;ActionSettings&#x27; ) );
+        }
+
+        public function action_settings_all( $settings_all )
+        {
+            array_push( $settings_all, &#x27;conditions&#x27; ); // TODO: Add registered settings names.
+            return $settings_all;
+        }
+
+        public function builder_scripts()
+        {
+            $ver = self::VERSION;
+            wp_enqueue_style(  &#x27;nf-cl-builder&#x27;,  plugin_dir_url( __FILE__ ) . &#x27;assets/css/builder.css&#x27;, array(), $ver );
+            wp_enqueue_script( &#x27;nf-cl-builder&#x27;,  plugin_dir_url( __FILE__ ) . &#x27;assets/js/min/builder.js&#x27;, array(), $ver );
+            wp_localize_script( &#x27;nf-cl-builder&#x27;, &#x27;nfcli18n&#x27;, self::config( &#x27;i18nCLBuilder&#x27; ) );
+            wp_localize_script( &#x27;nf-cl-builder&#x27;, &#x27;nfListCountries&#x27;, Ninja_Forms::config( &#x27;CountryList&#x27; ) );
+        }
+
+        public function builder_templates()
+        {
+            NF_ConditionalLogic::template( &#x27;builder-edit-settings.html.php&#x27; );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Internal API Methods
+        |--------------------------------------------------------------------------
+        */
+
+        /**
+         * Comparator
+         *
+         * @since 3.0.0
+         * @param $key
+         * @return NF_ConditionalLogic_Comparator
+         * @throws Exception
+         */
+        public function comparator( $key )
+        {
+            if( isset( $this-&gt;comparators[ $key ] ) ) return $this-&gt;comparators[ $key ][ &#x27;instance&#x27; ];
+            return new NF_ConditionalLogic_Comparators_NullComparator();
+        }
+
+        /**
+         * Trigger
+         *
+         * @since 3.0.0
+         * @param $key
+         * @return NF_ConditionalLogic_Trigger
+         * @throws Exception
+         */
+        public function trigger( $key )
+        {
+            if( isset( $this-&gt;triggers[ $key ] ) ) return $this-&gt;triggers[ $key ][ &#x27;instance&#x27; ];
+            return false;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Plugin Properties and Methods
+        |--------------------------------------------------------------------------
+        */
+
+        /**
+         * @var NF_ConditionalLogic
+         * @since 3.0
+         */
+        private static $instance;
+
+        /**
+         * Plugin Directory
+         *
+         * @since 3.0
+         * @var string $dir
+         */
+        public static $dir = &#x27;&#x27;;
+
+        /**
+         * Plugin URL
+         *
+         * @since 3.0
+         * @var string $url
+         */
+        public static $url = &#x27;&#x27;;
+
+        /**
+         * Main Plugin Instance
+         *
+         * Insures that only one instance of a plugin class exists in memory at any one
+         * time. Also prevents needing to define globals all over the place.
+         *
+         * @since 3.0
+         * @static
+         * @static var array $instance
+         * @return NF_ConditionalLogic Highlander Instance
+         */
+        public static function instance()
+        {
+            if (!isset(self::$instance) &amp;&amp; !(self::$instance instanceof NF_ConditionalLogic)) {
+                self::$instance = new NF_ConditionalLogic();
+
+                self::$dir = plugin_dir_path(__FILE__);
+
+                self::$url = plugin_dir_url(__FILE__);
+
+                /*
+                 * Register our autoloader
+                 */
+                spl_autoload_register(array(self::$instance, &#x27;autoloader&#x27;));
+            }
+
+            return self::$instance;
+        }
+
+        /**
+         * Template
+         *
+         * @param string $file_name
+         * @param array $data
+         */
+        public static function template( $file_name = &#x27;&#x27;, array $data = array() )
+        {
+            if( ! $file_name ) return;
+
+            extract( $data );
+
+            include self::$dir . &#x27;includes/Templates/&#x27; . $file_name;
+        }
+
+        /**
+         * Config
+         *
+         * @param $file_name
+         * @return mixed
+         */
+        public static function config( $file_name )
+        {
+            return include self::$dir . &#x27;includes/Config/&#x27; . $file_name . &#x27;.php&#x27;;
+        }
+
+        /**
+         * Autoloader
+         *
+         * Loads files using the class name to mimic the folder structure.
+         *
+         * @param $class_name
+         */
+        public function autoloader($class_name)
+        {
+            if (class_exists($class_name)) return;
+
+            if ( false === strpos( $class_name, self::PREFIX ) ) return;
+
+            $class_name = str_replace( self::PREFIX, &#x27;&#x27;, $class_name );
+            $classes_dir = realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . &#x27;includes&#x27; . DIRECTORY_SEPARATOR;
+            $class_file = str_replace(&#x27;_&#x27;, DIRECTORY_SEPARATOR, $class_name) . &#x27;.php&#x27;;
+
+            if (file_exists($classes_dir . $class_file)) {
+                require_once $classes_dir . $class_file;
+            }
+        }
+
+        /**
+         * Setup License
+         *
+         * Registers the plugin with the extension updater.
+         */
+        public function setup_license()
+        {
+            if ( ! class_exists( &#x27;NF_Extension_Updater&#x27; ) ) return;
+
+            new NF_Extension_Updater( self::NAME, self::VERSION, self::AUTHOR, __FILE__, self::SLUG );
+        }
+
+        public function localize_action_conditions( $settings, $form_id ) {
+            /*
+             * Get any action conditions
+             */
+            $action_conditions = array();
+
+            $form_actions = Ninja_Forms()-&gt;form( $form_id )-&gt;get_actions();
+            foreach( $form_actions as $action ){
+                $conditions = $action-&gt;get_setting( &#x27;conditions&#x27; );
+                if( ! isset ( $conditions[ &#x27;when&#x27; ][0][ &#x27;key&#x27; ] ) || empty( $conditions[ &#x27;when&#x27; ][0][ &#x27;key&#x27; ] ) ) continue;
+                
+                /*
+                 * Make sure that we have a valid &quot;then&quot; setting.
+                 */
+                if ( ! isset ( $conditions[ &#x27;then&#x27; ][0][ &#x27;key&#x27; ] ) || empty( $conditions[ &#x27;then&#x27; ][0][ &#x27;key&#x27; ] ) ) {
+                    $conditions[ &#x27;then&#x27; ][0][ &#x27;key&#x27; ] = $action-&gt;get_id();
+                    $conditions[ &#x27;then&#x27; ][0][ &#x27;trigger&#x27; ] = &#x27;activate_action&#x27;;
+                    $conditions[ &#x27;then&#x27; ][0][ &#x27;type&#x27; ] = &#x27;action&#x27;;
+                }
+
+                /*
+                 * Make sure that we have a valid &quot;else&quot; setting.
+                 */
+                if ( ! isset ( $conditions[ &#x27;else&#x27; ][0][ &#x27;key&#x27; ] ) || empty( $conditions[ &#x27;else&#x27; ][0][ &#x27;key&#x27; ] ) ) {
+                    $conditions[ &#x27;else&#x27; ][0][ &#x27;key&#x27; ] = $action-&gt;get_id();
+                    $conditions[ &#x27;else&#x27; ][0][ &#x27;trigger&#x27; ] = &#x27;deactivate_action&#x27;;
+                    $conditions[ &#x27;else&#x27; ][0][ &#x27;type&#x27; ] = &#x27;action&#x27;;
+                    $conditions[ &#x27;else&#x27; ][0][ &#x27;modelType&#x27; ] = &#x27;else&#x27;;
+                }
+
+                $settings[ &#x27;conditions&#x27; ][] = $conditions;
+
+            }
+
+            return $settings;
+        }
+    }
+
+    /**
+     * The main function responsible for returning The Highlander Plugin
+     * Instance to functions everywhere.
+     *
+     * Use this function like you would a global variable, except without needing
+     * to declare the global.
+     *
+     * @since 3.0
+     * @return NF_ConditionalLogic Highlander Instance
+     */
+    function NF_ConditionalLogic()
+    {
+        return NF_ConditionalLogic::instance();
+    }
+
+    NF_ConditionalLogic();
+
+    /*
+     * Localize our mock conditional logic data
+     */
+    function nf_cl_display_mock_data( $form_id ) {
+        wp_enqueue_script( &#x27;nf-cl-front-end&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/js/min/front-end.js&#x27;, array( &#x27;nf-front-end&#x27; ) );
+    }
+
+    add_action( &#x27;ninja_forms_enqueue_scripts&#x27;, &#x27;nf_cl_display_mock_data&#x27; );
+
+}</pre></details></body></html>

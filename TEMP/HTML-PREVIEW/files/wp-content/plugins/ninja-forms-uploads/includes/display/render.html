@@ -1,0 +1,86 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/display/render.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/display/render.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Display_Render {
+
+	/**
+	 * @var
+	 */
+	protected static $scripts_loaded = false;
+
+	/**
+	 * NF_FU_Display_Render constructor.
+	 */
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_localize_fields&#x27;, array( $this, &#x27;enqueue_scripts&#x27; ) );
+		add_filter( &#x27;ninja_forms_localize_fields_preview&#x27;, array( $this, &#x27;enqueue_scripts&#x27; ) );
+	}
+
+	/**
+	 * Enqueue scripts for the frontend
+	 *
+	 * @param array|object $field
+	 *
+	 * @return array|object $field
+	 */
+	public function enqueue_scripts( $field ) {
+		$settings = is_object( $field ) ? $field-&gt;get_settings() : $field[&#x27;settings&#x27;];
+
+		if ( NF_FU_File_Uploads::TYPE !== $settings[&#x27;type&#x27;] ) {
+			return $field;
+		}
+
+		if ( is_array( $field ) &amp;&amp; ( ! isset( $field[&#x27;settings&#x27;][&#x27;type&#x27;] ) || NF_FU_File_Uploads::TYPE !== $field[&#x27;settings&#x27;][&#x27;type&#x27;] ) ) {
+			return $field;
+		}
+
+		if ( self::$scripts_loaded ) {
+			return $field;
+		}
+
+		$ver = NF_File_Uploads()-&gt;plugin_version;
+		$url = plugin_dir_url( NF_File_Uploads()-&gt;plugin_file_path );
+		wp_enqueue_script( &#x27;nf-fu-jquery-iframe-transport&#x27;, $url . &#x27;assets/js/lib/jquery.iframe-transport.js&#x27;, array(
+			&#x27;jquery&#x27;,
+		), $ver );
+		wp_enqueue_script( &#x27;nf-fu-jquery-fileupload&#x27;, $url . &#x27;assets/js/lib/jquery.fileupload.js&#x27;, array(
+			&#x27;jquery&#x27;,
+			&#x27;jquery-ui-widget&#x27;,
+			&#x27;nf-fu-jquery-iframe-transport&#x27;,
+		), $ver );
+
+		wp_enqueue_script( &#x27;nf-fu-jquery-fileupload-process&#x27;, $url . &#x27;assets/js/lib/jquery.fileupload-process.js&#x27;, array(
+			&#x27;nf-fu-jquery-fileupload&#x27;,
+		), $ver );
+
+		wp_enqueue_script( &#x27;nf-fu-jquery-fileupload-validate&#x27;, $url . &#x27;assets/js/lib/jquery.fileupload-validate.js&#x27;, array(
+			&#x27;nf-fu-jquery-fileupload&#x27;,
+			&#x27;nf-fu-jquery-fileupload-process&#x27;,
+		), $ver );
+
+		wp_enqueue_script( &#x27;nf-fu-file-upload&#x27;, $url . &#x27;assets/js/front-end/controllers/fieldFile.js&#x27;, array(
+			&#x27;jquery&#x27;,
+			&#x27;nf-front-end&#x27;,
+			&#x27;nf-fu-jquery-fileupload&#x27;,
+		), $ver );
+
+		wp_localize_script( &#x27;nf-fu-file-upload&#x27;, &#x27;nf_upload&#x27;, array(
+			&#x27;strings&#x27; =&gt; apply_filters( &#x27;ninja_forms_uploads_js_strings&#x27;, array(
+				&#x27;file_limit&#x27;           =&gt; __( &#x27;Max %n files are allowed&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;upload_error&#x27;         =&gt; __( &#x27;Nonce error, upload failed&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;unknown_upload_error&#x27; =&gt; __( &#x27;Upload error, upload failed&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;max_file_size_error&#x27;  =&gt; __( &#x27;File exceeds maximum file size. File must be under %nMB.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;select_files&#x27;         =&gt; isset( $settings[&#x27;select_files_text&#x27;] ) ? $settings[&#x27;select_files_text&#x27;] : __( &#x27;Select Files&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;delete_file&#x27;          =&gt; __( &#x27;Delete&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			) ),
+		) );
+
+		wp_enqueue_style( &#x27;nf-fu-jquery-fileupload&#x27;, $url . &#x27;assets/css/file-upload.css&#x27;, array(), $ver );
+
+		self::$scripts_loaded = true;
+
+		return $field;
+	}
+} 
+</pre></details></body></html>

@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/config/field-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/config/field-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+$max_mb_int = NF_FU_Helper::format_mb( ini_get( &#x27;upload_max_filesize&#x27; ), true );
+
+return apply_filters( &#x27;ninja_forms_uploads_field_settings&#x27;, array(
+	&#x27;save_to_server&#x27; =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;save_to_server&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;toggle&#x27;,
+		&#x27;value&#x27; =&gt; &#x27;1&#x27;,
+		&#x27;label&#x27; =&gt; __( &#x27;Save to Server&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+		&#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+		&#x27;help&#x27;  =&gt; __( &#x27;Save the file to the server.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+	),
+	&#x27;upload_rename&#x27;      =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;upload_rename&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+		&#x27;value&#x27; =&gt; &#x27;&#x27;,
+		&#x27;label&#x27; =&gt; __( &#x27;Rename Uploaded File&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+		&#x27;width&#x27; =&gt; &#x27;full&#x27;,
+		// TODO link
+		&#x27;help&#x27;  =&gt; __( &#x27;Advanced renaming options. You can also create directories using &quot;/&quot;. If you do not want to rename the files, leave this box blank&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+	),
+	&#x27;media_library&#x27; =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;media_library&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;toggle&#x27;,
+		&#x27;value&#x27; =&gt; &#x27;false&#x27;,
+		&#x27;label&#x27; =&gt; __( &#x27;Save to Media Library&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+		&#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+		&#x27;help&#x27;  =&gt; __( &#x27;Save to Media Library.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;deps&#x27;  =&gt; array(
+			&#x27;save_to_server&#x27; =&gt; true,
+		),
+	),
+	&#x27;upload_multi_count&#x27; =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;upload_multi_count&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;number&#x27;,
+		&#x27;label&#x27; =&gt; __( &#x27;File Limit&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;value&#x27; =&gt; 1,
+		&#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;restrictions&#x27;,
+		&#x27;help&#x27;  =&gt; __( &#x27;How many files can be uploaded?&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+	),
+	&#x27;max_file_size&#x27; =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;max_file_size&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;number&#x27;,
+		&#x27;label&#x27; =&gt; __( &#x27;File Size Limit&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;value&#x27; =&gt; &#x27;&#x27;,
+		&#x27;max&#x27;   =&gt; $max_mb_int, // TODO fix max not appearing in markup
+		&#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;restrictions&#x27;,
+		&#x27;help&#x27;  =&gt; sprintf( __( &#x27;Maximum size of a file that can be uploaded. Defaults to %sM&#x27;, &#x27;ninja-forms-uploads&#x27; ), NF_File_Uploads()-&gt;controllers-&gt;settings-&gt;get_setting( &#x27;max_filesize&#x27;, $max_mb_int ) ),
+	),
+	&#x27;upload_types&#x27;       =&gt; array(
+		&#x27;name&#x27;        =&gt; &#x27;upload_types&#x27;,
+		&#x27;type&#x27;        =&gt; &#x27;textbox&#x27;,
+		&#x27;label&#x27;       =&gt; __( &#x27;Allowed File Types&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;help&#x27;        =&gt; __( &#x27;Comma Separated List of allowed file types. An empty list means all file types are accepted. (i.e. jpg, gif, png, pdf) This is not fool-proof and can be tricked, please remember that there is always a danger in allowing users to upload files.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;group&#x27;       =&gt; &#x27;restrictions&#x27;,
+		&#x27;width&#x27;       =&gt; &#x27;one-half&#x27;,
+	),
+	&#x27;select_files_text&#x27; =&gt; array(
+		&#x27;name&#x27;  =&gt; &#x27;select_files_text&#x27;,
+		&#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+		&#x27;value&#x27; =&gt; __( &#x27;Select Files&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;label&#x27; =&gt; __( &#x27;Select Files Button Text&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;group&#x27; =&gt; &#x27;display&#x27;,
+		&#x27;width&#x27; =&gt; &#x27;full&#x27;,
+		&#x27;help&#x27;  =&gt; __( &#x27;Change the button text for selecting files.&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+	),
+) );
+</pre></details></body></html>

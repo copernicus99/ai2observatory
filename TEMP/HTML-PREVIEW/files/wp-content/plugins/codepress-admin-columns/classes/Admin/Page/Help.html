@@ -1,0 +1,346 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Help.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Help.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;h2&gt;&lt;/h2&gt;
+        &lt;p&gt;
+			 &lt;br/&gt;
+
+			
+        &lt;/p&gt;
+
+		
+                &lt;h3&gt;&lt;/h3&gt;
+				
+                    &lt;div class=&quot;ac-deprecated-message&quot;&gt;
+                        &lt;p&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+				
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Admin_Page_Help extends AC_Admin_Page {
+
+	const TRANSIENT_COUNT_KEY = &#x27;ac-deprecated-message-count&#x27;;
+
+	private $messages = array();
+
+	public function __construct() {
+
+		$this
+			-&gt;set_slug( &#x27;help&#x27; )
+			-&gt;set_label_with_count();
+
+		// Hide page when there are no messages
+		if ( ! $this-&gt;get_message_count() ) {
+			$this-&gt;set_show_in_menu( false );
+		}
+
+		// Init and request
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;init&#x27; ), 9 );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;run_hooks_on_help_tab&#x27; ) );
+		add_action( &#x27;admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+	}
+
+	/**
+	 * @return $this
+	 */
+	private function set_label_with_count() {
+		$label = __( &#x27;Help&#x27;, &#x27;codepress-admin-columns&#x27; );
+
+		if ( $count = $this-&gt;get_message_count() ) {
+			$label .= &#x27;&lt;span class=&quot;ac-badge&quot;&gt;&#x27; . $count . &#x27;&lt;/span&gt;&#x27;;
+		}
+
+		$this-&gt;set_label( $label );
+
+		return $this;
+	}
+
+	/**
+	 * Run all hooks once
+	 */
+	public function init() {
+		if ( ! AC()-&gt;user_can_manage_admin_columns() ) {
+			return;
+		}
+
+		// Run once
+		if ( false === $this-&gt;get_message_count() ) {
+			$this-&gt;run_hooks();
+		}
+	}
+
+	/**
+	 * Run all hooks when opening the help tab.
+	 */
+	public function run_hooks_on_help_tab() {
+		if ( ! AC()-&gt;user_can_manage_admin_columns() || ! $this-&gt;is_current_screen() ) {
+			return;
+		}
+
+		$this-&gt;run_hooks();
+	}
+
+	/**
+	 * Admin scripts
+	 */
+	public function admin_scripts() {
+	    if ( $this-&gt;is_current_screen() ) {
+		    wp_enqueue_style( &#x27;ac-admin-page-help-css&#x27;, AC()-&gt;get_plugin_url() . &#x27;assets/css/admin-page-help&#x27; . AC()-&gt;minified() . &#x27;.css&#x27;, array(), AC()-&gt;get_version() );
+	    }
+	}
+
+	private function update_message_count() {
+		$count = count( $this-&gt;get_messages( &#x27;filter&#x27; ) ) + count( $this-&gt;get_messages( &#x27;action&#x27; ) );
+
+		set_transient( self::TRANSIENT_COUNT_KEY, $count, WEEK_IN_SECONDS );
+	}
+
+	private function get_message_count() {
+		return get_transient( self::TRANSIENT_COUNT_KEY );
+	}
+
+	public function delete_message_count() {
+		delete_transient( self::TRANSIENT_COUNT_KEY );
+	}
+
+	/**
+	 * This will run all deprecated hooks and adds a message when a hook has been used on the site.
+	 */
+	public function run_hooks() {
+
+		$types = array( &#x27;post&#x27;, &#x27;user&#x27;, &#x27;comment&#x27;, &#x27;link&#x27;, &#x27;media&#x27; );
+		$post_types = get_post_types();
+
+		$columns = array();
+		foreach ( AC()-&gt;get_list_screens() as $ls ) {
+			foreach ( $ls-&gt;get_column_types() as $column ) {
+				$columns[ $column-&gt;get_type() ] = $column-&gt;get_type();
+			}
+		}
+
+		// Filters
+
+		$this-&gt;deprecated_filter( &#x27;cac/headings/label&#x27;, &#x27;3.0&#x27;, &#x27;cac-columns-custom&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/column/meta/value&#x27;, &#x27;3.0&#x27;, &#x27;cac-column-meta-value&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/column/meta/types&#x27;, &#x27;3.0&#x27;, &#x27;cac-column-meta-types&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/settings/tabs&#x27;, &#x27;3.0&#x27;, &#x27;cac-settings-tabs&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/editable/is_column_editable&#x27;, &#x27;3.0&#x27;, &#x27;cac-editable-is_column_editable&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/editable/editables_data&#x27;, &#x27;3.0&#x27;, &#x27;cac-editable-editables_data&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/editable/options&#x27;, &#x27;3.0&#x27;, &#x27;cac-editable-editables_data&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/inline-edit/ajax-column-save/value&#x27;, &#x27;3.0&#x27;, &#x27;cac-inline-edit-ajax-column-save-value&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/addon/filtering/options&#x27;, &#x27;3.0&#x27;, &#x27;cac-addon-filtering-options&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/addon/filtering/dropdown_top_label&#x27;, &#x27;3.0&#x27;, &#x27;cac-addon-filtering-dropdown_top_label&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/addon/filtering/taxonomy/terms_args&#x27;, &#x27;3.0&#x27;, &#x27;cac-addon-filtering-taxonomy-terms_args&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/addon/filtering/dropdown_empty_option&#x27;, &#x27;3.0&#x27;, &#x27;cac-addon-filtering-taxonomy-terms_args&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/column/actions/action_links&#x27;, &#x27;3.0&#x27;, &#x27;cac-column_actions-action_links&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/acf/format_acf_value&#x27;, &#x27;3.0&#x27;, &#x27;cac-acf-format_acf_value&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/addon/filtering/taxonomy/terms_args&#x27;, &#x27;3.0&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/column/meta/use_text_input&#x27;, &#x27;3.0&#x27; );
+		$this-&gt;deprecated_filter( &#x27;cac/hide_renewal_notice&#x27;, &#x27;3.0&#x27; );
+
+		$this-&gt;deprecated_filter( &#x27;cac/columns/custom&#x27;, &#x27;3.0&#x27;, &#x27;cac-columns-custom&#x27; );
+		foreach ( $types as $type ) {
+			$this-&gt;deprecated_filter( &#x27;cac/columns/custom/type=&#x27; . $type, &#x27;3.0&#x27;, &#x27;cac-columns-custom&#x27; );
+		}
+
+		foreach ( $post_types as $post_type ) {
+			$this-&gt;deprecated_filter( &#x27;cac/columns/custom/post_type=&#x27; . $post_type, &#x27;3.0&#x27;, &#x27;cac-columns-custom&#x27; );
+		}
+
+		$this-&gt;deprecated_filter( &#x27;cac/column/value&#x27;, &#x27;3.0&#x27;, &#x27;cac-column-value&#x27; );
+		foreach ( $types as $type ) {
+			$this-&gt;deprecated_filter( &#x27;cac/column/value/&#x27; . $type, &#x27;3.0&#x27;, &#x27;cac-column-value&#x27; );
+		}
+
+		$this-&gt;deprecated_filter( &#x27;cac/editable/column_value&#x27;, &#x27;3.0&#x27;, &#x27;cac-editable-column_value&#x27; );
+		foreach ( $columns as $column_type ) {
+			$this-&gt;deprecated_filter( &#x27;cac/editable/column_value/column=&#x27; . $column_type, &#x27;3.0&#x27;, &#x27;cac-editable-column_value&#x27; );
+		}
+
+		$this-&gt;deprecated_filter( &#x27;cac/editable/column_save&#x27;, &#x27;3.0&#x27;, &#x27;cac-editable-column_save&#x27; );
+		foreach ( $columns as $column_type ) {
+			$this-&gt;deprecated_filter( &#x27;cac/editable/column_save/column=&#x27; . $column_type, &#x27;3.0&#x27;, &#x27;cac-editable-column_save&#x27; );
+		}
+
+		// Actions
+        $this-&gt;deprecated_action( &#x27;cac/admin_head&#x27;, &#x27;3.0&#x27;, &#x27;cac-admin_head&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/loaded&#x27;, &#x27;3.0&#x27;, &#x27;cac-cacloaded&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/inline-edit/after_ajax_column_save&#x27;, &#x27;3.0&#x27;, &#x27;cacinline-editafter_ajax_column_save&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/after_title&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/form_actions&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/sidebox&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/form_columns&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/after_columns&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/column/settings_meta&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/general&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cpac_messages&#x27;, &#x27;3.0&#x27; );
+        $this-&gt;deprecated_action( &#x27;cac/settings/after_menu&#x27;, &#x27;3.0&#x27; );
+
+		$this-&gt;update_message_count();
+	}
+
+	private function get_groups() {
+		$groups = array(
+			&#x27;filter&#x27; =&gt; __( &#x27;Deprecated Filters&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;action&#x27; =&gt; __( &#x27;Deprecated Actions&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		return $groups;
+	}
+
+	/**
+	 * @param string      $hook
+	 * @param string      $version
+	 * @param string|null $page_slug
+	 */
+	private function deprecated_filter( $hook, $version, $page_slug = null ) {
+		if ( has_filter( $hook ) ) {
+			$message = sprintf( __( &#x27;The filter %s used on this website is deprecated since %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;&lt;code&gt;&#x27; . $hook . &#x27;&lt;/code&gt;&#x27;, &#x27;&lt;strong&gt;&#x27; . $version . &#x27;&lt;/strong&gt;&#x27; );
+
+			$this-&gt;add_deprecated_message( &#x27;filter&#x27;, $message, $hook, &#x27;filter-reference/&#x27; . $page_slug );
+		}
+	}
+
+	/**
+	 * @param string      $hook
+	 * @param string      $version
+	 * @param string|null $page_slug
+	 */
+	private function deprecated_action( $hook, $version, $page_slug = null ) {
+		if ( has_action( $hook ) ) {
+			$message = sprintf( __( &#x27;The action %s used on this website is deprecated since %s.&#x27;, &#x27;codepress-admin-columns&#x27; ), &#x27;&lt;code&gt;&#x27; . $hook . &#x27;&lt;/code&gt;&#x27;, &#x27;&lt;strong&gt;&#x27; . $version . &#x27;&lt;/strong&gt;&#x27; );
+
+			$this-&gt;add_deprecated_message( &#x27;action&#x27;, $message, $hook, &#x27;action-reference/&#x27; . $page_slug );
+		}
+	}
+
+	/**
+	 * @param string $type
+	 * @param string $message
+	 * @param string $hook
+	 * @param null   $page
+	 */
+	private function add_deprecated_message( $type, $message, $hook, $page = null ) {
+		if ( $callback_message = $this-&gt;get_callback_message( $hook ) ) {
+			$message .= &#x27; &#x27; . $callback_message;
+		}
+		if ( $page ) {
+			$message .= &#x27; &#x27; . $this-&gt;get_documention_link( $page );
+		}
+
+		$this-&gt;add_message( $message, $type );
+	}
+
+	/**
+	 * @param string $message
+	 * @param string $type
+	 */
+	private function add_message( $message, $type = &#x27;filter&#x27; ) {
+		$this-&gt;messages[ $type ][] = $message;
+	}
+
+	/**
+	 * @param string $type
+	 *
+	 * @return array|false
+	 */
+	private function get_messages( $type = &#x27;filter&#x27; ) {
+		if ( ! isset( $this-&gt;messages[ $type ] ) ) {
+			return array();
+		}
+
+		return $this-&gt;messages[ $type ];
+	}
+
+	/**
+	 * @param string $page Website page slug
+	 *
+	 * @return false|string
+	 */
+	private function get_documention_link( $page ) {
+		return ac_helper()-&gt;html-&gt;link( ac_get_site_url( &#x27;documentation/&#x27; . $page ), __( &#x27;View documentation&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27; &amp;raquo;&#x27;, array( &#x27;target&#x27; =&gt; &#x27;_blank&#x27; ) );
+	}
+
+	/**
+	 * @param string $hook Action or Filter
+	 *
+	 * @return array|false
+	 */
+	private function get_callbacks( $hook ) {
+		global $wp_filter;
+
+		if ( ! isset( $wp_filter[ $hook ] ) ) {
+			return false;
+		}
+
+		if ( empty( $wp_filter[ $hook ]-&gt;callbacks ) ) {
+			return false;
+		}
+
+		$callbacks = array();
+
+		foreach ( $wp_filter[ $hook ]-&gt;callbacks as $callback ) {
+			foreach ( $callback as $cb ) {
+
+				// Function
+				if ( is_scalar( $cb[&#x27;function&#x27;] ) ) {
+					$callbacks[] = $cb[&#x27;function&#x27;];
+				}
+
+				// Method
+				if ( is_array( $cb[&#x27;function&#x27;] ) ) {
+					$callbacks[] = get_class( $cb[&#x27;function&#x27;][0] ) . &#x27;::&#x27; . $cb[&#x27;function&#x27;][1];
+				}
+			}
+		}
+
+		if ( ! $callbacks ) {
+			return false;
+		}
+
+		return $callbacks;
+	}
+
+	/**
+	 * @param string $hook Action or Filter
+	 *
+	 * @return string|false
+	 */
+	private function get_callback_message( $hook ) {
+		$callbacks = $this-&gt;get_callbacks( $hook );
+
+		if ( ! $callbacks ) {
+			return false;
+		}
+
+		return sprintf( _n( &#x27;The callback used is %s.&#x27;, &#x27;The callbacks used are %s&#x27;, count( $callbacks ), &#x27;codepress-admin-columns&#x27; ), &#x27;&lt;code&gt;&#x27; . implode( &#x27;&lt;/code&gt;, &lt;code&gt;&#x27;, $callbacks ) . &#x27;&lt;/code&gt;&#x27; );
+	}
+
+	/**
+	 * Render help page
+	 */
+	public function display() {
+		?&gt;
+        &lt;h2&gt;&lt;?php _e( &#x27;Help&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/h2&gt;
+        &lt;p&gt;
+			&lt;?php _e( &#x27;The Admin Columns plugin has undergone some major changes in version 4.&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt; &lt;br/&gt;
+
+			&lt;?php printf( __( &#x27;This site is using some actions or filters that have changed. Please read %s to resolve them.&#x27;, &#x27;codepress-admin-columns&#x27; ), ac_helper()-&gt;html-&gt;link( ac_get_site_utm_url( &#x27;documentation/faq/upgrading-from-v3-to-v4&#x27;, &#x27;help&#x27; ), __( &#x27;our documentation&#x27;, &#x27;codepress-admin-columns&#x27; ) ) ); ?&gt;
+        &lt;/p&gt;
+
+		&lt;?php foreach ( $this-&gt;get_groups() as $type =&gt; $label ) {
+			if ( $messages = $this-&gt;get_messages( $type ) ) : ?&gt;
+                &lt;h3&gt;&lt;?php echo esc_html( $label ); ?&gt;&lt;/h3&gt;
+				&lt;?php foreach ( $messages as $message ) : ?&gt;
+                    &lt;div class=&quot;ac-deprecated-message&quot;&gt;
+                        &lt;p&gt;&lt;?php echo $message; ?&gt;&lt;/p&gt;
+                    &lt;/div&gt;
+				&lt;?php endforeach; ?&gt;
+			&lt;?php endif;
+		}
+	}
+
+}
+</pre></details></body></html>

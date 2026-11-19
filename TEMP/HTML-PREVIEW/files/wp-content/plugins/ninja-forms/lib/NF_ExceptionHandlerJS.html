@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/lib/NF_ExceptionHandlerJS.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/lib/NF_ExceptionHandlerJS.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            window.addEventListener( &#x27;error&#x27;, function (e) {
+
+                var source = e.filename.match( /plugins\/(...)/gi ) || e.filename;
+
+                var message = &#x27;&lt;pre&gt;&#x27; +
+                    &#x27;[ADMIN NOTICE] Form Rendering Error&#x27; +
+                    &#x27;\r\rSource: &#x27; + source +
+                    &#x27;\r\r&lt;span style=&quot;color:red;&quot;&gt;&#x27; + e.error + &#x27;&lt;/span&gt;&#x27; +
+                    &#x27;&lt;/pre&gt;&#x27;;
+
+
+                // Replace form loading animation.
+                var forms = document.getElementsByClassName( &#x27;nf-form-cont&#x27; );
+                for ( var i = 0; i &lt; forms.length; i++ ) {
+                    forms[i].innerHTML = message;
+                }
+            });
+        &lt;/script&gt;
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Adds a global exception handler for reporting on form rendering issues.
+ *
+ * Note: Exceptions before `document.ready` do not break scripts inside of `document.ready`.
+ */
+final class NF_ExceptionHandlerJS
+{
+    public function __construct()
+    {
+        add_action( &#x27;wp_head&#x27;, array( $this, &#x27;wp_head&#x27; ), 6 );
+    }
+
+    public function wp_head()
+    {
+        if( ! current_user_can( &#x27;manage_options&#x27; ) ) return;
+        ?&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            window.addEventListener( &#x27;error&#x27;, function (e) {
+
+                var source = e.filename.match( /plugins\/(...)/gi ) || e.filename;
+
+                var message = &#x27;&lt;pre&gt;&#x27; +
+                    &#x27;[ADMIN NOTICE] Form Rendering Error&#x27; +
+                    &#x27;\r\rSource: &#x27; + source +
+                    &#x27;\r\r&lt;span style=&quot;color:red;&quot;&gt;&#x27; + e.error + &#x27;&lt;/span&gt;&#x27; +
+                    &#x27;&lt;/pre&gt;&#x27;;
+
+
+                // Replace form loading animation.
+                var forms = document.getElementsByClassName( &#x27;nf-form-cont&#x27; );
+                for ( var i = 0; i &lt; forms.length; i++ ) {
+                    forms[i].innerHTML = message;
+                }
+            });
+        &lt;/script&gt;
+        &lt;?php
+    }
+} // END CLASS NF_ExceptionHandlerJS
+</pre></details></body></html>

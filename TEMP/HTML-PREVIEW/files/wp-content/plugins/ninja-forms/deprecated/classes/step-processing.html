@@ -1,0 +1,197 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/step-processing.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/step-processing.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! function_exists( &#x27;nf_is_func_disabled&#x27; ) ) {
+    function nf_is_func_disabled($function)
+    {
+        $disabled = explode(&#x27;,&#x27;, ini_get(&#x27;disable_functions&#x27;));
+
+        return in_array($function, $disabled);
+    }
+}
+
+/**
+ * Class for performing actions incrementally. Internally used for converting submissions, exporting submissions, etc.
+ * Very useful when interacting with large amounts of data.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Step Processing
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7.4
+*/
+
+class NF_Step_Processing
+{
+
+	/**
+	 * @var action
+	 */
+	var $action = &#x27;&#x27;;
+
+	/**
+	 * @var step
+	 */
+	var $step = &#x27;&#x27;;
+
+	/**
+	 * @var total_steps
+	 */
+	var $total_steps = &#x27;&#x27;;
+
+	/**
+	 * @var redirect
+	 */
+	var $redirect = &#x27;&#x27;;
+
+    /**
+     * @var array
+     */
+    var $errors = array();
+
+	/**
+	 * @var args
+	 */
+	var $args = array();
+
+	/**
+	 * Get things rolling
+	 * 
+	 * @since 2.7.4
+	 * @return void
+	 */
+	function __construct() {
+
+		//Bail if we aren&#x27;t in the admin.
+		if ( ! is_admin() )
+			return false;
+
+        if ( function_exists( &#x27;ignore_user_abort&#x27; ) &amp;&amp; ! nf_is_func_disabled( &#x27;ignore_user_abort&#x27; ) ) {
+            ignore_user_abort( true );
+        }
+
+		add_action( &#x27;wp_ajax_nf_&#x27; . $this-&gt;action, array( $this, &#x27;processing&#x27; ) );
+	}
+
+	/**
+	 * Process our request.
+	 * Call the appropriate loading or step functions.
+	 * 
+	 * @since 2.7.6
+	 * @return void
+	 */
+	public function processing() {
+
+		// Get our passed arguments. These come from the querysting of the processing page.
+		if ( isset ( $_REQUEST[&#x27;args&#x27;] ) ) {
+			$this-&gt;args = $_REQUEST[&#x27;args&#x27;];
+			if ( isset ( $this-&gt;args[&#x27;redirect&#x27;] ) ) {
+				$this-&gt;redirect = $this-&gt;args[&#x27;redirect&#x27;];
+			}
+		} else {
+			$this-&gt;args = array();
+		}	
+
+		// Get our current step.
+		$this-&gt;step = isset ( $_REQUEST[&#x27;step&#x27;] )? esc_html( $_REQUEST[&#x27;step&#x27;] ) : &#x27;loading&#x27;;
+
+		// Get our total steps
+		$this-&gt;total_steps = isset ( $_REQUEST[&#x27;total_steps&#x27;] )? esc_html( $_REQUEST[&#x27;total_steps&#x27;] ) : 0;
+
+		// If our step is loading, then we need to return how many total steps there are along with the next step, which is 1.
+		if ( &#x27;loading&#x27; == $this-&gt;step ) {
+			$return = $this-&gt;loading();
+			if ( ! isset ( $return[&#x27;step&#x27;] ) ) {
+				$saved_step = get_user_option( &#x27;nf_step_processing_&#x27; . $this-&gt;action . &#x27;_step&#x27; );
+				if ( ! empty ( $saved_step ) ) {
+					$this-&gt;step = $saved_step;
+				} else {
+					$this-&gt;step = 1;
+				}
+
+				$return[&#x27;step&#x27;] = $this-&gt;step;
+			}
+			if ( ! isset ( $return[&#x27;complete&#x27;] ) ) {
+				$return[&#x27;complete&#x27;] = false;
+			}
+		} else { // We aren&#x27;t on the loading step, so do our processing.
+			$return = $this-&gt;step();
+			if ( ! isset ( $return[&#x27;step&#x27;] ) ) {
+				$this-&gt;step++;
+				$return[&#x27;step&#x27;] = $this-&gt;step;
+			}
+
+			if ( ! isset ( $return[&#x27;complete&#x27;] ) ) {
+				if ( $this-&gt;step &gt; $this-&gt;total_steps ) {
+					$complete = true;
+				} else {
+					$complete = false;
+				}
+				$return[&#x27;complete&#x27;] = $complete;
+			}
+
+			$return[&#x27;total_steps&#x27;] = $this-&gt;total_steps;
+		}
+
+		$user_id = get_current_user_id();
+
+		if ( $return[&#x27;complete&#x27;] ) {
+			// Delete our step option
+			delete_user_option( $user_id, &#x27;nf_step_processing_&#x27; . $this-&gt;action . &#x27;_step&#x27; );
+			// Set our redirect variable.
+			$return[&#x27;redirect&#x27;] = $this-&gt;redirect;
+			// Run our complete function
+			$this-&gt;complete();
+		} else {
+			// Save our current step so that we can resume if necessary
+			update_user_option( $user_id, &#x27;nf_step_processing_&#x27; . $this-&gt;action . &#x27;_step&#x27;, $this-&gt;step );
+		}
+
+		if ( isset ( $this-&gt;redirect ) &amp;&amp; ! empty ( $this-&gt;redirect ) ) {
+			$this-&gt;args[&#x27;redirect&#x27;] = $this-&gt;redirect;
+		}
+
+        $return[&#x27;errors&#x27;] = ( $this-&gt;errors ) ? $this-&gt;errors : FALSE;
+
+		$return[&#x27;args&#x27;] = $this-&gt;args;
+
+		echo json_encode( $return );
+		die();
+
+	}
+
+	/**
+	 * Run our loading process.
+	 * This function should be overwritten in child classes.
+	 * 
+	 * @since 2.7.4
+	 * @return array $args
+	 */
+	public function loading() {
+		// This space left intentionally blank.
+	}
+
+	/**
+	 * This function is called for every step.
+	 * This function should be overwritten in child classes.
+	 * 
+	 * @since 2.7.4
+	 * @return array $args
+	 */
+	public function step() {
+		// This space left intentionally blank.
+	}	
+
+	/**
+	 * This function is called for every step.
+	 * This function should be overwritten in child classes.
+	 * 
+	 * @since 2.7.4
+	 * @return array $args
+	 */
+	public function complete() {
+		// This space left intentionally blank.
+	}
+
+
+
+}</pre></details></body></html>

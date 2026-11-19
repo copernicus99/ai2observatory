@@ -1,0 +1,112 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/database-migrations.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/database-migrations.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Upgrade_Database_Migrations extends NF_Upgrade
+{
+    public $name = &#x27;database_migrations&#x27;;
+
+    public $priority = &quot;0.0.1&quot;;
+
+    public $description = &#x27;The database needs to be updated to support the new version.&#x27;;
+
+    public $args = array();
+
+    public $errors = array();
+
+    public function loading()
+    {
+        $already_run = $this-&gt;isComplete();
+
+        $this-&gt;total_steps = ( $already_run ) ? 0 : 1;
+    }
+
+    public function step( $step )
+    {
+        $this-&gt;createObjectTable();
+        $this-&gt;createObjectMetaTable();
+        $this-&gt;createObjectRelationshipsTable();
+    }
+
+    public function complete()
+    {
+        update_option( &#x27;nf_database_migrations&#x27;, true);
+    }
+
+    public function isComplete()
+    {
+        if( $this-&gt;existsObjectTable() ||
+            $this-&gt;existsObjectMetaTable() ||
+            $this-&gt;existsObjectRelationshipsTable()
+        ) {
+            return true;
+        }
+        return get_option( &#x27;nf_database_migrations&#x27;, false );
+    }
+
+    /*
+     * PRIVATE METHODS
+     */
+
+    private function createObjectTable()
+    {
+        require_once( ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27; );
+
+        $sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECTS_TABLE_NAME . &quot; (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+        `type` varchar(255) NOT NULL,
+        PRIMARY KEY (`id`)
+        ) DEFAULT CHARSET=utf8;&quot;;
+
+        dbDelta( $sql );
+    }
+
+    private function existsObjectTable()
+    {
+        global $wpdb;
+        return $wpdb-&gt;query( &quot;SHOW TABLES LIKE &#x27;&quot; . NF_OBJECTS_TABLE_NAME . &quot;&#x27;&quot; );
+    }
+
+
+    private function createObjectMetaTable()
+    {
+        require_once( ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27; );
+
+        $sql = &quot;CREATE TABLE IF NOT EXISTS &quot;. NF_OBJECT_META_TABLE_NAME . &quot; (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+        `object_id` bigint(20) NOT NULL,
+        `meta_key` varchar(255) NOT NULL,
+        `meta_value` longtext NOT NULL,
+        PRIMARY KEY (`id`)
+        ) DEFAULT CHARSET=utf8;&quot;;
+
+        dbDelta( $sql );
+    }
+
+    private function existsObjectMetaTable()
+    {
+        global $wpdb;
+        return $wpdb-&gt;query( &quot;SHOW TABLES LIKE &#x27;&quot; . NF_OBJECT_META_TABLE_NAME . &quot;&#x27;&quot; );
+    }
+
+    private function createObjectRelationshipsTable()
+    {
+        require_once( ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27; );
+
+        $sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECT_RELATIONSHIPS_TABLE_NAME . &quot; (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT,
+        `child_id` bigint(20) NOT NULL,
+        `parent_id` bigint(20) NOT NULL,
+        `child_type` varchar(255) NOT NULL,
+        `parent_type` varchar(255) NOT NULL,
+        PRIMARY KEY (`id`)
+        ) DEFAULT CHARSET=utf8;&quot;;
+
+        dbDelta( $sql );
+    }
+
+    private function existsObjectRelationshipsTable()
+    {
+        global $wpdb;
+        return $wpdb-&gt;query( &quot;SHOW TABLES LIKE &#x27;&quot; . NF_OBJECT_RELATIONSHIPS_TABLE_NAME . &quot;&#x27;&quot; );
+    }
+}
+</pre></details></body></html>

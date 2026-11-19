@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/user-info-fields.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/user-info-fields.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+ *
+ * Function that adds the address group dropdown to the user information field items.
+ *
+ * @since 2.2.37
+ * @returns void
+ */
+
+function ninja_forms_user_info_fields_groups( $field_id, $field_data ){
+	global $ninja_forms_fields;
+	$field = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field[&#x27;type&#x27;];
+	$default_user_info = 0;
+	if ( isset ( $ninja_forms_fields[$field_type][&#x27;edit_options&#x27;] ) and is_array( $ninja_forms_fields[$field_type][&#x27;edit_options&#x27;] ) ) {
+		foreach ( $ninja_forms_fields[$field_type][&#x27;edit_options&#x27;] as $option ) {
+			if ( isset ( $option[&#x27;name&#x27;] ) and $option[&#x27;name&#x27;] == &#x27;user_info_field_group&#x27; and isset ( $option[&#x27;default&#x27;] ) ) {
+				$default_user_info = $option[&#x27;default&#x27;];
+				break;
+			}
+		}
+	}
+
+	if ( ( isset ( $field_data[&#x27;user_info_field_group&#x27;] ) AND $field_data[&#x27;user_info_field_group&#x27;] == 1 ) or ( ( !isset ( $field_data[&#x27;user_info_field_group&#x27;] ) or $field_data[&#x27;user_info_field_group&#x27;] !== 0 ) and $default_user_info == 1 ) ) {
+		$options = array(
+			array( &#x27;name&#x27; =&gt; &#x27;- &#x27;.__( &#x27;None&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;&#x27; ),
+			array( &#x27;name&#x27; =&gt; __( &#x27;Billing&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;billing&#x27; ),
+			array( &#x27;name&#x27; =&gt; __( &#x27;Shipping&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;shipping&#x27; ),
+			array( &#x27;name&#x27; =&gt; __( &#x27;Custom&#x27;, &#x27;ninja-forms&#x27; ).&#x27; -&gt;&#x27;, &#x27;value&#x27; =&gt; &#x27;custom&#x27; ),
+		);
+
+		if ( isset ( $field_data[&#x27;user_info_field_group_name&#x27;] ) ) {
+			$group_name = $field_data[&#x27;user_info_field_group_name&#x27;];
+		} else { 
+			$group_name = &#x27;&#x27;;
+		}
+
+		if ( isset ( $field_data[&#x27;user_info_field_group_custom&#x27;] ) ) {
+			$group_custom = $field_data[&#x27;user_info_field_group_custom&#x27;];
+		} else {
+			$group_custom = &#x27;&#x27;;
+		}
+
+		if ( $group_name == &#x27;custom&#x27; ) {
+			$custom_class = &#x27;&#x27;;
+		} else {
+			$custom_class = &#x27;hidden&#x27;;
+		}
+		
+		ninja_forms_edit_field_el_output( $field_id, &#x27;select&#x27;, __( &#x27;User Info Field Group&#x27;, &#x27;ninja-forms&#x27; ), &#x27;user_info_field_group_name&#x27;, $group_name, &#x27;thin&#x27;, $options, &#x27;user-info-group-name widefat&#x27; );
+		ninja_forms_edit_field_el_output( $field_id, &#x27;text&#x27;, __( &#x27;Custom Field Group&#x27;, &#x27;ninja-forms&#x27; ), &#x27;user_info_field_group_custom&#x27;, $group_custom, &#x27;thin&#x27;, &#x27;&#x27;, &#x27;user-info-custom-group widefat &#x27;.$custom_class, &#x27;&#x27;, $custom_class );
+	}
+}
+
+add_action( &#x27;ninja_forms_edit_field_after_registered&#x27;, &#x27;ninja_forms_user_info_fields_groups&#x27;, 10, 2 );</pre></details></body></html>

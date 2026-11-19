@@ -1,0 +1,119 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/ninja-forms-style.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/ninja-forms-style.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+ * Plugin Name: Ninja Forms - Layout &amp; Styles
+ * Plugin URI: https://ninjaforms.com/extensions/layout-styles/
+ * Description: Form layout and styling add-on for Ninja Forms.
+ * Version: 3.0.25
+ * Author: The WP Ninjas
+ * Author URI: http://ninjaforms.com
+ * Text Domain: ninja-forms-layout-styles
+ *
+ * Copyright 2016 The WP Ninjas.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ */
+
+if( ! class_exists( &#x27;NF_Layouts_Conversion&#x27;, false ) ) {
+    require_once &#x27;lib/conversion.php&#x27;;
+}
+
+if( ! defined( &#x27;NINJA_FORMS_STYLE_VERSION&#x27; ) ) {
+    define(&quot;NINJA_FORMS_STYLE_VERSION&quot;, &quot;3.0.25&quot;);
+}
+
+if( version_compare( get_option( &#x27;ninja_forms_version&#x27;, &#x27;0.0.0&#x27; ), &#x27;3&#x27;, &#x27;&lt;&#x27; ) || get_option( &#x27;ninja_forms_load_deprecated&#x27;, FALSE ) ) {
+
+    if( ! defined( &#x27;NINJA_FORMS_STYLE_DIR&#x27; ) ) {
+        define(&quot;NINJA_FORMS_STYLE_DIR&quot;, plugin_dir_path(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    if( ! defined( &#x27;NINJA_FORMS_STYLE_URL&#x27; ) ) {
+        define(&quot;NINJA_FORMS_STYLE_URL&quot;, plugin_dir_url(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    include &#x27;deprecated/ninja-forms-style.php&#x27;;
+
+} else {
+
+    include &#x27;layouts/ninja-forms-layouts.php&#x27;;
+    if( ! function_exists( &#x27;NF_Layouts&#x27; ) ) {
+        function NF_Layouts() { return NF_Layouts::instance(); }
+    }
+    NF_Layouts();
+
+    include &#x27;styles/ninja-forms-styles.php&#x27;;
+    if( ! function_exists( &#x27;NF_Styles&#x27; ) ) {
+        function NF_Styles() { return NF_Styles::instance(); }
+    }
+    NF_Styles();
+
+    add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_layout_styles_setup_license&#x27; );
+    if( ! function_exists( &#x27;ninja_forms_layout_styles_setup_license&#x27; ) ) {
+        function ninja_forms_layout_styles_setup_license()
+        {
+            if (!class_exists(&#x27;NF_Extension_Updater&#x27;)) return;
+
+            new NF_Extension_Updater(&#x27;Layout and Styles&#x27;, NINJA_FORMS_STYLE_VERSION, &#x27;WP Ninjas&#x27;, __FILE__, &#x27;style&#x27;);
+        }
+    }
+}
+
+add_filter( &#x27;ninja_forms_upgrade_settings&#x27;, &#x27;ninja_forms_styles_upgrade_form_settings&#x27; );
+if( ! function_exists( &#x27;ninja_forms_styles_upgrade_form_settings&#x27; ) ) {
+    function ninja_forms_styles_upgrade_form_settings( $data ){
+
+        if( ! isset( $data[ &#x27;settings&#x27; ][ &#x27;style&#x27; ][ &#x27;groups&#x27; ] ) ) return $data;
+
+        foreach( $data[ &#x27;settings&#x27; ][ &#x27;style&#x27; ][ &#x27;groups&#x27; ] as $group =&gt; $settings ){
+
+            if( &#x27;field&#x27; == $group ) $group = &#x27;element&#x27;;
+
+            foreach( $settings as $setting =&gt; $value ){
+                $setting = $group . &#x27;_styles_&#x27; . $setting;
+                $data[ &#x27;settings&#x27; ][ $setting ] = $value;
+            }
+        }
+
+        return $data;
+    }
+}
+
+add_filter( &#x27;ninja_forms_upgrade_settings&#x27;, &#x27;ninja_forms_styles_upgrade_plugin_settings&#x27; );
+if( ! function_exists( &#x27;ninja_forms_styles_upgrade_plugin_settings&#x27; ) ) {
+    function ninja_forms_styles_upgrade_plugin_settings( $data ){
+        return $data;
+    }
+}
+
+add_filter( &#x27;ninja_forms_upgrade_field&#x27;, &#x27;ninja_forms_styles_upgrade_field_settings&#x27; );
+if( ! function_exists( &#x27;ninja_forms_styles_upgrade_field_settings&#x27; ) ) {
+    function ninja_forms_styles_upgrade_field_settings( $data ){
+
+        if( ! isset( $data[ &#x27;style&#x27; ][ &#x27;groups&#x27; ] ) ) return $data;
+
+        foreach( $data[ &#x27;style&#x27; ][ &#x27;groups&#x27; ] as $group =&gt; $settings ){
+
+            if( &#x27;field&#x27; == $group ) $group = &#x27;element&#x27;;
+
+            foreach( $settings as $setting =&gt; $value ){
+                $setting = $group . &#x27;_styles_&#x27; . $setting;
+                $data[ $setting ] = $value;
+            }
+        }
+
+        unset( $data[ &#x27;style&#x27; ] );
+
+        return $data;
+    }
+}
+</pre></details></body></html>

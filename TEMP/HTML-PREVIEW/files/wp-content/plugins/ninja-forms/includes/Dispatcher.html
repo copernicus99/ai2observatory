@@ -1,0 +1,234 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Dispatcher.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Dispatcher.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/**
+ * Handles sending information to our api.ninjaforms.com endpoint.
+ *
+ * @since  3.2
+ */
+final class NF_Dispatcher
+{
+    private $api_url = &#x27;http://api.ninjaforms.com/&#x27;;
+
+    /**
+     * Returns bool true if we are opted-in or have a premium add-on.
+     * If a premium add-on is installed, then users have opted into tracked via our terms and conditions.
+     * If no premium add-ons are installed, check to see if the user has opted in or out of anonymous usage tracking.
+     *
+     * @since  version
+     * @return bool
+     */
+    public function should_we_send() {
+
+        /**
+         * TODO:
+         * Prevent certain URLS or IPs from submitting. i.e. staging, 127.0.0.1, localhost, etc.
+         */
+
+        if ( ! has_filter( &#x27;ninja_forms_settings_licenses_addons&#x27; ) &amp;&amp; ( ! Ninja_Forms()-&gt;tracking-&gt;is_opted_in() || Ninja_Forms()-&gt;tracking-&gt;is_opted_out() ) ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Package up our environment variables and send those to our API endpoint.
+     * 
+     * @since  3.2
+     * @return void
+     */
+    public function update_environment_vars() {
+        global $wpdb;
+
+        // Plugins
+        $active_plugins = (array) get_option( &#x27;active_plugins&#x27;, array() );
+
+        //WP_DEBUG
+        if ( defined(&#x27;WP_DEBUG&#x27;) &amp;&amp; WP_DEBUG ){
+            $debug = 1;
+        } else {
+            $debug =  0;
+        }
+
+        //WPLANG
+        if ( defined( &#x27;WPLANG&#x27; ) &amp;&amp; WPLANG ) {
+            $lang = WPLANG;
+        } else {
+            $lang = &#x27;default&#x27;;
+        }
+
+        $ip_address = &#x27;&#x27;;
+        if ( array_key_exists( &#x27;SERVER_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;SERVER_ADDR&#x27; ];
+        } else if ( array_key_exists( &#x27;LOCAL_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;LOCAL_ADDR&#x27; ];
+        }
+
+        $host_name = gethostbyaddr( $ip_address );
+
+        if ( is_multisite() ) {
+            $multisite_enabled = 1;
+        } else {
+            $multisite_enabled = 0;
+        }
+
+        $environment = array(
+            &#x27;nf_version&#x27;                =&gt; Ninja_Forms::VERSION,
+            &#x27;wp_version&#x27;                =&gt; get_bloginfo(&#x27;version&#x27;),
+            &#x27;multisite_enabled&#x27;         =&gt; $multisite_enabled,
+            &#x27;server_type&#x27;               =&gt; $_SERVER[&#x27;SERVER_SOFTWARE&#x27;],
+            &#x27;php_version&#x27;               =&gt; phpversion(),
+            &#x27;mysql_version&#x27;             =&gt; $wpdb-&gt;db_version(),
+            &#x27;wp_memory_limit&#x27;           =&gt; WP_MEMORY_LIMIT,
+            &#x27;wp_debug_mode&#x27;             =&gt; $debug,
+            &#x27;wp_lang&#x27;                   =&gt; $lang,
+            &#x27;wp_max_upload_size&#x27;        =&gt; size_format( wp_max_upload_size() ),
+            &#x27;php_max_post_size&#x27;         =&gt; ini_get( &#x27;post_max_size&#x27; ),
+            &#x27;hostname&#x27;                  =&gt; $host_name,
+            &#x27;smtp&#x27;                      =&gt; ini_get(&#x27;SMTP&#x27;),
+            &#x27;smtp_port&#x27;                 =&gt; ini_get(&#x27;smtp_port&#x27;),
+            &#x27;active_plugins&#x27;            =&gt; $active_plugins,
+        );
+
+        $this-&gt;send( &#x27;update_environment_vars&#x27;, $environment );
+    }
+    
+    /**
+     * Package up our form data and send it to our API endpoint.
+     * 
+     * @since 3.2
+     * @return void
+     */
+    public function form_data() {
+        global $wpdb;
+        
+        // If we have not finished the process...
+        if ( ! get_option( &#x27;nf_form_tel_sent&#x27; ) || &#x27;false&#x27; == get_option( &#x27;nf_form_tel_sent&#x27; ) ) {
+            // Get our list of already processed forms (if it exists).
+            $forms_ref = get_option( &#x27;nf_form_tel_data&#x27; );
+            // Get a list of Forms on this site.
+            $sql = &quot;SELECT id FROM `&quot; . $wpdb-&gt;prefix . &quot;nf3_forms`&quot;;
+            $forms = $wpdb-&gt;get_results( $sql, &#x27;ARRAY_A&#x27; );
+            // If our list of processed forms already exists...
+            if ( ! empty( $forms_ref ) ) {
+                // Break those into an array.
+                $forms_ref = explode( &#x27;,&#x27;, $forms_ref );
+            } // Otherwise...
+            else {
+                // Make sure we have an array.
+                $forms_ref = array();
+            }
+            $match_found = false;
+            // For each form...
+            foreach ( $forms as $form ) {
+                // If the current form is not in our list of sent values...
+                if ( ! in_array( $form[ &#x27;id&#x27; ], $forms_ref ) ) {
+                    // Set our target ID.
+                    $id = $form[ &#x27;id&#x27; ];
+                    // Record that we found a match.
+                    $match_found = true;
+                }
+            }
+            // If we didn&#x27;t find a match.
+            if ( ! $match_found ) {
+                // Record that we&#x27;re done.
+                update_option( &#x27;nf_form_tel_sent&#x27;, &#x27;true&#x27;, false );
+                // Exit.
+                return false;
+            }// Otherwise... (We did find a match.)
+            // Get our form.
+            $form_data = Ninja_Forms()-&gt;form( intval( $id ) )-&gt;get();
+            // Setup our data value.
+            $data = array();
+            // Set the form title.
+            $data[ &#x27;title&#x27; ] = $form_data-&gt;get_setting( &#x27;title&#x27; );
+            $sql = &quot;SELECT COUNT(meta_id) AS total FROM `&quot; . $wpdb-&gt;prefix . &quot;postmeta` WHERE meta_key = &#x27;_form_id&#x27; AND meta_value = &#x27;&quot; . intval( $id ) . &quot;&#x27;&quot;;
+            $result = $wpdb-&gt;get_results( $sql, &#x27;ARRAY_A&#x27; );
+            // Set the number of submissions.
+            $data[ &#x27;subs&#x27; ] = $result[ 0 ][ &#x27;total&#x27; ];
+            // Get our fields.
+            $field_data = Ninja_Forms()-&gt;form( intval( $id ) )-&gt;get_fields();
+            $data[ &#x27;fields&#x27; ] = array();
+            // For each field on the form...
+            foreach ( $field_data as $field ) {
+                // Add that data to our array.
+                $data[ &#x27;fields&#x27; ][] = $field-&gt;get_setting( &#x27;type&#x27; );
+            }
+            // Get our actions.
+            $action_data = Ninja_Forms()-&gt;form( intval( $id ) )-&gt;get_actions();
+            $data[ &#x27;actions&#x27; ] = array();
+            // For each action on the form...
+            foreach ( $action_data as $action ) {
+                // Add that data to our array.
+                $data[ &#x27;actions&#x27; ][] = $action-&gt;get_setting( &#x27;type&#x27; );
+            }
+            // Add this form ID to our option.
+            $forms_ref[] = $id;
+            // Update our option.
+            update_option( &#x27;nf_form_tel_data&#x27;, implode( &#x27;,&#x27;, $forms_ref ), false );
+            $this-&gt;send( &#x27;form_data&#x27;, $data );
+        }
+    }
+
+    /**
+     * Sends a campaign slug and data to our API endpoint.
+     * Checks to ensure that the user has 1) opted into tracking or 2) they have a premium add-on installed.
+     * 
+     * @since  3.2
+     * @param  string       $slug   Campaign slug
+     * @param  array        $data   Array of data being sent. Should NOT already be a JSON string.
+     * @return void
+     */
+    public function send( $slug, $data = array() ) {
+
+        if ( ! $this-&gt;should_we_send() ) {
+            return false;
+        }
+
+        /**
+         * Gather site data before we send.
+         *
+         * We send the following site data with our passed data:
+         * IP Address
+         * Email
+         * Site Url
+         */
+
+        $ip_address = &#x27;&#x27;;
+        if ( array_key_exists( &#x27;SERVER_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;SERVER_ADDR&#x27; ];
+        } else if ( array_key_exists( &#x27;LOCAL_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;LOCAL_ADDR&#x27; ];
+        }
+
+        /**
+         * Email address of the current user, defaulting to admin email if they do not have one.
+         */
+        $current_user = wp_get_current_user();
+        if ( ! empty ( $current_user-&gt;user_email ) ) {
+            $email = $current_user-&gt;user_email;
+        } else {
+            $email = get_option( &#x27;admin_email&#x27; );
+        }        
+
+        $site_data = array(
+            &#x27;url&#x27;           =&gt; site_url(),
+            &#x27;ip_address&#x27;    =&gt; $ip_address,
+            &#x27;email&#x27;         =&gt; $email,
+        );
+
+        /*
+         * Send our data using wp_remote_post.
+         */
+         $response = wp_remote_post(
+            $this-&gt;api_url,
+            array(
+                &#x27;body&#x27; =&gt; array(
+                    &#x27;slug&#x27;          =&gt; $slug,
+                    &#x27;data&#x27;          =&gt; wp_json_encode( $data ),
+                    &#x27;site_data&#x27;     =&gt; wp_json_encode( $site_data ),
+                ),
+            )
+        );
+    }
+}
+</pre></details></body></html>

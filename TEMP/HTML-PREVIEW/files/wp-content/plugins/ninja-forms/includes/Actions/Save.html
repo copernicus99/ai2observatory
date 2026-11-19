@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Actions/Save.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Actions/Save.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Action_Save
+ */
+final class NF_Actions_Save extends NF_Abstracts_Action
+{
+    /**
+    * @var string
+    */
+    protected $_name  = &#x27;save&#x27;;
+
+    /**
+    * @var array
+    */
+    protected $_tags = array();
+
+    /**
+    * @var string
+    */
+    protected $_timing = &#x27;late&#x27;;
+
+    /**
+    * @var int
+    */
+    protected $_priority = &#x27;-1&#x27;;
+
+    /**
+    * Constructor
+    */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Store Submission&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    /*
+    * PUBLIC METHODS
+    */
+
+    public function save( $action_settings )
+    {
+
+    }
+
+    public function process( $action_settings, $form_id, $data )
+    {
+        if( isset( $data[&#x27;settings&#x27;][&#x27;is_preview&#x27;] ) &amp;&amp; $data[&#x27;settings&#x27;][&#x27;is_preview&#x27;] ){
+            return $data;
+        }
+
+        if( ! apply_filters ( &#x27;ninja_forms_save_submission&#x27;, true, $form_id ) ) return $data;
+
+        $sub = Ninja_Forms()-&gt;form( $form_id )-&gt;sub()-&gt;get();
+
+        $hidden_field_types = apply_filters( &#x27;nf_sub_hidden_field_types&#x27;, array() );
+
+        foreach( $data[&#x27;fields&#x27;] as $field ){
+
+            if( in_array( $field[ &#x27;type&#x27; ], array_values( $hidden_field_types ) ) ) {
+                $data[&#x27;actions&#x27;][&#x27;save&#x27;][&#x27;hidden&#x27;][] = $field[&#x27;type&#x27;];
+                continue;
+            }
+
+            $field[ &#x27;value&#x27; ] = apply_filters( &#x27;nf_save_sub_user_value&#x27;, $field[ &#x27;value&#x27; ], $field[ &#x27;id&#x27; ] );
+
+            $sub-&gt;update_field_value( $field[ &#x27;id&#x27; ], $field[ &#x27;value&#x27; ] );
+        }
+
+        if( isset( $data[ &#x27;extra&#x27; ] ) ) {
+            $sub-&gt;update_extra_values( $data[&#x27;extra&#x27;] );
+        }
+
+        do_action( &#x27;nf_before_save_sub&#x27;, $sub-&gt;get_id() );
+
+        $sub-&gt;save();
+
+        do_action( &#x27;nf_save_sub&#x27;, $sub-&gt;get_id() );
+        do_action( &#x27;nf_create_sub&#x27;, $sub-&gt;get_id() );
+        do_action( &#x27;ninja_forms_save_sub&#x27;, $sub-&gt;get_id() );
+
+        $data[ &#x27;actions&#x27; ][ &#x27;save&#x27; ][ &#x27;sub_id&#x27; ] = $sub-&gt;get_id();
+
+        return $data;
+    }
+}
+</pre></details></body></html>

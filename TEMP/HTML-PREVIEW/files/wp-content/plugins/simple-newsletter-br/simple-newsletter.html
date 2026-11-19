@@ -1,0 +1,300 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/simple-newsletter-br/simple-newsletter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/simple-newsletter-br/simple-newsletter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+					&lt;div class=&quot;simplenewsletter-confirm-success&quot;&gt;
+						&lt;p&gt;&lt;/p&gt;
+					&lt;/div&gt;
+					
+		&lt;aside id=&quot;simplenewsletter-widget&quot; class=&quot;widget&quot;&gt;
+			&lt;h2 class=&quot;widget-title&quot;&gt;&lt;/h2&gt;
+			&lt;div class=&quot;col-md-12&quot;&gt;
+              &lt;!-- section title --&gt;
+              &lt;div class=&quot;section-heading&quot;&gt;
+                &lt;h2 class=&quot;section-title animated&quot; 
+                  data-animation=&quot;fadeInDown&quot; 
+                  data-delay=&quot;0&quot;&gt;
+                &lt;/h2&gt;
+                &lt;p class=&quot;animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;100&quot;&gt;
+                   &lt;/p&gt;
+              &lt;/div&gt;
+              &lt;!-- /section title --&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;col-md-12&quot;&gt;
+		
+			
+			&lt;/div&gt;
+		&lt;/aside&gt;
+		
+		&lt;p&gt;
+			&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+			&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot;&gt;
+			&lt;label for=&quot;&quot;&gt;&lt;/label&gt;
+			&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot;&gt;
+		&lt;/p&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php 
+/**
+ * @package Simple Newsletter
+ */
+/*
+Plugin Name: Simple Newsletter
+Description: Plugin de Newsletter com Double Opt-in
+Version: 0.5.1
+Author: Robson Miranda
+Text Domain: simple-newsletter-br
+Domain Path: /languages
+*/
+
+require(&#x27;class_newsletter.php&#x27;);
+
+if(!class_exists(&#x27;simpleNewsletter&#x27;)) {
+
+	class simpleNewsletter {
+
+		public function __construct()
+		{
+			add_action( &#x27;admin_menu&#x27;, array(&amp;$this,&#x27;settings&#x27;));
+			add_action( &#x27;wp_enqueue_scripts&#x27;, array(&amp;$this,&#x27;scripts&#x27; ));
+			add_action( &#x27;admin_enqueue_scripts&#x27;, array(&amp;$this,&#x27;admin_scripts&#x27; ) );
+			add_action( &#x27;init&#x27;, array(&amp;$this, &#x27;load_sn_tranlate&#x27;));
+
+			if(isset($_POST[&#x27;simplenewsletter&#x27;]))
+			{
+				add_action(&#x27;after_setup_theme&#x27;, array(&amp;$this, &#x27;generateForm&#x27;));
+			}
+
+			if(isset($_GET[&#x27;sn_export_method&#x27;]) &amp;&amp; is_admin())
+			{
+				add_action(&#x27;after_setup_theme&#x27;, array(&amp;$this, &#x27;export&#x27;));
+			}
+
+			add_shortcode(&#x27;simplenewsletter&#x27;, array(&amp;$this,&#x27;generateForm&#x27;));
+		}
+
+		public function load_sn_tranlate()
+		{
+			load_plugin_textdomain(&#x27;simple-newsletter-br&#x27;, FALSE, dirname(plugin_basename(__FILE__)).&#x27;/languages/&#x27;);
+		}
+
+		/** This method render a submenu on configuration */
+		public function settings()
+		{
+			add_options_page( &#x27;&#x27;, &#x27;Simple Newsletter&#x27;, &#x27;manage_options&#x27;, &#x27;simplenewsletter-admin&#x27;, array( &amp;$this, &#x27;admin_updateSettings&#x27; ) );
+			add_menu_page(&#x27;Newsletter&#x27;, &#x27;Simple Newsletter&#x27;, &#x27;administrator&#x27;, &#x27;simplenewsletter-grid&#x27;, array(&amp;$this,&#x27;admin_gridSubscribers&#x27;), &#x27;dashicons-groups&#x27;);
+		}
+
+		/** Enqueue Scripts on site */
+
+		public function scripts()
+		{
+			wp_enqueue_script( &#x27;simplenewsletter&#x27;, plugins_url(&#x27;js/main.js&#x27;, __FILE__), array(&#x27;jquery&#x27;));
+		}
+
+		public function admin_scripts()
+		{
+			if( !isset($_GET[&#x27;page&#x27;]) || $_GET[&#x27;page&#x27;] != &#x27;simplenewsletter-grid&#x27; ){
+				return ;
+			}
+			
+			wp_enqueue_script( &#x27;simplenewsletter-admin&#x27;, plugins_url(&#x27;js/admin_main.js&#x27;, __FILE__), array(&#x27;jquery&#x27;));
+		}
+
+		/** Generate the donation form */
+		public function generateForm( $attr )
+		{
+			$newsletter = new controllerNewsletter();
+
+			if(isset($_GET[&#x27;sn_token&#x27;]))
+			{
+				if($newsletter-&gt;confirm($_GET[&#x27;sn_token&#x27;]))
+				{
+					?&gt;
+					&lt;div class=&quot;simplenewsletter-confirm-success&quot;&gt;
+						&lt;p&gt;&lt;?php echo get_option(&#x27;simplenewsletter_confirmedmessage&#x27;); ?&gt;&lt;/p&gt;
+					&lt;/div&gt;
+					&lt;?php
+				}	
+			}
+
+			$errors = array();
+
+			$attr = shortcode_atts(
+				array(
+					&#x27;values&#x27; =&gt; &#x27;Nenhum Valor&#x27;,
+					), $attr, &#x27;simplenewsletter&#x27;
+				);
+
+			if(isset($_POST[&#x27;simplenewsletter&#x27;]) )
+			{
+				$newsletter-&gt;insert($_POST[&#x27;simplenewsletter&#x27;]);
+				$errors = $newsletter-&gt;errors;
+				$this-&gt;ajaxResponse($errors, $newsletter-&gt;success_message);
+if ( wp_redirect(&#x27;confirm&#x27;) ) {
+    exit;
+}
+			}
+
+			if( isset( $errors ) || empty( $_POST[&#x27;simplenewsletter&#x27;] ) )
+			{
+				foreach( $errors as $field =&gt; $error )
+				{
+					echo &quot;&lt;span class=&#x27;error&#x27;&gt;$error&lt;/p&gt;&quot;;
+				}
+				$this-&gt;render_form( $attr );
+			}
+		}
+
+		public function render_form($attr)
+		{
+			include (&#x27;views/user_form.php&#x27;);
+		}
+
+		/** Set the token and API to generate the bill bank */
+		public function admin_updateSettings()
+		{
+			if(!empty($_POST))
+			{
+				foreach($_POST as $name=&gt;$value)
+				{
+					$value = sanitize_text_field($value);
+					update_option($name, $value);
+				}
+
+				add_settings_error(
+					&#x27;newsletterSaveSettings&#x27;,
+					esc_attr( &#x27;settings_updated&#x27; ),
+					&#x27;Configurações Atualizadas&#x27;,
+					&#x27;updated&#x27;
+					);
+			}
+
+			include(&#x27;views/admin_form.php&#x27;);
+		}
+
+		public function admin_gridSubscribers()
+		{
+			include (&#x27;views/admin_grid.php&#x27;);
+		}
+
+		public function export()
+		{
+			$newsletter = new controllerNewsletter();
+			$newsletter-&gt;export($_GET[&#x27;sn_export_method&#x27;]);
+			exit;
+		}
+
+		
+		/** * Activate the plugin */
+		public static function activate() {
+			global $wpdb;
+			//Cria as opções administrativas
+			add_option(&quot;simplenewsletter_dbloptin&quot;, &quot;1&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_showname&quot;, &quot;1&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_successmessage&quot;, &quot;Obrigado por se cadastrar&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_confirmedmessage&quot;, &quot;Obrigado por confirmar seu email&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_confirmationemail&quot;, &quot;Obrigado por se cadastrar, clique no link abaixo para confirmar o seu email&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_logo&quot;, &quot;&quot;, null, &quot;no&quot;);
+			add_option(&quot;simplenewsletter_showon&quot;, &quot;append&quot;, null, &quot;no&quot;);
+			//Executa a query de criação da tabela de armazenamento
+			$file = fopen( plugin_dir_path(__FILE__).&#x27;table.sql&#x27;, &quot;r&quot;);
+			$query = fread($file, filesize(plugin_dir_path(__FILE__).&#x27;table.sql&#x27;));
+			fclose($file);
+			$wpdb-&gt;query($query);
+		}
+
+		/** * Deactivate the plugin */ 
+		public static function deactivate() {
+			delete_option(&quot;simplenewsletter_dbloptin&quot;);
+			delete_option(&quot;simplenewsletter_logo&quot;);
+			delete_option(&quot;simplenewsletter_confirmationemail&quot;);
+			delete_option(&quot;simplenewsletter_showname&quot;);
+			delete_option(&quot;simplenewsletter_successmessage&quot;);
+			delete_option(&quot;simplenewsletter_confirmedmessage&quot;);
+			delete_option(&quot;simplenewsletter_showon&quot;);
+		}
+
+		public function ajaxResponse($errors, $success_message)
+		{
+			//check if is ajax
+			if(!empty($_SERVER[&#x27;HTTP_X_REQUESTED_WITH&#x27;]) &amp;&amp; strtolower($_SERVER[&#x27;HTTP_X_REQUESTED_WITH&#x27;]) == &#x27;xmlhttprequest&#x27;)
+			{
+				if(!empty($errors))
+				{
+					echo json_encode( array( &#x27;success&#x27; =&gt; &#x27;0&#x27;, &#x27;message&#x27; =&gt; $errors ) );
+				}else{
+					echo json_encode( array( &#x27;success&#x27; =&gt; &#x27;1&#x27;, &#x27;message&#x27; =&gt; $success_message ) );
+				}
+				exit;
+
+				return true;
+			}
+			
+			return true;
+		}
+
+	}
+}
+
+if(class_exists(&quot;simpleNewsletter&quot;)){
+	register_activation_hook(__FILE__, array(&#x27;simpleNewsletter&#x27;, &#x27;activate&#x27;));
+	register_deactivation_hook(__FILE__, array(&#x27;simpleNewsletter&#x27;, &#x27;deactivate&#x27;));
+	$simpleNewsletter = new simpleNewsletter;
+	add_action( &#x27;widgets_init&#x27;, &#x27;simplenewsletter_register_widgets&#x27; );
+}
+
+class widgetSimpleNewsletter extends WP_Widget {
+
+	function __construct() {
+		// Instantiate the parent object
+		parent::__construct( false, &#x27;Simple Newsletter&#x27;, array(&#x27;description&#x27; =&gt; __(&#x27;Add the subscription form on widget area&#x27;, &#x27;simple-newsletter-br&#x27;)) );
+	}
+
+	function widget( $args, $instance ) {
+		?&gt;
+		&lt;aside id=&quot;simplenewsletter-widget&quot; class=&quot;widget&quot;&gt;
+			&lt;h2 class=&quot;widget-title&quot;&gt;&lt;/h2&gt;
+			&lt;div class=&quot;col-md-12&quot;&gt;
+              &lt;!-- section title --&gt;
+              &lt;div class=&quot;section-heading&quot;&gt;
+                &lt;h2 class=&quot;section-title animated&quot; 
+                  data-animation=&quot;fadeInDown&quot; 
+                  data-delay=&quot;0&quot;&gt;
+                &lt;?php echo get_aio_style_title($instance[&#x27;title&#x27;]); ?&gt;&lt;/h2&gt;
+                &lt;p class=&quot;animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;100&quot;&gt;
+                   &lt;?php echo ( isset($instance[&#x27;boxtext&#x27;]) &amp;&amp; !empty($instance[&#x27;boxtext&#x27;]) ) ? $instance[&#x27;boxtext&#x27;] : &#x27;&#x27;; ?&gt;&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;!-- /section title --&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;col-md-12&quot;&gt;
+		
+			&lt;?php do_shortcode(&#x27;[simplenewsletter]&#x27;); ?&gt;
+			&lt;/div&gt;
+		&lt;/aside&gt;
+		&lt;?php
+	}
+
+	function update( $new_instance, $old_instance ) {
+		$instance = array();
+		$instance[&#x27;title&#x27;] = ( ! empty( $new_instance[&#x27;title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;title&#x27;] ) : &#x27;&#x27;;
+		$instance[&#x27;boxtext&#x27;] = ( ! empty( $new_instance[&#x27;boxtext&#x27;] ) ) ? strip_tags( $new_instance[&#x27;boxtext&#x27;] ) : &#x27;&#x27;;
+		return $instance;
+	}
+
+	function form( $instance ) {
+		$title = ! empty( $instance[&#x27;title&#x27;] ) ? $instance[&#x27;title&#x27;] : __( &#x27;New title&#x27;, &#x27;simple-newsletter-br&#x27; );
+		$boxtext = ! empty( $instance[&#x27;boxtext&#x27;] ) ? $instance[&#x27;boxtext&#x27;] : __( &#x27;Box Text&#x27;, &#x27;simple-newsletter-br&#x27; );
+		?&gt;
+		&lt;p&gt;
+			&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Title:&#x27; ); ?&gt;&lt;/label&gt; 
+			&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $title ); ?&gt;&quot;&gt;
+			&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;boxtext&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Box Text:&#x27;, &#x27;simple-newsletter-br&#x27; ); ?&gt;&lt;/label&gt;
+			&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;boxtext&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;boxtext&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $boxtext ); ?&gt;&quot;&gt;
+		&lt;/p&gt;
+		&lt;?php 
+	}
+}
+
+function simplenewsletter_register_widgets() {
+	register_widget( &#x27;widgetSimpleNewsletter&#x27; );
+}</pre></details></body></html>

@@ -1,0 +1,79 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Column/ActionColumnHelper.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Column/ActionColumnHelper.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Holds all the row actions buttons for each content type (e.g. post, comment, user and media).
+ * WP_List_Table does not have a method for retrieving row actions. This class uses their filters to fetch the actions.
+ * For example usage see the AC_Column_Actions class.
+ *
+ * Class AC_Column_ActionColumnHelper
+ */
+class AC_Column_ActionColumnHelper {
+
+	private $actions;
+
+	/**
+	 * @since 2.5
+	 */
+	private static $_instance = null;
+
+	/**
+	 * @since 2.5
+	 */
+	public static function instance() {
+		if ( null === self::$_instance ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
+
+	private function __construct() {
+		add_filter( &#x27;comment_row_actions&#x27;, array( $this, &#x27;set_comment&#x27; ), 10, 2 );
+		add_filter( &#x27;page_row_actions&#x27;, array( $this, &#x27;set_post&#x27; ), 10, 2 );
+		add_filter( &#x27;post_row_actions&#x27;, array( $this, &#x27;set_post&#x27; ), 10, 2 );
+		add_filter( &#x27;media_row_actions&#x27;, array( $this, &#x27;set_media&#x27; ), 10, 2 );
+		add_filter( &#x27;user_row_actions&#x27;, array( $this, &#x27;set_user&#x27; ), 10, 2 );
+	}
+
+	public function set_comment( $actions, $comment ) {
+		$this-&gt;actions[ &#x27;comment&#x27; ][ $comment-&gt;ID ] = $actions;
+
+		return $actions;
+	}
+
+	public function set_post( $actions, $post ) {
+		$this-&gt;actions[ &#x27;post&#x27; ][ $post-&gt;ID ] = $actions;
+
+		return $actions;
+	}
+
+	public function set_media( $actions, $post ) {
+		$this-&gt;actions[ &#x27;media&#x27; ][ $post-&gt;ID ] = $actions;
+
+		return $actions;
+	}
+
+	public function set_user( $actions, $user ) {
+		$this-&gt;actions[ &#x27;user&#x27; ][ $user-&gt;ID ] = $actions;
+
+		return $actions;
+	}
+
+	/**
+	 * Retrieve row actions like &#x27;edit, trash, spam&#x27; etc.
+	 *
+	 * @param string $type
+	 * @param int $id Object ID
+	 *
+	 * @return array|false Array with actions
+	 */
+	public function get( $type, $id ) {
+		return isset( $this-&gt;actions[ $type ][ $id ] ) ? $this-&gt;actions[ $type ][ $id ] : array();
+	}
+
+}
+</pre></details></body></html>

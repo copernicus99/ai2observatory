@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/FormEndpoints.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/FormEndpoints.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_Controllers_FormEndpoints extends NF_Abstracts_Controller
+{
+    /*
+     * Constructor
+     */
+    public function __construct()
+    {
+//        add_action( &#x27;wp_ajax_nf_get_forms&#x27;, array( $this, &#x27;get_forms&#x27; ) );
+//        add_action( &#x27;wp_ajax_nf_get_new_form_templates&#x27;, array( $this, &#x27;get_new_form_templates&#x27; ) );
+//        add_action( &#x27;wp_ajax_nf_delete&#x27;, array( $this, &#x27;delete&#x27; ) );
+//        add_action( &#x27;wp_ajax_nf_duplicate&#x27;, array( $this, &#x27;duplicate&#x27; ) );
+    }
+
+    /*
+     *
+     */
+    public function get_forms()
+    {
+        $db_forms_controller = new NF_Database_FormsController();
+        $forms_json = $db_forms_controller-&gt;getFormsData();
+        $this-&gt;_respond( $forms_json );
+    }
+
+    /*
+     *
+     */
+    public function get_new_form_templates()
+    {
+        $templates = Ninja_Forms()-&gt;config( &#x27;NewFormTemplates&#x27; );
+        die( json_encode( $templates ) );
+    }
+
+    /*
+     *
+     */
+    public function delete()
+    {
+        $id = $_REQUEST[ &#x27;form_id&#x27; ];
+
+        try{
+            $form = Ninja_Forms()-&gt;form( $id )-&gt;get();
+            $this-&gt;_data[ &#x27;delete&#x27; ] = $form-&gt;delete();;
+        } catch( Exception $e ) {
+            $this-&gt;_data[ &#x27;errors&#x27; ][] = $e-&gt;getMessage();
+        }
+        $this-&gt;_respond();
+    }
+
+    public function duplicate()
+    {
+        $form_id = $_REQUEST[ &#x27;form_id&#x27; ];
+
+        //Copied and pasted from NF_Database_models_Form::duplicate line 136
+        $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+
+        $settings = $form-&gt;get_settings();
+
+        $new_form = Ninja_Forms()-&gt;form()-&gt;get();
+        $new_form-&gt;update_settings( $settings );
+
+        $form_title = $form-&gt;get_setting( &#x27;title&#x27; );
+
+        $new_form_title = $form_title . &quot; - &quot; . __( &#x27;copy&#x27;, &#x27;ninja-forms&#x27; );
+
+        $new_form-&gt;update_setting( &#x27;title&#x27;, $new_form_title );
+
+        $new_form-&gt;update_setting( &#x27;lock&#x27;, 0 );
+
+        $new_form-&gt;save();
+
+        $new_form_id = $new_form-&gt;get_id();
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+        foreach( $fields as $field ){
+
+            $field_settings = $field-&gt;get_settings();
+
+            $field_settings[ &#x27;parent_id&#x27; ] = $new_form_id;
+
+            $new_field = Ninja_Forms()-&gt;form( $new_form_id )-&gt;field()-&gt;get();
+            $new_field-&gt;update_settings( $field_settings )-&gt;save();
+        }
+
+        $actions = Ninja_Forms()-&gt;form( $form_id )-&gt;get_actions();
+
+        foreach( $actions as $action ){
+
+            $action_settings = $action-&gt;get_settings();
+
+            $new_action = Ninja_Forms()-&gt;form( $new_form_id )-&gt;action()-&gt;get();
+            $new_action-&gt;update_settings( $action_settings )-&gt;save();
+        }
+
+        return $new_form_id;
+
+    }
+}
+</pre></details></body></html>

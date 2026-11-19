@@ -1,0 +1,120 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Libraries/EOS/Stack.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Libraries/EOS/Stack.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/*
+ * MODIFICATIONS
+ * - Renamed with prefix to avoid naming collisions.
+ */
+
+/**
+ * Basic Stack Class.
+ *
+ * Created for use with eqEOS. May eventually be replaced with native
+ * PHP functions `array_pop()`, `array_push()`, and `end()`
+ *
+ * @author Jon Lawrence &lt;jlawrence11@gmail.com&gt;
+ * @copyright Copyright �2005-2013 Jon Lawrence
+ * @license http://opensource.org/licenses/LGPL-2.1 LGPL 2.1 License
+ * @package Math
+ * @subpackage EOS
+ * @version 2.0
+ */
+class NF_EOS_Stack {
+    private $index;
+    private $locArray;
+
+    /**
+     * Constructor
+     *
+     * Initializes the stack
+     */
+    public function __construct() {
+        //define the private vars
+        $this-&gt;locArray = array();
+        $this-&gt;index = -1;
+    }
+
+    /**
+     * Peek
+     *
+     * Will view the last element of the stack without removing it
+     *
+     * @return Mixed An element of the array or false if none exist
+     */
+    public function peek() {
+        if($this-&gt;index &gt; -1)
+            return $this-&gt;locArray[$this-&gt;index];
+        else
+            return false;
+    }
+
+    /**
+     * Poke
+     *
+     * Will add an element to the end of the stack
+     *
+     * @param Mixed $data Element to add
+     */
+    public function poke($data) {
+        $this-&gt;locArray[++$this-&gt;index] = $data;
+    }
+
+    /**
+     * Push
+     *
+     * Alias of {@see Stack::poke()}
+     * Adds element to the stack
+     *
+     * @param Mixed $data Element to add
+     */
+    public function push($data) {
+        //allias for &#x27;poke&#x27;
+        $this-&gt;poke($data);
+    }
+
+    /**
+     * Pop
+     *
+     * Retrives an element from the end of the stack, and removes it from
+     * the stack at the same time. If no elements, returns boolean false
+     *
+     * @return Mixed Element at end of stack or false if none exist
+     */
+    public function pop() {
+        if($this-&gt;index &gt; -1)
+        {
+            $this-&gt;index--;
+            return $this-&gt;locArray[$this-&gt;index+1];
+        }
+        else
+            return false;
+    }
+
+    /**
+     * Clear
+     *
+     * Clears the stack to be reused.
+     */
+    public function clear() {
+        $this-&gt;index = -1;
+        $this-&gt;locArray = array();
+    }
+
+    /**
+     * Get Stack
+     *
+     * Returns the array of stack elements, keeping all, indexed at 0
+     *
+     * @return Mixed Array of stack elements or false if none exist.
+     */
+    public function getStack() {
+        if($this-&gt;index &gt; -1)
+        {
+            return array_values($this-&gt;locArray);
+        }
+        else
+            return false;
+    }
+}
+
+?&gt;
+</pre></details></body></html>

@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/external.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/external.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+abstract class NF_Upload_External {
+
+	private $slug;
+
+	private $title;
+
+	private $settings;
+
+	function __construct( $title, $slug, $settings ) {
+		$this-&gt;title    = $title;
+		$this-&gt;slug     = $slug;
+		$this-&gt;settings = $settings;
+
+		$this-&gt;init();
+	}
+
+	public function init( ){
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;register_settings&#x27; ) );
+		add_filter( &#x27;ninja_forms_upload_locations&#x27;, array( $this, &#x27;register_location&#x27; ) );
+		add_action( &#x27;ninja_forms_post_process&#x27;, array( $this, &#x27;upload_to_external&#x27; ) );
+		add_action( &#x27;ninja_forms_post_process&#x27;, array( $this, &#x27;remove_server_upload&#x27; ), 1001 );
+	}
+
+	public static function instance( $external, $require = false ) {
+		if ( $require ) {
+			require_once( $external );
+			$external = basename( $external, &#x27;.php&#x27; );
+		}
+		$external_class = &#x27;External_&#x27; . ucfirst( $external );
+		if ( class_exists( $external_class ) ) {
+			return new $external_class();
+		}
+
+		return false;
+	}
+
+	public function register_location( $locations ) {
+		if ( $this-&gt;is_connected() &amp;&amp; ! $this-&gt;already_registered( $locations, $this-&gt;slug ) ) {
+			$locations[] = array(
+				&#x27;value&#x27; =&gt; $this-&gt;slug,
+				&#x27;name&#x27;  =&gt; $this-&gt;title
+			);
+		}
+
+		return $locations;
+	}
+
+	private function already_registered( $locations, $slug ) {
+		foreach ( $locations as $location ) {
+			if ( isset( $location[ &#x27;value&#x27; ] ) &amp;&amp; $location[ &#x27;value&#x27; ] == $slug ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function register_settings() {
+		$args = array(
+			&#x27;page&#x27;     =&gt; &#x27;ninja-forms-uploads&#x27;,
+			&#x27;tab&#x27;      =&gt; &#x27;external_settings&#x27;,
+			&#x27;slug&#x27;     =&gt; $this-&gt;slug . &#x27;_settings&#x27;,
+			&#x27;title&#x27;    =&gt; sprintf( __( &#x27;%s Settings&#x27;, &#x27;ninja-forms-uploads&#x27; ), $this-&gt;title ),
+			&#x27;settings&#x27; =&gt; $this-&gt;settings
+		);
+		if ( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ) {
+			ninja_forms_register_tab_metabox( $args );
+		}
+	}
+
+	public function is_connected() {
+		return false;
+	}
+
+	private function post_process( $form_id ) {
+		if ( ! $this-&gt;is_connected() ) {
+			return false;
+		}
+
+		return ninja_forms_upload_get_uploaded_files( $this-&gt;slug );
+	}
+
+	public function upload_to_external( $form_id ) {
+		$files = $this-&gt;post_process( $form_id );
+		if ( ! is_array( $files ) || empty( $files ) ) {
+			return;
+		}
+
+		global $ninja_forms_processing, $wpdb;
+
+		foreach ( $files as $data ) {
+			if ( ! $data[&#x27;user_value&#x27;] ) {
+				continue;
+			}
+			foreach ( $data[&#x27;user_value&#x27;] as $key =&gt; $file ) {
+				if ( ! isset( $file[&#x27;file_path&#x27;] ) ) {
+					continue;
+				}
+				$filename = $file[&#x27;file_path&#x27;] . $file[&#x27;file_name&#x27;];
+				if ( file_exists( $filename ) ) {
+					$args = $this-&gt;upload_file( $filename );
+					if ( $args[&#x27;path&#x27;] != &#x27;&#x27; ) {
+						$path = trailingslashit( $args[&#x27;path&#x27;] );
+					}
+					if ( isset( $data[&#x27;field_row&#x27;][&#x27;data&#x27;][&#x27;upload_location&#x27;] ) ) {
+						$data[&#x27;user_value&#x27;][ $key ][&#x27;upload_location&#x27;] = $data[&#x27;field_row&#x27;][&#x27;data&#x27;][&#x27;upload_location&#x27;];
+					}
+					$data[&#x27;user_value&#x27;][ $key ][&#x27;external_path&#x27;] = $path;
+					$data[&#x27;user_value&#x27;][ $key ][&#x27;external_filename&#x27;] = $args[&#x27;filename&#x27;];
+
+					// Allow the external service classes to alter the file data
+					$file_data = $this-&gt;enrich_file_data( $data[&#x27;user_value&#x27;][ $key ] );
+
+					$wpdb-&gt;update( NINJA_FORMS_UPLOADS_TABLE_NAME, array( &#x27;data&#x27; =&gt; serialize( $file_data) ), array( &#x27;id&#x27; =&gt; $data[&#x27;user_value&#x27;][ $key ][&#x27;upload_id&#x27;] ) );
+				}
+			}
+
+			$ninja_forms_processing-&gt;update_field_value( $data[&#x27;field_id&#x27;], $data[&#x27;user_value&#x27;] );
+		}
+
+
+	}
+
+	public function remove_server_upload( $form_id ) {
+		$files = $this-&gt;post_process( $form_id );
+		if ( ! is_array( $files ) || empty( $files ) ) {
+			return;
+		}
+
+		ninja_forms_upload_remove_uploaded_files( $files );
+	}
+
+	public function upload_file( $filename, $path = &#x27;&#x27; ) {
+		return &#x27;&#x27;;
+	}
+
+	public function file_url( $filename, $path = &#x27;&#x27;, $data = array() ) {
+		return &#x27;&#x27;;
+	}
+
+	public function sanitize_path( $path, $suffix = &#x27;/&#x27; ) {
+		$path = ltrim( $path, &#x27;/&#x27; );
+		$path = rtrim( $path, &#x27;/&#x27; );
+
+		return $path . $suffix;
+	}
+
+	public function get_filename_external( $file ) {
+		$filename = basename( $file );
+		$filename = time() . &#x27;-&#x27;. $filename;
+
+		return apply_filters( &#x27;ninja_forms_uploads_&#x27; . $this-&gt;slug . &#x27;_filename&#x27;, $filename );
+	}
+
+	public function enrich_file_data( $data ){
+		return $data;
+	}
+
+} </pre></details></body></html>

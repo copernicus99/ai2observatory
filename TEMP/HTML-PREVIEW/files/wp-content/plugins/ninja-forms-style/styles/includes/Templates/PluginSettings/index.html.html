@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/styles/includes/Templates/PluginSettings/index.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/styles/includes/Templates/PluginSettings/index.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div class=&quot;wrap&quot;&gt;
+
+    &lt;h1&gt;&lt;/h1&gt;
+
+    &lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+        
+            
+        
+    &lt;/h2&gt;
+
+    &lt;div id=&quot;poststuff&quot;&gt;
+        &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt;
+
+            
+
+            
+
+            &lt;p&gt;
+                &lt;label&gt;
+                    &lt;input type=&quot;checkbox&quot; name=&quot;advanced&quot; id=&quot;advanced_css&quot; value=&quot;1&quot;&gt; Show Advanced CSS Properties
+                &lt;/label&gt;
+            &lt;/p&gt;
+
+            &lt;input type=&quot;hidden&quot; name=&quot;update_ninja_forms_style_settings&quot;&gt;
+            &lt;input type=&quot;submit&quot; class=&quot;button button-primary&quot; value=&quot;Save Settings&quot;&gt;
+
+            &lt;div style=&quot;float:right;&quot;&gt;
+                &lt;input
+                        onClick=&quot;return confirm(&#x27;This will clear ALL styles. Are you sure?&#x27;);&quot;
+                        type=&quot;submit&quot; class=&quot;button button-default&quot; name=&quot;nuke_styles&quot; value=&quot;Clear All Styles&quot;&gt;
+            &lt;/div&gt;
+
+        &lt;/form&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div class=&quot;wrap&quot;&gt;
+
+    &lt;h1&gt;&lt;?php _e( &#x27;Style Settings&#x27;, &#x27;ninja-forms-styles&#x27; ); ?&gt;&lt;/h1&gt;
+
+    &lt;h2 class=&quot;nav-tab-wrapper&quot;&gt;
+        &lt;?php foreach( $view-&gt;get_var( &#x27;groups&#x27; ) as $group ): ?&gt;
+            &lt;?php $view-&gt;get_part( &#x27;tab&#x27;, $group ); ?&gt;
+        &lt;?php endforeach; ?&gt;
+    &lt;/h2&gt;
+
+    &lt;div id=&quot;poststuff&quot;&gt;
+        &lt;form action=&quot;&quot; method=&quot;POST&quot;&gt;
+
+            &lt;?php
+            if( &#x27;field_type&#x27; == $view-&gt;get_var( &#x27;tab&#x27; ) ){
+                $view-&gt;get_part( &#x27;field-type-selector&#x27; );
+            }
+            ?&gt;
+
+            &lt;?php
+            foreach( $view-&gt;get_var( &#x27;sections&#x27; ) as $section ) {
+                $view-&gt;get_part( &#x27;postbox&#x27;, $section );
+            }
+            ?&gt;
+
+            &lt;p&gt;
+                &lt;label&gt;
+                    &lt;input type=&quot;checkbox&quot; name=&quot;advanced&quot; id=&quot;advanced_css&quot; value=&quot;1&quot;&gt; Show Advanced CSS Properties
+                &lt;/label&gt;
+            &lt;/p&gt;
+
+            &lt;input type=&quot;hidden&quot; name=&quot;update_ninja_forms_style_settings&quot;&gt;
+            &lt;input type=&quot;submit&quot; class=&quot;button button-primary&quot; value=&quot;Save Settings&quot;&gt;
+
+            &lt;div style=&quot;float:right;&quot;&gt;
+                &lt;input
+                        onClick=&quot;return confirm(&#x27;This will clear ALL styles. Are you sure?&#x27;);&quot;
+                        type=&quot;submit&quot; class=&quot;button button-default&quot; name=&quot;nuke_styles&quot; value=&quot;Clear All Styles&quot;&gt;
+            &lt;/div&gt;
+
+        &lt;/form&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+
+</pre></details></body></html>

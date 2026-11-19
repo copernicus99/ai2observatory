@@ -1,0 +1,176 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/update-email-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/update-email-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Upgrade_Email_Settings extends NF_Upgrade
+{
+    public $name = &#x27;email_settings&#x27;;
+
+    public $priority = &#x27;2.9.3&#x27;;
+
+    public $description = &#x27;Email settings need to be transferred to a new storage method.&#x27;;
+
+    public $args = array();
+
+    public $errors = array();
+
+    public function loading()
+    {
+        // Remove old email settings.
+        $this-&gt;changeEmailFav();
+
+        // Get our total number of forms.
+        $form_count = $this-&gt;getFormCount();
+
+        // Get all our forms
+        $forms = $this-&gt;getAllForms();
+
+        $x = 1;
+        if ( is_array( $forms ) ) {
+            foreach ( $forms as $form ) {
+                $this-&gt;args[&#x27;forms&#x27;][$x] = $form[&#x27;id&#x27;];
+                $x++;
+            }
+        }
+
+        if( empty( $this-&gt;total_steps ) || $this-&gt;total_steps &lt;= 1 ) {
+            $this-&gt;total_steps = $form_count;
+        }
+
+        $args = array(
+            &#x27;total_steps&#x27; 	=&gt; $this-&gt;total_steps,
+            &#x27;step&#x27; 			=&gt; 1,
+        );
+
+        $this-&gt;redirect = admin_url( &#x27;admin.php?page=ninja-forms&#x27; );
+
+        return $args;
+    }
+
+    public function step( $step )
+    {
+        // Get our form ID
+        $form_id = $this-&gt;args[&#x27;forms&#x27;][ $step ];
+        $this-&gt;removeOldEmailSettings( $form_id );
+    }
+
+    public function complete()
+    {
+        update_option( &#x27;nf_update_email_settings_complete&#x27;, true );
+    }
+
+    public function isComplete()
+    {
+        return get_option( &#x27;nf_update_email_settings_complete&#x27;, false );
+    }
+
+    /*
+     * PRIVATE METHODS
+     */
+
+    private function changeEmailFav() {
+        global $wpdb;
+
+        $email_address = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Email&#x27; ), ARRAY_A );
+
+        $sql = &#x27;DELETE FROM `&#x27; . NINJA_FORMS_FAV_FIELDS_TABLE_NAME . &#x27;` WHERE name = &quot;Email Address&quot;&#x27;;
+
+        $wpdb-&gt;query( $sql );
+
+        $sql = &#x27;DELETE FROM `&#x27; . NINJA_FORMS_FAV_FIELDS_TABLE_NAME . &#x27;` WHERE name = &quot;Email&quot;&#x27;;
+
+        $wpdb-&gt;query( $sql );
+
+        if ( isset ( $email_address[&#x27;id&#x27;] ) &amp;&amp; ! empty ( $email_address[&#x27;id&#x27;] ) ) {
+            $sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+		(&#x27; . $email_address[&#x27;id&#x27;] . &#x27;, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:25:{s:5:&quot;label&quot;;s:5:&quot;Email&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;1&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:10:&quot;user_phone&quot;;s:1:&quot;0&quot;;s:10:&quot;user_email&quot;;s:1:&quot;1&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Email\&#x27;)&#x27;;
+            $wpdb-&gt;query($sql);
+        }
+
+    }
+
+    private function getFormCount() {
+        global $wpdb;
+
+        $forms = Ninja_Forms()-&gt;forms()-&gt;get_all();
+        return count( $forms );
+    }
+
+    private function getAllForms(){
+        $forms = Ninja_Forms()-&gt;forms()-&gt;get_all();
+
+        $tmp_array = array();
+        $x = 0;
+        foreach ( $forms as $form_id ) {
+            $tmp_array[ $x ][&#x27;id&#x27;] = $form_id;
+            $tmp_array[ $x ][&#x27;data&#x27;] = Ninja_Forms()-&gt;form( $form_id )-&gt;get_all_settings();
+            $tmp_array[ $x ][&#x27;name&#x27;] = Ninja_Forms()-&gt;form( $form_id )-&gt;get_setting( &#x27;form_title&#x27; );
+            $x++;
+        }
+
+        return $tmp_array;
+    }
+
+    private function removeOldEmailSettings( $form_id = &#x27;&#x27; ) {
+
+        if ( &#x27;&#x27; == $form_id ) {
+            $forms = $this-&gt;getAllForms();
+
+            if ( is_array( $forms ) ) {
+                foreach ( $forms as $form ) {
+                    $this-&gt;removeOldEmailSendTo( $form[&#x27;id&#x27;] );
+                }
+            }
+        } else {
+            $this-&gt;removeOldEmailSendTo( $form_id );
+        }
+    }
+
+    function removeOldEmailSendTo( $form_id ) {
+        if ( empty ( $form_id ) )
+            return false;
+
+        // Remove any &quot;Admin mailto&quot; settings we might have.
+        $form_row = ninja_forms_get_form_by_id( $form_id );
+
+        if ( isset ( $form_row[&#x27;data&#x27;][&#x27;admin_mailto&#x27;] ) ) {
+            unset ( $form_row[&#x27;data&#x27;][&#x27;admin_mailto&#x27;] );
+
+            $args = array(
+                &#x27;update_array&#x27;	=&gt; array(
+                    &#x27;data&#x27;		=&gt; serialize( $form_row[&#x27;data&#x27;] ),
+                ),
+                &#x27;where&#x27;			=&gt; array(
+                    &#x27;id&#x27; 		=&gt; $form_id,
+                ),
+            );
+
+            ninja_forms_update_form( $args );
+
+        }
+
+        // Update any old email settings we have.
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+        // Create a notification for our user email
+        if ( ! empty ( $fields ) ) {
+            foreach ( $fields as $field_id =&gt; $field ) {
+                if ( isset ( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;send_email&#x27;] == 1 ) {
+                    // Add this field to our $addresses variable.
+                    unset( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] );
+                    unset( $field[&#x27;data&#x27;][&#x27;replyto_email&#x27;] );
+                    unset( $field[&#x27;data&#x27;][&#x27;from_name&#x27;] );
+
+                    $args = array(
+                        &#x27;update_array&#x27;	=&gt; array(
+                            &#x27;data&#x27;		=&gt; serialize( $field[&#x27;data&#x27;] ),
+                        ),
+                        &#x27;where&#x27;			=&gt; array(
+                            &#x27;id&#x27; 		=&gt; $field_id,
+                        ),
+                    );
+
+                    ninja_forms_update_field( $args );
+                }
+            }
+        }
+    }
+}</pre></details></body></html>

@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentysixteen/template-parts/content-search.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentysixteen/template-parts/content-search.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+&lt;article id=&quot;post-&quot; &gt;
+	&lt;header class=&quot;entry-header&quot;&gt;
+		
+	&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+	
+
+	
+
+	
+
+		&lt;footer class=&quot;entry-footer&quot;&gt;
+			
+			
+		&lt;/footer&gt;&lt;!-- .entry-footer --&gt;
+
+	
+
+		
+
+	
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * The template part for displaying results in search pages
+ *
+ * @package WordPress
+ * @subpackage Twenty_Sixteen
+ * @since Twenty Sixteen 1.0
+ */
+?&gt;
+
+&lt;article id=&quot;post-&lt;?php the_ID(); ?&gt;&quot; &lt;?php post_class(); ?&gt;&gt;
+	&lt;header class=&quot;entry-header&quot;&gt;
+		&lt;?php the_title( sprintf( &#x27;&lt;h2 class=&quot;entry-title&quot;&gt;&lt;a href=&quot;%s&quot; rel=&quot;bookmark&quot;&gt;&#x27;, esc_url( get_permalink() ) ), &#x27;&lt;/a&gt;&lt;/h2&gt;&#x27; ); ?&gt;
+	&lt;/header&gt;&lt;!-- .entry-header --&gt;
+
+	&lt;?php twentysixteen_post_thumbnail(); ?&gt;
+
+	&lt;?php twentysixteen_excerpt(); ?&gt;
+
+	&lt;?php if ( &#x27;post&#x27; === get_post_type() ) : ?&gt;
+
+		&lt;footer class=&quot;entry-footer&quot;&gt;
+			&lt;?php twentysixteen_entry_meta(); ?&gt;
+			&lt;?php
+				edit_post_link(
+					sprintf(
+						/* translators: %s: Name of current post */
+						__( &#x27;Edit&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentysixteen&#x27; ),
+						get_the_title()
+					),
+					&#x27;&lt;span class=&quot;edit-link&quot;&gt;&#x27;,
+					&#x27;&lt;/span&gt;&#x27;
+				);
+			?&gt;
+		&lt;/footer&gt;&lt;!-- .entry-footer --&gt;
+
+	&lt;?php else : ?&gt;
+
+		&lt;?php
+			edit_post_link(
+				sprintf(
+					/* translators: %s: Name of current post */
+					__( &#x27;Edit&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentysixteen&#x27; ),
+					get_the_title()
+				),
+				&#x27;&lt;footer class=&quot;entry-footer&quot;&gt;&lt;span class=&quot;edit-link&quot;&gt;&#x27;,
+				&#x27;&lt;/span&gt;&lt;/footer&gt;&lt;!-- .entry-footer --&gt;&#x27;
+			);
+		?&gt;
+
+	&lt;?php endif; ?&gt;
+&lt;/article&gt;&lt;!-- #post-## --&gt;
+
+</pre></details></body></html>

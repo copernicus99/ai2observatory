@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/amazon.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/amazon.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+require_once( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/lib/s3/s3.php&#x27; );
+
+/**
+ * Class External_Amazon
+ */
+class External_Amazon extends NF_Upload_External {
+
+	private $title = &#x27;Amazon S3&#x27;;
+
+	private $slug = &#x27;amazon&#x27;;
+
+	private $settings;
+
+	private $connected_settings = false;
+
+	private $file_path = false;
+
+	function __construct() {
+		$this-&gt;set_settings();
+		parent::__construct( $this-&gt;title, $this-&gt;slug, $this-&gt;settings );
+	}
+
+	private function set_settings() {
+		$this-&gt;settings = array(
+			array(
+				&#x27;name&#x27;  =&gt; &#x27;amazon_s3_access_key&#x27;,
+				&#x27;type&#x27;  =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Access Key&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27;  =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27;  =&gt; &#x27;amazon_s3_secret_key&#x27;,
+				&#x27;type&#x27;  =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Secret Key&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27;  =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27;  =&gt; &#x27;amazon_s3_bucket_name&#x27;,
+				&#x27;type&#x27;  =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Bucket Name&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27;  =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27;          =&gt; &#x27;amazon_s3_file_path&#x27;,
+				&#x27;type&#x27;          =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27;         =&gt; __( &#x27;File Path&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27;          =&gt; __( &#x27;The default file path in the bucket where the file will be uploaded to&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;default_value&#x27; =&gt; &#x27;ninja-forms/&#x27;
+			),
+		);
+	}
+
+	public function is_connected() {
+		$data = get_option( &#x27;ninja_forms_settings&#x27; );
+		if ( ( isset( $data[&#x27;amazon_s3_access_key&#x27;] ) &amp;&amp; $data[&#x27;amazon_s3_access_key&#x27;] != &#x27;&#x27; ) &amp;&amp;
+		     ( isset( $data[&#x27;amazon_s3_secret_key&#x27;] ) &amp;&amp; $data[&#x27;amazon_s3_secret_key&#x27;] != &#x27;&#x27; ) &amp;&amp;
+		     ( isset( $data[&#x27;amazon_s3_bucket_name&#x27;] ) &amp;&amp; $data[&#x27;amazon_s3_bucket_name&#x27;] != &#x27;&#x27; ) &amp;&amp;
+		     ( isset( $data[&#x27;amazon_s3_file_path&#x27;] ) &amp;&amp; $data[&#x27;amazon_s3_file_path&#x27;] != &#x27;&#x27; )
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private function load_settings() {
+		if ( ! $this-&gt;connected_settings ) {
+			$data                     = get_option( &#x27;ninja_forms_settings&#x27; );
+			$settings                 = array();
+			$settings[&#x27;access_key&#x27;]   = $data[&#x27;amazon_s3_access_key&#x27;];
+			$settings[&#x27;secret_key&#x27;]   = $data[&#x27;amazon_s3_secret_key&#x27;];
+			$settings[&#x27;bucket_name&#x27;]  = $data[&#x27;amazon_s3_bucket_name&#x27;];
+
+			$bucket = $settings[&#x27;bucket_name&#x27;];
+
+			if ( ( ! isset( $data[&#x27;amazon_s3_bucket_region&#x27;][ $bucket ] ) || empty( $data[&#x27;amazon_s3_bucket_region&#x27;][ $bucket ] ) ) &amp;&amp; isset( $settings[&#x27;bucket_name&#x27;] ) ) {
+				// Retrieve the bucket region if we don&#x27;t have it
+				// Or the bucket has changed since we last retrieved it
+				$s3     = new S3( $settings[&#x27;access_key&#x27;], $settings[&#x27;secret_key&#x27;] );
+				$region = $s3-&gt;getBucketLocation( $settings[&#x27;bucket_name&#x27;] );
+
+				$data[&#x27;amazon_s3_bucket_region&#x27;] = array( $settings[&#x27;bucket_name&#x27;] =&gt; $region );
+				update_option( &#x27;ninja_forms_settings&#x27;, $data );
+			} else {
+				$region = $data[&#x27;amazon_s3_bucket_region&#x27;][ $bucket ];
+			}
+
+			$settings[&#x27;bucket_region&#x27;] = $region;
+			$settings[&#x27;file_path&#x27;]     = $data[&#x27;amazon_s3_file_path&#x27;];
+
+			$this-&gt;connected_settings = $settings;
+		}
+	}
+
+	private function prepare( $path = false, $region = null ) {
+		$this-&gt;load_settings();
+		if ( ! $path ) {
+			$path = apply_filters( &#x27;ninja_forms_uploads_&#x27; . $this-&gt;slug . &#x27;_path&#x27;, $this-&gt;connected_settings[&#x27;file_path&#x27;] );
+		} else if ( $path == &#x27;&#x27; ) {
+			$path = $this-&gt;connected_settings[&#x27;file_path&#x27;];
+		}
+		$this-&gt;file_path = $this-&gt;sanitize_path( $path );
+
+		$s3 = new S3( $this-&gt;connected_settings[&#x27;access_key&#x27;], $this-&gt;connected_settings[&#x27;secret_key&#x27;] );
+
+		if ( is_null( $region ) ) {
+			$region = $this-&gt;connected_settings[&#x27;bucket_region&#x27;];
+		}
+
+		if ( &#x27;&#x27; !== $region &amp;&amp; &#x27;US&#x27; !== $region ) {
+			// Use the correct API endpoint for non US standard bucket regions
+			$s3-&gt;setEndpoint( &#x27;s3-&#x27; . $this-&gt;connected_settings[&#x27;bucket_region&#x27;] . &#x27;.amazonaws.com&#x27; );
+		}
+
+		return $s3;
+	}
+
+	public function upload_file( $file, $path = false ) {
+		$s3       = $this-&gt;prepare( $path );
+		$filename = $this-&gt;get_filename_external( $file );
+		$s3-&gt;putObjectFile( $file, $this-&gt;connected_settings[&#x27;bucket_name&#x27;], $this-&gt;file_path . $filename, S3::ACL_PUBLIC_READ );
+
+		return array( &#x27;path&#x27; =&gt; $this-&gt;file_path, &#x27;filename&#x27; =&gt; $filename );
+	}
+
+	/**
+	 * Get the Amazon S3 URL using bucket and region for the file, falling
+	 * back to the settings bucket and region
+	 *
+	 * @param string $filename
+	 * @param string $path
+	 * @param array  $data
+	 *
+	 * @return string
+	 */
+	public function file_url( $filename, $path = &#x27;&#x27;, $data = array() ) {
+		$bucket = ( isset( $data[&#x27;bucket&#x27;] ) ) ? $data[&#x27;bucket&#x27;] : $this-&gt;connected_settings[&#x27;bucket_name&#x27;];
+		$region = ( isset( $data[&#x27;region&#x27;] ) ) ? $data[&#x27;region&#x27;] : $this-&gt;connected_settings[&#x27;bucket_region&#x27;];
+
+		$s3 = $this-&gt;prepare( $path, $region );
+
+		return $s3-&gt;getAuthenticatedURL( $bucket, $this-&gt;file_path . $filename, 3600 );
+	}
+
+	/**
+	 * Save the bucket and region to the file data
+	 * in case it is changed in settings.
+	 *
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public function enrich_file_data( $data ) {
+		$data[&#x27;bucket&#x27;] = $this-&gt;connected_settings[&#x27;bucket_name&#x27;];
+		$data[&#x27;region&#x27;] = $this-&gt;connected_settings[&#x27;bucket_region&#x27;];
+
+		return $data;
+	}
+}
+</pre></details></body></html>

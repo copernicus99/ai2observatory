@@ -1,0 +1,399 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/browse-uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/browse-uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;div id=&quot;&quot; class=&quot;tablenav top&quot;&gt;
+			&lt;div class=&quot;alignleft actions&quot;&gt;
+				&lt;select id=&quot;&quot; class=&quot;&quot; name=&quot;bulk_action&quot;&gt;
+					&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+					&lt;option value=&quot;delete&quot;&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&quot; class=&quot;button-secondary&quot;&gt;
+			&lt;/div&gt;
+			&lt;div class=&quot;alignleft actions&quot;&gt;
+				&lt;select id=&quot;&quot; name=&quot;limit&quot;&gt;
+					&lt;option value=&quot;20&quot; &gt;20&lt;/option&gt;
+					&lt;option value=&quot;50&quot; &gt;50&lt;/option&gt;
+					&lt;option value=&quot;100&quot; &gt;100&lt;/option&gt;
+				&lt;/select&gt;
+				
+				&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&quot; class=&quot;button-secondary&quot;&gt;
+			&lt;/div&gt;
+			&lt;div id=&quot;&quot; class=&quot;alignright navtable-pages&quot;&gt;
+				
+				&lt;span class=&quot;displaying-num&quot;&gt; -  of  &lt;/span&gt;
+				
+				&lt;span class=&quot;pagination-links&quot;&gt;
+					&lt;a class=&quot;first-page disabled&quot; title=&quot;&quot; href=&quot;&quot;&gt;«&lt;/a&gt;
+					&lt;a class=&quot;prev-page disabled&quot; title=&quot;&quot; href=&quot;&quot;&gt;‹&lt;/a&gt;
+					&lt;span class=&quot;paging-input&quot;&gt;&lt;input class=&quot;current-page&quot; title=&quot;&quot; type=&quot;text&quot; name=&quot;paged&quot; value=&quot;&quot; size=&quot;2&quot;&gt; of &lt;span class=&quot;total-pages&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+					&lt;a class=&quot;next-page&quot; title=&quot;Go to the next page&quot; href=&quot;&quot;&gt;›&lt;/a&gt;
+					&lt;a class=&quot;last-page&quot; title=&quot;Go to the last page&quot; href=&quot;&quot;&gt;»&lt;/a&gt;
+				&lt;/span&gt;
+				
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;br /&gt;
+		&lt;table border=&quot;1px&quot; class=&quot;wp-list-table widefat fixed posts&quot;&gt;
+			&lt;thead&gt;
+				&lt;tr&gt;
+					&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ninja_forms_select_all&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+				&lt;/tr&gt;
+			&lt;/thead&gt;
+			&lt;tbody id=&quot;ninja_forms_uploads_tbody&quot;&gt;
+		
+				&lt;tr id=&quot;ninja_forms_upload__tr&quot;&gt;
+					&lt;th scope=&quot;row&quot; class=&quot;check-column&quot;&gt;
+						&lt;input type=&quot;checkbox&quot; id=&quot;&quot; name=&quot;ninja_forms_uploads[]&quot; value=&quot;&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;
+					&lt;/th&gt;
+					&lt;td&gt;
+						&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;
+						&lt;div class=&quot;row-actions&quot;&gt;
+							&lt;span class=&quot;view&quot;&gt;&lt;a class=&quot;view&quot; title=&quot;&quot; href=&quot;&quot; target=&quot;_blank&quot; id=&quot;&quot;&gt;&lt;/a&gt; | &lt;/span&gt;
+							&lt;span class=&quot;trash&quot;&gt;&lt;a class=&quot;trash ninja-forms-delete-upload&quot; title=&quot;&quot; href=&quot;#&quot; id=&quot;delete_upload_&quot;&gt;&lt;/a&gt;&lt;/span&gt;
+						&lt;/div&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						
+					&lt;/td&gt;
+					&lt;td&gt;
+						
+					&lt;/td&gt;
+					&lt;td&gt;
+						
+					&lt;/td&gt;
+					&lt;td&gt;
+						
+					&lt;/td&gt;
+					&lt;td&gt;
+						
+					&lt;/td&gt;
+				&lt;/tr&gt;
+			
+		&lt;tr id=&quot;ninja_forms_files_empty&quot; style=&quot;&quot;&gt;
+			&lt;td colspan=&quot;5&quot;&gt;
+				
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		
+
+			&lt;/tbody&gt;
+			&lt;tfoot&gt;
+				&lt;tr&gt;
+					&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ninja_forms_select_all&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;/th&gt;
+				&lt;/tr&gt;
+			&lt;/tfoot&gt;
+		&lt;/table&gt;
+
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+add_action(&#x27;admin_init&#x27;, &#x27;ninja_forms_register_tab_browse_uploads&#x27;);
+function ninja_forms_register_tab_browse_uploads(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Browse Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-uploads&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_tab_browse_uploads&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_browse_uploads&#x27;,
+		&#x27;show_save&#x27; =&gt; false,
+		&#x27;tab_reload&#x27; =&gt; false,
+	);
+	if( function_exists( &#x27;ninja_forms_register_tab&#x27; ) ){
+		ninja_forms_register_tab(&#x27;browse_uploads&#x27;, $args);
+	}
+}
+
+function ninja_forms_tab_browse_uploads(){
+	global $wpdb;
+	$plugin_settings = get_option(&quot;ninja_forms_settings&quot;);
+
+	//Check for filters
+	$args = array();
+	if(isset($_POST[&#x27;form_id&#x27;]) AND $_POST[&#x27;form_id&#x27;] == &#x27;all&#x27;){
+		unset( $_SESSION[&#x27;ninja_forms_form_id&#x27;] );
+	}else if(isset($_POST[&#x27;form_id&#x27;]) AND $_POST[&#x27;form_id&#x27;] != &#x27;all&#x27;){
+		$args[&#x27;form_id&#x27;] = $_POST[&#x27;form_id&#x27;];
+		$_SESSION[&#x27;ninja_forms_form_id&#x27;] = $_POST[&#x27;form_id&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_form_id&#x27;]) AND $_SESSION[&#x27;ninja_forms_form_id&#x27;] != &#x27;all&#x27;){
+		$args[&#x27;form_id&#x27;] = $_SESSION[&#x27;ninja_forms_form_id&#x27;];
+	}
+
+	if(isset($_POST[&#x27;begin_date&#x27;]) AND !empty($_POST[&#x27;begin_date&#x27;])){
+		$args[&#x27;begin_date&#x27;] = $_POST[&#x27;begin_date&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_begin_date&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_begin_date&#x27;])){
+		$args[&#x27;begin_date&#x27;] = $_SESSION[&#x27;ninja_forms_begin_date&#x27;];
+	}
+
+	if(isset($_POST[&#x27;end_date&#x27;]) AND !empty($_POST[&#x27;end_date&#x27;])){
+		$args[&#x27;end_date&#x27;] = $_POST[&#x27;end_date&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_end_date&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_end_date&#x27;])){
+		$args[&#x27;end_date&#x27;] = $_SESSION[&#x27;ninja_forms_end_date&#x27;];
+	}
+
+	if(isset($_POST[&#x27;upload_types&#x27;]) AND !empty($_POST[&#x27;upload_types&#x27;])){
+		$args[&#x27;upload_types&#x27;] = $_POST[&#x27;upload_types&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_types&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_types&#x27;])){
+		$args[&#x27;upload_types&#x27;] = $_SESSION[&#x27;ninja_forms_upload_types&#x27;];
+	}
+
+	if(isset($_POST[&#x27;upload_name&#x27;]) AND !empty($_POST[&#x27;upload_name&#x27;])){
+		$args[&#x27;upload_name&#x27;] = $_POST[&#x27;upload_name&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_name&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_name&#x27;])){
+		$args[&#x27;upload_name&#x27;] = $_SESSION[&#x27;ninja_forms_upload_name&#x27;];
+	}	
+
+	if(isset($_POST[&#x27;upload_user&#x27;]) AND !empty($_POST[&#x27;upload_user&#x27;])){
+		$args[&#x27;upload_user&#x27;] = $_POST[&#x27;upload_user&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_user&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_user&#x27;])){
+		$args[&#x27;upload_user&#x27;] = $_SESSION[&#x27;ninja_forms_upload_user&#x27;];
+	}
+
+	if(isset($_POST[&#x27;order_by&#x27;]) AND !empty($_POST[&#x27;order_by&#x27;])){
+		$args[&#x27;order_by&#x27;] = $_POST[&#x27;order_by&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_order_by&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_order_by&#x27;])){
+		$args[&#x27;order_by&#x27;] = $_SESSION[&#x27;ninja_forms_upload_order_by&#x27;];
+	}else{
+		$args[&#x27;order_by&#x27;] = &#x27;date_updated&#x27;;
+	}
+
+	$all_files = ninja_forms_get_uploads($args);
+	$upload_count = count($all_files);
+
+	if(isset($_POST[&#x27;limit&#x27;])){
+		$saved_limit = $_POST[&#x27;limit&#x27;];
+		$limit = $_POST[&#x27;limit&#x27;];
+	}else{
+		$saved_limit = 20;
+		$limit = 20;
+	}
+
+	if($upload_count &lt; $limit){
+		$limit = $upload_count;
+	}
+
+	if(isset($_REQUEST[&#x27;paged&#x27;]) AND !empty($_REQUEST[&#x27;paged&#x27;])){
+		$current_page = $_REQUEST[&#x27;paged&#x27;];
+	}else{
+		$current_page = 1;
+	}
+
+	if($upload_count &gt; $limit){
+		$page_count = ceil($upload_count / $limit);
+	}else{
+		$page_count = 1;
+	}
+
+	if($current_page &gt; 1){
+		$start = (($current_page - 1) * $limit);
+		if($upload_count &lt; $limit){
+			$end = $upload_count;
+		}else{
+			$end = $current_page * $limit;
+		}
+
+		if($end &gt; $upload_count){
+			$end = $upload_count;
+		}
+	}else{
+		$start = 0;
+		$end = $limit;
+	}
+
+	?&gt;
+		&lt;div id=&quot;&quot; class=&quot;tablenav top&quot;&gt;
+			&lt;div class=&quot;alignleft actions&quot;&gt;
+				&lt;select id=&quot;&quot; class=&quot;&quot; name=&quot;bulk_action&quot;&gt;
+					&lt;option value=&quot;&quot;&gt;&lt;?php _e(&#x27;Bulk Actions&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/option&gt;
+					&lt;option value=&quot;delete&quot;&gt;&lt;?php _e(&#x27;Delete&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/option&gt;
+				&lt;/select&gt;
+				&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&lt;?php _e( &#x27;Apply&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; class=&quot;button-secondary&quot;&gt;
+			&lt;/div&gt;
+			&lt;div class=&quot;alignleft actions&quot;&gt;
+				&lt;select id=&quot;&quot; name=&quot;limit&quot;&gt;
+					&lt;option value=&quot;20&quot; &lt;?php selected($saved_limit, 20);?&gt;&gt;20&lt;/option&gt;
+					&lt;option value=&quot;50&quot; &lt;?php selected($saved_limit, 50);?&gt;&gt;50&lt;/option&gt;
+					&lt;option value=&quot;100&quot; &lt;?php selected($saved_limit, 100);?&gt;&gt;100&lt;/option&gt;
+				&lt;/select&gt;
+				&lt;?php _e(&#x27;Uploads Per Page&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;
+				&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;&lt;?php _e( &#x27;Go&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; class=&quot;button-secondary&quot;&gt;
+			&lt;/div&gt;
+			&lt;div id=&quot;&quot; class=&quot;alignright navtable-pages&quot;&gt;
+				&lt;?php
+				if($upload_count != 0 AND $current_page &lt;= $page_count){
+				?&gt;
+				&lt;span class=&quot;displaying-num&quot;&gt;&lt;?php if($start == 0){ echo 1; }else{ echo $start; }?&gt; - &lt;?php echo $end;?&gt; of &lt;?php echo $upload_count;?&gt; &lt;?php if($upload_count == 1){ _e(&#x27;Upload&#x27;, &#x27;ninja-forms-uploads&#x27;); }else{ _e(&#x27;Uploads&#x27;, &#x27;ninja-forms-uploads&#x27;);}?&gt;&lt;/span&gt;
+				&lt;?php
+				}
+					if($page_count &gt; 1){
+
+						$first_page = add_query_arg( array( &#x27;paged&#x27; =&gt; 1 ) );
+						$last_page = add_query_arg( array( &#x27;paged&#x27; =&gt; $page_count ) );
+
+						if( $current_page &gt; 1 ){
+							$prev_page = $current_page - 1;
+							$prev_page = add_query_arg( array(&#x27;paged&#x27; =&gt; $prev_page ) );
+						}else{
+							$prev_page = $first_page;
+						}
+						if( $current_page != $page_count ){
+							$next_page = $current_page + 1;
+							$next_page = add_query_arg( array( &#x27;paged&#x27; =&gt; $next_page ) );
+						}else{
+							$next_page = $last_page;
+						}
+
+				?&gt;
+				&lt;span class=&quot;pagination-links&quot;&gt;
+					&lt;a class=&quot;first-page disabled&quot; title=&quot;&lt;?php _e( &#x27;Go to the first page&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $first_page;?&gt;&quot;&gt;«&lt;/a&gt;
+					&lt;a class=&quot;prev-page disabled&quot; title=&quot;&lt;?php _e( &#x27;Go to the previous page&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $prev_page;?&gt;&quot;&gt;‹&lt;/a&gt;
+					&lt;span class=&quot;paging-input&quot;&gt;&lt;input class=&quot;current-page&quot; title=&quot;&lt;?php _e( &#x27;Current page&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; type=&quot;text&quot; name=&quot;paged&quot; value=&quot;&lt;?php echo $current_page;?&gt;&quot; size=&quot;2&quot;&gt; of &lt;span class=&quot;total-pages&quot;&gt;&lt;?php echo $page_count;?&gt;&lt;/span&gt;&lt;/span&gt;
+					&lt;a class=&quot;next-page&quot; title=&quot;Go to the next page&quot; href=&quot;&lt;?php echo $next_page;?&gt;&quot;&gt;›&lt;/a&gt;
+					&lt;a class=&quot;last-page&quot; title=&quot;Go to the last page&quot; href=&quot;&lt;?php echo $last_page;?&gt;&quot;&gt;»&lt;/a&gt;
+				&lt;/span&gt;
+				&lt;?php
+					}
+				?&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;br /&gt;
+		&lt;table border=&quot;1px&quot; class=&quot;wp-list-table widefat fixed posts&quot;&gt;
+			&lt;thead&gt;
+				&lt;tr&gt;
+					&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ninja_forms_select_all&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;File Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Original User Filename&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Date&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Form Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;User Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;File Location&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+				&lt;/tr&gt;
+			&lt;/thead&gt;
+			&lt;tbody id=&quot;ninja_forms_uploads_tbody&quot;&gt;
+		&lt;?php
+		if(is_array($all_files) AND !empty($all_files) AND $current_page &lt;= $page_count){
+			for ($i = $start; $i &lt; $end; $i++) {
+				$field_id = $all_files[$i][&#x27;field_id&#x27;];
+				$upload_id = $all_files[$i][&#x27;id&#x27;];
+				$date_updated = strtotime($all_files[$i][&#x27;date_updated&#x27;]);
+				$date_updated = date(&#x27;m/d/Y&#x27;, $date_updated);
+				$data = $all_files[$i][&#x27;data&#x27;];
+				$form_row = ninja_forms_get_form_by_field_id($field_id);
+				$form_data = $form_row[&#x27;data&#x27;];
+				$form_title = isset ( $form_data[&#x27;form_title&#x27;] ) ? $form_data[&#x27;form_title&#x27;] : &#x27;&#x27;;
+				if ( isset( $data[&#x27;user_file_name&#x27;] ) ) {
+					$user_file_name = stripslashes($data[&#x27;user_file_name&#x27;]);
+				} else {
+					$user_file_name = &#x27;&#x27;;
+				}
+				
+				if(isset($all_files[$i][&#x27;user_id&#x27;]) AND !empty($all_files[$i][&#x27;user_id&#x27;])){
+					$user_data = get_userdata($all_files[$i][&#x27;user_id&#x27;]);
+					$user_nicename = $user_data-&gt;user_nicename;
+				}else{
+					$user_nicename = &#x27;&#x27;;
+				}
+
+				if ( isset( $data[&#x27;file_url&#x27;] ) ) {
+					$file_url = ninja_forms_upload_file_url( $data );
+				} else {
+					$file_url = &#x27;&#x27;;
+				}				
+
+				if ( isset( $data[&#x27;file_name&#x27;] ) ) {
+					$file_name = $data[&#x27;file_name&#x27;];
+				} else {
+					$file_name = &#x27;&#x27;;
+				}
+
+				if ( isset( $data[&#x27;upload_location&#x27;] ) ) {
+					$upload_location = $data[&#x27;upload_location&#x27;];
+				} else {
+					$upload_location = &#x27;Server&#x27;;
+				}
+
+				?&gt;
+				&lt;tr id=&quot;ninja_forms_upload_&lt;?php echo $upload_id;?&gt;_tr&quot;&gt;
+					&lt;th scope=&quot;row&quot; class=&quot;check-column&quot;&gt;
+						&lt;input type=&quot;checkbox&quot; id=&quot;&quot; name=&quot;ninja_forms_uploads[]&quot; value=&quot;&lt;?php echo $upload_id;?&gt;&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;
+					&lt;/th&gt;
+					&lt;td&gt;
+						&lt;a href=&quot;&lt;?php echo $file_url;?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php echo $file_name;?&gt;&lt;/a&gt;
+						&lt;div class=&quot;row-actions&quot;&gt;
+							&lt;span class=&quot;view&quot;&gt;&lt;a class=&quot;view&quot; title=&quot;&lt;?php _e( &#x27;View this file&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo $file_url;?&gt;&quot; target=&quot;_blank&quot; id=&quot;&quot;&gt;&lt;?php _e( &#x27;View&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt; | &lt;/span&gt;
+							&lt;span class=&quot;trash&quot;&gt;&lt;a class=&quot;trash ninja-forms-delete-upload&quot; title=&quot;&lt;?php _e( &#x27;Delete this file&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&quot; href=&quot;#&quot; id=&quot;delete_upload_&lt;?php echo $upload_id;?&gt;&quot;&gt;&lt;?php _e( &#x27;Delete&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt;&lt;/span&gt;
+						&lt;/div&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;?php echo $user_file_name;?&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;?php echo $date_updated;?&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;?php echo $form_title;?&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;?php echo $user_nicename;?&gt;
+					&lt;/td&gt;
+					&lt;td&gt;
+						&lt;?php echo ucwords( $upload_location );?&gt;
+					&lt;/td&gt;
+				&lt;/tr&gt;
+			&lt;?php
+			}
+		}else{
+		?&gt;
+		&lt;tr id=&quot;ninja_forms_files_empty&quot; style=&quot;&quot;&gt;
+			&lt;td colspan=&quot;5&quot;&gt;
+				&lt;?php _e( &#x27;No files found&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;?php
+		}
+		?&gt;
+
+			&lt;/tbody&gt;
+			&lt;tfoot&gt;
+				&lt;tr&gt;
+					&lt;th class=&quot;check-column&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ninja_forms_select_all&quot; class=&quot;ninja-forms-uploads-bulk-action&quot;&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;File Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Original User Filename&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Date&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;Form Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;User Name&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;?php _e(&#x27;File Location&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&lt;/th&gt;
+				&lt;/tr&gt;
+			&lt;/tfoot&gt;
+		&lt;/table&gt;
+
+	&lt;?php
+}
+
+function ninja_forms_save_browse_uploads( $data ){
+	if(isset($data[&#x27;bulk_action&#x27;]) AND $data[&#x27;bulk_action&#x27;] == &#x27;delete&#x27;){
+		if(isset($data[&#x27;ninja_forms_uploads&#x27;])){
+			if(is_array($data[&#x27;ninja_forms_uploads&#x27;]) AND !empty($data[&#x27;ninja_forms_uploads&#x27;])){
+				foreach($data[&#x27;ninja_forms_uploads&#x27;] as $upload){
+					ninja_forms_delete_upload($upload);
+				}
+				$update_msg = count( $_POST[&#x27;ninja_forms_uploads&#x27;] ).&#x27; &#x27;;
+				if( count( $_POST[&#x27;ninja_forms_uploads&#x27;] ) &gt; 1 ){
+					$update_msg .= __( &#x27;Uploads Deleted&#x27;, &#x27;ninja-forms-uploads&#x27; );
+
+				}else{
+					$update_msg .= __( &#x27;Upload Deleted&#x27;, &#x27;ninja-forms-uploads&#x27; );
+				}
+			}
+			return $update_msg;
+		}
+	}
+
+}</pre></details></body></html>

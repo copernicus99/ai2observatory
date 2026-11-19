@@ -1,0 +1,769 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/Models/Form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/Models/Form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Database_Models_Form
+ */
+final class NF_Database_Models_Form extends NF_Abstracts_Model
+{
+    protected $_type = &#x27;form&#x27;;
+
+    protected $_table_name = &#x27;nf3_forms&#x27;;
+
+    protected $_meta_table_name = &#x27;nf3_form_meta&#x27;;
+
+    protected $_columns = array(
+        &#x27;title&#x27;,
+        &#x27;key&#x27;,
+        &#x27;created_at&#x27;
+    );
+
+    protected $_fields;
+
+    protected static $imported_form_id;
+
+    public function __construct( $db, $id = &#x27;&#x27; )
+    {
+        add_action( &#x27;ninja_forms_before_import_form&#x27;, array( $this, &#x27;import_form_backwards_compatibility&#x27; ) );
+        parent::__construct( $db, $id );
+    }
+
+    public function delete()
+    {
+        parent::delete();
+
+        $fields = Ninja_Forms()-&gt;form( $this-&gt;_id )-&gt;get_fields();
+
+        foreach( $fields as $field ){
+            $field-&gt;delete();
+        }
+
+        $actions = Ninja_Forms()-&gt;form( $this-&gt;_id )-&gt;get_actions();
+
+        foreach( $actions as $action ){
+            $action-&gt;delete();
+        }
+
+	    $chunked_option_flag = &#x27;nf_form_&#x27; . $this-&gt;_id . &#x27;_chunks&#x27;;
+        $chunked_option_value = get_option( $chunked_option_flag );
+	    // if there is nf_form_x_chunks option, we need to delete those
+	    if( $chunked_option_value ) {
+		    // if we have chunk&#x27;d it, get the list of chunks
+		    $form_chunks = explode( &#x27;,&#x27;, $chunked_option_value );
+
+		    //get the option value of each chunk and concat them into the form
+		    foreach( $form_chunks as $chunk ){
+			    delete_option( $chunk );
+		    }
+
+		    delete_option( $chunked_option_flag );
+	    }
+
+	    $this-&gt;delete_submissions();
+
+        delete_option( &#x27;nf_form_&#x27; . $this-&gt;_id );
+    }
+
+    private function delete_submissions( ) {
+	    global $wpdb;
+	    $total_subs_deleted = 0;
+	    $post_result = 0;
+	    $max_cnt = 250;
+
+	    // SQL for getting 250 subs at a time
+	    $sub_sql = &quot;SELECT id FROM `&quot; . $wpdb-&gt;prefix . &quot;posts` AS p
+			LEFT JOIN `&quot; . $wpdb-&gt;prefix . &quot;postmeta` AS m ON p.id = m.post_id
+			WHERE p.post_type = &#x27;nf_sub&#x27; AND m.meta_key = &#x27;_form_id&#x27;
+			AND m.meta_value = %s LIMIT &quot; . $max_cnt;
+
+	    while ($post_result &lt;= $max_cnt ) {
+		    $subs = $wpdb-&gt;get_col( $wpdb-&gt;prepare( $sub_sql, $this-&gt;_id ),0 );
+		    // if we are out of subs, then stop
+		    if( 0 === count( $subs ) ) break;
+		    // otherwise, let&#x27;s delete the postmeta as well
+		    $delete_meta_query = &quot;DELETE FROM `&quot; . $wpdb-&gt;prefix . &quot;postmeta` WHERE post_id IN ( [IN] )&quot;;
+		    $delete_meta_query = $this-&gt;prepare_in( $delete_meta_query, $subs );
+		    $meta_result       = $wpdb-&gt;query( $delete_meta_query );
+		    if ( $meta_result &gt; 0 ) {
+			    // now we actually delete the posts(nf_sub)
+			    $delete_post_query = &quot;DELETE FROM `&quot; . $wpdb-&gt;prefix . &quot;posts` WHERE id IN ( [IN] )&quot;;
+			    $delete_post_query = $this-&gt;prepare_in( $delete_post_query, $subs );
+			    $post_result       = $wpdb-&gt;query( $delete_post_query );
+			    $total_subs_deleted = $total_subs_deleted + $post_result;
+
+		    }
+	    }
+    }
+
+	private function prepare_in( $sql, $vals ) {
+		global $wpdb;
+		$not_in_count = substr_count( $sql, &#x27;[IN]&#x27; );
+		if ( $not_in_count &gt; 0 ) {
+			$args = array( str_replace( &#x27;[IN]&#x27;, implode( &#x27;, &#x27;, array_fill( 0, count( $vals ), &#x27;%d&#x27; ) ), str_replace( &#x27;%&#x27;, &#x27;%%&#x27;, $sql ) ) );
+			// This will populate ALL the [IN]&#x27;s with the $vals, assuming you have more than one [IN] in the sql
+			for ( $i=0; $i &lt; substr_count( $sql, &#x27;[IN]&#x27; ); $i++ ) {
+				$args = array_merge( $args, $vals );
+			}
+			$sql = call_user_func_array( array( $wpdb, &#x27;prepare&#x27; ), array_merge( $args ) );
+		}
+		return $sql;
+	}
+
+    public static function get_next_sub_seq( $form_id )
+    {
+        global $wpdb;
+
+        // TODO: Leverage form cache.
+
+        $last_seq_num = $wpdb-&gt;get_var( $wpdb-&gt;prepare(
+            &#x27;SELECT value FROM &#x27; . $wpdb-&gt;prefix . &#x27;nf3_form_meta WHERE `key` = &quot;_seq_num&quot; AND `parent_id` = %s&#x27;
+        , $form_id ) );
+
+        if( $last_seq_num ) {
+            $wpdb-&gt;update( $wpdb-&gt;prefix . &#x27;nf3_form_meta&#x27;, array( &#x27;value&#x27; =&gt; $last_seq_num + 1 ), array( &#x27;key&#x27; =&gt; &#x27;_seq_num&#x27;, &#x27;parent_id&#x27; =&gt; $form_id ) );
+        } else {
+            $last_seq_num = 1;
+            $wpdb-&gt;insert( $wpdb-&gt;prefix . &#x27;nf3_form_meta&#x27;, array( &#x27;key&#x27; =&gt; &#x27;_seq_num&#x27;, &#x27;value&#x27; =&gt; $last_seq_num + 1, &#x27;parent_id&#x27; =&gt; $form_id ) );
+        }
+
+        return $last_seq_num;
+    }
+
+    public static function import( array $import, $id = &#x27;&#x27;, $is_conversion )
+    {
+        $import = apply_filters( &#x27;ninja_forms_before_import_form&#x27;, $import );
+
+        /*
+        * Create Form
+        */
+        $form = Ninja_Forms()-&gt;form( $id )-&gt;get();
+        $form-&gt;update_settings( $import[ &#x27;settings&#x27; ] );
+        
+        if( ! $is_conversion ) {
+            $form-&gt;update_setting( &#x27;created_at&#x27;, current_time( &#x27;mysql&#x27; ) );
+        }
+		
+        $form-&gt;save();
+        $form_id = $form-&gt;get_id();
+
+        $form_cache = array(
+            &#x27;id&#x27; =&gt; $form_id,
+            &#x27;fields&#x27; =&gt; array(),
+            &#x27;actions&#x27; =&gt; array(),
+            &#x27;settings&#x27; =&gt; $form-&gt;get_settings()
+        );
+        $update_process = Ninja_Forms()-&gt;background_process( &#x27;update-fields&#x27; );
+        foreach( $import[ &#x27;fields&#x27; ] as $settings ){
+			
+            if( $is_conversion ) {
+                $field_id = $settings[ &#x27;id&#x27; ];
+                $field = Ninja_Forms()-&gt;form($form_id)-&gt;field( $field_id )-&gt;get();
+                $field-&gt;save();
+            } else {
+                unset( $settings[ &#x27;id&#x27; ] );
+                $settings[ &#x27;created_at&#x27; ] = current_time( &#x27;mysql&#x27; );
+                $field = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+                $field-&gt;save();
+            }
+
+            $settings[ &#x27;parent_id&#x27; ] = $form_id;
+
+            array_push( $form_cache[ &#x27;fields&#x27; ], array(
+                &#x27;id&#x27; =&gt; $field-&gt;get_id(),
+                &#x27;settings&#x27; =&gt; $settings
+            ));
+
+            $update_process-&gt;push_to_queue(array(
+                &#x27;id&#x27; =&gt; $field-&gt;get_id(),
+                &#x27;settings&#x27; =&gt; $settings
+            ));
+        }
+        $update_process-&gt;save()-&gt;dispatch();
+
+        foreach( $import[ &#x27;actions&#x27; ] as $settings ){
+
+            $action = Ninja_Forms()-&gt;form($form_id)-&gt;action()-&gt;get();
+
+            if( ! $is_conversion ) {
+                $settings[ &#x27;created_at&#x27; ] = current_time( &#x27;mysql&#x27; );
+            }
+
+            $action-&gt;update_settings( $settings )-&gt;save();
+
+            array_push( $form_cache[ &#x27;actions&#x27; ], array(
+                &#x27;id&#x27; =&gt; $action-&gt;get_id(),
+                &#x27;settings&#x27; =&gt; $settings
+            ));
+        }
+
+        update_option( &#x27;nf_form_&#x27; . $form_id, $form_cache );
+
+        add_action( &#x27;admin_notices&#x27;, array( &#x27;NF_Database_Models_Form&#x27;, &#x27;import_admin_notice&#x27; ) );
+
+        self::$imported_form_id = $form_id;
+
+        return $form_id;
+    }
+
+    public static function import_admin_notice()
+    {
+        Ninja_Forms()-&gt;template( &#x27;admin-notice-form-import.html.php&#x27;, array( &#x27;form_id&#x27;=&gt; self::$imported_form_id ) );
+    }
+
+    public static function duplicate( $form_id )
+    {
+        global $wpdb;
+
+        // Duplicate the Form Object.
+        $wpdb-&gt;query( $wpdb-&gt;prepare(
+            &quot;
+                INSERT INTO {$wpdb-&gt;prefix}nf3_forms ( `title` )
+                SELECT CONCAT( `title`, &#x27; - &#x27;, %s )
+                FROM {$wpdb-&gt;prefix}nf3_forms 
+                WHERE  id = %d;
+            &quot;, __( &#x27;copy&#x27;, &#x27;ninja-forms&#x27; ), $form_id
+        ) );
+        $new_form_id = $wpdb-&gt;insert_id;
+
+        // Duplicate the Form Meta.
+        $wpdb-&gt;query( $wpdb-&gt;prepare(
+           &quot;
+           INSERT INTO {$wpdb-&gt;prefix}nf3_form_meta ( `parent_id`, `key`, `value` )
+                SELECT %d, `key`, `value`
+                FROM   {$wpdb-&gt;prefix}nf3_form_meta
+                WHERE  parent_id = %d
+                AND `key` != &#x27;_seq_num&#x27;;
+           &quot;, $new_form_id, $form_id
+        ));
+
+        // Get the fields to duplicate
+        $old_fields = $wpdb-&gt;get_results( $wpdb-&gt;prepare(
+            &quot;
+            SELECT `id`
+            FROM {$wpdb-&gt;prefix}nf3_fields
+            WHERE parent_id = %d
+            &quot;, $form_id
+        ));
+
+        foreach( $old_fields as $old_field ){
+            // Duplicate the Field Object.
+            $wpdb-&gt;query( $wpdb-&gt;prepare(
+               &quot;
+               INSERT INTO {$wpdb-&gt;prefix}nf3_fields ( `label`, `key`, `type`, `parent_id` )
+               SELECT `label`, `key`, `type`, %d
+               FROM {$wpdb-&gt;prefix}nf3_fields
+               WHERE id = %d
+               &quot;, $new_form_id, $old_field-&gt;id
+            ));
+            $new_field_id = $wpdb-&gt;insert_id;
+            // Duplicate the Field Meta.
+            $wpdb-&gt;query( $wpdb-&gt;prepare(
+                &quot;
+                INSERT INTO {$wpdb-&gt;prefix}nf3_field_meta ( `parent_id`, `key`, `value` )
+                SELECT %d, `key`, `value`
+                FROM   {$wpdb-&gt;prefix}nf3_field_meta
+                WHERE  parent_id = %d;
+                &quot;, $new_field_id, $old_field-&gt;id
+            ));
+        }
+
+        // Duplicate the Actions.
+
+        // Get the actions to duplicate
+        $old_actions = $wpdb-&gt;get_results( $wpdb-&gt;prepare(
+            &quot;
+            SELECT `id`
+            FROM {$wpdb-&gt;prefix}nf3_actions
+            WHERE parent_id = %d
+            &quot;, $form_id
+        ));
+
+        foreach( $old_actions as $old_action ){
+            // Duplicate the Action Object.
+            $wpdb-&gt;query( $wpdb-&gt;prepare(
+                &quot;
+               INSERT INTO {$wpdb-&gt;prefix}nf3_actions ( `title`, `key`, `type`, `active`, `parent_id` )
+               SELECT `title`, `key`, `type`, `active`, %d
+               FROM {$wpdb-&gt;prefix}nf3_actions
+               WHERE id = %d
+               &quot;, $new_form_id, $old_action-&gt;id
+            ));
+            $new_action_id = $wpdb-&gt;insert_id;
+            // Duplicate the Action Meta.
+            $wpdb-&gt;query( $wpdb-&gt;prepare(
+                &quot;
+                INSERT INTO {$wpdb-&gt;prefix}nf3_action_meta ( `parent_id`, `key`, `value` )
+                SELECT %d, `key`, `value`
+                FROM   {$wpdb-&gt;prefix}nf3_action_meta
+                WHERE  parent_id = %d;
+                &quot;, $new_action_id, $old_action-&gt;id
+            ));
+        }
+
+        return $new_form_id;
+    }
+
+    public static function export( $form_id, $return = FALSE )
+    {
+        //TODO: Set Date Format from Plugin Settings
+        $date_format = &#x27;m/d/Y&#x27;;
+
+        $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+        
+        $form_title = $form-&gt;get_setting( &#x27;title&#x27; );
+        $form_title = preg_replace( &quot;/[^A-Za-z0-9 ]/&quot;, &#x27;&#x27;, $form_title );
+        $form_title = str_replace( &#x27; &#x27;, &#x27;_&#x27;, $form_title );
+
+        $export = array(
+            &#x27;settings&#x27; =&gt; $form-&gt;get_settings(),
+            &#x27;fields&#x27; =&gt; array(),
+            &#x27;actions&#x27; =&gt; array()
+        );
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+        foreach( $fields as $field ){
+            $export[&#x27;fields&#x27;][] = $field-&gt;get_settings();
+        }
+
+        $actions = Ninja_Forms()-&gt;form( $form_id )-&gt;get_actions();
+
+        foreach( $actions as $action ){
+            $export[ &#x27;actions&#x27; ][] = $action-&gt;get_settings();
+        }
+
+        if( $return ){
+            return $export;
+        } else {
+
+            $today = date( $date_format, current_time( &#x27;timestamp&#x27; ) );
+            $filename = apply_filters( &#x27;ninja_forms_form_export_filename&#x27;, &#x27;nf_form_&#x27; . $today . &#x27;_&#x27; . $form_title );
+            $filename = $filename . &quot;.nff&quot;;
+
+            header( &#x27;Content-type: application/json&#x27;);
+            header( &#x27;Content-Disposition: attachment; filename=&quot;&#x27;.$filename .&#x27;&quot;&#x27; );
+            header( &#x27;Pragma: no-cache&#x27;);
+            header( &#x27;Expires: 0&#x27; );
+//            echo apply_filters( &#x27;ninja_forms_form_export_bom&#x27;,&quot;\xEF\xBB\xBF&quot; ) ; // Byte Order Mark
+	        if( isset( $_REQUEST[ &#x27;nf_export_form_turn_off_encoding&#x27; ] )
+	            &amp;&amp; $_REQUEST[ &#x27;nf_export_form_turn_off_encoding&#x27; ] ) {
+		        echo json_encode( $export );
+	        } else {
+		        echo json_encode( WPN_Helper::utf8_encode( $export ) );
+	        }
+
+            die();
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Backwards Compatibility
+    |--------------------------------------------------------------------------
+    */
+
+    public function import_form_backwards_compatibility( $import )
+    {
+        // Rename `data` to `settings`
+        if( isset( $import[ &#x27;data&#x27; ] ) ){
+            $import[ &#x27;settings&#x27; ] = $import[ &#x27;data&#x27; ];
+            unset( $import[ &#x27;data&#x27; ] );
+        }
+
+        // Rename `notifications` to `actions`
+        if( isset( $import[ &#x27;notifications&#x27; ] ) ){
+            $import[ &#x27;actions&#x27; ] = $import[ &#x27;notifications&#x27; ];
+            unset( $import[ &#x27;notifications&#x27; ] );
+        }
+
+        // Rename `form_title` to `title`
+        if( isset( $import[ &#x27;settings&#x27; ][ &#x27;form_title&#x27; ] ) ){
+            $import[ &#x27;settings&#x27; ][ &#x27;title&#x27; ] = $import[ &#x27;settings&#x27; ][ &#x27;form_title&#x27; ];
+            unset( $import[ &#x27;settings&#x27; ][ &#x27;form_title&#x27; ] );
+        }
+
+        // Convert `last_sub` to `_seq_num`
+        if( isset( $import[ &#x27;settings&#x27; ][ &#x27;last_sub&#x27; ] ) ) {
+            $import[ &#x27;settings&#x27; ][ &#x27;_seq_num&#x27; ] = $import[ &#x27;settings&#x27; ][ &#x27;last_sub&#x27; ] + 1;
+        }
+
+        // Make sure
+        if( ! isset( $import[ &#x27;fields&#x27; ] ) ){
+            $import[ &#x27;fields&#x27; ] = array();
+        }
+
+        // `Field` to `Fields`
+        if( isset( $import[ &#x27;field&#x27; ] ) ){
+            $import[ &#x27;fields&#x27; ] = $import[ &#x27;field&#x27; ];
+            unset( $import[ &#x27;field&#x27; ] );
+        }
+
+        $import = apply_filters( &#x27;ninja_forms_upgrade_settings&#x27;, $import );
+
+        // Combine Field and Field Data
+        foreach( $import[ &#x27;fields&#x27; ] as $key =&gt; $field ){
+
+            if( &#x27;_honeypot&#x27; == $field[ &#x27;type&#x27; ] ) {
+                unset( $import[ &#x27;fields&#x27; ][ $key ] );
+                continue;
+            }
+
+            if( ! $field[ &#x27;type&#x27; ] ) {
+                unset( $import[ &#x27;fields&#x27;][ $key ] );
+                continue;
+            }
+
+            // TODO: Split Credit Card field into multiple fields.
+            $field = $this-&gt;import_field_backwards_compatibility( $field );
+
+            if( isset( $field[ &#x27;new_fields&#x27; ] ) ){
+                foreach( $field[ &#x27;new_fields&#x27; ] as $new_field ){
+                    $import[ &#x27;fields&#x27; ][] = $new_field;
+                }
+                unset( $field[ &#x27;new_fields&#x27; ] );
+            }
+
+            $import[ &#x27;fields&#x27; ][ $key ] = $field;
+        }
+
+        $has_save_action = FALSE;
+        foreach( $import[ &#x27;actions&#x27; ] as $key =&gt; $action ){
+            $action = $this-&gt;import_action_backwards_compatibility( $action );
+            $import[ &#x27;actions&#x27; ][ $key ] = $action;
+
+            if( &#x27;save&#x27; == $action[ &#x27;type&#x27; ] ) $has_save_action = TRUE;
+        }
+
+        if( ! $has_save_action ) {
+            $import[ &#x27;actions&#x27; ][] = array(
+                &#x27;type&#x27; =&gt; &#x27;save&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Save Form&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;active&#x27; =&gt; TRUE
+            );
+        }
+
+        $import = $this-&gt;import_merge_tags_backwards_compatibility( $import );
+
+        return apply_filters( &#x27;ninja_forms_after_upgrade_settings&#x27;, $import );
+    }
+
+    public function import_merge_tags_backwards_compatibility( $import )
+    {
+        $field_lookup = array();
+
+        foreach( $import[ &#x27;fields&#x27; ] as $key =&gt; $field ){
+
+            if( ! isset( $field[ &#x27;id&#x27; ] ) ) continue;
+
+            $field_id  = $field[ &#x27;id&#x27; ];
+            $field_key = $field[ &#x27;type&#x27; ] . &#x27;_&#x27; . $field_id;
+            $field_lookup[ $field_id ] = $import[ &#x27;fields&#x27; ][ $key ][ &#x27;key&#x27; ] = $field_key;
+        }
+
+        foreach( $import[ &#x27;actions&#x27; ] as $key =&gt; $action_settings ){
+            foreach( $action_settings as $setting =&gt; $value ){
+                foreach( $field_lookup as $field_id =&gt; $field_key ){
+
+                    // Convert Tokenizer
+                    $token = &#x27;field_&#x27; . $field_id;
+                    if( ! is_array( $value ) ) {
+                        if (FALSE !== strpos($value, $token)) {
+                            $value = str_replace($token, &#x27;{field:&#x27; . $field_key . &#x27;}&#x27;, $value);
+                        }
+                    }
+
+                    // Convert Shortcodes
+                    $shortcode = &quot;[ninja_forms_field id=$field_id]&quot;;
+                    if( ! is_array( $value ) ) {
+                        if ( FALSE !== strpos( $value, $shortcode ) ) {
+                            $value = str_replace( $shortcode, &#x27;{field:&#x27; . $field_key . &#x27;}&#x27;, $value );
+                        }
+                    }
+                }
+
+                //Checks for the nf_sub_seq_num short code and replaces it with the submission sequence merge tag
+                $sub_seq = &#x27;[nf_sub_seq_num]&#x27;;
+                if( ! is_array( $value ) ) {
+                    if( FALSE !== strpos( $value, $sub_seq ) ){
+                        $value = str_replace( $sub_seq, &#x27;{submission:sequence}&#x27;, $value );
+                    }
+                }
+
+                if( ! is_array( $value ) ) {
+                    if (FALSE !== strpos($value, &#x27;[ninja_forms_all_fields]&#x27;)) {
+                        $value = str_replace(&#x27;[ninja_forms_all_fields]&#x27;, &#x27;{field:all_fields}&#x27;, $value);
+                    }
+                }
+                $action_settings[ $setting ] = $value;
+                $import[ &#x27;actions&#x27; ][ $key ] = $action_settings;
+            }
+        }
+
+        return $import;
+    }
+
+    public function import_action_backwards_compatibility( $action )
+    {
+        // Remove `_` from type
+        if( isset( $action[ &#x27;type&#x27; ] ) ) {
+            $action[&#x27;type&#x27;] = str_replace(&#x27;_&#x27;, &#x27;&#x27;, $action[&#x27;type&#x27;]);
+        }
+
+        if( &#x27;email&#x27; == $action[ &#x27;type&#x27; ] ){
+            $action[ &#x27;to&#x27; ]            	= str_replace( &#x27;`&#x27;, &#x27;,&#x27;, $action[ &#x27;to&#x27; ] );
+            $action[ &#x27;email_subject&#x27; ] 	= str_replace( &#x27;`&#x27;, &#x27;,&#x27;, $action[ &#x27;email_subject&#x27; ] );
+            $action[ &#x27;cc&#x27; ] 		= str_replace( &#x27;`&#x27;, &#x27;,&#x27;, $action[ &#x27;cc&#x27; ] );
+            $action[ &#x27;bcc&#x27; ] 		= str_replace( &#x27;`&#x27;, &#x27;,&#x27;, $action[ &#x27;bcc&#x27; ] );
+            // If our email is in plain text...
+            if ( $action[ &#x27;email_format&#x27; ] == &#x27;plain&#x27; ) {
+                // Record it as such.
+                $action[ &#x27;email_message_plain&#x27; ] = $action[ &#x27;email_message&#x27; ];
+            } // Otherwise... (It&#x27;s not plain text.)
+            else {
+                // Record it as HTML.
+                $action[ &#x27;email_message&#x27; ] = nl2br( $action[ &#x27;email_message&#x27; ] );
+            }
+        }
+
+        // Convert `name` to `label`
+        if( isset( $action[ &#x27;name&#x27; ] ) ) {
+            $action[&#x27;label&#x27;] = $action[&#x27;name&#x27;];
+            unset($action[&#x27;name&#x27;]);
+        }
+
+        return apply_filters( &#x27;ninja_forms_upgrade_action_&#x27; . $action[ &#x27;type&#x27; ], $action );
+    }
+
+    public function import_field_backwards_compatibility( $field )
+    {
+        // Flatten field settings array
+        if( isset( $field[ &#x27;data&#x27; ] ) &amp;&amp; is_array( $field[ &#x27;data&#x27; ] ) ){
+            $field = array_merge( $field, $field[ &#x27;data&#x27; ] );
+        }
+        unset( $field[ &#x27;data&#x27; ] );
+
+        // Drop form_id in favor of parent_id, which is set by the form.
+        if( isset( $field[ &#x27;form_id&#x27; ] ) ){
+            unset( $field[ &#x27;form_id&#x27; ] );
+        }
+
+        // Remove `_` prefix from type setting
+        $field[ &#x27;type&#x27; ] = ltrim( $field[ &#x27;type&#x27; ], &#x27;_&#x27; );
+
+        // Type: `text` -&gt; `textbox`
+        if( &#x27;text&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;textbox&#x27;;
+        }
+
+        if( &#x27;submit&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;processing_label&#x27; ] = &#x27;Processing&#x27;;
+        }
+
+        if( isset( $field[ &#x27;email&#x27; ] ) ){
+
+            if( &#x27;textbox&#x27; == $field[ &#x27;type&#x27; ] &amp;&amp; $field[ &#x27;email&#x27; ] ) {
+                $field[&#x27;type&#x27;] = &#x27;email&#x27;;
+            }
+            unset( $field[ &#x27;email&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;class&#x27; ] ) ){
+            $field[ &#x27;element_class&#x27; ] = $field[ &#x27;class&#x27; ];
+            unset( $field[ &#x27;class&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;req&#x27; ] ) ){
+            $field[ &#x27;required&#x27; ] = $field[ &#x27;req&#x27; ];
+            unset( $field[ &#x27;req&#x27; ] );
+        }
+
+        if( isset( $field[ &#x27;default_value_type&#x27; ] ) ){
+
+            /* User Data */
+            if( &#x27;_user_id&#x27; == $field[ &#x27;default_value_type&#x27; ] )           $field[ &#x27;default&#x27; ] = &#x27;{wp:user_id}&#x27;;
+            if( &#x27;_user_email&#x27; == $field[ &#x27;default_value_type&#x27; ] )        $field[ &#x27;default&#x27; ] = &#x27;{wp:user_email}&#x27;;
+            if( &#x27;_user_lastname&#x27; == $field[ &#x27;default_value_type&#x27; ] )     $field[ &#x27;default&#x27; ] = &#x27;{wp:user_last_name}&#x27;;
+            if( &#x27;_user_firstname&#x27; == $field[ &#x27;default_value_type&#x27; ] )    $field[ &#x27;default&#x27; ] = &#x27;{wp:user_first_name}&#x27;;
+            if( &#x27;_user_display_name&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{wp:user_display_name}&#x27;;
+
+            /* Post Data */
+            if( &#x27;post_id&#x27; == $field[ &#x27;default_value_type&#x27; ] )    $field[ &#x27;default&#x27; ] = &#x27;{wp:post_id}&#x27;;
+            if( &#x27;post_url&#x27; == $field[ &#x27;default_value_type&#x27; ] )   $field[ &#x27;default&#x27; ] = &#x27;{wp:post_url}&#x27;;
+            if( &#x27;post_title&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{wp:post_title}&#x27;;
+
+            /* System Data */
+            if( &#x27;today&#x27; == $field[ &#x27;default_value_type&#x27; ] ) $field[ &#x27;default&#x27; ] = &#x27;{other:date}&#x27;;
+
+            /* Miscellaneous */
+            if( &#x27;_custom&#x27; == $field[ &#x27;default_value_type&#x27; ] &amp;&amp; isset( $field[ &#x27;default_value&#x27; ] ) ){
+                $field[ &#x27;default&#x27; ] = $field[ &#x27;default_value&#x27; ];
+            }
+            if( &#x27;querystring&#x27; == $field[ &#x27;default_value_type&#x27; ] &amp;&amp; isset( $field[ &#x27;default_value&#x27; ] ) ){
+                $field[ &#x27;default&#x27; ] = &#x27;{querystring:&#x27; . $field[ &#x27;default_value&#x27; ] . &#x27;}&#x27;;
+            }
+
+            unset( $field[ &#x27;default_value&#x27; ] );
+            unset( $field[ &#x27;default_value_type&#x27; ] );
+        } else if ( isset ( $field[ &#x27;default_value&#x27; ] ) ) {
+            $field[ &#x27;default&#x27; ] = $field[ &#x27;default_value&#x27; ];
+        }
+
+        if( &#x27;list&#x27; == $field[ &#x27;type&#x27; ] ) {
+
+            if ( isset( $field[ &#x27;list_type&#x27; ] ) ) {
+
+                if (&#x27;dropdown&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listselect&#x27;;
+                }
+                if (&#x27;radio&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listradio&#x27;;
+                }
+                if (&#x27;checkbox&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listcheckbox&#x27;;
+                }
+                if (&#x27;multi&#x27; == $field[&#x27;list_type&#x27;]) {
+                    $field[&#x27;type&#x27;] = &#x27;listmultiselect&#x27;;
+                }
+            }
+
+            if( isset( $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ] ) ) {
+                $field[ &#x27;options&#x27; ] = array_values( $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ] );
+                unset( $field[ &#x27;list&#x27; ][ &#x27;options&#x27; ] );
+            }
+
+            foreach( $field[ &#x27;options&#x27; ] as &amp;$option ){
+                if( isset( $option[ &#x27;value&#x27; ] ) &amp;&amp; $option[ &#x27;value&#x27; ] ) continue;
+                $option[ &#x27;value&#x27; ] = $option[ &#x27;label&#x27; ];
+            }
+        }
+
+        if( &#x27;country&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;listcountry&#x27;;
+            $field[ &#x27;options&#x27; ] = array();
+        }
+
+        // Convert `textbox` to other field types
+        foreach( array( &#x27;fist_name&#x27;, &#x27;last_name&#x27;, &#x27;user_zip&#x27;, &#x27;user_city&#x27;, &#x27;user_phone&#x27;, &#x27;user_email&#x27;, &#x27;user_address_1&#x27;, &#x27;user_address_2&#x27;, &#x27;datepicker&#x27; ) as $item ) {
+            if ( isset( $field[ $item ] ) &amp;&amp; $field[ $item ] ) {
+                $field[ &#x27;type&#x27; ] = str_replace( array( &#x27;_&#x27;, &#x27;user&#x27;, &#x27;1&#x27;, &#x27;2&#x27;, &#x27;picker&#x27; ), &#x27;&#x27;, $item );
+
+                unset( $field[ $item ] );
+            }
+        }
+
+        if( &#x27;timed_submit&#x27; == $field[ &#x27;type&#x27; ] ) {
+            $field[ &#x27;type&#x27; ] = &#x27;submit&#x27;;
+        }
+
+        if( &#x27;checkbox&#x27; == $field[ &#x27;type&#x27; ] ){
+
+            if( isset( $field[ &#x27;calc_value&#x27; ] ) ){
+
+                if( isset( $field[ &#x27;calc_value&#x27; ][ &#x27;checked&#x27; ] ) ){
+                    $field[ &#x27;checked_calc_value&#x27; ] = $field[ &#x27;calc_value&#x27; ][ &#x27;checked&#x27; ];
+                    unset( $field[ &#x27;calc_value&#x27; ][ &#x27;checked&#x27; ] );
+                }
+                if( isset( $field[ &#x27;calc_value&#x27; ][ &#x27;unchecked&#x27; ] ) ){
+                    $field[ &#x27;unchecked_calc_value&#x27; ] = $field[ &#x27;calc_value&#x27; ][ &#x27;unchecked&#x27; ];
+                    unset( $field[ &#x27;calc_value&#x27; ][ &#x27;unchecked&#x27; ] );
+                }
+            }
+        }
+
+        if( &#x27;rating&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;starrating&#x27;;
+
+            if( isset( $field[ &#x27;rating_stars&#x27; ] ) ){
+                $field[ &#x27;default&#x27; ] = $field[ &#x27;rating_stars&#x27; ];
+                unset( $field[ &#x27;rating_stars&#x27; ] );
+            }
+        }
+
+        if( &#x27;number&#x27; == $field[ &#x27;type&#x27; ] ){
+
+            if( ! isset( $field[ &#x27;number_min&#x27; ] ) || ! $field[ &#x27;number_min&#x27; ] ){
+                $field[ &#x27;num_min&#x27; ] = &#x27;&#x27;;
+            } else {
+                $field[ &#x27;num_min&#x27; ] = $field[ &#x27;number_min&#x27; ];
+            }
+
+            if( ! isset( $field[ &#x27;number_max&#x27; ] ) || ! $field[ &#x27;number_max&#x27; ] ){
+                $field[ &#x27;num_max&#x27; ] = &#x27;&#x27;;
+            } else {
+                $field[ &#x27;num_max&#x27; ] = $field[ &#x27;number_max&#x27; ];
+            }
+
+            if( ! isset( $field[ &#x27;number_step&#x27; ] ) || ! $field[ &#x27;number_step&#x27; ] ){
+                $field[ &#x27;num_step&#x27; ] = 1;
+            } else {
+                $field[ &#x27;num_step&#x27; ] = $field[ &#x27;number_step&#x27; ];
+            }
+        }
+
+        if( &#x27;profile_pass&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;password&#x27;;
+
+            $passwordconfirm = array_merge( $field, array(
+                &#x27;id&#x27; =&gt; &#x27;&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;passwordconfirm&#x27;,
+                &#x27;label&#x27; =&gt; $field[ &#x27;label&#x27; ] . &#x27; &#x27; . __( &#x27;Confirm&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;confirm_field&#x27; =&gt; &#x27;password_&#x27; . $field[ &#x27;id&#x27; ]
+            ));
+            $field[ &#x27;new_fields&#x27; ][] = $passwordconfirm;
+        }
+
+        if( &#x27;desc&#x27; == $field[ &#x27;type&#x27; ] ){
+            $field[ &#x27;type&#x27; ] = &#x27;html&#x27;;
+        }
+
+        if( &#x27;credit_card&#x27; == $field[ &#x27;type&#x27; ] ){
+
+            $field[ &#x27;type&#x27; ] = &#x27;creditcardnumber&#x27;;
+            $field[ &#x27;label&#x27; ] = $field[ &#x27;cc_number_label&#x27; ];
+            $field[ &#x27;label_pos&#x27; ] = &#x27;above&#x27;;
+
+            if( $field[ &#x27;help_text&#x27; ] ){
+                $field[ &#x27;help_text&#x27; ] = &#x27;&lt;p&gt;&#x27; . $field[ &#x27;help_text&#x27; ] . &#x27;&lt;/p&gt;&#x27;;
+            }
+
+            $credit_card_fields = array(
+                &#x27;creditcardcvc&#x27;        =&gt; $field[ &#x27;cc_cvc_label&#x27; ],
+                &#x27;creditcardfullname&#x27;   =&gt; $field[ &#x27;cc_name_label&#x27; ],
+                &#x27;creditcardexpiration&#x27; =&gt; $field[ &#x27;cc_exp_month_label&#x27; ] . &#x27; &#x27; . $field[ &#x27;cc_exp_year_label&#x27; ],
+                &#x27;creditcardzip&#x27;        =&gt; __( &#x27;Credit Card Zip&#x27;, &#x27;ninja-forms&#x27; ),
+            );
+
+
+            foreach( $credit_card_fields as $new_type =&gt; $new_label ){
+                $field[ &#x27;new_fields&#x27; ][] = array_merge( $field, array(
+                    &#x27;id&#x27; =&gt; &#x27;&#x27;,
+                    &#x27;type&#x27; =&gt; $new_type,
+                    &#x27;label&#x27; =&gt; $new_label,
+                    &#x27;help_text&#x27; =&gt; &#x27;&#x27;,
+                    &#x27;desc_text&#x27; =&gt; &#x27;&#x27;
+                ));
+            }
+        }
+
+        /*
+         * Convert inside label position over to placeholder
+         */
+        if ( isset ( $field[ &#x27;label_pos&#x27; ] ) &amp;&amp; &#x27;inside&#x27; == $field[ &#x27;label_pos&#x27; ] ) {
+            if ( ! isset ( $field[ &#x27;placeholder&#x27; ] ) || empty ( $field[ &#x27;placeholder&#x27; ] ) ) {
+                $field[ &#x27;placeholder&#x27; ] = $field[ &#x27;label&#x27; ];
+            }
+            $field[ &#x27;label_pos&#x27; ] = &#x27;hidden&#x27;;
+        }
+
+        if( isset( $field[ &#x27;desc_text&#x27; ] ) ){
+            $field[ &#x27;desc_text&#x27; ] = nl2br( $field[ &#x27;desc_text&#x27; ] );
+        }
+        if( isset( $field[ &#x27;help_text&#x27; ] ) ){
+            $field[ &#x27;help_text&#x27; ] = nl2br( $field[ &#x27;help_text&#x27; ] );
+        }
+
+
+        return apply_filters( &#x27;ninja_forms_upgrade_field&#x27;, $field );
+    }
+
+} // End NF_Database_Models_Form
+</pre></details></body></html>

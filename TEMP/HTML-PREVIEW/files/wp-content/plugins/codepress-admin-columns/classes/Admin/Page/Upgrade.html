@@ -1,0 +1,388 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Upgrade.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Admin/Page/Upgrade.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;div class=&quot;message error&quot;&gt;
+            &lt;p&gt;
+				
+                &lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;&lt;/a&gt;
+            &lt;/p&gt;
+        &lt;/div&gt;
+		
+            &lt;script type=&quot;text/javascript&quot;&gt;
+				run_upgrade( &quot;&quot; );
+            &lt;/script&gt;
+			
+            &lt;p&gt;&lt;/p&gt;
+            
+        &lt;h1&gt;&lt;/h1&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Upgrade
+ *
+ * Class largely based on code from ACF ( props to Elliot )
+ *
+ * @since 2.0
+ */
+class AC_Admin_Page_Upgrade extends AC_Admin_Page {
+
+	const VERSION_KEY = &#x27;cpac_version&#x27;;
+
+	public $update_prevented = false;
+
+	/**
+	 * @since 2.0
+	 */
+	function __construct() {
+		$this
+			-&gt;set_slug( &#x27;upgrade&#x27; )
+			-&gt;set_label( __( &#x27;Upgrade&#x27;, &#x27;codepress-admin-columns&#x27; ) )
+			-&gt;set_show_in_menu( false );
+
+		add_action( &#x27;wp_ajax_cpac_upgrade&#x27;, array( $this, &#x27;ajax_upgrade&#x27; ) );
+
+		if ( ! $this-&gt;allow_upgrade() ) {
+			add_action( &#x27;ac/settings/after_menu&#x27;, array( $this, &#x27;proaddon_notice&#x27; ) );
+		}
+
+		add_action( &#x27;admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+	}
+
+	/**
+	 * Display a notice about the deprecated pro add-on
+	 *
+	 * @since 2.2
+	 */
+	public function proaddon_notice() {	?&gt;
+        &lt;div class=&quot;message error&quot;&gt;
+            &lt;p&gt;
+				&lt;?php _e( &#x27;The pro add-on is no longer supported. Please login to your account and download Admin Columns Pro&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;
+                &lt;a href=&quot;&lt;?php echo ac_get_site_utm_url( &#x27;pro-addon-information&#x27;, &#x27;pro-notice&#x27; ); ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php _e( &#x27;Learn more&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt;
+            &lt;/p&gt;
+        &lt;/div&gt;
+		&lt;?php
+	}
+
+	/**
+	 * Whether upgrading is allowed
+	 *
+	 * @since 2.1.5
+	 *
+	 * @return bool Whether plugin upgrading is allowed
+	 */
+	public function allow_upgrade() {
+		require_once ABSPATH . &#x27;wp-admin/includes/plugin.php&#x27;;
+
+		return ! is_plugin_active( &#x27;cac-addon-pro/cac-addon-pro.php&#x27; );
+	}
+
+	/**
+	 * Init Upgrade Process
+	 *
+	 * @since 2.0
+	 */
+	public function ajax_upgrade() {
+
+		// vars
+		$return = array(
+			&#x27;status&#x27;  =&gt; false,
+			&#x27;message&#x27; =&gt; &quot;&quot;,
+			&#x27;next&#x27;    =&gt; false,
+		);
+
+		$version = $_POST[&#x27;version&#x27;];
+
+		// versions
+		switch ( $version ) {
+
+			case &#x27;2.0.0&#x27; :
+
+				$old_settings = get_option( &#x27;cpac_options&#x27; );
+
+				// old settings
+				if ( ! empty( $old_settings[&#x27;columns&#x27;] ) ) {
+
+					foreach ( $old_settings[&#x27;columns&#x27;] as $storage_key =&gt; $old_columns ) {
+
+						$columns = array();
+
+						if ( $old_columns ) {
+
+							// used to determine clone ID
+							$tax_count = null;
+							$post_count = null;
+							$meta_count = null;
+
+							foreach ( $old_columns as $old_column_name =&gt; $old_column_settings ) {
+
+								// only active columns
+								if ( isset( $old_column_settings[&#x27;state&#x27;] ) &amp;&amp; &#x27;on&#x27; !== $old_column_settings[&#x27;state&#x27;] ) {
+									continue;
+								}
+
+								// convert old settings to new
+								$settings = array_merge( $old_column_settings, array(
+									&#x27;type&#x27;  =&gt; $old_column_name,
+									&#x27;clone&#x27; =&gt; &#x27;&#x27;,
+								) );
+
+								// set name
+								$name = $old_column_name;
+
+								// convert: Users
+								if ( &#x27;wp-users&#x27; == $storage_key ) {
+
+									// is user post count?
+									if ( strpos( $old_column_name, &#x27;column-user_postcount-&#x27; ) !== false ) {
+										$settings[&#x27;type&#x27;] = &#x27;column-user_postcount&#x27;;
+										$settings[&#x27;clone&#x27;] = $post_count;
+										$settings[&#x27;post_type&#x27;] = str_replace( &#x27;column-user_postcount-&#x27;, &#x27;&#x27;, $old_column_name );
+
+										$name = $post_count ? $settings[&#x27;type&#x27;] . &#x27;-&#x27; . $settings[&#x27;clone&#x27;] : $settings[&#x27;type&#x27;];
+										$post_count++;
+									}
+								}
+
+								// convert: Media
+								elseif ( &#x27;wp-media&#x27; == $storage_key ) {
+
+									if ( &#x27;column-filesize&#x27; == $old_column_name ) {
+										$name = &#x27;column-file_size&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									// is EXIF data?
+									elseif ( strpos( $old_column_name, &#x27;column-image-&#x27; ) !== false ) {
+										$name = &#x27;column-exif_data&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+										$settings[&#x27;exif_datatype&#x27;] = str_replace( &#x27;column-image-&#x27;, &#x27;&#x27;, $old_column_name );
+									}
+									elseif ( &#x27;column-file_paths&#x27; == $old_column_name ) {
+										$name = &#x27;column-available_sizes&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+								}
+
+								// convert: Comments
+								elseif ( &#x27;wp-comments&#x27; == $storage_key ) {
+
+									if ( &#x27;column-author_author&#x27; == $old_column_name ) {
+										$name = &#x27;column-author&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+								}
+
+								// convert: Posts
+								else {
+
+									if ( &#x27;column-attachment-count&#x27; == $old_column_name ) {
+										$name = &#x27;column-attachment_count&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									elseif ( &#x27;column-author-name&#x27; == $old_column_name ) {
+										$name = &#x27;column-author_name&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+										$settings[&#x27;display_author_as&#x27;] = $old_column_settings[&#x27;display_as&#x27;];
+									}
+									elseif ( &#x27;column-before-moretag&#x27; == $old_column_name ) {
+										$name = &#x27;column-before_moretag&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									elseif ( &#x27;column-comment-count&#x27; == $old_column_name ) {
+										$name = &#x27;column-comment_count&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+										$settings[&#x27;comment_status&#x27;] = &#x27;total_comments&#x27;;
+									}
+									elseif ( &#x27;column-comment-status&#x27; == $old_column_name ) {
+										$name = &#x27;column-comment_status&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									elseif ( &#x27;column-ping-status&#x27; == $old_column_name ) {
+										$name = &#x27;column-ping_status&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									elseif ( &#x27;column-page-slug&#x27; == $old_column_name ) {
+										$name = &#x27;column-slug&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+									elseif ( &#x27;column-page-template&#x27; == $old_column_name ) {
+										$name = &#x27;column-page_template&#x27;;
+										$settings[&#x27;type&#x27;] = $name;
+									}
+								}
+
+								// convert: Applies to all storage types
+
+								// is taxonomy?
+								if ( strpos( $old_column_name, &#x27;column-taxonomy-&#x27; ) !== false ) {
+									$settings[&#x27;type&#x27;] = &#x27;column-taxonomy&#x27;;
+									$settings[&#x27;clone&#x27;] = $tax_count;
+									$settings[&#x27;taxonomy&#x27;] = str_replace( &#x27;column-taxonomy-&#x27;, &#x27;&#x27;, $old_column_name );
+
+									$name = $tax_count ? $settings[&#x27;type&#x27;] . &#x27;-&#x27; . $settings[&#x27;clone&#x27;] : $settings[&#x27;type&#x27;];
+									$tax_count++;
+								}
+								// is custom field?
+								elseif ( strpos( $old_column_name, &#x27;column-meta-&#x27; ) !== false ) {
+
+									$settings[&#x27;type&#x27;] = &#x27;column-meta&#x27;;
+									//$settings[&#x27;clone&#x27;] = str_replace( &#x27;column-meta-&#x27;, &#x27;&#x27;, $old_column_name );
+									$settings[&#x27;clone&#x27;] = $meta_count;
+
+									$name = $meta_count ? $settings[&#x27;type&#x27;] . &#x27;-&#x27; . $settings[&#x27;clone&#x27;] : $settings[&#x27;type&#x27;];
+									$meta_count++;
+								}
+								elseif ( &#x27;column-word-count&#x27; == $old_column_name ) {
+									$name = &#x27;column-word_count&#x27;;
+									$settings[&#x27;type&#x27;] = $name;
+								}
+
+								// add to column set
+								$columns[ $name ] = $settings;
+
+								// reorder so that active column are at the top of the pile.
+								$active = $inactive = array();
+								foreach ( $columns as $name =&gt; $_settings ) {
+									if ( &#x27;on&#x27; === $_settings[&#x27;state&#x27;] ) {
+										$active[ $name ] = $_settings;
+									}
+									else {
+										$inactive[ $name ] = $_settings;
+									}
+								}
+								$columns = array_merge( $active, $inactive );
+							}
+
+							// store column settings
+							if ( ! get_option( &quot;cpac_options_{$storage_key}&quot; ) ) {
+								update_option( &quot;cpac_options_{$storage_key}&quot;, $columns );
+							}
+						}
+					}
+				}
+
+				// update version
+				update_option( self::VERSION_KEY, $version );
+
+				$return = array(
+					&#x27;status&#x27;  =&gt; true,
+					&#x27;message&#x27; =&gt; __( &quot;Migrating Column Settings&quot;, &#x27;codepress-admin-columns&#x27; ) . &#x27;...&#x27;,
+					&#x27;next&#x27;    =&gt; false,
+				);
+
+				break;
+		}
+
+		// return json
+		echo json_encode( $return );
+		die;
+	}
+
+	/*
+	* Starting points of the upgrade process
+	*
+	* @since 2.0
+	*/
+	public function start_upgrade() {
+
+		$version = get_option( self::VERSION_KEY, &#x27;1.0.0&#x27; );
+		$next = false;
+
+		// list of starting points
+		if ( $version &lt; &#x27;2.0.0&#x27; ) {
+			$next = &#x27;2.0.0&#x27;;
+		}
+
+		// Run upgrade?
+		if ( $next ) : ?&gt;
+            &lt;script type=&quot;text/javascript&quot;&gt;
+				run_upgrade( &quot;&lt;?php echo $next; ?&gt;&quot; );
+            &lt;/script&gt;
+			&lt;?php
+
+		// No update required
+		else : ?&gt;
+            &lt;p&gt;&lt;?php _e( &#x27;No Upgrade Required&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/p&gt;
+            &lt;?php echo ac_helper()-&gt;html-&gt;link( AC()-&gt;admin()-&gt;get_link( &#x27;welcome&#x27; ), __( &#x27;Return to welcome screen.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		endif;
+	}
+
+	/**
+	 * Scripts
+	 *
+	 * @since 2.0
+	 */
+	public function admin_scripts() {
+	    if ( ! $this-&gt;is_current_screen() ) {
+	        return;
+        }
+
+		wp_enqueue_script( &#x27;ac-upgrade&#x27;, AC()-&gt;get_plugin_url() . &#x27;assets/js/upgrade.js&#x27;, array( &#x27;jquery&#x27; ), AC()-&gt;get_version() );
+		wp_localize_script( &#x27;ac-upgrade&#x27;, &#x27;cpac_upgrade_i18n&#x27;, array(
+			&#x27;complete&#x27;    =&gt; __( &#x27;Upgrade Complete!&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;&#x27; . esc_url( AC()-&gt;admin()-&gt;get_link( &#x27;welcome&#x27; ) ) . &#x27;&quot;&gt;&#x27; . __( &#x27;Return to settings.&#x27;, &#x27;codepress-admin-columns&#x27; ) . &quot;&lt;/a&gt;&quot;,
+			&#x27;error&#x27;       =&gt; __( &#x27;Error&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;major_error&#x27; =&gt; __( &#x27;Sorry. Something went wrong during the upgrade process. Please report this on the support forum.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		) );
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public function display() {
+		?&gt;
+        &lt;h1&gt;&lt;?php _e( &#x27;Upgrade&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/h1&gt;
+		&lt;?php
+
+		$version = get_option( self::VERSION_KEY, false );
+
+		// Maybe version pre 2.0.0 was used
+		if ( ! $version &amp;&amp; get_option( &#x27;cpac_options&#x27; ) ) {
+			$version = &#x27;1.0.0&#x27;;
+		}
+
+		// Maybe upgrade?
+		if ( $version ) {
+
+			// run every upgrade
+			if ( $version &lt; AC()-&gt;get_version() ) {
+				// nothing yet
+			}
+
+			// run only when updating from v1 to v2
+			if ( $version &lt; &#x27;2.0.0&#x27; ) {
+
+				// show welcome screen
+				wp_safe_redirect( AC()-&gt;admin()-&gt;get_link( &#x27;welcome&#x27; ) );
+				exit;
+			}
+
+			// run only when database upgrade is needed
+			if ( $version &lt; AC()-&gt;get_upgrade_version() ) {
+
+				// display upgrade message on every page except upgrade page itself
+				if ( ! ( isset( $_REQUEST[&#x27;page&#x27;] ) &amp;&amp; &#x27;upgrade&#x27; === $_REQUEST[&#x27;page&#x27;] ) ) {
+
+                    $message = sprintf( &quot;Admin Columns %s requires a database upgrade.&quot;, AC()-&gt;get_version() );
+                    $message .= sprintf( &quot;Please %s, then click %s.&quot;, ac_helper()-&gt;html-&gt;link( &#x27;http://codex.wordpress.org/Backing_Up_Your_Database&#x27;, &#x27;backup your database&#x27; ), ac_helper()-&gt;html-&gt;link( $this-&gt;get_link(), &#x27;Upgrade Database&#x27; ) );
+
+					AC()-&gt;notice( $message, &#x27;updated&#x27; );
+				}
+			}
+
+			// run when NO upgrade is needed
+			elseif ( $version &lt; AC()-&gt;get_version() ) {
+
+				update_option( self::VERSION_KEY, AC()-&gt;get_version() );
+			}
+		}
+
+		// Fresh install
+		else {
+
+			update_option( self::VERSION_KEY, AC()-&gt;get_version() );
+		}
+	}
+
+}
+</pre></details></body></html>

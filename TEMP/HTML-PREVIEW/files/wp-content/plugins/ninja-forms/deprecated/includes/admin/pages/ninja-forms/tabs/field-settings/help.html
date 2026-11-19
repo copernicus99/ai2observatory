@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/field-settings/help.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/field-settings/help.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;p&gt;.&lt;/p&gt;
+	&lt;/p&gt;:
+		&lt;ul&gt;
+			&lt;li&gt;.&lt;/li&gt;
+			&lt;li&gt;.&lt;/li&gt;
+			&lt;li&gt;.&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/p&gt;
+	&lt;p&gt;
+		. . .
+	&lt;/p&gt;
+	&lt;p&gt;
+		. .
+	&lt;/p&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_field_settings_help&#x27;, 9 );
+function ninja_forms_register_field_settings_help(){
+	$args = array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;builder&#x27;,
+		&#x27;title&#x27; =&gt; __( &#x27;Input Mask&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_help_field_settings&#x27;,
+	);
+	ninja_forms_register_help_screen_tab(&#x27;mask_help&#x27;, $args);
+}
+
+function ninja_forms_help_field_settings(){
+	?&gt;
+	&lt;p&gt;&lt;?php _e(&#x27;Any character you place in the &quot;custom mask&quot; box that is not in the list below will be automatically entered for the user as they type and will not be removeable&#x27;, &#x27;ninja-forms&#x27;);?&gt;.&lt;/p&gt;
+	&lt;/p&gt;&lt;?php _e(&#x27;These are the predefined masking characters&#x27;, &#x27;ninja-forms&#x27;);?&gt;:
+		&lt;ul&gt;
+			&lt;li&gt;&lt;?php _e(&#x27;a - Represents an alpha character (A-Z,a-z) - Only allows letters to be entered&#x27;, &#x27;ninja-forms&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;&lt;?php _e(&#x27;9 - Represents a numeric character (0-9) - Only allows numbers to be entered&#x27;, &#x27;ninja-forms&#x27;);?&gt;.&lt;/li&gt;
+			&lt;li&gt;&lt;?php _e(&#x27;* - Represents an alphanumeric character (A-Z,a-z,0-9) - This allows both numbers and letters to be entered&#x27;, &#x27;ninja-forms&#x27;);?&gt;.&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/p&gt;
+	&lt;p&gt;
+		&lt;?php _e(&#x27;So, if you wanted to create a mask for an American Social Security Number, you would type 999-99-9999 into the box&#x27;, &#x27;ninja-forms&#x27;);?&gt;. &lt;?php _e(&#x27;The 9s would represent any number, and the -s would be automatically added&#x27;, &#x27;ninja-forms&#x27;);?&gt;. &lt;?php _e(&#x27;This would prevent the user from putting in anything other than numbers&#x27;, &#x27;ninja-forms&#x27;);?&gt;.
+	&lt;/p&gt;
+	&lt;p&gt;
+		&lt;?php _e(&#x27;You can also combine these for specific applications&#x27;, &#x27;ninja-forms&#x27;);?&gt;. &lt;?php _e(&#x27;For instance, if you had a product key that was in the form of A4B51.989.B.43C, you could mask it with: a9a99.999.a.99a, which would force all the a\&#x27;s to be letters and the 9s to be numbers&#x27;, &#x27;ninja-forms&#x27;);?&gt;.
+	&lt;/p&gt;
+	&lt;?php
+}</pre></details></body></html>

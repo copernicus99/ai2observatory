@@ -1,0 +1,219 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/inc/icon-functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/inc/icon-functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * SVG icons related functions and filters
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+/**
+ * Add SVG definitions to the footer.
+ */
+function twentyseventeen_include_svg_icons() {
+	// Define SVG sprite file.
+	$svg_icons = get_parent_theme_file_path( &#x27;/assets/images/svg-icons.svg&#x27; );
+
+	// If it exists, include it.
+	if ( file_exists( $svg_icons ) ) {
+		require_once( $svg_icons );
+	}
+}
+//add_action( &#x27;wp_footer&#x27;, &#x27;twentyseventeen_include_svg_icons&#x27;, 9999 );
+
+/**
+ * Return SVG markup.
+ *
+ * @param array $args {
+ *     Parameters needed to display an SVG.
+ *
+ *     @type string $icon  Required SVG icon filename.
+ *     @type string $title Optional SVG title.
+ *     @type string $desc  Optional SVG description.
+ * }
+ * @return string SVG markup.
+ */
+function twentyseventeen_get_svg( $args = array() ) {
+	// Make sure $args are an array.
+	if ( empty( $args ) ) {
+		return __( &#x27;Please define default parameters in the form of an array.&#x27;, &#x27;twentyseventeen&#x27; );
+	}
+
+	// Define an icon.
+	if ( false === array_key_exists( &#x27;icon&#x27;, $args ) ) {
+		return __( &#x27;Please define an SVG icon filename.&#x27;, &#x27;twentyseventeen&#x27; );
+	}
+
+	// Set defaults.
+	$defaults = array(
+		&#x27;icon&#x27;        =&gt; &#x27;&#x27;,
+		&#x27;title&#x27;       =&gt; &#x27;&#x27;,
+		&#x27;desc&#x27;        =&gt; &#x27;&#x27;,
+		&#x27;fallback&#x27;    =&gt; false,
+	);
+
+	// Parse args.
+	$args = wp_parse_args( $args, $defaults );
+
+	// Set aria hidden.
+	$aria_hidden = &#x27; aria-hidden=&quot;true&quot;&#x27;;
+
+	// Set ARIA.
+	$aria_labelledby = &#x27;&#x27;;
+
+	/*
+	 * Twenty Seventeen doesn&#x27;t use the SVG title or description attributes; non-decorative icons are described with .screen-reader-text.
+	 *
+	 * However, child themes can use the title and description to add information to non-decorative SVG icons to improve accessibility.
+	 *
+	 * Example 1 with title: &lt;?php echo twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;arrow-right&#x27;, &#x27;title&#x27; =&gt; __( &#x27;This is the title&#x27;, &#x27;textdomain&#x27; ) ) ); ?&gt;
+	 *
+	 * Example 2 with title and description: &lt;?php echo twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;arrow-right&#x27;, &#x27;title&#x27; =&gt; __( &#x27;This is the title&#x27;, &#x27;textdomain&#x27; ), &#x27;desc&#x27; =&gt; __( &#x27;This is the description&#x27;, &#x27;textdomain&#x27; ) ) ); ?&gt;
+	 *
+	 * See https://www.paciellogroup.com/blog/2013/12/using-aria-enhance-svg-accessibility/.
+	 */
+	if ( $args[&#x27;title&#x27;] ) {
+		$aria_hidden     = &#x27;&#x27;;
+		$unique_id       = uniqid();
+		$aria_labelledby = &#x27; aria-labelledby=&quot;title-&#x27; . $unique_id . &#x27;&quot;&#x27;;
+
+		if ( $args[&#x27;desc&#x27;] ) {
+			$aria_labelledby = &#x27; aria-labelledby=&quot;title-&#x27; . $unique_id . &#x27; desc-&#x27; . $unique_id . &#x27;&quot;&#x27;;
+		}
+	}
+
+	// Begin SVG markup.
+	$svg = &#x27;&lt;svg class=&quot;icon icon-&#x27; . esc_attr( $args[&#x27;icon&#x27;] ) . &#x27;&quot;&#x27; . $aria_hidden . $aria_labelledby . &#x27; role=&quot;img&quot;&gt;&#x27;;
+
+	// Display the title.
+	if ( $args[&#x27;title&#x27;] ) {
+		$svg .= &#x27;&lt;title id=&quot;title-&#x27; . $unique_id . &#x27;&quot;&gt;&#x27; . esc_html( $args[&#x27;title&#x27;] ) . &#x27;&lt;/title&gt;&#x27;;
+
+		// Display the desc only if the title is already set.
+		if ( $args[&#x27;desc&#x27;] ) {
+			$svg .= &#x27;&lt;desc id=&quot;desc-&#x27; . $unique_id . &#x27;&quot;&gt;&#x27; . esc_html( $args[&#x27;desc&#x27;] ) . &#x27;&lt;/desc&gt;&#x27;;
+		}
+	}
+
+	/*
+	 * Display the icon.
+	 *
+	 * The whitespace around `&lt;use&gt;` is intentional - it is a work around to a keyboard navigation bug in Safari 10.
+	 *
+	 * See https://core.trac.wordpress.org/ticket/38387.
+	 */
+	$svg .= &#x27; &lt;use href=&quot;#icon-&#x27; . esc_html( $args[&#x27;icon&#x27;] ) . &#x27;&quot; xlink:href=&quot;#icon-&#x27; . esc_html( $args[&#x27;icon&#x27;] ) . &#x27;&quot;&gt;&lt;/use&gt; &#x27;;
+
+	// Add some markup to use as a fallback for browsers that do not support SVGs.
+	if ( $args[&#x27;fallback&#x27;] ) {
+		$svg .= &#x27;&lt;span class=&quot;svg-fallback icon-&#x27; . esc_attr( $args[&#x27;icon&#x27;] ) . &#x27;&quot;&gt;&lt;/span&gt;&#x27;;
+	}
+
+	$svg .= &#x27;&lt;/svg&gt;&#x27;;
+
+	return $svg;
+}
+
+/**
+ * Display SVG icons in social links menu.
+ *
+ * @param  string  $item_output The menu item output.
+ * @param  WP_Post $item        Menu item object.
+ * @param  int     $depth       Depth of the menu.
+ * @param  array   $args        wp_nav_menu() arguments.
+ * @return string  $item_output The menu item output with social icon.
+ */
+function twentyseventeen_nav_menu_social_icons( $item_output, $item, $depth, $args ) {
+	// Get supported social icons.
+	$social_icons = twentyseventeen_social_links_icons();
+
+	// Change SVG icon inside social links menu if there is supported URL.
+	if ( &#x27;social&#x27; === $args-&gt;theme_location ) {
+		foreach ( $social_icons as $attr =&gt; $value ) {
+			if ( false !== strpos( $item_output, $attr ) ) {
+				$item_output = str_replace( $args-&gt;link_after, &#x27;&lt;/span&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; esc_attr( $value ) ) ), $item_output );
+			}
+		}
+	}
+
+	return $item_output;
+}
+//add_filter( &#x27;walker_nav_menu_start_el&#x27;, &#x27;twentyseventeen_nav_menu_social_icons&#x27;, 10, 4 );
+
+/**
+ * Add dropdown icon if menu item has children.
+ *
+ * @param  string $title The menu item&#x27;s title.
+ * @param  object $item  The current menu item.
+ * @param  array  $args  An array of wp_nav_menu() arguments.
+ * @param  int    $depth Depth of menu item. Used for padding.
+ * @return string $title The menu item&#x27;s title with dropdown icon.
+ */
+function twentyseventeen_dropdown_icon_to_menu_link( $title, $item, $args, $depth ) {
+	if ( &#x27;top&#x27; === $args-&gt;theme_location ) {
+		foreach ( $item-&gt;classes as $value ) {
+			if ( &#x27;menu-item-has-children&#x27; === $value || &#x27;page_item_has_children&#x27; === $value ) {
+				$title = $title . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;angle-down&#x27; ) );
+			}
+		}
+	}
+
+	return $title;
+}
+//add_filter( &#x27;nav_menu_item_title&#x27;, &#x27;twentyseventeen_dropdown_icon_to_menu_link&#x27;, 10, 4 );
+
+/**
+ * Returns an array of supported social links (URL and icon name).
+ *
+ * @return array $social_links_icons
+ */
+function twentyseventeen_social_links_icons() {
+	// Supported social links icons.
+	$social_links_icons = array(
+		&#x27;behance.net&#x27;     =&gt; &#x27;behance&#x27;,
+		&#x27;codepen.io&#x27;      =&gt; &#x27;codepen&#x27;,
+		&#x27;deviantart.com&#x27;  =&gt; &#x27;deviantart&#x27;,
+		&#x27;digg.com&#x27;        =&gt; &#x27;digg&#x27;,
+		&#x27;dribbble.com&#x27;    =&gt; &#x27;dribbble&#x27;,
+		&#x27;dropbox.com&#x27;     =&gt; &#x27;dropbox&#x27;,
+		&#x27;facebook.com&#x27;    =&gt; &#x27;facebook&#x27;,
+		&#x27;flickr.com&#x27;      =&gt; &#x27;flickr&#x27;,
+		&#x27;foursquare.com&#x27;  =&gt; &#x27;foursquare&#x27;,
+		&#x27;plus.google.com&#x27; =&gt; &#x27;google-plus&#x27;,
+		&#x27;github.com&#x27;      =&gt; &#x27;github&#x27;,
+		&#x27;instagram.com&#x27;   =&gt; &#x27;instagram&#x27;,
+		&#x27;linkedin.com&#x27;    =&gt; &#x27;linkedin&#x27;,
+		&#x27;mailto:&#x27;         =&gt; &#x27;envelope-o&#x27;,
+		&#x27;medium.com&#x27;      =&gt; &#x27;medium&#x27;,
+		&#x27;pinterest.com&#x27;   =&gt; &#x27;pinterest-p&#x27;,
+		&#x27;getpocket.com&#x27;   =&gt; &#x27;get-pocket&#x27;,
+		&#x27;reddit.com&#x27;      =&gt; &#x27;reddit-alien&#x27;,
+		&#x27;skype.com&#x27;       =&gt; &#x27;skype&#x27;,
+		&#x27;skype:&#x27;          =&gt; &#x27;skype&#x27;,
+		&#x27;slideshare.net&#x27;  =&gt; &#x27;slideshare&#x27;,
+		&#x27;snapchat.com&#x27;    =&gt; &#x27;snapchat-ghost&#x27;,
+		&#x27;soundcloud.com&#x27;  =&gt; &#x27;soundcloud&#x27;,
+		&#x27;spotify.com&#x27;     =&gt; &#x27;spotify&#x27;,
+		&#x27;stumbleupon.com&#x27; =&gt; &#x27;stumbleupon&#x27;,
+		&#x27;tumblr.com&#x27;      =&gt; &#x27;tumblr&#x27;,
+		&#x27;twitch.tv&#x27;       =&gt; &#x27;twitch&#x27;,
+		&#x27;twitter.com&#x27;     =&gt; &#x27;twitter&#x27;,
+		&#x27;vimeo.com&#x27;       =&gt; &#x27;vimeo&#x27;,
+		&#x27;vine.co&#x27;         =&gt; &#x27;vine&#x27;,
+		&#x27;vk.com&#x27;          =&gt; &#x27;vk&#x27;,
+		&#x27;wordpress.org&#x27;   =&gt; &#x27;wordpress&#x27;,
+		&#x27;wordpress.com&#x27;   =&gt; &#x27;wordpress&#x27;,
+		&#x27;yelp.com&#x27;        =&gt; &#x27;yelp&#x27;,
+		&#x27;youtube.com&#x27;     =&gt; &#x27;youtube&#x27;,
+	);
+
+	/**
+	 * Filter Twenty Seventeen social links icons.
+	 *
+	 * @since Twenty Seventeen 1.0
+	 *
+	 * @param array $social_links_icons
+	 */
+	return apply_filters( &#x27;twentyseventeen_social_links_icons&#x27;, $social_links_icons );
+}
+</pre></details></body></html>

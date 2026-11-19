@@ -1,0 +1,439 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;a class=&quot;ac-toggle-box-link&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+			&lt;div class=&quot;ac-toggle-box-contents&quot;&gt;&lt;/div&gt;
+			
+		&lt;span class=&quot;indicator-&quot; data-indicator-id=&quot;&quot; title=&quot;&quot;&gt;&lt;/span&gt;
+		
+		&lt;div class=&quot;ac-progress-bar&quot;&gt;
+			
+				&lt;span class=&quot;ac-label-main&quot;&gt;&lt;/span&gt;
+			
+			&lt;div class=&quot;ac-bar-container&quot;&gt;
+				&lt;span class=&quot;ac-label-left&quot;&gt;&lt;/span&gt;
+				&lt;span class=&quot;ac-label-right&quot;&gt;&lt;/span&gt;
+				
+					&lt;div class=&quot;ac-bar&quot; style=&quot;width:%&quot;&gt;&lt;/div&gt;
+				
+			&lt;/div&gt;
+		&lt;/div&gt;
+		
+				&lt;span class=&quot;ac-more-link-show&quot;&gt;( &lt;a&gt;&lt;/a&gt; )&lt;/span&gt;
+				&lt;span class=&quot;ac-show-more-block&quot;&gt;
+					
+					&lt;br/&gt;
+                    &lt;span class=&quot;ac-more-link-hide&quot;&gt;( &lt;a&gt;&lt;/a&gt; )&lt;/span&gt;
+                &lt;/span&gt;
+				
+		&lt;span class=&quot;ac-value-stars&quot;&gt;
+			
+		&lt;/span&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Html {
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 *
+	 * @since 3.0
+	 * @return string
+	 */
+	public function get_attribute_as_string( $key, $value ) {
+		return sprintf( &#x27;%s=&quot;%s&quot;&#x27;, $key, esc_attr( trim( $value ) ) );
+	}
+
+	/**
+	 * @param array $attributes
+	 *
+	 * @since 3.0
+	 * @return string
+	 */
+	public function get_attributes_as_string( array $attributes ) {
+		$output = array();
+
+		foreach ( $attributes as $key =&gt; $value ) {
+			$output[] = $this-&gt;get_attribute_as_string( $key, $value );
+		}
+
+		return implode( &#x27; &#x27;, $output );
+	}
+
+	/**
+	 * @param string $url
+	 * @param string $label
+	 *
+	 * @return string|false HTML Anchor element
+	 */
+	public function link( $url, $label = null, $attributes = array() ) {
+		if ( false === $label ) {
+			return $label;
+		}
+
+		if ( ! $url ) {
+			return $label;
+		}
+
+		if ( null === $label ) {
+			$label = $url;
+		}
+
+		if ( ! $label ) {
+			return false;
+		}
+
+		if ( ! $this-&gt;contains_html( $label ) ) {
+			$label = esc_html( $label );
+		}
+
+		if ( array_key_exists( &#x27;tooltip&#x27;, $attributes ) ) {
+			$attributes[&#x27;data-ac-tip&#x27;] = $attributes[&#x27;tooltip&#x27;];
+			unset( $attributes[&#x27;tooltip&#x27;] );
+		}
+
+		$allowed = wp_allowed_protocols();
+		$allowed[] = &#x27;skype&#x27;;
+		$allowed[] = &#x27;call&#x27;;
+
+		return &#x27;&lt;a href=&quot;&#x27; . esc_url( $url, $allowed ) . &#x27;&quot; &#x27; . $this-&gt;get_attributes( $attributes ) . &#x27;&gt;&#x27; . $label . &#x27;&lt;/a&gt;&#x27;;
+	}
+
+	/**
+	 * @since 2.5
+	 */
+	public function divider() {
+		return &#x27;&lt;span class=&quot;ac-divider&quot;&gt;&lt;/span&gt;&#x27;;
+	}
+
+	/**
+	 * @param string $content
+	 *
+	 * @return string
+	 */
+	public function get_tooltip_attr( $content ) {
+		if ( ! $content ) {
+			return false;
+		}
+
+		return &#x27;data-ac-tip=&quot;&#x27; . esc_attr( $content ) . &#x27;&quot;&#x27;;
+	}
+
+	/**
+	 * @param $label
+	 * @param $tooltip
+	 *
+	 * @return string
+	 */
+	public function tooltip( $label, $tooltip ) {
+		if ( $label &amp;&amp; $tooltip ) {
+			$label = &#x27;&lt;span &#x27; . $this-&gt;get_tooltip_attr( $tooltip ) . &#x27;&gt;&#x27; . $label . &#x27;&lt;/span&gt;&#x27;;
+		}
+
+		return $label;
+	}
+
+	/**
+	 * Displays a toggle Box.
+	 *
+	 * @param string $label
+	 * @param string $contents
+	 */
+	public function toggle_box( $label, $contents ) {
+		if ( ! $label ) {
+			return;
+		}
+
+		if ( $contents ) : ?&gt;
+			&lt;a class=&quot;ac-toggle-box-link&quot; href=&quot;#&quot;&gt;&lt;?php echo $label; ?&gt;&lt;/a&gt;
+			&lt;div class=&quot;ac-toggle-box-contents&quot;&gt;&lt;?php echo $contents; ?&gt;&lt;/div&gt;
+			&lt;?php
+		else :
+			echo $label;
+		endif;
+	}
+
+	/**
+	 * Display a toggle box which trigger an ajax event on click. The ajax callback calls AC_Column::get_ajax_value.
+	 *
+	 * @param int    $id
+	 * @param string $label
+	 * @param string $column_name
+	 *
+	 * @return string|false HTML
+	 */
+	public function toggle_box_ajax( $id, $label, $column_name ) {
+		if ( ! $label ) {
+			return false;
+		}
+
+		return ac_helper()-&gt;html-&gt;link( &#x27;#&#x27;, $label . &#x27;&lt;div class=&quot;spinner&quot;&gt;&lt;/div&gt;&#x27;, array(
+			&#x27;class&#x27;              =&gt; &#x27;ac-toggle-box-link&#x27;,
+			&#x27;data-column&#x27;        =&gt; $column_name,
+			&#x27;data-item-id&#x27;       =&gt; $id,
+			&#x27;data-ajax-populate&#x27; =&gt; 1,
+		) );
+	}
+
+	/**
+	 * @param string $string
+	 * @param int    $max_chars
+	 *
+	 * @return string
+	 */
+	public function codearea( $string, $max_chars = 1000 ) {
+		if ( ! $string ) {
+			return false;
+		}
+
+		return &#x27;&lt;textarea style=&quot;color: #808080; width: 100%; min-height: 60px;&quot; readonly&gt;&#x27; . substr( $string, 0, $max_chars ) . &#x27;&lt;/textarea&gt;&#x27;;
+	}
+
+	/**
+	 * @param array $attributes
+	 *
+	 * @return string
+	 */
+	private function get_attributes( $attributes ) {
+		$_attributes = array();
+
+		foreach ( $attributes as $attribute =&gt; $value ) {
+			if ( in_array( $attribute, array( &#x27;title&#x27;, &#x27;id&#x27;, &#x27;class&#x27;, &#x27;style&#x27;, &#x27;target&#x27; ) ) || &#x27;data-&#x27; === substr( $attribute, 0, 5 ) ) {
+				$_attributes[] = $this-&gt;get_attribute_as_string( $attribute, $value );
+			}
+		}
+
+		return &#x27; &#x27; . implode( &#x27; &#x27;, $_attributes );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return bool
+	 */
+	private function contains_html( $string ) {
+		return $string &amp;&amp; is_string( $string ) ? $string !== strip_tags( $string ) : false;
+	}
+
+	/**
+	 * Display indicator icon in the column settings header
+	 *
+	 * @param string $name
+	 */
+	public function indicator( $class, $id, $title = false ) { ?&gt;
+		&lt;span class=&quot;indicator-&lt;?php echo esc_attr( $class ); ?&gt;&quot; data-indicator-id=&quot;&lt;?php echo esc_attr( $id ); ?&gt;&quot; title=&quot;&lt;?php echo esc_attr( $title ); ?&gt;&quot;&gt;&lt;/span&gt;
+		&lt;?php
+	}
+
+	/**
+	 * Adds a divider to the implode
+	 *
+	 * @param $array
+	 *
+	 * @return string
+	 */
+	public function implode( $array, $divider = true ) {
+		if ( ! is_array( $array ) ) {
+			return $array;
+		}
+
+		// Remove empty values
+		$array = $this-&gt;remove_empty( $array );
+
+		if ( true === $divider ) {
+			$divider = $this-&gt;divider();
+		}
+
+		return implode( $divider, $array );
+	}
+
+	public function remove_empty( $array ) {
+		return array_filter( $array, array( ac_helper()-&gt;string, &#x27;is_not_empty&#x27; ) );
+	}
+
+	/**
+	 * Remove attribute from an html tag
+	 *
+	 * @param string       $html      HTML tag
+	 * @param string|array $attribute Attribute: style, class, alt, data etc.
+	 *
+	 * @return mixed
+	 */
+	public function strip_attributes( $html, $attributes ) {
+		if ( $this-&gt;contains_html( $html ) ) {
+			foreach ( (array) $attributes as $attribute ) {
+				$html = preg_replace( &#x27;/(&lt;[^&gt;]+) &#x27; . $attribute . &#x27;=&quot;.*?&quot;/i&#x27;, &#x27;$1&#x27;, $html );
+			}
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Small HTML block with grey background and rounded corners
+	 *
+	 * @param string|array $items
+	 *
+	 * @return string
+	 */
+	public function small_block( $items ) {
+		$blocks = array();
+
+		foreach ( (array) $items as $item ) {
+			if ( $item &amp;&amp; is_string( $item ) ) {
+				$blocks[] = &#x27;&lt;span class=&quot;ac-small-block&quot;&gt;&#x27; . $item . &#x27;&lt;/span&gt;&#x27;;
+			}
+		}
+
+		return implode( $blocks );
+	}
+
+	/**
+	 * @param array $args
+	 *
+	 * @return string
+	 */
+	public function progress_bar( $args = array() ) {
+		$defaults = array(
+			&#x27;current&#x27;     =&gt; 0,
+			&#x27;total&#x27;       =&gt; 100, // -1 is infinitive
+			&#x27;label_left&#x27;  =&gt; &#x27;&#x27;,
+			&#x27;label_right&#x27; =&gt; &#x27;&#x27;,
+			&#x27;label_main&#x27;  =&gt; &#x27;&#x27;,
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		if ( -1 === $args[&#x27;total&#x27;] ) {
+			$args[&#x27;current&#x27;] = 0;
+			$args[&#x27;total&#x27;] = 100;
+			$args[&#x27;label_right&#x27;] = &#x27;&amp;infin;&#x27;;
+		}
+
+		$args[&#x27;current&#x27;] = absint( $args[&#x27;current&#x27;] );
+		$args[&#x27;total&#x27;] = absint( $args[&#x27;total&#x27;] );
+
+		if ( $args[&#x27;total&#x27;] &lt; 0 ) {
+			return false;
+		}
+
+		$percentage = 0;
+
+		if ( $args[&#x27;total&#x27;] &gt; 0 ) {
+			$percentage = round( ( $args[&#x27;current&#x27;] / $args[&#x27;total&#x27;] ) * 100 );
+		}
+
+		// Allowed size is zero, but current has a value
+		if ( 0 === $args[&#x27;total&#x27;] &amp;&amp; $args[&#x27;current&#x27;] &gt; 0 ) {
+			$percentage = 101;
+		}
+
+		$class = &#x27;&#x27;;
+		if ( $percentage &gt; 100 ) {
+			$percentage = 100;
+			$class = &#x27; full&#x27;;
+		}
+
+		ob_start();
+		?&gt;
+		&lt;div class=&quot;ac-progress-bar&lt;?php echo esc_attr( $class ); ?&gt;&quot;&gt;
+			&lt;?php if ( $args[&#x27;label_main&#x27;] ) : ?&gt;
+				&lt;span class=&quot;ac-label-main&quot;&gt;&lt;?php echo esc_html( $args[&#x27;label_main&#x27;] ); ?&gt;&lt;/span&gt;
+			&lt;?php endif; ?&gt;
+			&lt;div class=&quot;ac-bar-container&quot;&gt;
+				&lt;span class=&quot;ac-label-left&quot;&gt;&lt;?php echo esc_html( $args[&#x27;label_left&#x27;] ); ?&gt;&lt;/span&gt;
+				&lt;span class=&quot;ac-label-right&quot;&gt;&lt;?php echo esc_html( $args[&#x27;label_right&#x27;] ); ?&gt;&lt;/span&gt;
+				&lt;?php if ( $percentage ) : ?&gt;
+					&lt;div class=&quot;ac-bar&quot; style=&quot;width:&lt;?php echo esc_attr( $percentage ); ?&gt;%&quot;&gt;&lt;/div&gt;
+				&lt;?php endif; ?&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;?php
+
+		return ob_get_clean();
+	}
+
+	public function more( $array, $number = 10, $glue = &#x27;, &#x27; ) {
+		$first_set = array_slice( $array, 0, $number );
+		$last_set = array_slice( $array, $number );
+
+		ob_start();
+
+		if ( $first_set ) {
+
+			echo implode( $glue, $first_set );
+
+			if ( $last_set ) { ?&gt;
+				&lt;span class=&quot;ac-more-link-show&quot;&gt;( &lt;a&gt;&lt;?php printf( __( &#x27;Show %s more&#x27;, &#x27;codepress-admin-columns&#x27; ), count( $last_set ) ); ?&gt;&lt;/a&gt; )&lt;/span&gt;
+				&lt;span class=&quot;ac-show-more-block&quot;&gt;
+					&lt;?php echo $glue . implode( $glue, $first_set ); ?&gt;
+					&lt;br/&gt;
+                    &lt;span class=&quot;ac-more-link-hide&quot;&gt;( &lt;a&gt;&lt;?php _e( &#x27;Hide&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&lt;/a&gt; )&lt;/span&gt;
+                &lt;/span&gt;
+				&lt;?php
+			}
+		}
+
+		return ob_get_clean();
+	}
+
+	/**
+	 * Return round HTML span
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	public function rounded( $string ) {
+		return &#x27;&lt;span class=&quot;ac-rounded&quot;&gt;&#x27; . $string . &#x27;&lt;/span&gt;&#x27;;
+	}
+
+	/**
+	 * Returns star rating based on X start from $max count. Does support decimals.
+	 *
+	 * @param int $count
+	 * @param int $max
+	 *
+	 * @return string
+	 */
+	public function stars( $count, $max = 0 ) {
+		$stars = array(
+			&#x27;filled&#x27; =&gt; floor( $count ),
+			&#x27;half&#x27;   =&gt; floor( round( ( $count * 2 ) ) - ( floor( $count ) * 2 ) ) ? 1 : 0,
+			&#x27;empty&#x27;  =&gt; 0,
+		);
+
+		$max = absint( $max );
+
+		if ( $max &gt; 0 ) {
+			$star_count = $stars[&#x27;filled&#x27;] + $stars[&#x27;half&#x27;];
+
+			$stars[&#x27;empty&#x27;] = $max - $star_count;
+
+			if ( $star_count &gt; $max ) {
+				$stars[&#x27;filled&#x27;] = $max;
+				$stars[&#x27;half&#x27;] = 0;
+			}
+		}
+
+		$icons = array();
+
+		foreach ( $stars as $type =&gt; $count ) {
+			for ( $i = 1; $i &lt;= $count; $i++ ) {
+				$icons[] = ac_helper()-&gt;icon-&gt;dashicon( array( &#x27;icon&#x27; =&gt; &#x27;star-&#x27; . $type, &#x27;class&#x27; =&gt; &#x27;ac-value-star&#x27; ) );
+			}
+		}
+
+		ob_start();
+		?&gt;
+		&lt;span class=&quot;ac-value-stars&quot;&gt;
+			&lt;?php echo implode( &#x27; &#x27;, $icons ); ?&gt;
+		&lt;/span&gt;
+		&lt;?php
+		return ob_get_clean();
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,518 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/ModelFactory.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/ModelFactory.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Abstracts_ModelFactory
+ */
+class NF_Abstracts_ModelFactory
+{
+    /**
+     * Database Object
+     *
+     * @var
+     */
+    protected $_db;
+
+    /**
+     * The last set object.
+     *   Used to create context between two objects in a chain.
+     *
+     * @var object
+     */
+    protected $_object;
+
+    /**
+     * Form
+     */
+     protected $_form;
+
+    /**
+     * Fields
+     *
+     * An array of field model objects.
+     *
+     * @var array
+     */
+    protected $_fields = array();
+
+    /**
+     * Actions
+     *
+     * An array of action model objects.
+     *
+     * @var array
+     */
+    protected $_actions = array();
+
+    /**
+     * Objects
+     *
+     * An array of generic model objects.
+     *
+     * @var array
+     */
+    protected $_objects = array();
+
+    //-----------------------------------------------------
+    // Public Methods
+    //-----------------------------------------------------
+
+    /**
+     * NF_Abstracts_ModelFactory constructor.
+     * @param $db
+     * @param $id
+     */
+    public function __construct( $db, $id )
+    {
+        $this-&gt;_db = $db;
+
+        $this-&gt;_object = $this-&gt;_form = new NF_Database_Models_Form( $this-&gt;_db, $id );
+
+        $form_cache = get_option( &#x27;nf_form_&#x27; . $id, false );
+
+        if( $form_cache &amp;&amp; isset ( $form_cache[ &#x27;settings&#x27; ] ) ){
+            $this-&gt;_object-&gt;update_settings( $form_cache[ &#x27;settings&#x27; ] );
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the parent object set by the constructor for chained methods.
+     *
+     * @return object
+     */
+    public function get()
+    {
+        $object = $this-&gt;_object;
+        $this-&gt;_object = $this-&gt;_form;
+        return $object;
+    }
+
+    /**
+     * Get Forms
+     *
+     * Returns an array of Form Model Objects.
+     *
+     * @param array $where
+     * @return array|bool
+     */
+    public function get_forms( array $where = array() )
+    {
+        if( &#x27;form&#x27; != $this-&gt;_object-&gt;get_type() ) return FALSE;
+
+        return $this-&gt;_object-&gt;find( NULL, $where );
+    }
+
+    /**
+     * Export Form
+     *
+     * A wrapper for the Form Model export method.
+     *
+     * @param bool|FALSE $return
+     * @return array
+     */
+    public function export_form( $return = FALSE )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        return NF_Database_Models_Form::export( $form_id, $return );
+    }
+
+    /**
+     * Import Form
+     *
+     * A wrapper for the Form Model import method.
+     *
+     * @param $import
+     * @param $decode_utf8
+     * @param $id
+     * @param $is_conversion
+     */
+    public function import_form( $import, $decode_utf8 = TRUE, $id = FALSE,
+		$is_conversion = FALSE )
+    {
+        
+        if( ! is_array( $import ) ){
+			// Check to see if user turned off UTF-8 encoding
+        	if( $decode_utf8 ) {
+		        $data = WPN_Helper::utf8_decode( json_decode( WPN_Helper::json_cleanup( html_entity_decode( $import ) ), true ) );
+	        } else {
+		        $data = json_decode( WPN_Helper::json_cleanup( html_entity_decode( $import ) ), true );
+	        }
+
+            if( ! is_array( $data ) ) {
+	            if( $decode_utf8 ) {
+		            $data = WPN_Helper::utf8_decode( json_decode( WPN_Helper::json_cleanup( $import ), true ) );
+	            } else {
+		            $data = json_decode( WPN_Helper::json_cleanup( $import ), true );
+	            }
+            }
+
+            if( ! is_array( $data ) ){
+                $data = WPN_Helper::maybe_unserialize( $import );
+
+                if( ! is_array( $data ) ){
+                    return false;
+                }
+            }
+            $import = $data;
+        }
+
+        return NF_Database_Models_Form::import( $import, $id, $is_conversion );
+    }
+
+    /*
+     * FIELDS
+     */
+
+    /**
+     * Sets the parent object for chained methods as a Field.
+     *
+     * @param string $id
+     * @return $this
+     */
+    public function field( $id = &#x27;&#x27; )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        $this-&gt;_object = new NF_Database_Models_Field( $this-&gt;_db, $id, $form_id );
+
+        return $this;
+    }
+
+    /**
+     * Returns a field object.
+     *
+     * @param $id
+     * @return NF_Database_Models_Field
+     */
+    public function get_field( $id )
+    {
+    	if( isset( $this-&gt;_fields[ $id ] ) ){
+            return $this-&gt;_fields[ $id ];
+        }
+
+        /* MISSING FORM ID FALLBACK */
+        /*
+        if( ! $form_id ){
+            $form_id = $wpdb-&gt;get_var( $wpdb-&gt;prepare(
+                &quot;SELECT parent_id from {$wpdb-&gt;prefix}nf3_fields WHERE id = %d&quot;, $id
+            ));
+            $this-&gt;_object = $this-&gt;_form = new NF_Database_Models_Form( $this-&gt;_db, $id );
+        }
+        */
+
+        if( ! $this-&gt;_fields ){
+			$this-&gt;get_fields();
+        }
+
+        if( ! isset( $this-&gt;_fields[ $id ] ) ){
+            $form_id = $this-&gt;_object-&gt;get_id();
+            $this-&gt;_fields[ $id ] = new NF_Database_Models_Field( $this-&gt;_db, $id, $form_id );
+        }
+
+        return $this-&gt;_fields[ $id ];
+    }
+
+    /**
+     * Returns an array of field objects for the set form (object).
+     *
+     * @param array $where
+     * @param bool|FALSE $fresh
+     * @return array
+     */
+    public function get_fields( $where = array(), $fresh = FALSE)
+    {
+
+        $field_by_key = array();
+
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        if( $where || $fresh || ! $this-&gt;_fields ){
+
+            $form_cache = get_option( &#x27;nf_form_&#x27; . $form_id, false );
+
+            if( ! $form_cache ) {
+                $model_shell = new NF_Database_Models_Field($this-&gt;_db, 0);
+
+                $fields = $model_shell-&gt;find($form_id, $where);
+
+                foreach ($fields as $field) {
+                    $this-&gt;_fields[$field-&gt;get_id()] = $field;
+                    $field_by_key[ $field-&gt;get_setting( &#x27;key&#x27; ) ] = $field;
+                }
+            } else {
+                foreach( $form_cache[ &#x27;fields&#x27; ] as $cached_field ){
+                    $field = new NF_Database_Models_Field( $this-&gt;_db, $cached_field[ &#x27;id&#x27; ], $form_id );
+                    $field-&gt;update_settings( $cached_field[ &#x27;settings&#x27; ] );
+                    $this-&gt;_fields[$field-&gt;get_id()] = $field;
+                    $field_by_key[ $field-&gt;get_setting( &#x27;key&#x27; ) ] = $field;
+                }
+            }
+
+            /*
+             * If a filter is registered to modify field order, then use that filter.
+             * If not, then usort??.
+             */
+            $order = apply_filters( &#x27;ninja_forms_get_fields_sorted&#x27;, array(), $this-&gt;_fields, $field_by_key, $form_id );
+
+            if ( ! empty( $order ) ) {
+                $this-&gt;_fields = $order;
+            }
+        }
+
+        /*
+         * Broke the sub edit screen order when I have this enabled.
+         */
+        // usort( $this-&gt;_fields, &quot;NF_Abstracts_Field::sort_by_order&quot; );
+
+        return $this-&gt;_fields;
+    }
+
+    /**
+     * Import Field
+     *
+     * A wrapper for the Form Model import method.
+     *
+     * @param $import
+     */
+    public function import_field( $settings, $field_id = &#x27;&#x27;, $is_conversion = FALSE )
+    {
+        $settings = maybe_unserialize( $settings );
+        NF_Database_Models_Field::import( $settings, $field_id, $is_conversion );
+    }
+
+
+    /*
+     * ACTIONS
+     */
+
+    /**
+     * Sets the parent object for chained methods as an Action.
+     *
+     * @param string $id
+     * @return $this
+     */
+    public function action( $id =&#x27;&#x27; )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        $this-&gt;_object = new NF_Database_Models_Action( $this-&gt;_db, $id, $form_id );
+
+        return $this;
+    }
+
+    /**
+     * Returns an action object.
+     *
+     * @param $id
+     * @return NF_Database_Models_Action
+     */
+    public function get_action( $id )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        return $this-&gt;_actions[ $id ] = new NF_Database_Models_Action( $this-&gt;_db, $id, $form_id );
+    }
+
+    /**
+     * Returns an array of action objects for the set form (object).
+     *
+     * @param array $where
+     * @param bool|FALSE $fresh
+     * @return array
+     */
+    public function get_actions( $where = array(), $fresh = FALSE)
+    {
+        if( $where || $fresh || ! $this-&gt;_actions ){
+
+            $form_id = $this-&gt;_object-&gt;get_id();
+
+            $model_shell = new NF_Database_Models_Action($this-&gt;_db, 0);
+
+            $actions = $model_shell-&gt;find($form_id, $where);
+
+            foreach ($actions as $action) {
+                $action-&gt;get_setting( &#x27;type&#x27; ); // Pre-load the type of action for usort()
+                $this-&gt;_actions[$action-&gt;get_id()] = $action;
+            }
+        }
+
+        usort( $this-&gt;_actions, &#x27;NF_Abstracts_Action::sort_actions&#x27; );
+
+        return $this-&gt;_actions;
+    }
+
+    /*
+     * OBJECTS
+     */
+
+    /**
+     * Sets the parent object for chained methods as an Object.
+     *
+     * @param string $id
+     * @return $this
+     */
+    public function object( $id = &#x27;&#x27; )
+    {
+        $parent_id = $this-&gt;_object-&gt;get_id();
+        $parent_type = $this-&gt;_object-&gt;get_type();
+
+        $this-&gt;_object = new NF_Database_Models_Object( $this-&gt;_db, $id, $parent_id, $parent_type );
+
+        return $this;
+    }
+
+    /**
+     * Returns an object.
+     *
+     * @param $id
+     * @return NF_Database_Models_Object
+     */
+    public function get_object( $id )
+    {
+        return $this-&gt;_objects[ $id ] = new NF_Database_Models_Object( $this-&gt;_db, $id );
+    }
+
+    /**
+     * Returns an array of objects for the set object.
+     *
+     * @param array $where
+     * @param bool|FALSE $fresh
+     * @return array
+     */
+    public function get_objects( $where = array(), $fresh = FALSE)
+    {
+        if( $where || $fresh || ! $this-&gt;_objects ){
+
+            $form_id = $this-&gt;_object-&gt;get_id();
+
+            $model_shell = new NF_Database_Models_Object( $this-&gt;_db, 0 );
+
+            $objects = $model_shell-&gt;find( $form_id, $where );
+
+            foreach( $objects as $object ){
+                $this-&gt;_objects[ $object-&gt;get_id() ] = $object;
+            }
+        }
+
+        return $this-&gt;_objects;
+    }
+
+    /*
+     * SUBMISSIONS
+     */
+
+    /**
+     * Submission
+     *
+     * Returns a single submission by ID,
+     *   or an empty submission.
+     *
+     * @param string $id
+     * @return $this
+     */
+    public function sub( $id = &#x27;&#x27; )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        $this-&gt;_object = new NF_Database_Models_Submission( $id, $form_id );
+
+        return $this;
+    }
+
+    /**
+     * Get Submission
+     *
+     * Returns a single submission by ID.
+     *
+     * @param $id
+     * @return NF_Database_Models_Submission
+     */
+    public function get_sub( $id )
+    {
+        $parent_id = $this-&gt;_object-&gt;get_id();
+
+        return $this-&gt;_objects[ $id ] = new NF_Database_Models_Submission( $id, $parent_id );
+    }
+
+    /**
+     * Get Submissions
+     *
+     * Returns an array of Submission Model Objects.
+     *
+     * @param array $where
+     * @param bool|FALSE $fresh
+     * @return array
+     */
+    public function get_subs( $where = array(), $fresh = FALSE, $sub_ids = array() )
+    {
+        if( $where || $fresh || $sub_ids || ! $this-&gt;_objects ){
+
+            $form_id = $this-&gt;_object-&gt;get_id();
+
+            $model_shell = new NF_Database_Models_Submission( 0 );
+
+            $objects = $model_shell-&gt;find( $form_id, $where, $sub_ids );
+
+            foreach( $objects as $object ){
+                $this-&gt;_objects[ $object-&gt;get_id() ] = $object;
+            }
+        }
+
+        return $this-&gt;_objects;
+    }
+
+    /**
+     * Export Submissions
+     *
+     * A wrapper for the Submission Model export method.
+     *
+     * @param array $sub_ids
+     * @param bool|FALSE $return
+     * @return string
+     */
+    public function export_subs( array $sub_ids = array(), $return = FALSE )
+    {
+        $form_id = $this-&gt;_object-&gt;get_id();
+
+        return NF_Database_Models_Submission::export( $form_id, $sub_ids, $return );
+    }
+
+    /*
+     * GENERIC
+     */
+
+    /**
+     * Get Model
+     *
+     * A generic method call for any object model type.
+     *
+     * @param $id
+     * @param $type
+     * @return bool|NF_Database_Models_Action|NF_Database_Models_Field|NF_Database_Models_Form|NF_Database_Models_Object
+     */
+    public function get_model( $id, $type )
+    {
+        global $wpdb;
+
+        switch( $type ){
+            case &#x27;form&#x27;:
+                return new NF_Database_Models_Form( $wpdb, $id );
+                break;
+            case &#x27;field&#x27;:
+                return new NF_Database_Models_Field( $wpdb, $id );
+                break;
+            case &#x27;action&#x27;:
+                return new NF_Database_Models_Action( $wpdb, $id );
+                break;
+            case &#x27;object&#x27;:
+                return new NF_Database_Models_Object( $wpdb, $id );
+                break;
+            default:
+                return FALSE;
+        }
+    }
+
+} // End Class NF_Abstracts_ModelFactory
+</pre></details></body></html>

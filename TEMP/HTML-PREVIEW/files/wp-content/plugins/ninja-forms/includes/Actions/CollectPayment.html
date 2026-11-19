@@ -1,0 +1,141 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Actions/CollectPayment.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Actions/CollectPayment.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Action_CollectPayment
+ */
+final class NF_Actions_CollectPayment extends NF_Abstracts_Action
+{
+    /**
+     * @var string
+     */
+    protected $_name  = &#x27;collectpayment&#x27;;
+
+    /**
+     * @var array
+     */
+    protected $_tags = array();
+
+    /**
+     * @var string
+     */
+    protected $_timing = &#x27;late&#x27;;
+
+    /**
+     * @var int
+     */
+    protected $_priority = 0;
+
+    /**
+     * @var array
+     */
+    protected $payment_gateways = array();
+
+    /**
+     * Constructor
+     *
+     * @param string $cp_nice_name
+     * @param string $cp_name
+     */
+    public function __construct( $cp_nice_name = &#x27;Collect Payment&#x27;,
+	    $cp_name = &#x27;collectpayment&#x27; )
+    {
+        parent::__construct();
+
+        // Set the nice name to what we passed in. &#x27;Collect Payment&#x27; is default
+	    if( &#x27;Collect Payment&#x27; == $cp_nice_name ) {
+	    	$cp_nice_name = __( &#x27;Collect Payment&#x27;, &#x27;ninja-forms&#x27; );
+	    }
+        $this-&gt;_nicename = $cp_nice_name;
+        // Set name to what we passed in. &#x27;collectpayment&#x27; is default
+        $this-&gt;_name = strtolower( $cp_name );
+
+        $settings = Ninja_Forms::config( &#x27;ActionCollectPaymentSettings&#x27; );
+
+        /**
+         * if we pass in something other than &#x27;collectpayment&#x27;, set the value
+         * of the gateway drop-down
+         **/
+        if ( &#x27;collectpayment&#x27; != $this-&gt;_name ) {
+        	$settings[ &#x27;payment_gateways&#x27; ][ &#x27;value&#x27; ] = $this-&gt;_name;
+        }
+
+        $this-&gt;_settings = array_merge( $this-&gt;_settings, $settings );
+
+        add_action( &#x27;ninja_forms_loaded&#x27;, array( $this, &#x27;register_payment_gateways&#x27; ), -1 );
+
+        add_filter( &#x27;ninja_forms_action_type_settings&#x27;, array( $this, &#x27;maybe_remove_action&#x27; ) );
+    }
+
+    public function save( $action_settings )
+    {
+
+    }
+
+    public function process( $action_settings, $form_id, $data )
+    {
+        
+        $payment_gateway = $action_settings[ &#x27;payment_gateways&#x27; ];
+
+        $payment_gateway_class = $this-&gt;payment_gateways[ $payment_gateway ];
+
+        /*
+         * Get our payment total if we have old data. (not used in current version)
+         *
+         * If we have selected &quot;Calc&quot; as our total type, then we want to use payment_total_calc
+         *
+         * If we have selected &quot;Field&quot; as our total type, then we want to use payment_total_field
+         *
+         * If we have selected &quot;Custom&quot; as our total type, then we want to use payment_total_fixed
+         */
+//        $total_type = isset( $action_settings[ &#x27;payment_total_type&#x27; ] ) ? $action_settings[ &#x27;payment_total_type&#x27; ] : &#x27;payment_total_fixed&#x27;;
+//
+//        switch ( $total_type ) {
+//            case &#x27;calc&#x27;:
+//                $payment_total = $action_settings[ &#x27;payment_total_calc&#x27; ];
+//                break;
+//            case &#x27;field&#x27;:
+//                $payment_total = $action_settings[ &#x27;payment_total_field&#x27; ];
+//                break;
+//            case &#x27;fixed&#x27;:
+//                $payment_total = $action_settings[ &#x27;payment_total_fixed&#x27; ];
+//                break;
+//            default:
+//                $payment_total = $action_settings[ &#x27;payment_total_fixed&#x27; ];
+//                break;
+//        }
+//
+//        return $payment_gateway_class-&gt;process( $action_settings, $form_id, $data, $payment_total );
+        // The above block is not actually being used.
+        
+        return $payment_gateway_class-&gt;process( $action_settings, $form_id, $data );
+    }
+
+    public function register_payment_gateways()
+    {
+        $this-&gt;payment_gateways = apply_filters( &#x27;ninja_forms_register_payment_gateways&#x27;, array() );
+
+        foreach( $this-&gt;payment_gateways as $gateway ){
+
+            if( ! is_subclass_of( $gateway, &#x27;NF_Abstracts_PaymentGateway&#x27; ) ){
+                continue;
+            }
+
+            $this-&gt;_settings[ &#x27;payment_gateways&#x27; ][ &#x27;options&#x27; ][] = array(
+                &#x27;label&#x27; =&gt; $gateway-&gt;get_name(),
+                &#x27;value&#x27; =&gt; $gateway-&gt;get_slug(),
+            );
+
+            $this-&gt;_settings = array_merge( $this-&gt;_settings, $gateway-&gt;get_settings() );
+        }
+    }
+
+    public function maybe_remove_action( $action_type_settings )
+    {
+        if( empty( $this-&gt;payment_gateways ) ){
+            unset( $action_type_settings[ $this-&gt;_name ] );
+        }
+
+        return $action_type_settings;
+    }
+}
+</pre></details></body></html>

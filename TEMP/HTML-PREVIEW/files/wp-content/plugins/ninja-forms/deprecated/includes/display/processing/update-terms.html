@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/update-terms.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/update-terms.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/*
+ *
+ * Function to hook into the post creation/update that will change the term based upon the selected term(s)
+ *
+ * @since 2.2.51
+ * @return void
+ */
+
+// Make sure that this function isn&#x27;t already defined.
+if ( !function_exists ( &#x27;ninja_forms_pre_process_populate_term&#x27; ) ) {
+    function ninja_forms_pre_process_populate_term( $form_id ){
+        global $ninja_forms_processing;
+
+        $add_field = apply_filters( &#x27;ninja_forms_use_post_fields&#x27;, false );
+        if ( !$add_field )
+            return false;
+
+        // Loop through our fields and see if we have a list field. If we do, check for the &#x27;populate_term&#x27; setting.
+        $field_values = $ninja_forms_processing-&gt;get_all_fields();
+        if( is_array( $field_values ) ){
+            foreach( $field_values as $field_id =&gt; $user_value ){
+                $field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+                $field_type = $field_row[&#x27;type&#x27;];
+                $field_data = $field_row[&#x27;data&#x27;];
+                if( $field_type == &#x27;_list&#x27; AND isset( $field_data[&#x27;populate_term&#x27;] ) AND $field_data[&#x27;populate_term&#x27;] != &#x27;&#x27; ){
+                    if( !is_array( $user_value ) ){
+                        $user_value = array( $user_value );
+                    }
+                    $ninja_forms_processing-&gt;update_form_setting( $field_data[&#x27;populate_term&#x27;].&#x27;_terms&#x27;, $user_value );
+                }
+            }
+        }
+    }
+
+    add_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_pre_process_populate_term&#x27; );
+}</pre></details></body></html>

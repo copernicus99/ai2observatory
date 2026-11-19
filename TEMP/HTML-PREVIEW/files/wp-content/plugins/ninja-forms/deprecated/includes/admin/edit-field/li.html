@@ -1,0 +1,568 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/li.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/li.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;li id=&quot;ninja_forms_field_&quot; class=&quot;  &quot;&gt;
+				&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field__conditional_value_type&quot; value=&quot;&quot;&gt;
+				&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field__fav_id&quot; name=&quot;&quot; class=&quot;ninja-forms-field-fav-id&quot; value=&quot;&quot;&gt;
+				&lt;dl class=&quot;menu-item-bar&quot;&gt;
+					&lt;dt class=&quot;menu-item-handle&quot; id=&quot;ninja_forms_metabox_field_&quot; &gt;
+						&lt;span class=&quot;item-title ninja-forms-field-title&quot; id=&quot;ninja_forms_field__title&quot;&gt;&lt;/span&gt;
+						&lt;span class=&quot;item-controls&quot;&gt;
+							&lt;span class=&quot;item-type&quot;&gt;&lt;span class=&quot;spinner&quot; style=&quot;margin-top:-2px;float:left;&quot;&gt;&lt;/span&gt;&lt;span class=&quot;item-type-name&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+							&lt;a class=&quot;item-edit nf-edit-field&quot; id=&quot;ninja_forms_field__toggle&quot; title=&quot;&quot; href=&quot;#&quot; data-field=&quot;&quot;&gt;&lt;/a&gt;
+						&lt;/span&gt;
+					&lt;/dt&gt;
+				&lt;/dl&gt;
+				
+				&lt;div class=&quot;menu-item-settings type-class inside &quot; id=&quot;ninja_forms_field__inside&quot; &gt;
+					
+			&lt;/div&gt;&lt;!-- .menu-item-settings--&gt;
+		&lt;/li&gt;
+		
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            tinyMCEPreInit.mceInit = jQuery.extend( tinyMCEPreInit.mceInit, );
+            tinyMCEPreInit.qtInit = jQuery.extend( tinyMCEPreInit.qtInit, );
+            nf_ajax_rte_editors = ;
+        &lt;/script&gt;
+        
+		&lt;table id=&quot;field-info&quot;&gt;
+			&lt;tr&gt;
+				
+					&lt;td width=&quot;65%&quot;&gt;: &lt;strong&gt;&lt;/strong&gt;&lt;/td&gt;
+					
+				&lt;!-- &lt;td width=&quot;15%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;ninja-forms-field-add-def&quot; id=&quot;ninja_forms_field__def&quot; class=&quot;ninja-forms-field-add-def&quot;&gt;Add Defined&lt;/a&gt;&lt;/td&gt;&lt;td width=&quot;15%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;ninja-forms-field-remove-def&quot; id=&quot;ninja_forms_field__def&quot;&gt;Remove Defined&lt;/a&gt;&lt;/td&gt; --&gt;
+				
+					&lt;td width=&quot;5%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;&quot; id=&quot;ninja_forms_field__fav&quot;&gt;&lt;span class=&quot;dashicons dashicons-star-&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+					
+			&lt;/tr&gt;
+		&lt;/table&gt;
+		
+		&lt;div class=&quot;nf-field-settings description-wide description&quot;&gt;
+			&lt;div class=&quot;title&quot;&gt;
+				&lt;span class=&quot;dashicons dashicons-arrow-down nf-field-sub-section-toggle&quot;&gt;&lt;/span&gt;
+			&lt;/div&gt;
+			&lt;div class=&quot;inside&quot; style=&quot;display:none;&quot;&gt;
+				
+			&lt;/div&gt;
+		&lt;/div&gt;
+		
+	&lt;div class=&quot;menu-item-actions description-wide submitbox&quot;&gt;
+		&lt;a class=&quot;submitdelete deletion nf-remove-field&quot; id=&quot;ninja_forms_field__remove&quot; data-field=&quot;&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+	&lt;/div&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+function ninja_forms_edit_field_output_li( $field_id, $new = false ) {
+	global $wpdb, $ninja_forms_fields, $nf_rte_editors;
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$current_tab = ninja_forms_get_current_tab();
+	if ( isset ( $_REQUEST[&#x27;page&#x27;] ) ) {
+		$current_page = esc_html( $_REQUEST[&#x27;page&#x27;] );
+	} else {
+		$current_page = &#x27;&#x27;;
+	}
+
+	$field_type = $field_row[&#x27;type&#x27;];
+	$field_data = $field_row[&#x27;data&#x27;];
+	$plugin_settings = nf_get_settings();
+
+	if ( isset( $ninja_forms_fields[$field_type][&#x27;use_li&#x27;] ) &amp;&amp; $ninja_forms_fields[$field_type][&#x27;use_li&#x27;] ) {
+
+		if ( isset( $field_row[&#x27;fav_id&#x27;] ) &amp;&amp; $field_row[&#x27;fav_id&#x27;] != 0 ) {
+			$fav_id = $field_row[&#x27;fav_id&#x27;];
+			$fav_row = ninja_forms_get_fav_by_id( $fav_id );
+			if ( empty( $fav_row[&#x27;name&#x27;] ) ) {
+				$args = array(
+					&#x27;update_array&#x27; =&gt; array(
+						&#x27;fav_id&#x27; =&gt; &#x27;&#x27;,
+					),
+					&#x27;where&#x27; =&gt; array(
+						&#x27;id&#x27; =&gt; $field_id,
+					),
+				);
+
+				ninja_forms_update_field( $args );
+				$fav_id = &#x27;&#x27;;
+			}
+		} else {
+			$fav_id = &#x27;&#x27;;
+		}
+
+		if ( isset( $field_row[&#x27;def_id&#x27;] ) &amp;&amp; $field_row[&#x27;def_id&#x27;] != 0 ) {
+			$def_id = $field_row[&#x27;def_id&#x27;];
+		} else {
+			$def_id = &#x27;&#x27;;
+		}
+
+		$form_id = $field_row[&#x27;form_id&#x27;];
+
+		if ( isset( $ninja_forms_fields[$field_type] ) ) {
+			$reg_field = $ninja_forms_fields[$field_type];
+			$type_name = $reg_field[&#x27;name&#x27;];
+			$edit_function = $reg_field[&#x27;edit_function&#x27;];
+			$edit_options = $reg_field[&#x27;edit_options&#x27;];
+			$li_class = $reg_field[&#x27;li_class&#x27;];
+
+			if ( $reg_field[&#x27;nesting&#x27;] ) {
+				$nesting_class = &#x27;ninja-forms-nest&#x27;;
+			} else {
+				$nesting_class = &#x27;ninja-forms-no-nest&#x27;;
+			}
+			$conditional = $reg_field[&#x27;conditional&#x27;];
+
+			$type_class = $field_type.&#x27;-li&#x27;;
+
+			if ( $def_id != 0 &amp;&amp; $def_id != &#x27;&#x27; ) {
+				$def_row = ninja_forms_get_def_by_id( $def_id );
+				if ( !empty( $def_row[&#x27;name&#x27;] ) ) {
+					$type_name = $def_row[&#x27;name&#x27;];
+				}
+			}
+
+			if ( $fav_id != 0 &amp;&amp; $fav_id != &#x27;&#x27; ) {
+				$fav_row = ninja_forms_get_fav_by_id( $fav_id );
+				if ( !empty( $fav_row[&#x27;name&#x27;] ) ) {
+					$fav_class = &#x27;ninja-forms-field-remove-fav&#x27;;
+					$type_name = $fav_row[&#x27;name&#x27;];
+				}
+			} else {
+				$fav_class = &#x27;ninja-forms-field-add-fav&#x27;;
+			}
+
+			if ( isset( $field_data[&#x27;label&#x27;] ) &amp;&amp; $field_data[&#x27;label&#x27;] != &#x27;&#x27; ) {
+				$li_label = $field_data[&#x27;label&#x27;];
+			} else {
+				$li_label = $type_name;
+			}
+
+			$li_label = apply_filters( &#x27;ninja_forms_edit_field_li_label&#x27;, $li_label, $field_id );
+
+			$li_label = stripslashes( $li_label );
+			$li_label = ninja_forms_esc_html_deep( $li_label );
+
+			if (
+			isset( $reg_field ) &amp;&amp;
+			isset( $reg_field[&#x27;conditional&#x27;] ) &amp;&amp;
+			isset( $reg_field[&#x27;conditional&#x27;][&#x27;value&#x27;] ) &amp;&amp;
+			isset( $reg_field[&#x27;conditional&#x27;][&#x27;value&#x27;][&#x27;type&#x27;] ) ) {
+				$conditional_value_type = $reg_field[&#x27;conditional&#x27;][&#x27;value&#x27;][&#x27;type&#x27;];
+			} else {
+				$conditional_value_type = &#x27;&#x27;;
+			}
+			?&gt;
+			&lt;li id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $li_class; ?&gt; &lt;?php echo $nesting_class;?&gt; &lt;?php echo $type_class;?&gt;&quot;&gt;
+				&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_value_type&quot; value=&quot;&lt;?php echo $conditional_value_type;?&gt;&quot;&gt;
+				&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_fav_id&quot; name=&quot;&quot; class=&quot;ninja-forms-field-fav-id&quot; value=&quot;&lt;?php echo $fav_id;?&gt;&quot;&gt;
+				&lt;dl class=&quot;menu-item-bar&quot;&gt;
+					&lt;dt class=&quot;menu-item-handle&quot; id=&quot;ninja_forms_metabox_field_&lt;?php echo $field_id;?&gt;&quot; &gt;
+						&lt;span class=&quot;item-title ninja-forms-field-title&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_title&quot;&gt;&lt;?php echo $li_label;?&gt;&lt;/span&gt;
+						&lt;span class=&quot;item-controls&quot;&gt;
+							&lt;span class=&quot;item-type&quot;&gt;&lt;span class=&quot;spinner&quot; style=&quot;margin-top:-2px;float:left;&quot;&gt;&lt;/span&gt;&lt;span class=&quot;item-type-name&quot;&gt;&lt;?php echo $type_name;?&gt;&lt;/span&gt;&lt;/span&gt;
+							&lt;a class=&quot;item-edit nf-edit-field&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_toggle&quot; title=&quot;&lt;?php _e( &#x27;Edit Menu Item&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;#&quot; data-field=&quot;&lt;?php echo $field_id; ?&gt;&quot;&gt;&lt;?php _e( &#x27;Edit Menu Item&#x27; , &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+						&lt;/span&gt;
+					&lt;/dt&gt;
+				&lt;/dl&gt;
+				&lt;?php
+				if ( $new ) {
+					$padding = &#x27;&#x27;;
+				} else {
+					$padding = &#x27;no-padding&#x27;;
+				}
+				?&gt;
+				&lt;div class=&quot;menu-item-settings type-class inside &lt;?php echo $padding?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_inside&quot; &gt;
+					&lt;?php
+					if ( $new ) {
+						nf_output_registered_field_settings( $field_id );
+					}
+		}
+	} else {
+		if ( isset( $ninja_forms_fields[$field_type] ) ) {
+			$reg_field = $ninja_forms_fields[$field_type];
+			$edit_function = $reg_field[&#x27;edit_function&#x27;];
+			$arguments = array();
+			$arguments[&#x27;field_id&#x27;] = $field_id;
+			$arguments[&#x27;data&#x27;] = $field_data;
+
+			if ( $edit_function != &#x27;&#x27; ) {
+				call_user_func_array( $edit_function, $arguments );
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_edit_field_li&#x27;, &#x27;ninja_forms_edit_field_output_li&#x27;, 10, 2 );
+
+function ninja_forms_edit_field_close_li( $field_id ) {
+	global $ninja_forms_fields;
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+
+	if ( isset( $ninja_forms_fields[$field_type][&#x27;use_li&#x27;] ) and $ninja_forms_fields[$field_type][&#x27;use_li&#x27;] ) {
+
+		do_action( &#x27;ninja_forms_edit_field_before_closing_li&#x27;, $field_id );
+?&gt;
+			&lt;/div&gt;&lt;!-- .menu-item-settings--&gt;
+		&lt;/li&gt;
+		&lt;?php
+	}
+}
+add_action( &#x27;ninja_forms_edit_field_after_li&#x27;, &#x27;ninja_forms_edit_field_close_li&#x27; );
+
+/**
+ * Test fixes for adding dynamic tinyMCE editors
+ *
+ */
+
+// used to capture javascript settings generated by the editor
+add_filter( &#x27;tiny_mce_before_init&#x27;, &#x27;NF_WP_Editor_Ajax::tiny_mce_before_init&#x27;, 10, 2 );
+add_filter( &#x27;quicktags_settings&#x27;, &#x27;NF_WP_Editor_Ajax::quicktags_settings&#x27;, 10, 2 );
+
+class NF_WP_Editor_Ajax {
+
+    /*
+    * AJAX Call Used to Generate the WP Editor
+    */
+
+    public static function output_js( $field_id = &#x27;&#x27;, $editors = array() ) {
+
+    	if ( empty( $field_id ) or empty( $editors ) )
+    		return false;
+
+    	$mce_init = &#x27;&#x27;;
+    	$qt_init = &#x27;&#x27;;
+
+    	foreach ( $editors as $id ) {
+			$mce_init .= self::get_mce_init($id);
+	        $qt_init .= self::get_qt_init($id);
+    	}
+
+    	$mce_init = &#x27;{&#x27; . trim( $mce_init, &#x27;,&#x27; ) . &#x27;}&#x27;;
+        $qt_init = &#x27;{&#x27; . trim( $qt_init, &#x27;,&#x27; ) . &#x27;}&#x27;;
+
+        ?&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            tinyMCEPreInit.mceInit = jQuery.extend( tinyMCEPreInit.mceInit, &lt;?php echo $mce_init ?&gt;);
+            tinyMCEPreInit.qtInit = jQuery.extend( tinyMCEPreInit.qtInit, &lt;?php echo $qt_init ?&gt;);
+            nf_ajax_rte_editors = &lt;?php echo json_encode( $editors ); ?&gt;;
+        &lt;/script&gt;
+        &lt;?php
+    }
+
+    /*
+    * Used to retrieve the javascript settings that the editor generates
+    */
+
+    private static $mce_settings = array();
+    private static $qt_settings = array();
+
+    public static function quicktags_settings( $qtInit, $editor_id ) {
+		self::$qt_settings[ $editor_id ] = $qtInit;
+        return $qtInit;
+    }
+
+    public static function tiny_mce_before_init( $mceInit, $editor_id ) {
+        self::$mce_settings[ $editor_id ] = $mceInit;
+        return $mceInit;
+    }
+
+    /*
+    * Code copied from _WP_Editors class (modified a little)
+    */
+    private static function get_qt_init($editor_id) {
+        if ( ! empty( self::$qt_settings[ $editor_id ] ) ) {
+            $options = self::_parse_init( self::$qt_settings[ $editor_id ]  );
+            $qtInit = &quot;&#x27;$editor_id&#x27;:{$options},&quot;;
+        } else {
+            $qtInit = &#x27;{}&#x27;;
+        }
+        return $qtInit;
+    }
+
+    private static function get_mce_init($editor_id) {
+        if ( !empty(self::$mce_settings[ $editor_id ]) ) {
+            $options = self::_parse_init( self::$mce_settings[ $editor_id ]  );
+            $mceInit = &quot;&#x27;$editor_id&#x27;:{$options},&quot;;
+        } else {
+            $mceInit = &#x27;{}&#x27;;
+        }
+        return $mceInit;
+    }
+
+    private static function _parse_init($init) {
+        $options = &#x27;&#x27;;
+
+        foreach ( $init as $k =&gt; $v ) {
+            if ( is_bool($v) ) {
+                $val = $v ? &#x27;true&#x27; : &#x27;false&#x27;;
+                $options .= $k . &#x27;:&#x27; . $val . &#x27;,&#x27;;
+                continue;
+            } elseif ( !empty($v) &amp;&amp; is_string($v) &amp;&amp; ( (&#x27;{&#x27; == $v{0} &amp;&amp; &#x27;}&#x27; == $v{strlen($v) - 1}) || (&#x27;[&#x27; == $v{0} &amp;&amp; &#x27;]&#x27; == $v{strlen($v) - 1}) || preg_match(&#x27;/^\(?function ?\(/&#x27;, $v) ) ) {
+                $options .= $k . &#x27;:&#x27; . $v . &#x27;,&#x27;;
+                continue;
+            }
+            $options .= $k . &#x27;:&quot;&#x27; . $v . &#x27;&quot;,&#x27;;
+        }
+
+        return &#x27;{&#x27; . trim( $options, &#x27; ,&#x27; ) . &#x27;}&#x27;;
+    }
+}
+
+function nf_output_registered_field_settings( $field_id, $data = array() ) {
+	global $ninja_forms_fields, $nf_rte_editors;
+
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+
+	$field_data = empty ( $data ) ? $field_row[&#x27;data&#x27;] : $data;
+
+	$current_tab = ninja_forms_get_current_tab();
+	if ( isset ( $_REQUEST[&#x27;page&#x27;] ) ) {
+		$current_page = esc_html( $_REQUEST[&#x27;page&#x27;] );
+	} else {
+		$current_page = &#x27;&#x27;;
+	}
+
+	$reg_field = $ninja_forms_fields[$field_type];
+	$type_name = $reg_field[&#x27;name&#x27;];
+	$edit_function = $reg_field[&#x27;edit_function&#x27;];
+	$edit_options = $reg_field[&#x27;edit_options&#x27;];
+	$edit_settings = $reg_field[&#x27;edit_settings&#x27;];
+
+	if ( $reg_field[&#x27;nesting&#x27;] ) {
+		$nesting_class = &#x27;ninja-forms-nest&#x27;;
+	} else {
+		$nesting_class = &#x27;ninja-forms-no-nest&#x27;;
+	}
+	$conditional = $reg_field[&#x27;conditional&#x27;];
+
+
+	if ( isset( $field_row[&#x27;fav_id&#x27;] ) &amp;&amp; $field_row[&#x27;fav_id&#x27;] != 0 ) {
+		$fav_id = $field_row[&#x27;fav_id&#x27;];
+		$fav_row = ninja_forms_get_fav_by_id( $fav_id );
+		if ( empty( $fav_row[&#x27;name&#x27;] ) ) {
+			$args = array(
+				&#x27;update_array&#x27; =&gt; array(
+					&#x27;fav_id&#x27; =&gt; &#x27;&#x27;,
+				),
+				&#x27;where&#x27; =&gt; array(
+					&#x27;id&#x27; =&gt; $field_id,
+				),
+			);
+
+			ninja_forms_update_field( $args );
+			$fav_id = &#x27;&#x27;;
+		}
+	} else {
+		$fav_id = &#x27;&#x27;;
+	}
+
+	if ( isset( $field_row[&#x27;def_id&#x27;] ) &amp;&amp; $field_row[&#x27;def_id&#x27;] != 0 ) {
+		$def_id = $field_row[&#x27;def_id&#x27;];
+	} else {
+		$def_id = &#x27;&#x27;;
+	}
+
+	if ( $fav_id != 0 &amp;&amp; $fav_id != &#x27;&#x27; ) {
+		$fav_row = ninja_forms_get_fav_by_id( $fav_id );
+		if ( !empty( $fav_row[&#x27;name&#x27;] ) ) {
+			$fav_class = &#x27;ninja-forms-field-remove-fav&#x27;;
+			$type_name = $fav_row[&#x27;name&#x27;];
+			$icon_class = &#x27;filled&#x27;;
+		}
+	} else {
+		$fav_class = &#x27;ninja-forms-field-add-fav&#x27;;
+		$icon_class = &#x27;empty&#x27;;
+	}
+
+	if ( $reg_field[&#x27;show_field_id&#x27;] || $reg_field[&#x27;show_fav&#x27;] ) {
+		?&gt;
+		&lt;table id=&quot;field-info&quot;&gt;
+			&lt;tr&gt;
+				&lt;?php
+				if ( $reg_field[&#x27;show_field_id&#x27;] ) {
+					?&gt;
+					&lt;td width=&quot;65%&quot;&gt;&lt;?php _e( &#x27;Field ID&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;: &lt;strong&gt;&lt;?php echo $field_id;?&gt;&lt;/strong&gt;&lt;/td&gt;
+					&lt;?php
+				}
+				?&gt;
+				&lt;!-- &lt;td width=&quot;15%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;ninja-forms-field-add-def&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_def&quot; class=&quot;ninja-forms-field-add-def&quot;&gt;Add Defined&lt;/a&gt;&lt;/td&gt;&lt;td width=&quot;15%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;ninja-forms-field-remove-def&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_def&quot;&gt;Remove Defined&lt;/a&gt;&lt;/td&gt; --&gt;
+				&lt;?php
+				if ( $reg_field[&#x27;show_fav&#x27;] ) {
+					?&gt;
+					&lt;td width=&quot;5%&quot;&gt;&lt;a href=&quot;#&quot; class=&quot;&lt;?php echo $fav_class;?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_fav&quot;&gt;&lt;span class=&quot;dashicons dashicons-star-&lt;?php echo $icon_class; ?&gt;&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/td&gt;
+					&lt;?php
+				}
+				?&gt;
+			&lt;/tr&gt;
+		&lt;/table&gt;
+		&lt;?php
+	}
+	do_action( &#x27;ninja_forms_edit_field_before_registered&#x27;, $field_id, $field_data );
+
+	$arguments = array( &#x27;field_id&#x27; =&gt; $field_id, &#x27;data&#x27; =&gt; $field_data );
+
+	if ( $edit_function != &#x27;&#x27; ) {
+		call_user_func_array( $edit_function, $arguments );
+	}
+
+	/**
+	 * We need to get a list of all of our RTEs.
+	 * If we&#x27;re submitting via ajax, we&#x27;ll need to use this list.
+	 */
+	if ( ! isset ( $nf_rte_editors ) )
+		$nf_rte_editors = array();
+
+	$editors = new NF_WP_Editor_Ajax();
+
+	if ( is_array( $edit_options ) and !empty( $edit_options ) ) {
+		foreach ( $edit_options as $opt ) {
+			$type = $opt[&#x27;type&#x27;];
+
+			$label_class = &#x27;&#x27;;
+
+			if ( isset( $opt[&#x27;label&#x27;] ) ) {
+				$label = $opt[&#x27;label&#x27;];
+			} else {
+				$label = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;name&#x27;] ) ) {
+				$name = $opt[&#x27;name&#x27;];
+			} else {
+				$name = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;width&#x27;] ) ) {
+				$width = $opt[&#x27;width&#x27;];
+			} else {
+				$width = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;options&#x27;] ) ) {
+				$options = $opt[&#x27;options&#x27;];
+			} else {
+				$options = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;class&#x27;] ) ) {
+				$class = $opt[&#x27;class&#x27;];
+			} else {
+				$class = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;default&#x27;] ) ) {
+				$default = $opt[&#x27;default&#x27;];
+			} else {
+				$default = &#x27;&#x27;;
+			}
+
+			if ( isset( $opt[&#x27;desc&#x27;] ) ) {
+				$desc = $opt[&#x27;desc&#x27;];
+			} else {
+				$desc = &#x27;&#x27;;
+			}
+
+			if ( isset( $field_data[$name] ) ) {
+				$value = $field_data[$name];
+			} else {
+				$value = $default;
+			}
+
+			ninja_forms_edit_field_el_output( $field_id, $type, $label, $name, $value, $width, $options, $class, $desc, $label_class );
+		}
+	}
+
+	add_action( &#x27;nf_edit_field_advanced&#x27;, &#x27;nf_test&#x27;, 10, 2 );
+
+	$settings_sections = apply_filters( &#x27;nf_edit_field_settings_sections&#x27;, array(
+		&#x27;restrictions&#x27; 	=&gt; __( &#x27;Restriction Settings&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;calculations&#x27;	=&gt; __( &#x27;Calculation Settings&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;advanced&#x27;		=&gt; __( &#x27;Advanced Settings&#x27;, &#x27;ninja-forms&#x27; ),
+		) );
+
+	foreach ( $settings_sections as $key =&gt; $name ) {
+		?&gt;
+		&lt;div class=&quot;nf-field-settings description-wide description&quot;&gt;
+			&lt;div class=&quot;title&quot;&gt;
+				&lt;?php echo $name; ?&gt;&lt;span class=&quot;dashicons dashicons-arrow-down nf-field-sub-section-toggle&quot;&gt;&lt;/span&gt;
+			&lt;/div&gt;
+			&lt;div class=&quot;inside&quot; style=&quot;display:none;&quot;&gt;
+				&lt;?php
+				if ( ! empty ( $edit_settings[ $key ] ) ) {
+					foreach ( $edit_settings[ $key ] as $opt ) {
+						$type = $opt[&#x27;type&#x27;];
+
+						$label_class = &#x27;&#x27;;
+
+						if ( isset( $opt[&#x27;label&#x27;] ) ) {
+							$label = $opt[&#x27;label&#x27;];
+						} else {
+							$label = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;name&#x27;] ) ) {
+							$name = $opt[&#x27;name&#x27;];
+						} else {
+							$name = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;width&#x27;] ) ) {
+							$width = $opt[&#x27;width&#x27;];
+						} else {
+							$width = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;options&#x27;] ) ) {
+							$options = $opt[&#x27;options&#x27;];
+						} else {
+							$options = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;class&#x27;] ) ) {
+							$class = $opt[&#x27;class&#x27;];
+						} else {
+							$class = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;default&#x27;] ) ) {
+							$default = $opt[&#x27;default&#x27;];
+						} else {
+							$default = &#x27;&#x27;;
+						}
+
+						if ( isset( $opt[&#x27;desc&#x27;] ) ) {
+							$desc = $opt[&#x27;desc&#x27;];
+						} else {
+							$desc = &#x27;&#x27;;
+						}
+
+						if ( isset( $field_data[$name] ) ) {
+							$value = $field_data[$name];
+						} else {
+							$value = $default;
+						}
+
+						ninja_forms_edit_field_el_output( $field_id, $type, $label, $name, $value, $width, $options, $class, $desc, $label_class );
+					}
+				}
+
+				do_action( &#x27;nf_edit_field_&#x27; . $key, $field_id, $field_data );
+				?&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;?php
+	}
+
+	?&gt;
+	&lt;div class=&quot;menu-item-actions description-wide submitbox&quot;&gt;
+		&lt;a class=&quot;submitdelete deletion nf-remove-field&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_remove&quot; data-field=&quot;&lt;?php echo $field_id; ?&gt;&quot; href=&quot;#&quot;&gt;&lt;?php _e(&#x27;Remove&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/a&gt;
+	&lt;/div&gt;
+	&lt;?php
+
+	if ( ! empty ( $nf_rte_editors ) &amp;&amp; isset ( $editors ) &amp;&amp; is_object( $editors ) ) {
+		$editors-&gt;output_js( $field_id, $nf_rte_editors );
+	}
+
+}
+
+function nf_test( $field_id, $field_data ) {
+	do_action( &#x27;ninja_forms_edit_field_after_registered&#x27;, $field_id, $field_data );
+}
+</pre></details></body></html>

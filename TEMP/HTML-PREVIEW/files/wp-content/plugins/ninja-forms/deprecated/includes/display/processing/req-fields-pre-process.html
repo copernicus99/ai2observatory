@@ -1,0 +1,103 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/req-fields-pre-process.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/processing/req-fields-pre-process.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+function ninja_forms_req_fields_process(){
+	global $ninja_forms_processing, $ninja_forms_fields;
+
+	$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+
+	if( is_array( $all_fields ) AND !empty( $all_fields ) ){
+		foreach($all_fields as $field_id =&gt; $user_value){
+			
+			$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+
+			if ( !$field_row ) {
+				$field_row = ninja_forms_get_field_by_id( $field_id );
+			}
+
+			$field_type = $field_row[&#x27;type&#x27;];
+
+			if ( isset ( $ninja_forms_fields[$field_type] ) ) {
+
+				if( isset( $field_row[&#x27;data&#x27;] ) ){
+					$field_data = $field_row[&#x27;data&#x27;];
+				}else{
+					$field_data = &#x27;&#x27;;
+				}
+
+				if( isset( $field_data[&#x27;req&#x27;] ) ){
+					$req = $field_data[&#x27;req&#x27;];
+				}else{
+					$req = &#x27;&#x27;;
+				}
+
+				if( isset( $field_data[&#x27;label_pos&#x27;] ) ){
+					$label_pos = $field_data[&#x27;label_pos&#x27;];
+				}else{
+					$label_pos = &#x27;&#x27;;
+				}
+					// Get the required field symbol.
+				$settings = nf_get_settings();
+				if ( isset ( $settings[&#x27;req_field_symbol&#x27;] ) ) {
+					$req_symbol = $settings[&#x27;req_field_symbol&#x27;];
+				} else {
+					$req_symbol = &#x27;*&#x27;;
+				}
+
+				if ( isset ( $field_data[&#x27;req&#x27;] ) and $field_data[&#x27;req&#x27;] == 1 and $label_pos == &#x27;inside&#x27; ) {
+					$field_data[&#x27;label&#x27;] .= &#x27; &#x27;.$req_symbol;
+				}
+
+				if( isset( $field_data[&#x27;label&#x27;] ) ){
+					$label = $field_data[&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				$label = strip_tags( $label );
+
+				$reg_type = $ninja_forms_fields[$field_type];
+				$req_validation = $reg_type[&#x27;req_validation&#x27;];
+
+				$plugin_settings = nf_get_settings();
+				if ( isset ( $plugin_settings[&#x27;req_field_error&#x27;] ) ) {
+					$req_field_error = __( $plugin_settings[&#x27;req_field_error&#x27;], &#x27;ninja-forms&#x27; );
+				} else {
+					$req_field_error = __( &#x27;This is a required field.&#x27;, &#x27;ninja-forms&#x27; );
+				}
+				
+				if( isset( $plugin_settings[&#x27;req_error_label&#x27;] ) ){
+					$req_error_label = __( $plugin_settings[&#x27;req_error_label&#x27;], &#x27;ninja-forms&#x27; );
+				}else{
+					$req_error_label = __( &#x27;Please check required fields.&#x27;, &#x27;ninja-forms&#x27; );
+				}
+
+				if( $req == 1 AND $user_value !== false ){
+
+					if($req_validation != &#x27;&#x27;){
+						$arguments[&#x27;field_id&#x27;] = $field_id;
+						$arguments[&#x27;user_value&#x27;] = $user_value;
+						$req = call_user_func_array($req_validation, $arguments);
+						if(!$req){
+							$ninja_forms_processing-&gt;add_error(&#x27;required-&#x27;.$field_id, $req_field_error, $field_id);
+							$ninja_forms_processing-&gt;add_error(&#x27;required-general&#x27;, $req_error_label, &#x27;general&#x27;);
+						}
+					}else{
+						if($label_pos == &#x27;inside&#x27;){
+							if( $user_value == $label OR ( empty( $user_value ) &amp;&amp; $user_value !== &quot;0&quot; ) ){
+								$ninja_forms_processing-&gt;add_error(&#x27;required-&#x27;.$field_id, $req_field_error, $field_id);
+								$ninja_forms_processing-&gt;add_error(&#x27;required-general&#x27;, $req_error_label, &#x27;general&#x27;);
+							}
+						}else{
+							if( $user_value === &#x27;&#x27; ){
+								$ninja_forms_processing-&gt;add_error(&#x27;required-&#x27;.$field_id, $req_field_error, $field_id);
+								$ninja_forms_processing-&gt;add_error(&#x27;required-general&#x27;, $req_error_label, &#x27;general&#x27;);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_req_fields_process&#x27;, 13);</pre></details></body></html>

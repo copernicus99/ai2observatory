@@ -1,0 +1,170 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/AddFormModal.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/AddFormModal.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+         &lt;div id=&quot;nf-insert-form-modal&quot; style=&quot;display:none;&quot;&gt;
+            &lt;p&gt;
+                
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;input type=&quot;button&quot; id=&quot;nf-insert-form&quot; class=&quot;button-primary&quot; value=&quot;&quot; /&gt;
+            &lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            jQuery( document ).ready( function( $ ) {
+                var jBox = jQuery( &#x27;.nf-insert-form&#x27; ).jBox( &#x27;Modal&#x27;, {
+                    title: &#x27;&#x27;,
+                    position: {
+                        x: &#x27;center&#x27;,
+                        y: &#x27;center&#x27;
+                    },
+                    closeButton: &#x27;title&#x27;,
+                    closeOnClick: &#x27;overlay&#x27;,
+                    closeOnEsc: true,
+                    // theme: &#x27;TooltipBorder&#x27;,
+                    content: jQuery( &#x27;#nf-insert-form-modal&#x27; ),
+                    onOpen: function() {
+                        jQuery( &#x27;.nf-forms-combobox&#x27; ).combobox();
+                        jQuery( this )[0].content.find( &#x27;.ui-autocomplete-input&#x27; ).attr( &#x27;placeholder&#x27;, &#x27;&#x27; );
+                        jQuery( this )[0].content.css( &#x27;overflow&#x27;, &#x27;visible&#x27; );
+                        jQuery( this )[0].content.find( &#x27;.ui-icon-triangle-1-s&#x27; ).addClass( &#x27;dashicons dashicons-arrow-down&#x27; ).css( &#x27;margin-left&#x27;, &#x27;-7px&#x27; );
+                    },
+                    onClose: function() {
+                        jQuery( &#x27;.nf-forms-combobox&#x27; ).combobox( &#x27;destroy&#x27;  );
+                    }
+                });
+
+                jQuery( document ).on( &#x27;click&#x27;, &#x27;#nf-insert-form&#x27;, function( e ) {
+                    e.preventDefault();
+                    var form_id = jQuery( &#x27;#nf-form-select&#x27; ).val();
+                    var shortcode = &#x27;[ninja_form id=&#x27; + form_id + &#x27;]&#x27;;
+                    window.parent.send_to_editor( shortcode );
+                    jBox.close();
+                    jQuery( &#x27;#nf-form-select&#x27; ).val( &#x27;&#x27; );
+                } );
+            } );
+        &lt;/script&gt;
+
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Add a button to tinyMCE editors when eidting posts/pages.
+ *
+ * @since 2.9.22
+ */
+
+class NF_Admin_AddFormModal {
+    
+    function __construct() {
+        // Add a tinyMCE button to our post and page editor
+        add_filter( &#x27;media_buttons_context&#x27;, array( $this, &#x27;insert_form_tinymce_buttons&#x27; ) );
+    }
+
+    /**
+     * Output our tinyMCE field buttons
+     *
+     * @access public
+     * @since 2.8
+     * @return void
+     */
+    public function insert_form_tinymce_buttons( $context ) {
+        global $pagenow;
+
+        if( ! in_array( $pagenow, array( &#x27;post.php&#x27;, &#x27;post-new.php&#x27; ) ) ){
+            return $context;
+        }
+        $html = &#x27;&lt;style&gt;
+            span.nf-insert-form {
+                color:#888;
+                font: 400 18px/1 dashicons;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                display: inline-block;
+                width: 18px;
+                height: 18px;
+                vertical-align: text-top;
+                margin: 0 2px 0 0;
+            }
+        &lt;/style&gt;&#x27;;
+        $html .= &#x27;&lt;a href=&quot;#&quot; class=&quot;button nf-insert-form&quot;&gt;&lt;span class=&quot;nf-insert-form dashicons dashicons-feedback&quot;&gt;&lt;/span&gt; &#x27; . __( &#x27;Add Form&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;;
+
+        wp_enqueue_script( &#x27;nf-combobox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/combobox.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;jquery-ui-core&#x27;, &#x27;jquery-ui-button&#x27;, &#x27;jquery-ui-autocomplete&#x27; ) );
+
+        wp_enqueue_script( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/jBox.min.js&#x27;, array( &#x27;jquery&#x27; ) );
+        wp_enqueue_style( &#x27;jBox&#x27;, Ninja_Forms::$url . &#x27;assets/css/jBox.css&#x27; );
+
+        // wp_enqueue_style( &#x27;jquery-smoothness&#x27;, NINJA_FORMS_URL .&#x27;css/smoothness/jquery-smoothness.css&#x27; );
+        ?&gt;
+         &lt;div id=&quot;nf-insert-form-modal&quot; style=&quot;display:none;&quot;&gt;
+            &lt;p&gt;
+                &lt;?php
+                $all_forms = Ninja_Forms()-&gt;form()-&gt;get_forms();
+                $first_option = __( &#x27;Select a form or type to search&#x27;, &#x27;ninja-forms&#x27; );
+                echo &#x27;&lt;select class=&quot;nf-forms-combobox&quot; id=&quot;nf-form-select&quot; data-first-option=&quot;&quot;&gt;&#x27;;
+                echo &#x27;&lt;option value=&quot;&quot;&gt;&lt;/option&gt;&#x27;;
+                foreach( $all_forms as $form ) {
+                    // $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+                    $label = $form-&gt;get_setting( &#x27;title&#x27; );
+                    $form_id = $form-&gt;get_id();
+                    if ( strlen( $label ) &gt; 30 )
+                        $label = substr( $label, 0, 30 ) . &#x27;...&#x27;;
+
+                    echo &#x27;&lt;option value=&quot;&#x27; . intval( $form_id ) . &#x27;&quot;&gt;&#x27; . $label . &#x27; - ID: &#x27; . $form_id . &#x27;&lt;/option&gt;&#x27;;
+                }
+                echo &#x27;&lt;/select&gt;&#x27;;
+                ?&gt;
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;input type=&quot;button&quot; id=&quot;nf-insert-form&quot; class=&quot;button-primary&quot; value=&quot;&lt;?php _e( &#x27;Insert&#x27;, &#x27;ninja-forms&#x27; )?&gt;&quot; /&gt;
+            &lt;/p&gt;
+        &lt;/div&gt;
+        &lt;?php
+        add_action( &#x27;admin_footer&#x27;, array( $this, &#x27;output_tinymce_button_js&#x27; ) );
+        return $context . &#x27; &#x27; . $html;
+    }
+
+    /**
+     * Output our tinyMCE field buttons
+     *
+     * @access public
+     * @since 2.8
+     * @return void
+     */
+    public function output_tinymce_button_js( $context ) {
+        ?&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            jQuery( document ).ready( function( $ ) {
+                var jBox = jQuery( &#x27;.nf-insert-form&#x27; ).jBox( &#x27;Modal&#x27;, {
+                    title: &#x27;&lt;?php _e( &#x27;Insert Form&#x27;, &#x27;ninja-forms&#x27; )?&gt;&#x27;,
+                    position: {
+                        x: &#x27;center&#x27;,
+                        y: &#x27;center&#x27;
+                    },
+                    closeButton: &#x27;title&#x27;,
+                    closeOnClick: &#x27;overlay&#x27;,
+                    closeOnEsc: true,
+                    // theme: &#x27;TooltipBorder&#x27;,
+                    content: jQuery( &#x27;#nf-insert-form-modal&#x27; ),
+                    onOpen: function() {
+                        jQuery( &#x27;.nf-forms-combobox&#x27; ).combobox();
+                        jQuery( this )[0].content.find( &#x27;.ui-autocomplete-input&#x27; ).attr( &#x27;placeholder&#x27;, &#x27;&lt;?php _e( &#x27;Select a form or type to search&#x27;, &#x27;ninja-forms&#x27; )?&gt;&#x27; );
+                        jQuery( this )[0].content.css( &#x27;overflow&#x27;, &#x27;visible&#x27; );
+                        jQuery( this )[0].content.find( &#x27;.ui-icon-triangle-1-s&#x27; ).addClass( &#x27;dashicons dashicons-arrow-down&#x27; ).css( &#x27;margin-left&#x27;, &#x27;-7px&#x27; );
+                    },
+                    onClose: function() {
+                        jQuery( &#x27;.nf-forms-combobox&#x27; ).combobox( &#x27;destroy&#x27;  );
+                    }
+                });
+
+                jQuery( document ).on( &#x27;click&#x27;, &#x27;#nf-insert-form&#x27;, function( e ) {
+                    e.preventDefault();
+                    var form_id = jQuery( &#x27;#nf-form-select&#x27; ).val();
+                    var shortcode = &#x27;[ninja_form id=&#x27; + form_id + &#x27;]&#x27;;
+                    window.parent.send_to_editor( shortcode );
+                    jBox.close();
+                    jQuery( &#x27;#nf-form-select&#x27; ).val( &#x27;&#x27; );
+                } );
+            } );
+        &lt;/script&gt;
+
+        &lt;?php
+    }
+}
+</pre></details></body></html>

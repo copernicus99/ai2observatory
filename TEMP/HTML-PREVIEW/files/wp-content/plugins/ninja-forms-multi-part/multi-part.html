@@ -1,0 +1,296 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/multi-part.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/multi-part.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+ * Plugin Name: Ninja Forms - Multi-Part Forms
+ * Plugin URI: https://ninjaforms.com/extensions/multi-part-forms/
+ * Description: Multi-Part Forms add-on for Ninja Forms.
+ * Version: 3.0.21
+ * Author: The WP Ninjas
+ * Author URI: http://ninjaforms.com
+ * Text Domain: ninja-forms-multi-part
+ *
+ * Copyright 2014 The WP Ninjas.
+ */
+
+if( ! class_exists( &#x27;NF_MultiPart_Conversion&#x27;, false ) ) {
+    require_once &#x27;lib/conversion.php&#x27;;
+}
+
+if( version_compare( get_option( &#x27;ninja_forms_version&#x27;, &#x27;0.0.0&#x27; ), &#x27;3&#x27;, &#x27;&lt;&#x27; ) || get_option( &#x27;ninja_forms_load_deprecated&#x27;, FALSE ) ) {
+
+    if( ! defined( &#x27;NINJA_FORMS_MP_DIR&#x27; ) ) {
+        define(&quot;NINJA_FORMS_MP_DIR&quot;, plugin_dir_path(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    if( ! defined( &#x27;NINJA_FORMS_MP_URL&#x27; ) ) {
+        define(&quot;NINJA_FORMS_MP_URL&quot;, plugin_dir_url(__FILE__) . &#x27;/deprecated&#x27;);
+    }
+
+    if( ! defined( &#x27;NINJA_FORMS_MP_VERSION&#x27; ) ) {
+        define(&quot;NINJA_FORMS_MP_VERSION&quot;, &quot;3.0.21&quot;);
+    }
+
+    include &#x27;deprecated/multi-part.php&#x27;;
+
+} else {
+
+    if( class_exists( &#x27;NF_MultiPart&#x27;, false ) ) return;
+
+    /**
+     * Class NF_MultiPart
+     */
+    final class NF_MultiPart
+    {
+        const VERSION = &#x27;3.0.21&#x27;;
+        const SLUG    = &#x27;ninja-forms-multi-part&#x27;;
+        const NAME    = &#x27;Multi Part&#x27;;
+        const AUTHOR  = &#x27;The WP Ninjas&#x27;;
+        const PREFIX  = &#x27;NF_MultiPart&#x27;;
+
+        public function __construct()
+        {
+            // Ninja Forms Hooks
+            add_action( &#x27;ninja_forms_loaded&#x27;, array( $this, &#x27;setup_admin&#x27; ) );
+
+            add_action( &#x27;admin_init&#x27;, array( $this, &#x27;setup_license&#x27;) );
+
+            add_action( &#x27;ninja_forms_builder_templates&#x27;, array( $this, &#x27;builder_templates&#x27; ) );
+            add_action( &#x27;ninja_forms_enqueue_scripts&#x27;,   array( $this, &#x27;frontend_templates&#x27; ) );
+
+            add_action( &#x27;nf_admin_enqueue_scripts&#x27;,   array( $this, &#x27;enqueue_builder&#x27; ), 11 );
+            add_action( &#x27;nf_display_enqueue_scripts&#x27;, array( $this, &#x27;enqueue_display&#x27; ) );
+
+            /*
+             * We need to sort fields in a different order than core.
+             */
+            add_filter( &#x27;ninja_forms_get_fields_sorted&#x27;, array( $this, &#x27;filter_field_order&#x27; ), 9, 4 );
+        }
+
+        public function setup_admin()
+        {
+            if( ! is_admin() ) return;
+
+            new NF_MultiPart_Admin_Settings();
+        }
+
+        public function builder_templates()
+        {
+            self::template( &#x27;builder.html.php&#x27; );
+        }
+
+        public function frontend_templates()
+        {
+            self::template( &#x27;frontend.html.php&#x27; );
+        }
+
+        public function enqueue_builder()
+        {
+            $ver = self::VERSION;
+            wp_enqueue_style( &#x27;nf-mp-builder&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/css/builder.css&#x27;, $ver );
+            wp_enqueue_script( &#x27;nf-mp-builder&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/js/min/builder.js&#x27;, array( &#x27;nf-builder&#x27;, &#x27;jquery-effects-slide&#x27;, &#x27;jquery-effects-transfer&#x27; ), $ver );
+        }
+
+        public function enqueue_display()
+        {
+            $ver = self::VERSION;
+            wp_enqueue_script( &#x27;nf-mp-front-end&#x27;, NF_MultiPart::$url . &#x27;assets/js/min/front-end.js&#x27;, array(), $ver );
+            wp_localize_script( &#x27;nf-mp-front-end&#x27;, &#x27;nfMPSettings&#x27;, array(
+                &#x27;prevLabel&#x27; =&gt; __( &#x27;Previous&#x27;, &#x27;ninja-forms-multi-part&#x27; ),
+                &#x27;nextLabel&#x27; =&gt; __( &#x27;Next&#x27;, &#x27;ninja-forms-multi-part&#x27; ) )
+            );
+
+            if( Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ) {
+                if( &#x27;light&#x27; == Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+                    wp_enqueue_style( &#x27;nf-mp-display&#x27;, NF_MultiPart::$url . &#x27;assets/css/display-opinions-light.css&#x27;, $ver );
+                }
+
+                if( &#x27;dark&#x27; == Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+                    wp_enqueue_style(&#x27;nf-mp-display&#x27;, NF_MultiPart::$url . &#x27;assets/css/display-opinions-dark.css&#x27;, $ver );
+                }
+            } else {
+                wp_enqueue_style( &#x27;nf-mp-display&#x27;, NF_MultiPart::$url . &#x27;assets/css/display-structure.css&#x27;, $ver );
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Internal API Methods
+        |--------------------------------------------------------------------------
+        */
+
+        /*
+        |--------------------------------------------------------------------------
+        | Plugin Properties and Methods
+        |--------------------------------------------------------------------------
+        */
+
+        /**
+         * @var NF_MultiPart
+         * @since 3.0
+         */
+        private static $instance;
+
+        /**
+         * Plugin Directory
+         *
+         * @since 3.0
+         * @var string $dir
+         */
+        public static $dir = &#x27;&#x27;;
+
+        /**
+         * Plugin URL
+         *
+         * @since 3.0
+         * @var string $url
+         */
+        public static $url = &#x27;&#x27;;
+
+        /**
+         * Main Plugin Instance
+         *
+         * Insures that only one instance of a plugin class exists in memory at any one
+         * time. Also prevents needing to define globals all over the place.
+         *
+         * @since 3.0
+         * @static
+         * @static var array $instance
+         * @return NF_MultiPart Highlander Instance
+         */
+        public static function instance()
+        {
+            if ( ! isset( self::$instance ) &amp;&amp; ! ( self::$instance instanceof NF_MultiPart ) ) {
+                self::$instance = new NF_MultiPart();
+                self::$dir = plugin_dir_path( __FILE__ );
+                self::$url = plugin_dir_url( __FILE__ );
+                spl_autoload_register( array( self::$instance, &#x27;autoloader&#x27; ) );
+            }
+            return self::$instance;
+        }
+
+        /**
+         * Autoloader
+         *
+         * @param $class_name
+         */
+        public function autoloader($class_name)
+        {
+            if( class_exists( $class_name ) ) return;
+
+            if( false === strpos( $class_name, self::PREFIX ) ) return;
+
+            $class_name = str_replace( self::PREFIX, &#x27;&#x27;, $class_name );
+            $classes_dir = realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . &#x27;includes&#x27; . DIRECTORY_SEPARATOR;
+            $class_file = str_replace(&#x27;_&#x27;, DIRECTORY_SEPARATOR, $class_name) . &#x27;.php&#x27;;
+
+            if ( file_exists( $classes_dir . $class_file ) ) {
+                require_once $classes_dir . $class_file;
+            }
+        }
+
+        /**
+         * Template
+         *
+         * @param string $file_name
+         * @param array $data
+         */
+        public static function template( $file_name = &#x27;&#x27;, array $data = array() )
+        {
+            if( ! $file_name ) return;
+
+            extract( $data );
+
+            include self::$dir . &#x27;includes/Templates/&#x27; . $file_name;
+        }
+
+        /**
+         * Config
+         *
+         * @param $file_name
+         * @return mixed
+         */
+        public static function config( $file_name )
+        {
+            return include self::$dir . &#x27;includes/Config/&#x27; . $file_name . &#x27;.php&#x27;;
+        }
+
+        /**
+         * Setup License
+         */
+        public function setup_license()
+        {
+            if ( ! class_exists( &#x27;NF_Extension_Updater&#x27; ) ) return;
+
+            new NF_Extension_Updater( &#x27;Multi-Part Forms&#x27;, self::VERSION, self::AUTHOR, __FILE__, &#x27;mp&#x27; );
+        }
+
+        public function filter_field_order( $order, $fields, $fields_by_key, $form_id ) {
+            /*
+             * We don&#x27;t want the Layout &amp; Styles filter to run if we are installed.
+             */
+             if( function_exists( &#x27;NF_Layouts&#x27; ) ){
+                 remove_filter( &#x27;ninja_forms_get_fields_sorted&#x27;, array( NF_Layouts(), &#x27;filter_field_order&#x27; ) );
+            }
+
+            $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+            $formContentData = $form-&gt;get_setting( &#x27;formContentData&#x27; );
+
+            $new_order = array();
+
+            // If Not a Multi-Part Form, return original order.
+            if( ! $formContentData ) return $order;
+
+            foreach( $formContentData as $part ) {
+                if( ! isset( $part[ &#x27;formContentData&#x27; ] ) ) continue;
+                $part_content = $part[ &#x27;formContentData&#x27; ];
+                /*
+                 * If we have part_content[&#x27;cells&#x27;], then we know we&#x27;re dealing with Layout &amp; Styles data.
+                 */
+                if ( is_array( $part_content[ 0 ] ) &amp;&amp; isset ( $part_content[ 0 ][ &#x27;cells&#x27; ] ) ) {
+
+                    foreach ( $part_content as $row ) {
+
+                        if( ! isset( $row[ &#x27;cells&#x27; ] ) ) continue;
+                        foreach ( $row[&#x27;cells&#x27;] as $cell ) {
+
+                            if( ! isset( $cell[ &#x27;fields&#x27; ] ) ) continue;
+                             foreach ( $cell[ &#x27;fields&#x27; ] as $field_key ) {
+                                $field = $fields_by_key[ $field_key ];
+                                $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+                                $new_order[ $field_id ] = $field;
+                            }
+                        }
+                    }
+                } else {
+                    foreach ( $part_content as $field_key ) {
+                        if( ! isset( $fields_by_key[ $field_key ] ) ) continue;
+                        $field = $fields_by_key[ $field_key ];
+                        $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+                        $new_order[ $field_id ] = $field;
+                    }
+                }
+            }
+
+            return $new_order;
+        }
+    }
+
+    /**
+     * The main function responsible for returning The Highlander Plugin
+     * Instance to functions everywhere.
+     *
+     * Use this function like you would a global variable, except without needing
+     * to declare the global.
+     *
+     * @since 3.0
+     * @return NF_MultiPart Highlander Instance
+     */
+    function NF_MultiPart()
+    {
+        return NF_MultiPart::instance();
+    }
+
+    NF_MultiPart();
+
+}
+</pre></details></body></html>

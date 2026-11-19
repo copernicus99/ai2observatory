@@ -1,0 +1,129 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/breadcrumb.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/breadcrumb.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;ul id=&quot;ninja_forms_form__mp_breadcrumbs&quot; class=&quot;ninja-forms-mp-breadcrumbs&quot; style=&quot;&quot;&gt;
+				
+						&lt;li&gt;
+							&lt;input type=&quot;submit&quot; id=&quot;ninja_forms_field__breadcrumb&quot; name=&quot;_mp_page_&quot; value=&quot;&quot; class=&quot; ninja-forms-mp-nav&quot; rel=&quot;&quot; style=&quot;&quot;&gt;
+						&lt;/li&gt;
+						
+			&lt;/ul&gt;
+			
+		&lt;ul style=&quot;display:none;&quot;&gt;
+		
+				&lt;li&gt;
+					&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&quot; value=&quot;&quot; rel=&quot;&quot; class=&quot; ninja-forms-form--mp-page-show&quot;&gt;
+					&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field__type&quot; value=&quot;_page_divider&quot;&gt;
+				&lt;/li&gt;
+				
+		&lt;/ul&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Outputs the HTML for the Multi-Part Form Breadcrumb Navigation.
+ *
+**/
+
+function ninja_forms_mp_display_breadcrumb( $form_id ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_data = $ninja_forms_loading-&gt;get_all_form_settings();
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	} else { 
+		$form_data = $ninja_forms_processing-&gt;get_all_form_settings();
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+	}
+
+	if ( isset ( $form_data[&#x27;multi_part&#x27;] ) AND $form_data[&#x27;multi_part&#x27;] == 1 ) {
+		$display = 1;
+
+		$display = apply_filters( &#x27;ninja_forms_mp_display_breadcrumbs_visbility&#x27;, $display, $form_id );
+
+		if( $display == 1 ){
+			$display = &#x27;&#x27;;
+		}else{
+			$display = &#x27;display:none;&#x27;;
+		}
+
+		$page_count = count($pages);
+
+		if( is_object( $ninja_forms_processing ) ){
+			$current_page = $ninja_forms_processing-&gt;get_extra_value( &#x27;_current_page&#x27; );
+		}else{
+			$current_page = 1;
+		}
+		if( isset( $form_data[&#x27;mp_breadcrumb&#x27;] ) AND $form_data[&#x27;mp_breadcrumb&#x27;] == 1 ){
+			?&gt;
+			&lt;ul id=&quot;ninja_forms_form_&lt;?php echo $form_id;?&gt;_mp_breadcrumbs&quot; class=&quot;ninja-forms-mp-breadcrumbs&quot; style=&quot;&lt;?php echo $display;?&gt;&quot;&gt;
+				&lt;?php
+				if( is_array( $pages ) AND !empty( $pages ) ){
+					foreach( $pages as $number =&gt; $page ){
+						if ( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27; ) ) {
+							$show = ninja_forms_mp_check_page_conditional( $form_id, $number );
+						} else {
+							$show = true;
+						}
+						
+						if( $show ){
+							$style = &#x27;&#x27;;
+						}else{
+							$style = &#x27;display:none;&#x27;;
+						}
+						if( $number == $current_page ){
+							$class = &#x27;ninja-forms-mp-breadcrumb-active ninja-forms-form-&#x27;.$form_id.&#x27;-mp-breadcrumb-active&#x27;;
+						}else{
+							$class = &#x27;ninja-forms-mp-breadcrumb-inactive ninja-forms-form-&#x27;.$form_id.&#x27;-mp-breadcrumb-inactive&#x27;;
+						}
+						?&gt;
+						&lt;li&gt;
+							&lt;input type=&quot;submit&quot; id=&quot;ninja_forms_field_&lt;?php echo $page[&#x27;id&#x27;];?&gt;_breadcrumb&quot; name=&quot;_mp_page_&lt;?php echo $number;?&gt;&quot; value=&quot;&lt;?php echo $page[&#x27;page_title&#x27;];?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt; ninja-forms-mp-nav&quot; rel=&quot;&lt;?php echo $number;?&gt;&quot; style=&quot;&lt;?php echo $style;?&gt;&quot;&gt;
+						&lt;/li&gt;
+						&lt;?php
+					}
+				}
+				?&gt;
+			&lt;/ul&gt;
+			&lt;?php
+		}
+
+		?&gt;
+		&lt;ul style=&quot;display:none;&quot;&gt;
+		&lt;?php
+		if( is_array( $pages ) AND !empty( $pages ) ){
+			foreach( $pages as $page =&gt; $vars ){
+				$field_id = $vars[&#x27;id&#x27;];
+				//Figure out if this page should be hidden.
+				if( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27; ) ){
+					$show = ninja_forms_mp_check_page_conditional( $form_id, $page );
+				}else{
+					$show = true;
+				}
+				
+				if( $show ){
+					$show = 1;
+				}else{
+					$show = 0;
+				}
+
+				if( $page == $current_page ){
+					$class = &#x27;ninja-forms-form-&#x27;.$form_id.&#x27;-mp-page-list-active&#x27;;
+				}else{
+					$class = &#x27;ninja-forms-form-&#x27;.$form_id.&#x27;-mp-page-list-inactive&#x27;;
+				}
+
+				?&gt;
+				&lt;li&gt;
+					&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $show;?&gt;&quot; rel=&quot;&lt;?php echo $page;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt; ninja-forms-form-&lt;?php echo $form_id;?&gt;-mp-page-show&quot;&gt;
+					&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_type&quot; value=&quot;_page_divider&quot;&gt;
+				&lt;/li&gt;
+				&lt;?php
+			}
+		}
+		?&gt;
+		&lt;/ul&gt;
+		&lt;?php		
+	}
+	
+}
+
+if ( !is_admin() ) {
+	add_action( &#x27;ninja_forms_display_after_open_form_tag&#x27;, &#x27;ninja_forms_mp_display_breadcrumb&#x27;, 8 );
+}</pre></details></body></html>

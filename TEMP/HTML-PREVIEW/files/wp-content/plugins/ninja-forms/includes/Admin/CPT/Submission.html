@@ -1,0 +1,437 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/CPT/Submission.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/CPT/Submission.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Admin_CPT_Submission
+ */
+class NF_Admin_CPT_Submission
+{
+    protected $cpt_slug = &#x27;nf_sub&#x27;;
+
+    public $screen_options;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Register our submission custom post type.
+        add_action( &#x27;init&#x27;, array( $this, &#x27;custom_post_type&#x27; ), 5 );
+
+        add_action( &#x27;admin_print_styles&#x27;, array( $this, &#x27;enqueue_scripts&#x27; ) );
+
+        // Filter Post Row Actions
+        add_filter( &#x27;post_row_actions&#x27;, array( $this, &#x27;post_row_actions&#x27; ), 10, 2 );
+
+        // Change our submission columns.
+        add_filter( &#x27;manage_nf_sub_posts_columns&#x27;, array( $this, &#x27;change_columns&#x27; ) );
+
+        // Add the appropriate data for our custom columns.
+        add_action( &#x27;manage_posts_custom_column&#x27;, array( $this, &#x27;custom_columns&#x27; ), 10, 2 );
+
+        // Save our metabox values
+        add_action( &#x27;save_post&#x27;, array( $this, &#x27;save_nf_sub&#x27; ), 10, 2 );
+
+        add_action( &#x27;add_meta_boxes&#x27;, array( $this, &#x27;add_meta_boxes&#x27; ), 10, 1 );
+        add_action( &#x27;add_meta_boxes&#x27;, array( $this, &#x27;remove_meta_boxes&#x27; ) );
+
+        // Filter our submission capabilities
+        add_filter( &#x27;user_has_cap&#x27;, array( $this, &#x27;cap_filter&#x27; ), 10, 3 );
+
+        // Filter our hidden columns by form ID.
+        add_action( &#x27;wp&#x27;, array( $this, &#x27;filter_hidden_columns&#x27; ) );
+
+        // Save our hidden columns by form id.
+        add_action( &#x27;wp_ajax_nf_hide_columns&#x27;, array( $this, &#x27;hide_columns&#x27; ) );
+        
+        add_action( &#x27;trashed_post&#x27;, array( $this, &#x27;nf_trash_sub&#x27; ) );
+    }
+
+    /**
+     * Custom Post Type
+     */
+    function custom_post_type() {
+
+        $labels = array(
+            &#x27;name&#x27;                =&gt; _x( &#x27;Submissions&#x27;, &#x27;Post Type General Name&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;singular_name&#x27;       =&gt; _x( &#x27;Submission&#x27;, &#x27;Post Type Singular Name&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;menu_name&#x27;           =&gt; __( &#x27;Submissions&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;name_admin_bar&#x27;      =&gt; __( &#x27;Submissions&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;parent_item_colon&#x27;   =&gt; __( &#x27;Parent Item:&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;all_items&#x27;           =&gt; __( &#x27;All Items&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;add_new_item&#x27;        =&gt; __( &#x27;Add New Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;add_new&#x27;             =&gt; __( &#x27;Add New&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;new_item&#x27;            =&gt; __( &#x27;New Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;edit_item&#x27;           =&gt; __( &#x27;Edit Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;update_item&#x27;         =&gt; __( &#x27;Update Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;view_item&#x27;           =&gt; __( &#x27;View Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;search_items&#x27;        =&gt; __( &#x27;Search Item&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;not_found&#x27;           =&gt; $this-&gt;not_found_message(),
+            &#x27;not_found_in_trash&#x27;  =&gt; __( &#x27;Not found in Trash&#x27;, &#x27;ninja-forms&#x27; ),
+        );
+        $args = array(
+            &#x27;label&#x27;               =&gt; __( &#x27;Submission&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;description&#x27;         =&gt; __( &#x27;Form Submissions&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;labels&#x27;              =&gt; $labels,
+            &#x27;supports&#x27;            =&gt; false,
+            &#x27;hierarchical&#x27;        =&gt; false,
+            &#x27;public&#x27;              =&gt; false,
+            &#x27;show_ui&#x27;             =&gt; true,
+            &#x27;show_in_menu&#x27;        =&gt; false,
+            &#x27;menu_position&#x27;       =&gt; 5,
+            &#x27;show_in_admin_bar&#x27;   =&gt; false,
+            &#x27;show_in_nav_menus&#x27;   =&gt; true,
+            &#x27;can_export&#x27;          =&gt; true,
+            &#x27;has_archive&#x27;         =&gt; true,
+            &#x27;exclude_from_search&#x27; =&gt; true,
+            &#x27;publicly_queryable&#x27;  =&gt; true,
+            &#x27;capability_type&#x27; =&gt; &#x27;nf_sub&#x27;,
+            &#x27;capabilities&#x27; =&gt; array(
+                &#x27;publish_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;edit_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;edit_others_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;delete_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;delete_others_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;read_private_posts&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;edit_post&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;delete_post&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;read_post&#x27; =&gt; &#x27;nf_sub&#x27;,
+            ),
+        );
+        register_post_type( $this-&gt;cpt_slug, $args );
+    }
+    
+    public function nf_trash_sub( $post_id )
+    {   
+        // If this isn&#x27;t a submission...
+        if ( &#x27;nf_sub&#x27; != get_post_type( $post_id ) ) {
+            // Exit early.
+            return false;
+        }
+        global $pagenow;
+        // If we were on the post.php page...
+        if ( &#x27;post.php&#x27; == $pagenow ) {
+            // Redirect the user to the submissions page for the form that submission belonged to.
+            wp_safe_redirect( admin_url( &#x27;edit.php?post_status=all&amp;post_type=nf_sub&amp;form_id=&#x27; . get_post_meta( $post_id, &#x27;_form_id&#x27;, true ) ) );
+            exit;
+        }
+        
+    }
+
+    public function enqueue_scripts()
+    {
+        global $pagenow, $typenow;
+        // Bail if we aren&#x27;t on the edit.php page or we aren&#x27;t editing our custom post type.
+        if ( ( $pagenow != &#x27;edit.php&#x27; &amp;&amp; $pagenow != &#x27;post.php&#x27; ) || $typenow != &#x27;nf_sub&#x27; )
+            return false;
+
+        $form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? absint( $_REQUEST[&#x27;form_id&#x27;] ) : &#x27;&#x27;;
+
+        wp_enqueue_script( &#x27;subs-cpt&#x27;,
+            Ninja_Forms::$url . &#x27;deprecated/assets/js/min/subs-cpt.min.js&#x27;,
+            array( &#x27;jquery&#x27;, &#x27;jquery-ui-datepicker&#x27; ) );
+
+        wp_localize_script( &#x27;subs-cpt&#x27;, &#x27;nf_sub&#x27;, array( &#x27;form_id&#x27; =&gt; $form_id ) );
+    }
+
+    public function post_row_actions( $actions, $sub )
+    {
+        if ( $this-&gt;cpt_slug == get_post_type() ){
+            unset( $actions[ &#x27;view&#x27; ] );
+            unset( $actions[ &#x27;inline hide-if-no-js&#x27; ] );
+            $export_url = add_query_arg( array( &#x27;action&#x27; =&gt; &#x27;export&#x27;, &#x27;post[]&#x27; =&gt; $sub-&gt;ID ) );
+            $actions[ &#x27;export&#x27; ] = sprintf( &#x27;&lt;a href=&quot;%s&quot;&gt;%s&lt;/a&gt;&#x27;, $export_url, __( &#x27;Export&#x27;, &#x27;ninja-forms&#x27; ) );
+        }
+
+        return $actions;
+    }
+
+    public function change_columns( $columns )
+    {
+        if( ! isset( $_GET[ &#x27;form_id&#x27; ] ) ) return $columns;
+
+        $form_id = absint( $_GET[ &#x27;form_id&#x27; ] );
+
+        static $columns;
+
+        if( $columns ) return $columns;
+
+        $columns = array(
+            &#x27;cb&#x27;    =&gt; &#x27;&lt;input type=&quot;checkbox&quot; /&gt;&#x27;,
+            &#x27;id&#x27; =&gt; __( &#x27;#&#x27;, &#x27;ninja-forms&#x27; ),
+        );
+
+        $form_cache = get_option( &#x27;nf_form_&#x27; . $form_id );
+
+        $form_fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+        foreach( $form_fields as $field ) {
+
+            if( is_object( $field ) ) {
+                $field = array(
+                    &#x27;id&#x27; =&gt; $field-&gt;get_id(),
+                    &#x27;settings&#x27; =&gt; $field-&gt;get_settings()
+                );
+            }
+
+            $hidden_field_types = apply_filters( &#x27;nf_sub_hidden_field_types&#x27;, array() );
+            if( in_array( $field[ &#x27;settings&#x27; ][ &#x27;type&#x27; ], array_values( $hidden_field_types ) ) ) continue;
+
+            $id = $field[ &#x27;id&#x27; ];
+            $label = $field[ &#x27;settings&#x27; ][ &#x27;label&#x27; ];
+            $columns[ $id ] = ( isset( $field[ &#x27;settings&#x27; ][ &#x27;admin_label&#x27; ] ) &amp;&amp; $field[ &#x27;settings&#x27; ][ &#x27;admin_label&#x27; ] ) ? $field[ &#x27;settings&#x27; ][ &#x27;admin_label&#x27; ] : $label;
+        }
+
+        $columns[&#x27;sub_date&#x27;] = __( &#x27;Date&#x27;, &#x27;ninja-forms&#x27; );
+
+        return $columns;
+    }
+
+    public function custom_columns( $column, $sub_id )
+    {
+        if( &#x27;nf_sub&#x27; != get_post_type() ) {
+            return;
+        }
+
+        $sub = Ninja_Forms()-&gt;form()-&gt;get_sub( $sub_id );
+
+        if( &#x27;id&#x27; == $column ) {
+            echo apply_filters( &#x27;nf_sub_table_seq_num&#x27;, $sub-&gt;get_seq_num(), $sub_id, $column );
+        }
+
+        $form_id = absint( $_GET[ &#x27;form_id&#x27; ] );
+
+        if( is_numeric( $column ) ){
+            $value = $sub-&gt;get_field_value( $column );
+
+            static $fields;
+            if( ! isset( $fields[ $column ] ) ) {
+                $fields[$column] = Ninja_Forms()-&gt;form( $form_id )-&gt;get_field( $column );
+            }
+            $field = $fields[$column];
+            echo apply_filters( &#x27;ninja_forms_custom_columns&#x27;, $value, $field, $sub_id );
+        }
+
+    }
+
+    public function save_nf_sub( $nf_sub_id, $nf_sub )
+    {
+        global $pagenow;
+
+        if ( ! isset ( $_POST[&#x27;nf_edit_sub&#x27;] ) || $_POST[&#x27;nf_edit_sub&#x27;] != 1 )
+            return $nf_sub_id;
+
+        // verify if this is an auto save routine.
+        // If it is our form has not been submitted, so we dont want to do anything
+        if ( defined( &#x27;DOING_AUTOSAVE&#x27; ) &amp;&amp; DOING_AUTOSAVE )
+            return $nf_sub_id;
+
+        if ( $pagenow != &#x27;post.php&#x27; )
+            return $nf_sub_id;
+
+        if ( $nf_sub-&gt;post_type != &#x27;nf_sub&#x27; )
+            return $nf_sub_id;
+
+        /* Get the post type object. */
+        $post_type = get_post_type_object( $nf_sub-&gt;post_type );
+
+        /* Check if the current user has permission to edit the post. */
+        if ( !current_user_can( $post_type-&gt;cap-&gt;edit_post, $nf_sub_id ) )
+            return $nf_sub_id;
+
+        $sub = Ninja_Forms()-&gt;form()-&gt;sub( $nf_sub_id )-&gt;get();
+
+        foreach ( $_POST[&#x27;fields&#x27;] as $field_id =&gt; $user_value ) {
+            $user_value = apply_filters( &#x27;nf_edit_sub_user_value&#x27;, $user_value, $field_id, $nf_sub_id );
+            $sub-&gt;update_field_value( $field_id, $user_value );
+        }
+
+        $sub-&gt;save();
+    }
+
+    /**
+     * Meta Boxes
+     */
+    public function add_meta_boxes( $post_type )
+    {
+        add_meta_box(
+            &#x27;nf_sub_fields&#x27;,
+            __( &#x27;User Submitted Values&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;fields_meta_box&#x27; ),
+            &#x27;nf_sub&#x27;,
+            &#x27;normal&#x27;,
+            &#x27;default&#x27;
+        );
+
+        add_meta_box(
+            &#x27;nf_sub_info&#x27;,
+            __( &#x27;Submission Info&#x27;, &#x27;ninja-forms&#x27; ),
+            array( $this, &#x27;info_meta_box&#x27; ),
+            &#x27;nf_sub&#x27;,
+            &#x27;side&#x27;,
+            &#x27;default&#x27;
+        );
+    }
+
+    /**
+     * Fields Meta Box
+     *
+     * @param $post
+     */
+    public function fields_meta_box( $post )
+    {
+        $form_id = get_post_meta( $post-&gt;ID, &#x27;_form_id&#x27;, TRUE );
+
+        $sub = Ninja_Forms()-&gt;form()-&gt;get_sub( $post-&gt;ID );
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+        $hidden_field_types = apply_filters( &#x27;nf_sub_hidden_field_types&#x27;, array() );
+
+        Ninja_Forms::template( &#x27;admin-metabox-sub-fields.html.php&#x27;, compact( &#x27;fields&#x27;, &#x27;sub&#x27;, &#x27;hidden_field_types&#x27; ) );
+    }
+
+    public static function sort_fields( $a, $b )
+    {
+        if ( $a-&gt;get_setting( &#x27;order&#x27; ) == $b-&gt;get_setting( &#x27;order&#x27; ) ) {
+            return 0;
+        }
+        return ( $a-&gt;get_setting( &#x27;order&#x27; ) &lt; $b-&gt;get_setting( &#x27;order&#x27; ) ) ? -1 : 1;
+    }
+
+    /**
+     * Info Meta Box
+     *
+     * @param $post
+     */
+    public function info_meta_box( $post )
+    {
+        $sub = Ninja_Forms()-&gt;form()-&gt;sub( $post-&gt;ID )-&gt;get();
+
+        $seq_num = $sub-&gt;get_seq_num();
+
+        $status = ucwords( $sub-&gt;get_status() );
+
+        if ($sub-&gt;get_user()) {
+            $user = apply_filters(&#x27;nf_edit_sub_username&#x27;, $sub-&gt;get_user()-&gt;data-&gt;user_nicename, $post-&gt;post_author);
+        } else {
+            $user = __( &#x27;Anonymous&#x27;, &#x27;ninja-forms&#x27; );
+        }
+
+        $form_title = $sub-&gt;get_form_title();
+
+        $sub_date = apply_filters( &#x27;nf_edit_sub_date_submitted&#x27;, $sub-&gt;get_sub_date( &#x27;m/d/Y H:i&#x27; ), $post-&gt;ID );
+
+        $mod_date = apply_filters( &#x27;nf_edit_sub_date_modified&#x27;, $sub-&gt;get_mod_date( &#x27;m/d/Y H:i&#x27; ), $post-&gt;ID );
+
+        Ninja_Forms::template( &#x27;admin-metabox-sub-info.html.php&#x27;, compact( &#x27;post&#x27;, &#x27;seq_num&#x27;, &#x27;status&#x27;, &#x27;user&#x27;, &#x27;form_title&#x27;, &#x27;sub_date&#x27;, &#x27;mod_date&#x27; ) );
+    }
+
+    /**
+     * Remove Meta Boxes
+     */
+    public function remove_meta_boxes()
+    {
+        // Remove the default Publish metabox
+        remove_meta_box( &#x27;submitdiv&#x27;, &#x27;nf_sub&#x27;, &#x27;side&#x27; );
+    }
+
+    public function cap_filter( $allcaps, $cap, $args )
+    {
+        $sub_cap = apply_filters(&#x27;ninja_forms_admin_submissions_capabilities&#x27;, &#x27;manage_options&#x27;);
+        if (!empty($allcaps[$sub_cap])) {
+            $allcaps[&#x27;nf_sub&#x27;] = true;
+        }
+        return $allcaps;
+    }
+
+    /**
+     * Filter our hidden columns so that they are handled on a per-form basis.
+     *
+     * @access public
+     * @since 2.7
+     * @return void
+     */
+    public function filter_hidden_columns() {
+        global $pagenow;
+        // Bail if we aren&#x27;t on the edit.php page, we aren&#x27;t editing our custom post type, or we don&#x27;t have a form_id set.
+        if ( $pagenow != &#x27;edit.php&#x27; || ! isset ( $_REQUEST[&#x27;post_type&#x27;] ) || $_REQUEST[&#x27;post_type&#x27;] != &#x27;nf_sub&#x27; || ! isset ( $_REQUEST[&#x27;form_id&#x27;] ) )
+            return false;
+        // Grab our current user.
+        $user = wp_get_current_user();
+        // Grab our form id.
+        $form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+        // Get the columns that should be hidden for this form ID.
+        $hidden_columns = get_user_option( &#x27;manageedit-nf_subcolumnshidden-form-&#x27; . $form_id );
+
+        // Checks to see if hidden columns are in the format expected for 2.9.x and converts formatting.
+        if(  ! empty( $hidden_columns ) &amp;&amp; strpos( $hidden_columns[ 0 ], &#x27;form_&#x27;  ) !== false  ) {
+            $hidden_columns = $this-&gt;convert_hidden_columns( $form_id, $hidden_columns );
+        }
+
+        if ( $hidden_columns === false ) {
+            // If we don&#x27;t have custom hidden columns set up for this form, then only show the first five columns.
+            // Get our column headers
+            $columns = get_column_headers( &#x27;edit-nf_sub&#x27; );
+            $hidden_columns = array();
+            $x = 0;
+            foreach ( $columns as $slug =&gt; $name ) {
+                if ( $x &gt; 5 ) {
+                    if ( $slug != &#x27;sub_date&#x27; )
+                        $hidden_columns[] = $slug;
+                }
+                $x++;
+            }
+        }
+        update_user_option( $user-&gt;ID, &#x27;manageedit-nf_subcolumnshidden&#x27;, $hidden_columns, true );
+    }
+
+    /**
+     * Convert Hidden Columns
+     * Looks for 2.9.x hidden columns formatting and converts it to the formatting 3.0 expects.
+     * @param $form_id
+     * @param $hidden_columns
+     * @return mixed
+     */
+    private function convert_hidden_columns( $form_id, $hidden_columns )
+    {
+        $id = &#x27;form_&#x27; . $form_id . &#x27;_field_&#x27;;
+        if( &#x27;sub_date&#x27; !== $hidden_columns ) {
+            $hidden_columns = str_replace( $id, &#x27;&#x27;, $hidden_columns );
+        }
+        return $hidden_columns;
+    }
+
+
+    /**
+     * Save our hidden columns per form id.
+     *
+     * @access public
+     * @since 2.7
+     * @return void
+     */
+    public function hide_columns() {
+        // Grab our current user.
+        $user = wp_get_current_user();
+        // Grab our form id.
+        $form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+        $hidden = isset( $_POST[&#x27;hidden&#x27;] ) ? explode( &#x27;,&#x27;, esc_html( $_POST[&#x27;hidden&#x27;] ) ) : array();
+        $hidden = array_filter( $hidden );
+        update_user_option( $user-&gt;ID, &#x27;manageedit-nf_subcolumnshidden-form-&#x27; . $form_id, $hidden, true );
+        die();
+    }
+
+    /*
+     * PRIVATE METHODS
+     */
+
+    private function not_found_message()
+    {
+        if ( ! isset ( $_REQUEST[&#x27;form_id&#x27;] ) || empty( $_REQUEST[&#x27;form_id&#x27;] ) ) {
+            return __( &#x27;Please select a form to view submissions&#x27;, &#x27;ninja-forms&#x27; );
+        } else {
+            return __( &#x27;No Submissions Found&#x27;, &#x27;ninja-forms&#x27; );
+        }
+    }
+
+}
+
+</pre></details></body></html>

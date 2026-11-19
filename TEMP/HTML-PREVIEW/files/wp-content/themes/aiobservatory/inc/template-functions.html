@@ -1,0 +1,206 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/inc/template-functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/inc/template-functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+            &lt;p&gt;
+                &lt;label for=&quot;&quot;&gt;:
+                &lt;input id=&quot;&quot; class=&quot;widefat&quot; type=&quot;text&quot; name=&quot;&quot; value=&quot;&quot; /&gt;&lt;/label&gt;
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;label for=&quot;&quot;&gt;:
+                &lt;input id=&quot;&quot; class=&quot;widefat&quot; type=&quot;text&quot; name=&quot;&quot; value=&quot;&quot; /&gt;&lt;/label&gt;
+            &lt;/p&gt;
+     
+            
+            "></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Additional features to allow styling of the templates
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+/**
+ * Adds custom classes to the array of body classes.
+ *
+ * @param array $classes Classes for the body element.
+ * @return array
+ */
+function twentyseventeen_body_classes( $classes ) {
+	// Add class of group-blog to blogs with more than 1 published author.
+	if ( is_multi_author() ) {
+		$classes[] = &#x27;group-blog&#x27;;
+	}
+
+	// Add class of hfeed to non-singular pages.
+	if ( ! is_singular() ) {
+		$classes[] = &#x27;hfeed&#x27;;
+	}
+
+	// Add class if we&#x27;re viewing the Customizer for easier styling of theme options.
+	if ( is_customize_preview() ) {
+		$classes[] = &#x27;twentyseventeen-customizer&#x27;;
+	}
+
+	// Add class on front page.
+	if ( is_front_page() &amp;&amp; &#x27;posts&#x27; !== get_option( &#x27;show_on_front&#x27; ) ) {
+		$classes[] = &#x27;twentyseventeen-front-page&#x27;;
+	}
+
+	// Add a class if there is a custom header.
+	if ( has_header_image() ) {
+		$classes[] = &#x27;has-header-image&#x27;;
+	}
+
+	// Add class if sidebar is used.
+	if ( is_active_sidebar( &#x27;sidebar-1&#x27; ) &amp;&amp; ! is_page() ) {
+		$classes[] = &#x27;has-sidebar&#x27;;
+	}
+
+	// Add class for one or two column page layouts.
+	if ( is_page() || is_archive() ) {
+		if ( &#x27;one-column&#x27; === get_theme_mod( &#x27;page_layout&#x27; ) ) {
+			$classes[] = &#x27;page-one-column&#x27;;
+		} else {
+			$classes[] = &#x27;page-two-column&#x27;;
+		}
+	}
+
+	// Add class if the site title and tagline is hidden.
+	if ( &#x27;blank&#x27; === get_header_textcolor() ) {
+		$classes[] = &#x27;title-tagline-hidden&#x27;;
+	}
+
+	// Get the colorscheme or the default if there isn&#x27;t one.
+	$colors = twentyseventeen_sanitize_colorscheme( get_theme_mod( &#x27;colorscheme&#x27;, &#x27;light&#x27; ) );
+	$classes[] = &#x27;colors-&#x27; . $colors;
+
+	return $classes;
+}
+add_filter( &#x27;body_class&#x27;, &#x27;twentyseventeen_body_classes&#x27; );
+
+/**
+ * Count our number of active panels.
+ *
+ * Primarily used to see if we have any panels active, duh.
+ */
+function twentyseventeen_panel_count() {
+
+	$panel_count = 0;
+
+	/**
+	 * Filter number of front page sections in Twenty Seventeen.
+	 *
+	 * @since Twenty Seventeen 1.0
+	 *
+	 * @param $num_sections integer
+	 */
+	$num_sections = apply_filters( &#x27;twentyseventeen_front_page_sections&#x27;, 4 );
+
+	// Create a setting and control for each of the sections available in the theme.
+	for ( $i = 1; $i &lt; ( 1 + $num_sections ); $i++ ) {
+		if ( get_theme_mod( &#x27;panel_&#x27; . $i ) ) {
+			$panel_count++;
+		}
+	}
+
+	return $panel_count;
+}
+
+/**
+ * Checks to see if we&#x27;re on the homepage or not.
+ */
+
+ $args = array(
+        &#x27;width&#x27;              =&gt; 1000,
+        &#x27;height&#x27;             =&gt; 250,
+        &#x27;flex-width&#x27;         =&gt; true,
+        &#x27;flex-height&#x27;        =&gt; true,
+    );
+    add_theme_support( &#x27;custom-header&#x27;, $args );
+
+    
+
+function twentyseventeen_is_frontpage() {
+	return ( is_front_page() &amp;&amp; ! is_home() );
+}
+
+function the_ai2_observatory_logo(){ 
+$custom_logo_id = get_theme_mod( &#x27;custom_logo&#x27; );
+$image = wp_get_attachment_image_src( $custom_logo_id , &#x27;full&#x27; );
+echo &#x27;&lt;img src=&quot;&#x27;.$image[0].&#x27;&quot; width=&quot;276&quot; height=&quot;116&quot; alt=&quot;&quot; border=&quot;0&quot;&gt;&#x27;;
+}
+
+
+// Poster file coming from wsi server (see html).....how is that happening!!
+function the_ai2_observatory_poster(){ 
+if(get_header_image()){
+	echo &#x27;&lt;img id=&quot;posterz&quot; class=&quot;poster&quot; src=&quot;&#x27;.get_header_image().&#x27;&quot; /&gt;&#x27;;
+}
+
+}
+
+
+// video upload option
+class cc_widget_image extends WP_Widget {
+        function cc_widget_image() {
+            $widget_ops = array(&#x27;classname&#x27; =&gt; &#x27;cc_widget_image&#x27;, &#x27;description&#x27; =&gt; __( &#x27;Select and show an image.&#x27;, &#x27;cc_language&#x27; ) );
+            $this-&gt;WP_Widget(&#x27;cc_widget_image&#x27;, &#x27;&#x27; . __( &#x27;Video Banner Widget&#x27;, &#x27;cc_language&#x27; ), $widget_ops);
+        }
+
+        function form($instance) {
+            $instance = wp_parse_args( (array) $instance, $defaults );
+            $title = $instance[&#x27;title&#x27;];
+            $image = $instance[&#x27;image&#x27;];
+            if(empty($image)){
+            	$instance[&#x27;image&#x27;] = &#x27;http://localhost/wpinstagram/wp-content/themes/aiobservatory/assets/video/vid360.mp4#t=0,48&#x27;;
+            }
+            $checkbox = $instance[&#x27;checkbox&#x27;];
+            ?&gt;
+            &lt;p&gt;
+                &lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id(&#x27;title&#x27;); ?&gt;&quot;&gt;&lt;?php _e(&#x27;Title&#x27;, &#x27;cc_language&#x27;); ?&gt;:
+                &lt;input id=&quot;&lt;?php echo $this-&gt;get_field_id(&#x27;title&#x27;); ?&gt;&quot; class=&quot;widefat&quot; type=&quot;text&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name(&#x27;title&#x27;); ?&gt;&quot; value=&quot;&lt;?php echo $instance[&#x27;title&#x27;]; ?&gt;&quot; /&gt;&lt;/label&gt;
+            &lt;/p&gt;
+            &lt;p&gt;
+                &lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id(&#x27;image&#x27;); ?&gt;&quot;&gt;&lt;?php _e(&#x27;Video Url&#x27;, &#x27;cc_language&#x27;); ?&gt;:
+                &lt;input id=&quot;&lt;?php echo $this-&gt;get_field_id(&#x27;image&#x27;); ?&gt;&quot; class=&quot;widefat&quot; type=&quot;text&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name(&#x27;image&#x27;); ?&gt;&quot; value=&quot;&lt;?php echo $instance[&#x27;image&#x27;]; ?&gt;&quot; /&gt;&lt;/label&gt;
+            &lt;/p&gt;
+     
+            
+            &lt;?php
+        }
+
+        function update($new_instance, $old_instance) {
+            $instance = $old_instance;          
+                $instance[&#x27;title&#x27;] = strip_tags($new_instance[&#x27;title&#x27;]); 
+                $instance[&#x27;image&#x27;] = $new_instance[&#x27;image&#x27;]; 
+            return $instance;
+        }
+
+        function widget($args, $instance) {
+            extract($args, EXTR_SKIP);
+
+            $title = apply_filters(&#x27;widget_title&#x27;, empty($instance[&#x27;title&#x27;]) ? __(&#x27;Image&#x27;) : $instance[&#x27;title&#x27;], $instance, $this-&gt;id_base);
+
+            echo $before_widget;
+
+            // display the widget title 
+                if ( $instance[&#x27;checkbox&#x27;] == &#x27;true&#x27; ) {
+                } else {
+                    if ( $title )
+                    echo $before_title . $title . $after_title;
+                }
+
+            // display the widget content 
+                echo the_post_thumbnail(array(220,200));
+                if(is_home()){
+                echo &#x27;&lt;video id=&quot;video-jsi&quot; autoplay &gt;
+&lt;source src=&quot;&#x27;.$instance[&#x27;image&#x27;].&#x27;&quot; type=&quot;video/mp4&quot;&gt;  &lt;!-- change FadeAudio() if end time changes --&gt;
+&lt;/video&gt;&#x27;;
+} else {
+	//echo &#x27;&lt;div id=&quot;video-poster&quot;&gt; &lt;img src=&quot;&#x27;.get_theme_file_uri(&#x27;assets/img/bg/video-desktop4.jpg&#x27;).&#x27;&quot; alt=&quot;&quot;&gt; &lt;/div&gt;&#x27;;
+}
+
+        echo $after_widget;
+        }
+    }
+
+    add_action( &#x27;widgets_init&#x27;, create_function(&#x27;&#x27;, &#x27;return register_widget(&quot;cc_widget_image&quot;);&#x27;) );</pre></details></body></html>

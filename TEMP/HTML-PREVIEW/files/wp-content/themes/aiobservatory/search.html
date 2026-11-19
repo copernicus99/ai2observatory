@@ -1,0 +1,179 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/search.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/search.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+&lt;div id=&quot;main&quot;&gt;
+
+            &lt;h1 class=&quot;fade&quot;&gt;Search Instagram Users &amp; Hashtag ,Posts&lt;/h1&gt;
+            &lt;div class=&quot;search-header&quot;&gt;
+                &lt;div class=&quot;fix&quot;&gt;
+                    &lt;section&gt;
+                        &lt;i class=&quot;icon-search&quot;&gt;&lt;/i&gt;
+                        &lt;form action=&quot;&quot;&gt;
+                        &lt;input type=&quot;text&quot; name=&quot;s&quot; class=&quot;searchKey-w&quot; placeholder=&quot;Search for user, hashtag, posts&quot; value=&quot;&quot; autocapitalize=&quot;off&quot; autocomplete=&quot;off&quot;&gt;
+                        &lt;span class=&quot;clearSearch&quot;&gt;×&lt;/span&gt;
+                        &lt;/form&gt;
+                    &lt;/section&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;container media&quot;&gt;
+                &lt;div class=&quot;row&quot;&gt;
+                    &lt;article class=&quot;right&quot;&gt;
+                        &lt;!--ad--&gt;
+                        &lt;div class=&quot;fixad s&quot;&gt;
+                                                 
+                        &lt;/div&gt;
+                        &lt;!--/ad--&gt;
+                    &lt;/article&gt;
+                    &lt;div class=&quot;left grid search overhide&quot;&gt;
+                        &lt;div class=&quot;row&quot;&gt;
+                         
+                            &lt;h3 class=&quot;name&quot;&gt;
+                                &lt;span&gt;Hot Users &amp; Hashtag&lt;/span&gt;
+                            &lt;/h3&gt;
+                            &lt;!--hotTags--&gt;
+                            
+                            &lt;article&gt;
+                                &lt;div class=&quot;card&quot;&gt;
+                                    &lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;
+                                        &lt;i&gt;#&lt;/i&gt;
+                                        &lt;strong&gt;&lt;/strong&gt;
+                                        &lt;br&gt;
+                                        &lt;span&gt; Posts&lt;/span&gt;
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/article&gt;
+                            
+                            &lt;article&gt;
+                                &lt;div class=&quot;card&quot;&gt;
+                                    &lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt;
+                                        &lt;img src=&quot;&quot;&gt;
+                                        &lt;strong&gt;&lt;/strong&gt;
+                                        &lt;br&gt;
+                                        &lt;span&gt;@&lt;/span&gt;
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/article&gt;
+                            
+                        &lt;/div&gt;
+
+                        
+                    &lt;/div&gt;
+                            &lt;div class=&quot;left grid&quot;&gt;
+                                &lt;article style=&quot;width: 100%;&quot;&gt; &lt;/article&gt;
+                            &lt;/div&gt;
+
+                   
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * The template for displaying search results pages
+ *
+ * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#search-result
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ * @version 1.0
+ */
+
+get_header(); ?&gt;
+&lt;div id=&quot;main&quot;&gt;
+&lt;?php 
+$array = array();
+$tag = array();
+$count = 0;
+$search_name = &#x27;&#x27;;
+global $instagramObject;
+if(isset($_GET[&#x27;s&#x27;])){
+    $search_name = $_GET[&#x27;s&#x27;];
+  if(is_object($instagramObject)){
+$data = $instagramObject-&gt;searchUser($_GET[&#x27;s&#x27;]);
+if($data-&gt;data){
+    $array = $data-&gt;data;
+    $count++;
+}
+}
+
+if(is_object($instagramObject)){
+$data = $instagramObject-&gt;getTag($_GET[&#x27;s&#x27;]);
+if($data-&gt;data-&gt;media_count&gt;0){
+    $tag = $data-&gt;data;
+    $count++;
+}
+}
+
+}
+//dd($tag);
+?&gt;
+            &lt;h1 class=&quot;fade&quot;&gt;Search Instagram Users &amp; Hashtag ,Posts&lt;/h1&gt;
+            &lt;div class=&quot;search-header&quot;&gt;
+                &lt;div class=&quot;fix&quot;&gt;
+                    &lt;section&gt;
+                        &lt;i class=&quot;icon-search&quot;&gt;&lt;/i&gt;
+                        &lt;form action=&quot;&lt;?php echo site_url();?&gt;&quot;&gt;
+                        &lt;input type=&quot;text&quot; name=&quot;s&quot; class=&quot;searchKey-w&quot; placeholder=&quot;Search for user, hashtag, posts&quot; value=&quot;&lt;?php echo $search_name;?&gt;&quot; autocapitalize=&quot;off&quot; autocomplete=&quot;off&quot;&gt;
+                        &lt;span class=&quot;clearSearch&quot;&gt;×&lt;/span&gt;
+                        &lt;/form&gt;
+                    &lt;/section&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;container media&quot;&gt;
+                &lt;div class=&quot;row&quot;&gt;
+                    &lt;article class=&quot;right&quot;&gt;
+                        &lt;!--ad--&gt;
+                        &lt;div class=&quot;fixad s&quot;&gt;
+                        &lt;?php dynamic_sidebar(&#x27;search-sidebar&#x27;);?&gt;                         
+                        &lt;/div&gt;
+                        &lt;!--/ad--&gt;
+                    &lt;/article&gt;
+                    &lt;div class=&quot;left grid search overhide&quot;&gt;
+                        &lt;div class=&quot;row&quot;&gt;
+                         
+                            &lt;h3 class=&quot;name&quot;&gt;
+                                &lt;span&gt;Hot Users &amp; Hashtag&lt;/span&gt;
+                            &lt;/h3&gt;
+                            &lt;!--hotTags--&gt;
+                            &lt;?php
+                            if($tag){ ?&gt;
+                            &lt;article&gt;
+                                &lt;div class=&quot;card&quot;&gt;
+                                    &lt;a href=&quot;&lt;?php echo site_url(&#x27;tag/?pid=&#x27;.$tag-&gt;name)?&gt;&quot; target=&quot;_blank&quot;&gt;
+                                        &lt;i&gt;#&lt;/i&gt;
+                                        &lt;strong&gt;&lt;?php echo $tag-&gt;name;?&gt;&lt;/strong&gt;
+                                        &lt;br&gt;
+                                        &lt;span&gt;&lt;?php echo number_format($tag-&gt;media_count);?&gt; Posts&lt;/span&gt;
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/article&gt;
+                            &lt;?php }
+                            if($array){
+                            foreach($array as $arr){?&gt;
+                            &lt;article&gt;
+                                &lt;div class=&quot;card&quot;&gt;
+                                    &lt;a href=&quot;&lt;?php echo site_url(&quot;profile/?pid=&quot;.$arr-&gt;username);?&gt;&quot; target=&quot;_blank&quot;&gt;
+                                        &lt;img src=&quot;&lt;?php echo $arr-&gt;profile_picture;?&gt;&quot;&gt;
+                                        &lt;strong&gt;&lt;?php echo $arr-&gt;full_name;?&gt;&lt;/strong&gt;
+                                        &lt;br&gt;
+                                        &lt;span&gt;@&lt;?php echo $arr-&gt;username;?&gt;&lt;/span&gt;
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/article&gt;
+                            &lt;?php 
+                        }
+                    }
+
+                        ?&gt;
+                        &lt;/div&gt;
+
+                        &lt;?php echo ($count==0)? &#x27;No post found.&#x27;:&#x27;&#x27;;?&gt;
+                    &lt;/div&gt;
+                            &lt;div class=&quot;left grid&quot;&gt;
+                                &lt;article style=&quot;width: 100%;&quot;&gt;&lt;?php dynamic_sidebar(&#x27;search-bottom&#x27;);?&gt; &lt;/article&gt;
+                            &lt;/div&gt;
+
+                   
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+&lt;?php get_footer();
+</pre></details></body></html>

@@ -1,0 +1,163 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/form-settings/form-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms/tabs/form-settings/form-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+
+function ninja_forms_register_tab_form_settings(){
+	$all_forms_link = esc_url( remove_query_arg( array( &#x27;form_id&#x27;, &#x27;tab&#x27; ) ) );
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Settings&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_form_settings&#x27;,
+		&#x27;tab_reload&#x27; =&gt; false,
+		// &#x27;title&#x27; =&gt; &#x27;&lt;h2&gt;Forms &lt;a href=&quot;&#x27;.$all_forms_link.&#x27;&quot; class=&quot;add-new-h2&quot;&gt;&#x27;.__(&#x27;View All Forms&#x27;, &#x27;ninja-forms&#x27;).&#x27;&lt;/a&gt;&lt;/h2&gt;&#x27;,
+	);
+	ninja_forms_register_tab(&#x27;form_settings&#x27;, $args);
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_tab_form_settings&#x27;, 11 );
+
+function ninja_forms_register_form_settings_basic_metabox(){
+
+	if( isset( $_REQUEST[&#x27;form_id&#x27;] ) ){
+		$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		$form_data = Ninja_Forms()-&gt;form( $form_id )-&gt;get_all_settings();
+	}else{
+		$form_id = &#x27;&#x27;;
+		$form_row = &#x27;&#x27;;
+		$form_data = &#x27;&#x27;;
+	}
+
+	$pages = get_pages();
+	$pages_array = array();
+	$append_array = array();
+	array_push($pages_array, array(&#x27;name&#x27; =&gt; __( &#x27;- None&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;&#x27;));
+	array_push($append_array, array(&#x27;name&#x27; =&gt; __( &#x27;- None&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;&#x27;));
+	foreach ($pages as $pagg) {
+		array_push($pages_array, array(&#x27;name&#x27; =&gt; $pagg-&gt;post_title, &#x27;value&#x27; =&gt; get_page_link($pagg-&gt;ID)));
+		array_push($append_array, array(&#x27;name&#x27; =&gt; $pagg-&gt;post_title, &#x27;value&#x27; =&gt; $pagg-&gt;ID));
+	}
+
+	if( isset( $form_data[&#x27;ajax&#x27;] ) ){
+		$ajax = $form_data[&#x27;ajax&#x27;];
+	}else{
+		$ajax = 0;
+	}
+
+	$args = apply_filters( &#x27;ninja_forms_form_settings_basic&#x27;, array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;form_settings&#x27;,
+		&#x27;slug&#x27; =&gt; &#x27;basic_settings&#x27;,
+		&#x27;title&#x27; =&gt; __( &#x27;Display&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+		&#x27;settings&#x27; =&gt; array(
+			array( 
+				&#x27;name&#x27; 				=&gt; &#x27;form_title&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;text&#x27;,
+				&#x27;label&#x27;				=&gt; __( &#x27;Form Title&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; 				=&gt; &#x27;show_title&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;checkbox&#x27;,
+				&#x27;label&#x27; 			=&gt; __( &#x27;Display Form Title&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;name&#x27; 				=&gt; &#x27;append_page&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;select&#x27;,
+				&#x27;desc&#x27; 				=&gt; &#x27;&#x27;,
+				&#x27;label&#x27; 			=&gt; __( &#x27;Add form to this page&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; 	=&gt; &#x27;&#x27;,
+				&#x27;help&#x27; 				=&gt; &#x27;&#x27;,
+				&#x27;options&#x27; 			=&gt; $append_array,
+			),
+			array(
+				&#x27;name&#x27; 				=&gt; &#x27;ajax&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; 				=&gt; &#x27;&#x27;,
+				&#x27;label&#x27; 				=&gt; __( &#x27;Submit via AJAX (without page reload)?&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; 	=&gt; &#x27;&#x27;,
+				&#x27;help&#x27; 				=&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; 				=&gt; &#x27;clear_complete&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; 				=&gt; &#x27;&#x27;,
+				&#x27;label&#x27; 			=&gt; __( &#x27;Clear successfully completed form?&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; 	=&gt; &#x27;&#x27;,
+				&#x27;desc&#x27; 				=&gt; __( &#x27;If this box is checked, Ninja Forms will clear the form values after it has been successfully submitted.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default_value&#x27; 	=&gt; 1,
+			),
+			array(
+				&#x27;name&#x27; 				=&gt; &#x27;hide_complete&#x27;,
+				&#x27;type&#x27; 				=&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; 				=&gt; &#x27;&#x27;,
+				&#x27;label&#x27; 			=&gt; __( &#x27;Hide successfully completed form?&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; 	=&gt; &#x27;&#x27;,
+				&#x27;desc&#x27; 				=&gt; __( &#x27;If this box is checked, Ninja Forms will hide the form after it has been successfully submitted.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default_value&#x27; 	=&gt; 1,
+			),
+		),
+	));
+	ninja_forms_register_tab_metabox($args);
+
+	$args = apply_filters( &#x27;ninja_forms_form_settings_restrictions&#x27;, array(
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;form_settings&#x27;,
+		&#x27;slug&#x27; =&gt; &#x27;restrictions&#x27;,
+		&#x27;title&#x27; =&gt; __( &#x27;Restrictions&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+		&#x27;settings&#x27; =&gt; array(
+			array(
+				&#x27;name&#x27; =&gt; &#x27;logged_in&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Require user to be logged in to view form?&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;help&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;not_logged_in_msg&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;rte&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Not Logged-In Message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;Message shown to users if the &quot;logged in&quot; checkbox above is checked and they are not logged-in.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;tr_class&#x27; =&gt; &#x27;&#x27;,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;sub_limit_number&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;number&#x27;,
+				&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Limit Submissions&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+				&#x27;desc&#x27; =&gt; __( &#x27;Select the number of submissions that this form will accept. Leave empty for no limit.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default_value&#x27; =&gt; &#x27;&#x27;,
+				&#x27;tr_class&#x27; =&gt; &#x27;&#x27;,
+				&#x27;min&#x27; =&gt; 0,
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;sub_limit_msg&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;rte&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Limit Reached Message&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;Please enter a message that you want displayed when this form has reached its submission limit and will not accept new submissions.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;tr_class&#x27; =&gt; &#x27;&#x27;,
+			),
+		),
+	));
+	ninja_forms_register_tab_metabox($args);
+
+
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_register_form_settings_basic_metabox&#x27; );
+
+function ninja_forms_save_form_settings( $form_id, $data ){
+	global $wpdb, $ninja_forms_admin_update_message;
+
+	foreach ( $data as $key =&gt; $val ){
+		if ( &#x27;form_title&#x27; == $key ) {
+			$val = esc_html( $val );
+		}
+		Ninja_Forms()-&gt;form( $form_id )-&gt;update_setting( $key, $val );
+	}
+
+	$update_msg = __( &#x27;Form Settings Saved&#x27;, &#x27;ninja-forms&#x27; );
+	return $update_msg;
+}
+</pre></details></body></html>

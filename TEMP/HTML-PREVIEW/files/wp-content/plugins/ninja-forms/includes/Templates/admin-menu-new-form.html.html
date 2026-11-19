@@ -1,0 +1,1377 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-new-form.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-new-form.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div id=&quot;nf-pre-builder&quot; style=&quot;background:#fff;position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999999;&quot;&gt;&lt;/div&gt;
+
+&lt;div id=&quot;nf-builder&quot; class=&quot;grey&quot;&gt;&lt;/div&gt;
+
+&lt;script id=&quot;tmpl-nf-builder&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-admin-header&quot;&gt;
+        &lt;div id=&quot;nf-logo&quot;&gt;&lt;/div&gt;
+        
+            &lt;a href=&quot;&quot; target=&quot;_blank&quot; class=&quot;nf-cta-bubble&quot;&gt;&lt;/a&gt;
+        
+
+        &lt;a href=&quot;admin.php?page=ninja-forms&quot; class=&quot;fa fa-times&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-overlay&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-header&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-main&quot; class=&quot;nf-app-main&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-menu-drawer&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-drawer&quot;&gt;&lt;/div&gt;
+    &lt;span class=&quot;merge-tags-content&quot; style=&quot;display:none;&quot;&gt;&lt;/span&gt;
+    &lt;div id=&quot;merge-tags-box&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- MERGE TAGS BOX TEMPLATES --&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;merge-tag-filter&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;merge-tag-container&quot;&gt;
+        &lt;div class=&quot;merge-tag-sections&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;merge-tag-list&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-section&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.label }}}
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-tag&quot; type=&quot;text/template&quot;&gt;
+    &lt;span data-tag=&quot;{{{data.tag}}}&quot;&gt;{{{ data.label }}} &lt;small&gt;{{{data.tag}}}&lt;/small&gt;&lt;/span&gt;
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-filter&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; placeholder=&quot;Search for merge tags&quot; &gt;
+&lt;/script&gt;
+&lt;!-- END: MERGE TAGS BOX TEMPLATES --&gt;
+
+&lt;script id=&quot;tmpl-nf-admin-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-admin-header&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-header&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-app-form-title&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-app-sub-header&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-header-form-title&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderTitle() }}}&lt;/h2&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-master-control nf-open-drawer&quot; title=&quot;&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;
+        &lt;i class=&quot;fa fa-plus&quot; data-drawerid=&quot;addField&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;span data-drawerid=&quot;addField&quot;&gt;&lt;/span&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-actions&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-master-control nf-open-drawer&quot; title=&quot;&quot; href=&quot;#&quot; data-drawerid=&quot;addAction&quot;&gt;
+        &lt;i class=&quot;fa fa-plus&quot; data-drawerid=&quot;addAction&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;span&gt;&lt;/span&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-settings&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- &lt;div id=&quot;nf-logo&quot;&gt;&lt;/div&gt; --&gt;
+    &lt;ul class=&quot;nf-app-menu&quot;&gt;&lt;/ul&gt;
+    &lt;span class=&quot;nf-mobile-menu-button&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;nf-app-buttons&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-action-button&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.renderPublish() }}}
+    {{{ data.maybeRenderCancel() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-button nf-mobile-menu&quot; title=&quot;&quot; {{{ data.maybeDisabled() }}}&quot; href=&quot;#&quot;&gt;&lt;span class=&quot;dashicons dashicons-editor-ul&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-publish-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; style=&quot;width:{{{ data.publishWidth }}} !important&quot; class=&quot;nf-button primary {{{ data.maybeDisabled() }}} publish&quot; title=&quot;&quot;&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-header-publish-loading&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; {{{ data.publishWidth }}} class=&quot;nf-button primary {{{ data.maybeDisabled() }}} publish&quot; title=&quot;&quot;&gt;
+        &lt;div class=&quot;nf-loading&quot;&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-view-changes&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-cancel viewChanges&quot; title=&quot;&quot; style=&quot;text-decoration: none;&quot; href=&quot;#&quot;&gt;&lt;span class=&quot;dashicons dashicons-backup&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-main-content&quot; class=&quot;nf-app-area&quot;&gt;
+        &lt;div id=&quot;nf-main-gutter-left&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;nf-main-body&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;nf-main-gutter-right&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;input class=&quot;nf-button secondary nf-change-domain&quot; data-domain=&quot;actions&quot; type=&quot;button&quot; value=&quot;Edit Emails and Actions&quot; /&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-actions&quot; type=&quot;text/template&quot;&gt;
+    &lt;input class=&quot;nf-button secondary nf-change-domain&quot; data-domain=&quot;settings&quot; type=&quot;button&quot; value=&quot;Manage Settings&quot; /&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-settings&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-fields-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-fields-empty&quot;&gt;
+        &lt;h3&gt;&lt;/h3&gt;
+        &lt;p&gt; 
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-actions-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;tr&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+            &lt;h3&gt;&lt;/h3&gt;
+            &lt;p&gt;&lt;/p&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;{{{ data.getFieldID() }}}&quot; class=&quot;{{{ data.renderClasses() }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;{{{ data.renderIcon() }}}&lt;span class=&quot;nf-field-label&quot;&gt;{{{ _.escape( data.label ) }}} {{{ data.renderRequired() }}}&lt;/span&gt;
+        &lt;div class=&quot;nf-item-controls&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-item-controls&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-item-edit nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&quot;&gt;&lt;i class=&quot;nf-edit-settings fa fa-cog&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;!-- &lt;span class=&quot;nf-item-editing&quot;&gt;Editing {{{ data.objectType }}}&lt;/span&gt; --&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div class=&quot;nf-item-duplicate nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&quot;&gt;&lt;i class=&quot;nf-duplicate fa fa-files-o&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div class=&quot;nf-item-delete nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&quot;&gt;&lt;i class=&quot;nf-delete fa fa-trash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/a&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-action-table&quot; type=&quot;text/template&quot;&gt;
+    &lt;table id=&quot;nf-table-display&quot; class=&quot;nf-actions-table&quot;&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-action-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;td&gt;{{{ data.renderToggle() }}}&lt;/td&gt;
+    &lt;td&gt;{{{ data.label }}}&lt;/td&gt;
+    &lt;td&gt;{{{ data.renderTypeNicename() }}}&lt;/td&gt;
+    &lt;td&gt;
+        &lt;div class=&quot;nf-item-controls&quot;&gt;&lt;/div&gt;
+    &lt;/td&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-form-setting-type&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot;&gt;&lt;span&gt;{{{ data.nicename }}}&lt;/span&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu&quot; type=&quot;text/template&quot;&gt;
+    &lt;ul class=&quot;primary&quot;&gt;
+        &lt;li class=&quot;nf-publish {{{ data.maybeDisabled() }}}&quot;&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;ul class=&quot;secondary&quot;&gt;&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;li&gt;&lt;a href=&quot;{{{ data.renderUrl() }}}&quot; title=&quot;{{{ data.nicename }}}&quot; tabindex=&quot;-1&quot; target=&quot;{{{ data.renderTarget() }}}&quot; {{{ data.renderDisabled() }}} &gt;{{{ data.renderDashicons() }}}{{{ data.nicename }}}&lt;/a&gt;&lt;/li&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-drawer-header&quot;&gt;&lt;/div&gt;
+    &lt;span id=&quot;nf-drawer-content&quot;&gt;&lt;/span&gt;
+    &lt;a class=&quot;nf-toggle-drawer&quot; title=&quot;&quot;&gt;
+        &lt;span class=&quot;dashicons dashicons-admin-collapse&quot;&gt;&lt;/span&gt;&lt;span class=&quot;nf-expand-off&quot;&gt;&lt;/span&gt;&lt;span class=&quot;nf-expand-on&quot;&gt;&lt;/span&gt;
+    &lt;/a&gt;
+    &lt;span id=&quot;nf-drawer-footer&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-add-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-drawer-staging&quot; class=&quot;nf-settings nf-stage&quot;&gt;
+        &lt;div class=&quot;nf-reservoir nf-drawer-staged-fields nf-field-type-droppable&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;span id=&quot;nf-drawer-primary&quot;&gt;&lt;/span&gt;
+    &lt;span id=&quot;nf-drawer-secondary&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-add-action&quot; type=&quot;text/template&quot;&gt;
+    &lt;span id=&quot;nf-drawer-primary&quot;&gt;&lt;/span&gt;
+    &lt;span id=&quot;nf-drawer-secondary&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-view-changes-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;# if ( ! data.disabled ) { #&gt;
+    &lt;tr&gt;
+    &lt;# } else { #&gt;
+    &lt;tr class=&quot;disabled-row&quot;&gt;
+    &lt;# } #&gt;
+
+        &lt;td&gt;
+            &lt;span class=&quot;dashicons dashicons-{{{ data.label.dashicon }}}&quot;&gt;&lt;/span&gt; &lt;span class=&quot;nf-changes-item {{{ ( data.disabled ) ? &#x27;disabled&#x27; : &#x27;&#x27; }}}&quot;&gt;&lt;/span&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.object }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.label }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.change }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;# if ( ! data.disabled ) { #&gt;
+                &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;undoSingle disabled&quot; style=&quot;text-decoration:none;&quot;&gt;
+            &lt;# } #&gt;
+
+            &lt;span class=&quot;dashicons dashicons-image-rotate {{{ ( data.disabled ) ? &#x27;disabled&#x27; : &#x27;&#x27; }}}&quot;&gt;&lt;/span&gt;
+
+            &lt;# if ( ! data.disabled ) { #&gt;
+                &lt;/a&gt;
+            &lt;# } #&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;nf-setting-title&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;nf-setting-groups&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings-title-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderTypeNicename() }}}&lt;/h2&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings-title-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderSavedStar() }}} {{{ data.renderTypeNicename() }}}&lt;/h2&gt;
+    &lt;span class=&quot;nf-add-saved-field&quot; style=&quot;display:none&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; placeholder=&quot;Saved Field Name&quot; value=&quot;{{{ data.label }}}&quot;&gt;
+    &lt;span class=&quot;add-button&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button primary&quot;&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field-loading&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; class=&quot;nf-button primary&quot;&gt;&amp;nbsp;
+        &lt;div class=&quot;nf-loading&quot;&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-field-setting-group&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings&quot;&gt;
+        {{{ data.renderLabel() }}}
+        &lt;span class=&quot;nf-field-settings&quot;&gt;&lt;/span&gt;
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-setting-group-label&quot; type=&quot;text/template&quot;&gt;
+    &lt;h3 class=&quot;toggle&quot;&gt;&lt;span class=&quot;dashicons dashicons-arrow-{{{ data.renderArrowDir() }}}&quot;&gt;&lt;/span&gt;{{{ data.label }}}&lt;/h3&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-staged-field&quot; type=&quot;text/template&quot;&gt;
+     &lt;span class=&quot;nf-item-dock&quot; id=&quot;{{{ data.id }}}&quot; data-id=&quot;{{{ data.slug }}}&quot;&gt;&lt;span class=&quot;fa fa-{{{ data.icon }}}&quot; data-id=&quot;{{{ data.slug }}}&quot;&gt;&lt;/span&gt;{{{ data.nicename }}}&lt;span class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-field-type-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings {{{ data.classes }}}&quot;&gt;
+        &lt;h3&gt;{{{ data.nicename }}}&lt;/h3&gt;
+        {{{ data.renderFieldTypes() }}}
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-field-type-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-field-type-button nf-field-type-draggable {{{ data.savedField() }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;
+        &lt;div class=&quot;nf-item&quot; data-id=&quot;{{{ data.id }}}&quot; tabindex=&quot;0&quot;&gt;&lt;span class=&quot;fa fa-{{{ data.icon }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;&lt;/span&gt;{{{ data.nicename }}}&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-action-type-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings nf-action-items {{{ data.renderClasses() }}}&quot;&gt;
+        &lt;h3&gt;{{{ data.renderNicename() }}}&lt;/h3&gt;
+        &lt;span class=&quot;action-types&quot;&gt;&lt;/span&gt;
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-action-type-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-one-third nf-action-type-draggable&quot; data-type=&quot;{{{ data.id }}}&quot;&gt;
+        &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; style=&quot;{{{ data.renderStyle() }}}&quot;&gt;{{{ data.nicename }}}&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;div class=&quot;nf-search&quot;&gt;
+            &lt;input type=&quot;search&quot; class=&quot;nf-filter&quot; value=&quot;&quot; placeholder=&quot;Filter&quot; tabindex=&quot;-1&quot; /&gt;
+        &lt;/div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button primary nf-close-drawer {{{ data.renderDisabled() }}}&quot; tabindex=&quot;-1&quot;&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-edit-settings&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button primary nf-close-drawer {{{ data.renderDisabled() }}}&quot; tabindex=&quot;-1&quot;&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-view-changes&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;div&gt;
+            &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button secondary undoChanges&quot; style=&quot;float:left;&quot; tabindex=&quot;-1&quot;&gt;&lt;span class=&quot;dashicons dashicons-backup&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button primary nf-close-drawer&quot; tabindex=&quot;-1&quot;&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-new-form&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;h3&gt;&lt;/h3&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-new-form&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;new-form-name&quot;&gt;&lt;/span&gt;
+    &lt;div class=&quot;new-form-submit&quot;&gt;&lt;/div&gt;
+    &lt;div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button secondary nf-close-drawer&quot; style=&quot;float:left;&quot; tabindex=&quot;-1&quot;&gt;&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;a href=&quot;#&quot; title=&quot;&quot; class=&quot;nf-button primary nf-close-drawer publish&quot; tabindex=&quot;-1&quot;&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-menu-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;li&gt;&lt;a href=&quot;{{{ data.renderUrl() }}}&quot; title=&quot;{{{ data.nicename }}}&quot; class=&quot;{{{ data.renderClasses() }}}&quot; target=&quot;{{{ data.renderTarget() }}}&quot; {{{ data.renderDisabled() }}}&gt;&lt;span class=&quot;app-menu-text&quot;&gt;{{{ data.nicename }}}&lt;/span&gt;{{{ data.renderDashicons() }}}&lt;/a&gt;&lt;/li&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-staged-fields-drag&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-staged-fields-drag&quot;&gt;
+        &lt;div id=&quot;drag-item-1&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;{{{ data.num }}}&lt;/div&gt;
+        &lt;div id=&quot;drag-item-2&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;&amp;nbsp;&lt;/div&gt;
+        &lt;div id=&quot;drag-item-3&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;&amp;nbsp;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-staged-fields-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-staged-fields-empty&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-empty&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-merge-tags-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;h4&gt;{{{ data.label }}}&lt;/h4&gt;
+    &lt;ul class=&quot;merge-tags&quot;&gt;&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-merge-tags-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; title=&quot;{{{ data.label }}}&quot; tabindex=&quot;1&quot; class=&quot;{{{ data.renderClasses() }}}&quot;&gt;{{{ _.escape( data.label ) }}}&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;!-- Field Settings Templates --&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-wrap&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        {{{ data.renderSetting() }}}
+        &lt;div class=&quot;nf-setting-error&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-wrap&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        {{{ data.renderSetting() }}}
+        &lt;span class=&quot;nf-setting-error&quot;&gt;&lt;/span&gt;
+        &lt;span class=&quot;nf-import-options&quot; style=&quot;display:none&quot;&gt;
+            :
+            &lt;br&gt;
+            &lt;br&gt;
+            &lt;strong&gt;&lt;/strong&gt;
+            &lt;br&gt;
+            &lt;br&gt;
+            &lt;em&gt;
+            Example:
+            &lt;/em&gt;
+            &lt;pre&gt;
+Label One, value-one, 1
+Label Two, value-two, 2
+Label Three, value-three, 3
+            &lt;/pre&gt;
+            &lt;textarea&gt;&lt;/textarea&gt;
+            &lt;a href=&quot;#&quot; class=&quot;nf-button primary nf-import extra&quot;&gt;&lt;/a&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-error&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;{{{ data.error || data.warning }}}&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-textbox&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+        {{{ data.renderMergeTags() }}}
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-media&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}} has-merge-tags&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+        &lt;span class=&quot;extra open-media-manager dashicons dashicons-admin-media merge-tags&quot;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-datepicker&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-number&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;number&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ ( &#x27;undefined&#x27; != typeof data.placeholder ) ? data.placeholder : &#x27;&#x27; }}}&quot; /&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-textarea&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;textarea id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;{{{ data.value }}}&lt;/textarea&gt;
+        {{{ data.renderMergeTags() }}}
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-rte&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}&lt;/label&gt;
+        &lt;div id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;{{{ data.value }}}&lt;/div&gt;
+        {{{ data.renderMergeTags() }}}
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;nf-select&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;select id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;
+            &lt;#
+            _.each( data.options, function( option ) {
+                #&gt;
+                &lt;option value=&quot;{{{ option.value }}}&quot; {{{ ( data.value == option.value ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; }}}&gt;{{{ option.label }}}&lt;/option&gt;
+                &lt;#
+            } );
+            #&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-field-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;nf-select&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;select id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;
+            &lt;#
+            _.each( data.options, function( option ) {
+                #&gt;
+                &lt;option value=&quot;{{{ option.value }}}&quot; {{{ ( data.value == option.value ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; }}}&gt;{{{ option.label }}}&lt;/option&gt;
+                &lt;#
+            } );
+            #&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-field-list&quot; type=&quot;text/template&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt; {{{ data.label }}} &lt;/legend&gt;
+        &lt;span class=&quot;nf-field-sub-settings&quot;&gt;&lt;/span&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-checkbox&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;span class=&quot;nf-setting-label&quot;&gt;{{{ data.label }}}&lt;/span&gt; {{{ data.renderTooltip() }}}
+    &lt;input type=&quot;checkbox&quot; id=&quot;{{{ data.name }}}&quot; class=&quot;nf-checkbox setting&quot; {{{ ( 1 == data.value ) ? &#x27;checked&#x27; : &#x27;&#x27; }}} /&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}}&lt;/label&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-toggle&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;span class=&quot;nf-setting-label&quot;&gt;{{{ data.label }}}{{{ data.renderTooltip() }}}&lt;/span&gt;
+    &lt;input type=&quot;checkbox&quot; data-setting=&quot;{{{ data.settingName }}}&quot; id=&quot;{{{ data.name }}}&quot; class=&quot;nf-toggle setting&quot; {{{ ( 1 == data.value ) ? &#x27;checked&#x27; : &#x27;&#x27; }}} /&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}}&lt;/label&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-color&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}&lt;/label&gt;
+
+    &lt;input type=&quot;text&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; class=&quot;setting&quot; data-default-color=&quot;#F9F9F9&quot; /&gt;
+
+    &lt;div class=&quot;nf-colorpicker&quot;&gt;
+
+    &lt;/div&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-fieldset&quot; type=&quot;text/template&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt;{{{ data.label }}}&lt;/legend&gt;
+        &lt;span class=&quot;nf-field-sub-settings&quot;&gt;&lt;/span&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;fieldset class=&quot;nf-list-options {{{ data.renderFieldsetClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        &lt;legend&gt;{{{ data.label }}}&lt;/legend&gt;
+        &lt;div class=&quot;nf-div-table&quot;&gt;
+            &lt;div class=&quot;nf-table-row nf-table-header&quot;&gt;
+                {{{ data.renderHeaders() }}}
+            &lt;/div&gt;
+
+            &lt;div class=&quot;nf-list-options-tbody&quot;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-empty&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-error&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.renderErrors() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-default-row&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-menu handle&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;#
+        var columns = data.getColumns();
+
+        if ( &#x27;undefined&#x27; != typeof columns.label ) {
+        #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.label }}}&quot; data-id=&quot;label&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.value ) {
+            #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.value }}}&quot; data-id=&quot;value&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.calc ) {
+        #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.calc }}}&quot; data-id=&quot;calc&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.selected ) {
+            #&gt;
+            &lt;div&gt;
+                &lt;input type=&quot;checkbox&quot; class=&quot;setting&quot; class=&quot;nf-checkbox&quot; {{{ ( 1 == data.selected ) ? &#x27;checked=&quot;checked&quot;&#x27; : &#x27;&#x27; }}} value=&quot;1&quot; data-id=&quot;selected&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-dismiss nf-delete&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-html&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-note&quot;&gt;
+        {{{ data.value }}}
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- Calculation Row Template --&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-calculation-repeater-row&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-menu handle&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;calc-left&quot;&gt;
+        &lt;div&gt;
+            &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.name }}}&quot; data-id=&quot;name&quot;&gt;
+            &lt;span class=&quot;nf-option-error&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div&gt;&lt;/div&gt;
+        &lt;div&gt;
+            &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.dec }}}&quot; data-id=&quot;dec&quot;&gt;
+            &lt;span class=&quot;nf-option-error&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;textarea class=&quot;setting&quot; data-id=&quot;eq&quot;&gt;{{{ data.eq }}}&lt;/textarea&gt;
+        &lt;span class=&quot;dashicons dashicons-list-view merge-tags&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-dismiss nf-delete&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- Rich Text Editor Templates --&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-media-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-admin-media&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-merge-tags-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-list-view&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-link-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-admin-links&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-unlink-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-editor-unlink&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-link-dropdown&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;summernote-link&quot;&gt;
+        URL
+        &lt;input type=&quot;url&quot; class=&quot;widefat code link-url&quot;&gt; &lt;br /&gt;
+        Text
+        &lt;input type=&quot;url&quot; class=&quot;widefat code link-text&quot;&gt; &lt;br /&gt;
+        &lt;label&gt;
+            &lt;input type=&quot;checkbox&quot; class=&quot;link-new-window&quot;&gt;
+        &lt;/label&gt;
+        &lt;input type=&quot;button&quot; class=&quot;cancel-link extra&quot; value=&quot;Cancel&quot;&gt;
+        &lt;input type=&quot;button&quot; class=&quot;insert-link extra&quot; value=&quot;Insert&quot;&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div id=&quot;nf-pre-builder&quot; style=&quot;background:#fff;position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999999;&quot;&gt;&lt;/div&gt;
+
+&lt;div id=&quot;nf-builder&quot; class=&quot;grey&quot;&gt;&lt;/div&gt;
+
+&lt;script id=&quot;tmpl-nf-builder&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-admin-header&quot;&gt;
+        &lt;div id=&quot;nf-logo&quot;&gt;&lt;/div&gt;
+        &lt;?php
+        /*
+         * TODO: Make this much more dynamic.
+         */
+        $nf_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+        $disable_admin_notices = ( isset ( $nf_settings[ &#x27;disable_admin_notices&#x27; ] ) ) ? $nf_settings[ &#x27;disable_admin_notices&#x27; ] : false;
+
+        if( ! function_exists( &#x27;NF_Layouts&#x27; ) &amp;&amp; ! $disable_admin_notices ) {
+            $u_id = get_option( &#x27;nf_aff&#x27;, false );
+            if ( !$u_id ) $u_id = apply_filters( &#x27;ninja_forms_affiliate_id&#x27;, false );
+            $link = &#x27;https://ninjaforms.com/extensions/layout-styles/?utm_medium=plugin&amp;utm_source=plugin-builder&amp;utm_campaign=Ninja+Forms+Builder&amp;utm_content=Layout+and+Styles&#x27;;
+            if ( $u_id ) {
+                $link = &#x27;http://www.shareasale.com/r.cfm?u=&#x27; . $u_id . &#x27;&amp;b=812237&amp;m=63061&amp;afftrack=&amp;urllink=&#x27; . $link;
+            }
+        ?&gt;
+            &lt;a href=&quot;&lt;?php echo $link; ?&gt;&quot; target=&quot;_blank&quot; class=&quot;nf-cta-bubble&quot;&gt;&lt;?php printf( __( &quot;Create multi-column form layouts with Layout &amp; Styles...%slearn more now!%s&quot;, &#x27;ninja-forms&#x27; ), &#x27;&lt;span&gt;&#x27;, &#x27;&lt;/span&gt;&#x27; ); ?&gt;&lt;/a&gt;
+        &lt;?php
+        }
+        ?&gt;
+
+        &lt;a href=&quot;admin.php?page=ninja-forms&quot; class=&quot;fa fa-times&quot;&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-overlay&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-header&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-main&quot; class=&quot;nf-app-main&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-menu-drawer&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-drawer&quot;&gt;&lt;/div&gt;
+    &lt;span class=&quot;merge-tags-content&quot; style=&quot;display:none;&quot;&gt;&lt;/span&gt;
+    &lt;div id=&quot;merge-tags-box&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- MERGE TAGS BOX TEMPLATES --&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;merge-tag-filter&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;merge-tag-container&quot;&gt;
+        &lt;div class=&quot;merge-tag-sections&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;merge-tag-list&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-section&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.label }}}
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-tag&quot; type=&quot;text/template&quot;&gt;
+    &lt;span data-tag=&quot;{{{data.tag}}}&quot;&gt;{{{ data.label }}} &lt;small&gt;{{{data.tag}}}&lt;/small&gt;&lt;/span&gt;
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-merge-tag-box-filter&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; placeholder=&quot;Search for merge tags&quot; &gt;
+&lt;/script&gt;
+&lt;!-- END: MERGE TAGS BOX TEMPLATES --&gt;
+
+&lt;script id=&quot;tmpl-nf-admin-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-admin-header&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-app-header&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-app-form-title&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;nf-app-sub-header&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-header-form-title&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderTitle() }}}&lt;/h2&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-master-control nf-open-drawer&quot; title=&quot;&lt;?php _e( &#x27;Add new field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;
+        &lt;i class=&quot;fa fa-plus&quot; data-drawerid=&quot;addField&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;span data-drawerid=&quot;addField&quot;&gt;&lt;?php _e( &#x27;Add new field&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-actions&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-master-control nf-open-drawer&quot; title=&quot;&lt;?php _e( &#x27;Add new action&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; href=&quot;#&quot; data-drawerid=&quot;addAction&quot;&gt;
+        &lt;i class=&quot;fa fa-plus&quot; data-drawerid=&quot;addAction&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+        &lt;span&gt;&lt;?php _e( &#x27;Add new action&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-sub-header-settings&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header&quot; type=&quot;text/template&quot;&gt;
+    &lt;!-- &lt;div id=&quot;nf-logo&quot;&gt;&lt;/div&gt; --&gt;
+    &lt;ul class=&quot;nf-app-menu&quot;&gt;&lt;/ul&gt;
+    &lt;span class=&quot;nf-mobile-menu-button&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;nf-app-buttons&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-action-button&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.renderPublish() }}}
+    {{{ data.maybeRenderCancel() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-button nf-mobile-menu&quot; title=&quot;&lt;?php _e( &#x27;Expand Menu&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; {{{ data.maybeDisabled() }}}&quot; href=&quot;#&quot;&gt;&lt;span class=&quot;dashicons dashicons-editor-ul&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-publish-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; style=&quot;width:{{{ data.publishWidth }}} !important&quot; class=&quot;nf-button primary {{{ data.maybeDisabled() }}} publish&quot; title=&quot;&lt;?php _e( &#x27;Publish&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;PUBLISH&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-header-publish-loading&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; {{{ data.publishWidth }}} class=&quot;nf-button primary {{{ data.maybeDisabled() }}} publish&quot; title=&quot;&lt;?php _e( &#x27;Loading&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;
+        &lt;div class=&quot;nf-loading&quot;&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-header-view-changes&quot; type=&quot;text/template&quot;&gt;
+    &lt;a class=&quot;nf-cancel viewChanges&quot; title=&quot;&lt;?php _e( &#x27;View Changes&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; style=&quot;text-decoration: none;&quot; href=&quot;#&quot;&gt;&lt;span class=&quot;dashicons dashicons-backup&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-main-content&quot; class=&quot;nf-app-area&quot;&gt;
+        &lt;div id=&quot;nf-main-gutter-left&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;nf-main-body&quot;&gt;&lt;/div&gt;
+        &lt;div id=&quot;nf-main-gutter-right&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;input class=&quot;nf-button secondary nf-change-domain&quot; data-domain=&quot;actions&quot; type=&quot;button&quot; value=&quot;Edit Emails and Actions&quot; /&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-actions&quot; type=&quot;text/template&quot;&gt;
+    &lt;input class=&quot;nf-button secondary nf-change-domain&quot; data-domain=&quot;settings&quot; type=&quot;button&quot; value=&quot;Manage Settings&quot; /&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-header-settings&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-fields-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-fields-empty&quot;&gt;
+        &lt;h3&gt;&lt;?php _e( &#x27;Add form fields&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/h3&gt;
+        &lt;p&gt;&lt;?php _e( &#x27;Get started by adding your first form field.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;?php _e( &quot;It&#x27;s that easy.&quot;, &#x27;ninja-forms&#x27; ); ?&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-actions-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;tr&gt;
+        &lt;td colspan=&quot;4&quot;&gt;
+            &lt;h3&gt;&lt;?php _e( &#x27;Add form actions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/h3&gt;
+            &lt;p&gt;&lt;?php _e( &quot;Get started by adding your first form field. Just click the plus and select the actions you want. It&#x27;s that easy.&quot;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/p&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-main-content-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;{{{ data.getFieldID() }}}&quot; class=&quot;{{{ data.renderClasses() }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;{{{ data.renderIcon() }}}&lt;span class=&quot;nf-field-label&quot;&gt;{{{ _.escape( data.label ) }}} {{{ data.renderRequired() }}}&lt;/span&gt;
+        &lt;div class=&quot;nf-item-controls&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-item-controls&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-item-edit nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Edit&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;i class=&quot;nf-edit-settings fa fa-cog&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;!-- &lt;span class=&quot;nf-item-editing&quot;&gt;Editing {{{ data.objectType }}}&lt;/span&gt; --&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div class=&quot;nf-item-duplicate nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Duplicate (^ + C + click)&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;i class=&quot;nf-duplicate fa fa-files-o&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/a&gt;&lt;/div&gt;
+    &lt;div class=&quot;nf-item-delete nf-item-control&quot;&gt;&lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Delete (^ + D + click)&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;&lt;i class=&quot;nf-delete fa fa-trash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/a&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-action-table&quot; type=&quot;text/template&quot;&gt;
+    &lt;table id=&quot;nf-table-display&quot; class=&quot;nf-actions-table&quot;&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;?php _e( &#x27;Name&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;?php _e( &#x27;Type&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/th&gt;
+                &lt;th&gt;&lt;?php _e( &#x27;Actions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-action-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;td&gt;{{{ data.renderToggle() }}}&lt;/td&gt;
+    &lt;td&gt;{{{ data.label }}}&lt;/td&gt;
+    &lt;td&gt;{{{ data.renderTypeNicename() }}}&lt;/td&gt;
+    &lt;td&gt;
+        &lt;div class=&quot;nf-item-controls&quot;&gt;&lt;/div&gt;
+    &lt;/td&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-form-setting-type&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot;&gt;&lt;span&gt;{{{ data.nicename }}}&lt;/span&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu&quot; type=&quot;text/template&quot;&gt;
+    &lt;ul class=&quot;primary&quot;&gt;
+        &lt;li class=&quot;nf-publish {{{ data.maybeDisabled() }}}&quot;&gt;&lt;?php _e( &#x27;Publish&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;ul class=&quot;secondary&quot;&gt;&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mobile-menu-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;li&gt;&lt;a href=&quot;{{{ data.renderUrl() }}}&quot; title=&quot;{{{ data.nicename }}}&quot; tabindex=&quot;-1&quot; target=&quot;{{{ data.renderTarget() }}}&quot; {{{ data.renderDisabled() }}} &gt;{{{ data.renderDashicons() }}}{{{ data.nicename }}}&lt;/a&gt;&lt;/li&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-drawer-header&quot;&gt;&lt;/div&gt;
+    &lt;span id=&quot;nf-drawer-content&quot;&gt;&lt;/span&gt;
+    &lt;a class=&quot;nf-toggle-drawer&quot; title=&quot;&lt;?php _e ( &#x27;Toggle Drawer&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;
+        &lt;span class=&quot;dashicons dashicons-admin-collapse&quot;&gt;&lt;/span&gt;&lt;span class=&quot;nf-expand-off&quot;&gt;&lt;?php _e( &#x27;Full screen&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;&lt;span class=&quot;nf-expand-on&quot;&gt;&lt;?php _e( &#x27;Half screen&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+    &lt;/a&gt;
+    &lt;span id=&quot;nf-drawer-footer&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-add-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;div id=&quot;nf-drawer-staging&quot; class=&quot;nf-settings nf-stage&quot;&gt;
+        &lt;div class=&quot;nf-reservoir nf-drawer-staged-fields nf-field-type-droppable&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;span id=&quot;nf-drawer-primary&quot;&gt;&lt;/span&gt;
+    &lt;span id=&quot;nf-drawer-secondary&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-add-action&quot; type=&quot;text/template&quot;&gt;
+    &lt;span id=&quot;nf-drawer-primary&quot;&gt;&lt;/span&gt;
+    &lt;span id=&quot;nf-drawer-secondary&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-view-changes-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;# if ( ! data.disabled ) { #&gt;
+    &lt;tr&gt;
+    &lt;# } else { #&gt;
+    &lt;tr class=&quot;disabled-row&quot;&gt;
+    &lt;# } #&gt;
+
+        &lt;td&gt;
+            &lt;span class=&quot;dashicons dashicons-{{{ data.label.dashicon }}}&quot;&gt;&lt;/span&gt; &lt;span class=&quot;nf-changes-item {{{ ( data.disabled ) ? &#x27;disabled&#x27; : &#x27;&#x27; }}}&quot;&gt;&lt;/span&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.object }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.label }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            {{{ data.label.change }}}
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;# if ( ! data.disabled ) { #&gt;
+                &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Undo&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;undoSingle disabled&quot; style=&quot;text-decoration:none;&quot;&gt;
+            &lt;# } #&gt;
+
+            &lt;span class=&quot;dashicons dashicons-image-rotate {{{ ( data.disabled ) ? &#x27;disabled&#x27; : &#x27;&#x27; }}}&quot;&gt;&lt;/span&gt;
+
+            &lt;# if ( ! data.disabled ) { #&gt;
+                &lt;/a&gt;
+            &lt;# } #&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;nf-setting-title&quot;&gt;&lt;/span&gt;
+    &lt;span class=&quot;nf-setting-groups&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings-title-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderTypeNicename() }}}&lt;/h2&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-settings-title-fields&quot; type=&quot;text/template&quot;&gt;
+    &lt;h2&gt;{{{ data.renderSavedStar() }}} {{{ data.renderTypeNicename() }}}&lt;/h2&gt;
+    &lt;span class=&quot;nf-add-saved-field&quot; style=&quot;display:none&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field&quot; type=&quot;text/template&quot;&gt;
+    &lt;input type=&quot;text&quot; placeholder=&quot;Saved Field Name&quot; value=&quot;{{{ data.label }}}&quot;&gt;
+    &lt;span class=&quot;add-button&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Add&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button primary&quot;&gt;&lt;?php _e( &#x27;Add&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-add-saved-field-loading&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; class=&quot;nf-button primary&quot;&gt;&amp;nbsp;
+        &lt;div class=&quot;nf-loading&quot;&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-field-setting-group&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings&quot;&gt;
+        {{{ data.renderLabel() }}}
+        &lt;span class=&quot;nf-field-settings&quot;&gt;&lt;/span&gt;
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-edit-setting-group-label&quot; type=&quot;text/template&quot;&gt;
+    &lt;h3 class=&quot;toggle&quot;&gt;&lt;span class=&quot;dashicons dashicons-arrow-{{{ data.renderArrowDir() }}}&quot;&gt;&lt;/span&gt;{{{ data.label }}}&lt;/h3&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-staged-field&quot; type=&quot;text/template&quot;&gt;
+     &lt;span class=&quot;nf-item-dock&quot; id=&quot;{{{ data.id }}}&quot; data-id=&quot;{{{ data.slug }}}&quot;&gt;&lt;span class=&quot;fa fa-{{{ data.icon }}}&quot; data-id=&quot;{{{ data.slug }}}&quot;&gt;&lt;/span&gt;{{{ data.nicename }}}&lt;span class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-field-type-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings {{{ data.classes }}}&quot;&gt;
+        &lt;h3&gt;{{{ data.nicename }}}&lt;/h3&gt;
+        {{{ data.renderFieldTypes() }}}
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-field-type-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-field-type-button nf-field-type-draggable {{{ data.savedField() }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;
+        &lt;div class=&quot;nf-item&quot; data-id=&quot;{{{ data.id }}}&quot; tabindex=&quot;0&quot;&gt;&lt;span class=&quot;fa fa-{{{ data.icon }}}&quot; data-id=&quot;{{{ data.id }}}&quot;&gt;&lt;/span&gt;{{{ data.nicename }}}&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-action-type-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;section class=&quot;nf-settings nf-action-items {{{ data.renderClasses() }}}&quot;&gt;
+        &lt;h3&gt;{{{ data.renderNicename() }}}&lt;/h3&gt;
+        &lt;span class=&quot;action-types&quot;&gt;&lt;/span&gt;
+    &lt;/section&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-action-type-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-one-third nf-action-type-draggable&quot; data-type=&quot;{{{ data.id }}}&quot;&gt;
+        &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; style=&quot;{{{ data.renderStyle() }}}&quot;&gt;{{{ data.nicename }}}&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-default&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;div class=&quot;nf-search&quot;&gt;
+            &lt;input type=&quot;search&quot; class=&quot;nf-filter&quot; value=&quot;&quot; placeholder=&quot;Filter&quot; tabindex=&quot;-1&quot; /&gt;
+        &lt;/div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button primary nf-close-drawer {{{ data.renderDisabled() }}}&quot; tabindex=&quot;-1&quot;&gt;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-edit-settings&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button primary nf-close-drawer {{{ data.renderDisabled() }}}&quot; tabindex=&quot;-1&quot;&gt;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-view-changes&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;div&gt;
+            &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Undo All&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button secondary undoChanges&quot; style=&quot;float:left;&quot; tabindex=&quot;-1&quot;&gt;&lt;span class=&quot;dashicons dashicons-backup&quot;&gt;&lt;/span&gt;&lt;?php _e( &#x27; Undo All&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button primary nf-close-drawer&quot; tabindex=&quot;-1&quot;&gt;&lt;?php _e( &#x27;Done&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-header-new-form&quot; type=&quot;text/template&quot;&gt;
+    &lt;header class=&quot;nf-drawer-header&quot;&gt;
+        &lt;h3&gt;&lt;?php _e( &#x27;Almost there...&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/h3&gt;
+    &lt;/header&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-content-new-form&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;new-form-name&quot;&gt;&lt;/span&gt;
+    &lt;div class=&quot;new-form-submit&quot;&gt;&lt;/div&gt;
+    &lt;div&gt;
+        &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Not Yet&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button secondary nf-close-drawer&quot; style=&quot;float:left;&quot; tabindex=&quot;-1&quot;&gt;&lt;?php _e( &#x27;Not Yet&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;a href=&quot;#&quot; title=&quot;&lt;?php _e( &#x27;Publish&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; class=&quot;nf-button primary nf-close-drawer publish&quot; tabindex=&quot;-1&quot;&gt;&lt;?php _e( &#x27;Publish&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-app-menu-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;li&gt;&lt;a href=&quot;{{{ data.renderUrl() }}}&quot; title=&quot;{{{ data.nicename }}}&quot; class=&quot;{{{ data.renderClasses() }}}&quot; target=&quot;{{{ data.renderTarget() }}}&quot; {{{ data.renderDisabled() }}}&gt;&lt;span class=&quot;app-menu-text&quot;&gt;{{{ data.nicename }}}&lt;/span&gt;{{{ data.renderDashicons() }}}&lt;/a&gt;&lt;/li&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-staged-fields-drag&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-staged-fields-drag&quot;&gt;
+        &lt;div id=&quot;drag-item-1&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;{{{ data.num }}}&lt;?php _e( &#x27; Fields&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/div&gt;
+        &lt;div id=&quot;drag-item-2&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;&amp;nbsp;&lt;/div&gt;
+        &lt;div id=&quot;drag-item-3&quot; class=&quot;nf-staged-fields-drag-wrap&quot;&gt;&amp;nbsp;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-drawer-staged-fields-empty&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-staged-fields-empty&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-empty&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-merge-tags-section&quot; type=&quot;text/template&quot;&gt;
+    &lt;h4&gt;{{{ data.label }}}&lt;/h4&gt;
+    &lt;ul class=&quot;merge-tags&quot;&gt;&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-merge-tags-item&quot; type=&quot;text/template&quot;&gt;
+    &lt;a href=&quot;#&quot; title=&quot;{{{ data.label }}}&quot; tabindex=&quot;1&quot; class=&quot;{{{ data.renderClasses() }}}&quot;&gt;{{{ _.escape( data.label ) }}}&lt;/a&gt;
+&lt;/script&gt;
+
+&lt;!-- Field Settings Templates --&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-wrap&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        {{{ data.renderSetting() }}}
+        &lt;div class=&quot;nf-setting-error&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-wrap&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;{{{ data.renderClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        {{{ data.renderSetting() }}}
+        &lt;span class=&quot;nf-setting-error&quot;&gt;&lt;/span&gt;
+        &lt;span class=&quot;nf-import-options&quot; style=&quot;display:none&quot;&gt;
+            &lt;?php _e( &#x27;Please use the following format&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;:
+            &lt;br&gt;
+            &lt;br&gt;
+            &lt;strong&gt;&lt;?php _e( &#x27;Label, Value, Calc Value&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/strong&gt;
+            &lt;br&gt;
+            &lt;br&gt;
+            &lt;em&gt;
+            Example:
+            &lt;/em&gt;
+            &lt;pre&gt;
+Label One, value-one, 1
+Label Two, value-two, 2
+Label Three, value-three, 3
+            &lt;/pre&gt;
+            &lt;textarea&gt;&lt;/textarea&gt;
+            &lt;a href=&quot;#&quot; class=&quot;nf-button primary nf-import extra&quot;&gt;&lt;?php _e( &#x27;Import&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-error&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;{{{ data.error || data.warning }}}&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-textbox&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+        {{{ data.renderMergeTags() }}}
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-media&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}} has-merge-tags&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+        &lt;span class=&quot;extra open-media-manager dashicons dashicons-admin-media merge-tags&quot;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-datepicker&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;text&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ data.placeholder }}}&quot; /&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-number&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;input type=&quot;number&quot; class=&quot;setting&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; placeholder=&quot;{{{ ( &#x27;undefined&#x27; != typeof data.placeholder ) ? data.placeholder : &#x27;&#x27; }}}&quot; /&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-textarea&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;textarea id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;{{{ data.value }}}&lt;/textarea&gt;
+        {{{ data.renderMergeTags() }}}
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-rte&quot; type=&quot;text/template&quot;&gt;
+    &lt;label class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}&lt;/label&gt;
+        &lt;div id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;{{{ data.value }}}&lt;/div&gt;
+        {{{ data.renderMergeTags() }}}
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;nf-select&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;select id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;
+            &lt;#
+            _.each( data.options, function( option ) {
+                #&gt;
+                &lt;option value=&quot;{{{ option.value }}}&quot; {{{ ( data.value == option.value ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; }}}&gt;{{{ option.label }}}&lt;/option&gt;
+                &lt;#
+            } );
+            #&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-field-select&quot; type=&quot;text/template&quot;&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;nf-select&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}
+        &lt;select id=&quot;{{{ data.name }}}&quot; class=&quot;setting&quot;&gt;
+            &lt;#
+            _.each( data.options, function( option ) {
+                #&gt;
+                &lt;option value=&quot;{{{ option.value }}}&quot; {{{ ( data.value == option.value ) ? &#x27;selected=&quot;selected&quot;&#x27; : &#x27;&#x27; }}}&gt;{{{ option.label }}}&lt;/option&gt;
+                &lt;#
+            } );
+            #&gt;
+        &lt;/select&gt;
+        &lt;div&gt;&lt;/div&gt;
+    &lt;/label&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-field-list&quot; type=&quot;text/template&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt; {{{ data.label }}} &lt;/legend&gt;
+        &lt;span class=&quot;nf-field-sub-settings&quot;&gt;&lt;/span&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-checkbox&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;span class=&quot;nf-setting-label&quot;&gt;{{{ data.label }}}&lt;/span&gt; {{{ data.renderTooltip() }}}
+    &lt;input type=&quot;checkbox&quot; id=&quot;{{{ data.name }}}&quot; class=&quot;nf-checkbox setting&quot; {{{ ( 1 == data.value ) ? &#x27;checked&#x27; : &#x27;&#x27; }}} /&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}}&lt;/label&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-toggle&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;span class=&quot;nf-setting-label&quot;&gt;{{{ data.label }}}{{{ data.renderTooltip() }}}&lt;/span&gt;
+    &lt;input type=&quot;checkbox&quot; data-setting=&quot;{{{ data.settingName }}}&quot; id=&quot;{{{ data.name }}}&quot; class=&quot;nf-toggle setting&quot; {{{ ( 1 == data.value ) ? &#x27;checked&#x27; : &#x27;&#x27; }}} /&gt;
+    &lt;label for=&quot;{{{ data.name }}}&quot;&gt;{{{ data.label }}}&lt;/label&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-color&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;label for=&quot;{{{ data.name }}}&quot; class=&quot;{{{ data.renderLabelClasses() }}}&quot;&gt;{{{ data.label }}} {{{ data.renderTooltip() }}}&lt;/label&gt;
+
+    &lt;input type=&quot;text&quot; id=&quot;{{{ data.name }}}&quot; value=&quot;{{{ data.value }}}&quot; class=&quot;setting&quot; data-default-color=&quot;#F9F9F9&quot; /&gt;
+
+    &lt;div class=&quot;nf-colorpicker&quot;&gt;
+
+    &lt;/div&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-fieldset&quot; type=&quot;text/template&quot;&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt;{{{ data.label }}}&lt;/legend&gt;
+        &lt;span class=&quot;nf-field-sub-settings&quot;&gt;&lt;/span&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater&quot; type=&quot;text/template&quot;&gt;
+
+    &lt;fieldset class=&quot;nf-list-options {{{ data.renderFieldsetClasses() }}}&quot; {{{ data.renderVisible() }}}&gt;
+        &lt;legend&gt;{{{ data.label }}}&lt;/legend&gt;
+        &lt;div class=&quot;nf-div-table&quot;&gt;
+            &lt;div class=&quot;nf-table-row nf-table-header&quot;&gt;
+                {{{ data.renderHeaders() }}}
+            &lt;/div&gt;
+
+            &lt;div class=&quot;nf-list-options-tbody&quot;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/fieldset&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-empty&quot; type=&quot;text/template&quot;&gt;
+
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-error&quot; type=&quot;text/template&quot;&gt;
+    {{{ data.renderErrors() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-option-repeater-default-row&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-menu handle&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;#
+        var columns = data.getColumns();
+
+        if ( &#x27;undefined&#x27; != typeof columns.label ) {
+        #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.label }}}&quot; data-id=&quot;label&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.value ) {
+            #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.value }}}&quot; data-id=&quot;value&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.calc ) {
+        #&gt;
+             &lt;div&gt;
+                &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.calc }}}&quot; data-id=&quot;calc&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+    &lt;#
+        if ( &#x27;undefined&#x27; != typeof columns.selected ) {
+            #&gt;
+            &lt;div&gt;
+                &lt;input type=&quot;checkbox&quot; class=&quot;setting&quot; class=&quot;nf-checkbox&quot; {{{ ( 1 == data.selected ) ? &#x27;checked=&quot;checked&quot;&#x27; : &#x27;&#x27; }}} value=&quot;1&quot; data-id=&quot;selected&quot;&gt;
+            &lt;/div&gt;
+            &lt;#
+        }
+    #&gt;
+
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-dismiss nf-delete&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-html&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-note&quot;&gt;
+        {{{ data.value }}}
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- Calculation Row Template --&gt;
+
+&lt;script id=&quot;tmpl-nf-edit-setting-calculation-repeater-row&quot; type=&quot;text/template&quot;&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-menu handle&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;calc-left&quot;&gt;
+        &lt;div&gt;
+            &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.name }}}&quot; data-id=&quot;name&quot;&gt;
+            &lt;span class=&quot;nf-option-error&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div&gt;&lt;?php _e( &#x27;Decimals&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/div&gt;
+        &lt;div&gt;
+            &lt;input type=&quot;text&quot; class=&quot;setting&quot; value=&quot;{{{ data.dec }}}&quot; data-id=&quot;dec&quot;&gt;
+            &lt;span class=&quot;nf-option-error&quot;&gt;&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;textarea class=&quot;setting&quot; data-id=&quot;eq&quot;&gt;{{{ data.eq }}}&lt;/textarea&gt;
+        &lt;span class=&quot;dashicons dashicons-list-view merge-tags&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;span class=&quot;dashicons dashicons-dismiss nf-delete&quot;&gt;&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;!-- Rich Text Editor Templates --&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-media-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-admin-media&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-merge-tags-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-list-view&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-link-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-admin-links&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-unlink-button&quot; type=&quot;text/template&quot;&gt;
+    &lt;span class=&quot;dashicons dashicons-editor-unlink&quot;&gt;&lt;/span&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-rte-link-dropdown&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;summernote-link&quot;&gt;
+        URL
+        &lt;input type=&quot;url&quot; class=&quot;widefat code link-url&quot;&gt; &lt;br /&gt;
+        Text
+        &lt;input type=&quot;url&quot; class=&quot;widefat code link-text&quot;&gt; &lt;br /&gt;
+        &lt;label&gt;
+            &lt;input type=&quot;checkbox&quot; class=&quot;link-new-window&quot;&gt;&lt;?php _e( &#x27; Open in new window&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+        &lt;/label&gt;
+        &lt;input type=&quot;button&quot; class=&quot;cancel-link extra&quot; value=&quot;Cancel&quot;&gt;
+        &lt;input type=&quot;button&quot; class=&quot;insert-link extra&quot; value=&quot;Insert&quot;&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+
+&lt;?php do_action( &#x27;ninja_forms_builder_templates&#x27; ); ?&gt;
+</pre></details></body></html>

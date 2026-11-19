@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Addons.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Addons.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Addons {
+
+	/**
+	 * @var AC_Addon[]
+	 */
+	private $addons;
+
+	/**
+	 * @return AC_Addon[]
+	 */
+	public function get_addons() {
+		if ( null === $this-&gt;addons ) {
+			$this-&gt;set_addons();
+		}
+
+		return $this-&gt;addons;
+	}
+
+	/**
+	 * @return AC_Addon[]
+	 */
+	public function get_active_promo() {
+		$addons = $this-&gt;get_addons();
+
+		foreach ( $addons as $k =&gt; $addon ) {
+			if ( ! $addon-&gt;is_plugin_active() || $addon-&gt;is_active() ) {
+				unset( $addons[ $k ] );
+			}
+		}
+
+		return $addons;
+	}
+
+	/**
+	 * All addons where 3d party is installed but integration is not installed
+	 *
+	 * @return AC_Addon[]
+	 */
+	public function get_missing_addons() {
+		$missing = array();
+
+		foreach ( $this-&gt;get_addons() as $k =&gt; $addon ) {
+			if ( $addon-&gt;is_plugin_active() &amp;&amp; ! $addon-&gt;is_active() ) {
+				$missing[] = $addon;
+			}
+		}
+
+		return $missing;
+	}
+
+	/**
+	 * @return AC_addon[]
+	 */
+	public function get_active_addons() {
+		$addons = array();
+
+		foreach ( $this-&gt;get_addons() as $addon ) {
+			if ( $addon-&gt;is_active() ) {
+				$addons[] = $addon;
+			}
+		}
+
+		return $addons;
+	}
+
+	/**
+	 * Get add-on details from the available add-ons list
+	 *
+	 * @since 2.2
+	 *
+	 * @param string $slug Addon slug
+	 *
+	 * @return AC_Addon|false Returns addon details if the add-on exists, false otherwise
+	 */
+	public function get_addon( $slug ) {
+		foreach ( $this-&gt;get_addons() as $addon ) {
+			if ( $slug === $addon-&gt;get_slug() ) {
+				return $addon;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param AC_Addon $addon
+	 */
+	public function register_addon( AC_Addon $addon ) {
+		$this-&gt;addons[] = $addon;
+	}
+
+	/**
+	 * Register addon
+	 */
+	private function set_addons() {
+		$classes = AC()-&gt;autoloader()-&gt;get_class_names_from_dir( AC()-&gt;get_plugin_dir() . &#x27;classes/Addon&#x27;, &#x27;AC_&#x27; );
+
+		foreach ( $classes as $class ) {
+			$this-&gt;register_addon( new $class );
+		}
+	}
+
+}
+</pre></details></body></html>

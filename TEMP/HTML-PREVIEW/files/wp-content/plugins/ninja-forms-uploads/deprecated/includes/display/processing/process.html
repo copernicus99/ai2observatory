@@ -1,0 +1,293 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/processing/process.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/display/processing/process.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/**
+ * This function will be ran during the processing (process) of a form.
+ * The goals here are to:
+ *		Move the temporary file to its permanent location.
+ *
+ * @param int $field_id - ID number of the field that is currently being displayed.
+ * @param array/string $user_value - the value of the field within the user-submitted form.
+ */
+
+function ninja_forms_field_upload_process($field_id, $user_value){
+	global $ninja_forms_processing;
+
+	$field_data = $ninja_forms_processing-&gt;get_all_submitted_fields();
+
+	$plugin_settings = get_option(&#x27;ninja_forms_settings&#x27;);
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_data = $field_row[&#x27;data&#x27;];
+	
+	$base_upload_dir = $plugin_settings[&#x27;base_upload_dir&#x27;];
+
+	if(isset($plugin_settings[&#x27;custom_upload_dir&#x27;])){
+		$custom_upload_dir = $plugin_settings[&#x27;custom_upload_dir&#x27;];
+	}else{
+		$custom_upload_dir = &#x27;&#x27;;
+	}
+
+	$tmp_upload_file = $ninja_forms_processing-&gt;get_field_value( $field_id );
+
+	if( is_array( $tmp_upload_file ) ){
+		foreach( $tmp_upload_file as $key =&gt; $file ){
+			if( ( isset( $file[&#x27;complete&#x27;] ) AND $file[&#x27;complete&#x27;] == 0 ) OR !isset( $file[&#x27;complete&#x27;] ) ){
+				if( isset( $file[&#x27;file_path&#x27;] ) ){
+					$file_path = $file[&#x27;file_path&#x27;];
+				}else{
+					$file_path = &#x27;&#x27;;
+				}
+				
+				if($file_path != &#x27;&#x27;){
+					$file_name = $file[&#x27;file_name&#x27;];
+					$user_file_name = $file[&#x27;user_file_name&#x27;];
+
+					$form_title = strtolower( stripslashes( trim( $ninja_forms_processing-&gt;get_form_setting(&#x27;form_title&#x27;) ) ) );
+					$form_title = preg_replace(&quot;/[\/\&amp;%#\$]/&quot;, &quot;&quot;, $form_title);
+					$form_title = preg_replace(&quot;/[\&quot;\&#x27;]/&quot;, &quot;&quot;, $form_title);
+					$form_title = preg_replace(&#x27;/\s+/&#x27;, &#x27;&#x27;, $form_title);
+
+					if(is_user_logged_in()){
+						$current_user = wp_get_current_user();
+						$user_name = $current_user-&gt;user_nicename;
+						$user_id = $current_user-&gt;ID;
+						$display_name = $current_user-&gt;display_name;
+						$first_name = $current_user-&gt;user_firstname;
+						$last_name = $current_user-&gt;user_lastname;
+					}else{
+						$user_name = &#x27;&#x27;;
+						$user_id = &#x27;&#x27;;
+						$display_name =&#x27;&#x27;;
+						$first_name = &#x27;&#x27;;
+						$last_name = &#x27;&#x27;;
+					}
+
+					if($custom_upload_dir != &#x27;&#x27;){
+						$custom_upload_dir = stripslashes(trim($custom_upload_dir));
+
+						$custom_upload_dir = str_replace(&quot;%filename%&quot;, $user_file_name, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%formtitle%&quot;, $form_title, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%date%&quot;, date(&#x27;Y-m-d&#x27;), $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%month%&quot;, date(&#x27;m&#x27;), $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%day%&quot;, date(&#x27;d&#x27;), $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%year%&quot;, date(&#x27;Y&#x27;), $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%username%&quot;, $user_name, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%userid%&quot;, $user_id, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%displayname%&quot;, $display_name, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%firstname%&quot;, $first_name, $custom_upload_dir);
+						$custom_upload_dir = str_replace(&quot;%lastname%&quot;, $last_name, $custom_upload_dir);
+
+						if( strpos( $custom_upload_dir, &#x27;/&#x27; ) !== false ){
+							$sep = &#x27;/&#x27;;
+						}else if( strpos( $custom_upload_dir, &#x27;\\&#x27; ) !== false ){
+							$sep = &#x27;\\&#x27;;
+						} else {
+							$sep = &#x27;/&#x27;;
+						}
+						
+						$custom_upload_dir = untrailingslashit( $custom_upload_dir );
+
+						//Replacement for line 85-&gt;98 in ninja-forms-uploads\includes\display\processing\processing.php
+						$tmp_upload_dir = explode( $sep, $custom_upload_dir );
+						$tmp_dirs = array(); //We are going to store all dir levels in this array first
+						$tmp_dir = $base_upload_dir; //easier to set here directly instead of in the foreach loop
+
+						//Let’s store all dir levels
+						foreach( $tmp_upload_dir as $dir ){
+							$tmp_dir = $tmp_dir.$dir.$sep;
+							//Prepend to array to get the deepest dir at the beginning
+							array_unshift($tmp_dirs, $tmp_dir);
+						}
+
+						$to_create = array();
+						//check which dirs to create
+						foreach( $tmp_dirs as $dir ){
+							if( is_dir($dir) ) {
+								break;
+							} else {
+								array_unshift( $to_create, $dir ); //Prepend to array so the deepest dir will at the end.
+							}
+						}
+
+						//create dirs
+						foreach( $to_create as $dir ) {
+							mkdir($dir);
+						}
+
+					}
+					
+					$upload_dir = $base_upload_dir.$custom_upload_dir;
+
+					$upload_dir = apply_filters( &#x27;ninja_forms_uploads_dir&#x27;, $upload_dir, $field_id );
+
+					$upload_dir = trailingslashit( $upload_dir );
+
+					if( strpos( $upload_dir, &#x27;/&#x27; ) !== false ){
+						$sep = &#x27;/&#x27;;
+					}else if( strpos( $upload_dir, &#x27;\\&#x27; ) !== false ){
+						$sep = &#x27;\\&#x27;;
+					}
+					
+					//Replacement for line 113-&gt;124 ninja-forms-uploads\includes\display\processing\processing.php
+					$tmp_upload_dir = explode( $sep, $upload_dir );
+					$tmp_dirs = array(); //We are going to store all dir levels in this array first
+					$tmp_dir = &#x27;&#x27;;
+
+					//Let’s store all dir levels
+					foreach( $tmp_upload_dir as $dir ){
+						$tmp_dir = $tmp_dir.$dir.$sep;
+						//Prepend to array to get the deepest dir at the beginning
+						array_unshift( $tmp_dirs, $tmp_dir );
+					}
+
+					$to_create = array();
+					//check which dirs to create
+					foreach( $tmp_dirs as $dir ){
+						if( is_dir($dir) ) {
+							break;
+						} else {
+							array_unshift( $to_create, $dir ); //Prepend to array so the deepest dir will at the end.
+						}
+					}
+
+					//create dirs
+					foreach( $to_create as $dir ) {
+						mkdir($dir);
+					}
+					
+					$file_dir = $upload_dir.$file_name;
+
+					if(!$ninja_forms_processing-&gt;get_all_errors()){
+						if( file_exists ( $file_path ) AND !is_dir( $file_path ) AND copy( $file_path, $file_dir ) ){
+
+							$current_uploads = $ninja_forms_processing-&gt;get_field_value( $field_id );
+							if( is_array( $current_uploads ) AND !empty( $current_uploads ) ){
+								foreach( $current_uploads as $key =&gt; $file ){
+									if( $file[&#x27;file_path&#x27;] == $file_path ){
+										$current_uploads[$key][&#x27;file_path&#x27;] = $upload_dir;
+										//$current_uploads[$key][&#x27;file_name&#x27;] = $file_name;
+										$current_uploads[$key][&#x27;complete&#x27;] = 1;
+									}
+								}
+							}
+
+							$ninja_forms_processing-&gt;update_field_value($field_id, $current_uploads);
+
+							if(file_exists($file_path)){
+								$dir = str_replace(&#x27;ninja_forms_field_&#x27;.$field_id, &#x27;&#x27;, $file_path);
+								unlink($file_path);
+								if(is_dir($dir)){
+									rmdir($dir);
+								}
+							}
+							
+						}else{
+							$ninja_forms_processing-&gt;add_error(&#x27;upload_&#x27;.$field_id, __( &#x27;File Upload Error&#x27;, &#x27;ninja-forms-uploads&#x27; ), $field_id);
+						}
+					}
+				}
+			}
+		}
+		if ( !$ninja_forms_processing-&gt;get_all_errors() ) {
+			do_action(&#x27;ninja_forms_upload_process&#x27;, $field_id);
+		}		
+	}
+}
+
+/**
+ * This section updates the upload database whenever a file is uploaded.
+ *
+ */
+
+function ninja_forms_upload_db_update( $field_id ){
+	global $wpdb, $ninja_forms_processing;
+
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	$user_id = $ninja_forms_processing-&gt;get_user_ID();
+	$files = $ninja_forms_processing-&gt;get_field_value( $field_id );
+	$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+	if( is_array( $files ) AND !empty( $files ) ){
+		foreach( $files as $key =&gt; $f ){
+			if( !isset( $f[&#x27;upload_id&#x27;] ) OR $f[&#x27;upload_id&#x27;] == &#x27;&#x27; ){
+				if( isset( $field_row[&#x27;data&#x27;][&#x27;upload_location&#x27;] ) ) {
+					$f[&#x27;upload_location&#x27;] = $field_row[&#x27;data&#x27;][&#x27;upload_location&#x27;];
+				}
+				if ( isset ( $f[&#x27;user_file_name&#x27;] ) ) {
+					$data = serialize( $f );
+					$wpdb-&gt;insert( NINJA_FORMS_UPLOADS_TABLE_NAME, array(&#x27;user_id&#x27; =&gt; $user_id, &#x27;form_id&#x27; =&gt; $form_id, &#x27;field_id&#x27; =&gt; $field_id, &#x27;data&#x27; =&gt; $data) );
+					$files[$key][&#x27;upload_id&#x27;] = $wpdb-&gt;insert_id;						
+				}
+			}
+		}
+		$ninja_forms_processing-&gt;update_field_value( $field_id, $files );
+	}
+}
+
+add_action(&#x27;ninja_forms_upload_process&#x27;, &#x27;ninja_forms_upload_db_update&#x27;);
+
+/**
+ * Get files uploaded to form for a specific location to save to
+ *
+ * @param $location
+ *
+ * @return array|bool
+ */
+function ninja_forms_upload_get_uploaded_files( $location ) {
+	global $ninja_forms_processing;
+	$files = array();
+	if ( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) ) {
+		foreach ( $ninja_forms_processing-&gt;get_extra_value( &#x27;uploads&#x27; ) as $field_id ) {
+			$field_row  = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+			if ( isset( $field_row[&#x27;data&#x27;][&#x27;upload_location&#x27;] ) AND $field_row[&#x27;data&#x27;][&#x27;upload_location&#x27;] == $location ) {
+				if ( is_array( $user_value ) ) {
+					$files[] = array(
+						&#x27;user_value&#x27; =&gt; $user_value,
+						&#x27;field_row&#x27;  =&gt; $field_row,
+						&#x27;field_id&#x27;   =&gt; $field_id
+					);
+				}
+			}
+		}
+	}
+
+	return $files;
+}
+
+/**
+ * Remove uploaded files
+ *
+ * @param $files
+ */
+function ninja_forms_upload_remove_uploaded_files( $files ) {
+	if ( ! $files ) {
+		return;
+	}
+
+	foreach( $files as $data ) {
+		if ( ! is_array( $data[&#x27;user_value&#x27;] ) ) {
+			return;
+		}
+
+		foreach ( $data[&#x27;user_value&#x27;] as $key =&gt; $file ) {
+			if ( ! isset( $file[&#x27;file_path&#x27;] ) ) {
+				continue;
+			}
+			$filename = $file[&#x27;file_path&#x27;] . $file[&#x27;file_name&#x27;];
+			if ( file_exists( $filename ) ) {
+				// Delete local file
+				unlink( $filename );
+			}
+		}
+	}
+}
+
+/**
+ * Remove uploaded files for when a file upload field has no location set
+ * Eg. when an admin only wants uploads to be sent on email attachments and not saved anywhere
+ */
+function ninja_forms_upload_remove_files_no_location() {
+	$files_data = ninja_forms_upload_get_uploaded_files( &#x27;none&#x27; );
+
+	ninja_forms_upload_remove_uploaded_files( $files_data );
+}
+add_action( &#x27;ninja_forms_post_process&#x27;, &#x27;ninja_forms_upload_remove_files_no_location&#x27;, 1001 );</pre></details></body></html>

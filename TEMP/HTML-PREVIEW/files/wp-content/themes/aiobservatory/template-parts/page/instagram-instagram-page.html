@@ -1,0 +1,191 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/template-parts/page/instagram-instagram-page.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/template-parts/page/instagram-instagram-page.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+ 
+&lt;div id=&quot;main&quot;&gt;
+&lt;div class=&quot;common-head bg&quot;&gt;
+   &lt;div class=&quot;container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+         &lt;h1&gt;#&lt;/h1&gt;
+         &lt;p&gt;&amp;nbsp;Posts&lt;/p&gt;
+      &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/div&gt;
+            &lt;div class=&quot;container grid overhide&quot;&gt;
+            
+                &lt;div class=&quot;row&quot;&gt;
+                
+                    &lt;article&gt;
+                        &lt;div class=&quot;card&quot;&gt;
+                            &lt;a href=&quot;&quot; class=&quot;media&quot; target=&quot;_blank&quot;&gt;
+                            
+                                &lt;div class=&quot;pic picUrl&quot; style=&quot;background-image:url(&#x27;&#x27;);&quot;&gt;&lt;/div&gt;
+                            &lt;/a&gt;
+                            &lt;section class=&quot;caption&quot;&gt;
+                                &lt;small&gt;&lt;/small&gt;
+                                &lt;p&gt;
+                        
+                                
+                                
+                                 &lt;a href=&quot;&quot; title=&quot;&quot;&gt;#&lt;/a&gt;
+                            
+                        &lt;/p&gt;
+                            &lt;/section&gt;
+                            &lt;footer class=&quot;clearfix&quot;&gt;
+                                &lt;span&gt;
+                                    &lt;i class=&quot;icon-like&quot;&gt;&lt;/i&gt;
+                                    
+                                &lt;/span&gt;
+                                &lt;span&gt;
+                                    &lt;i class=&quot;icon-comment&quot;&gt;&lt;/i&gt;
+                                    
+                                &lt;/span&gt;
+                                &lt;span&gt;
+                                    &lt;a href=&quot;#&quot; class=&quot;share&quot;&gt;
+                                        &lt;i class=&quot;icon-share&quot;&gt;&lt;/i&gt;
+                                        Share
+                                    &lt;/a&gt;
+                                &lt;/span&gt;
+                            &lt;/footer&gt;
+                        &lt;/div&gt;
+                    &lt;/article&gt;
+                    
+                    
+                &lt;article class=&quot;ad&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;top&quot;&gt;Advertisement&lt;/div&gt;
+                    
+                    &lt;div class=&quot;bottom&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+            
+                    &lt;div class=&quot;ajax-data&quot;&gt;&lt;/div&gt; 
+
+                &lt;/div&gt;
+                
+                    &lt;div class=&quot;grid-loading&quot;&gt;&lt;label class=&quot;btn&quot;&gt;No data available.&lt;/label&gt;&lt;/div&gt;
+                
+                
+                &lt;div class=&quot;grid-loading&quot;&gt;
+                    &lt;div class=&quot;grid-load-btn button&quot;&gt;
+                        Load More                      
+                    &lt;/div&gt;
+                    &lt;div class=&quot;grid-load&quot; data-web=&quot;posts&quot; data-end=&quot;You’ve reached the end of the list.&quot; style=&quot;display: none;&quot;&gt;&lt;span&gt;&lt;i class=&quot;icon-spinner&quot;&gt;&lt;/i&gt;Loading More...&lt;/span&gt;&lt;/div&gt;                   
+                &lt;/div&gt;
+                
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        
+&lt;input type=&quot;hidden&quot; id=&quot;tag&quot; value=&quot;&quot; /&gt;
+&lt;input type=&quot;hidden&quot; id=&quot;object&quot; value=&quot;get_tag_media&quot; /&gt;
+
+&lt;input type=&quot;hidden&quot; id=&quot;more&quot; value=&quot;&quot; /&gt;
+
+
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php /* Template Name: Profile */ 
+get_header();
+$search_name = str_replace(&quot;#&quot;, &quot;&quot;, get_the_title());
+$array = 0;
+$count = 0;
+$posts = array();
+$pagination = array();
+
+global $instagramObject;
+global $instagramPostPerPage;
+
+if(is_object($instagramObject)){
+if(isset($search_name)){
+        $data = $instagramObject-&gt;getTag($search_name);
+        if($data-&gt;data-&gt;media_count&gt;0){
+            $array = $data-&gt;data-&gt;media_count;
+        $data = $instagramObject-&gt;getTagMedia($search_name,$instagramPostPerPage);
+        if($data-&gt;data){
+            $posts = $data-&gt;data;
+            $pagination = $data-&gt;pagination;
+            $count++;
+        }
+    }
+
+}
+}
+?&gt;
+ 
+&lt;div id=&quot;main&quot;&gt;
+&lt;div class=&quot;common-head bg&quot;&gt;
+   &lt;div class=&quot;container&quot;&gt;
+      &lt;div class=&quot;row&quot;&gt;
+         &lt;h1&gt;#&lt;?php echo $search_name;?&gt;&lt;/h1&gt;
+         &lt;p&gt;&lt;?php echo number_format($array);?&gt;&amp;nbsp;Posts&lt;/p&gt;
+      &lt;/div&gt;
+   &lt;/div&gt;
+&lt;/div&gt;
+            &lt;div class=&quot;container grid overhide&quot;&gt;
+            
+                &lt;div class=&quot;row&quot;&gt;
+                &lt;?php if($posts){ 
+                    foreach ($posts as $post) {                 
+                    ?&gt;
+                    &lt;article&gt;
+                        &lt;div class=&quot;card&quot;&gt;
+                            &lt;a href=&quot;&lt;?php echo site_url(&#x27;media/?pid=&#x27;.$post-&gt;id);?&gt;&quot; class=&quot;media&quot; target=&quot;_blank&quot;&gt;
+                            &lt;?php echo ($post-&gt;type==&#x27;video&#x27;)? &#x27;&lt;i class=&quot;icon-play&quot;&gt;&lt;/i&gt;&#x27;:&#x27;&#x27;;?&gt;
+                                &lt;div class=&quot;pic picUrl&quot; style=&quot;background-image:url(&#x27;&lt;?php echo $post-&gt;images-&gt;thumbnail-&gt;url;?&gt;&#x27;);&quot;&gt;&lt;/div&gt;
+                            &lt;/a&gt;
+                            &lt;section class=&quot;caption&quot;&gt;
+                                &lt;small&gt;&lt;?php echo human_time_diff( $post-&gt;created_time, current_time(&#x27;timestamp&#x27;) ) . &#x27; ago&#x27;; ?&gt;&lt;/small&gt;
+                                &lt;p&gt;
+                        &lt;?php if($post-&gt;tags):?&gt;
+                                
+                                &lt;?php foreach($post-&gt;tags as $tag):?&gt;
+                                 &lt;a href=&quot;&lt;?php echo site_url(&#x27;tag/?pid=&#x27;.$tag);?&gt;&quot; title=&quot;&lt;?php echo $tag;?&gt;&quot;&gt;#&lt;?php echo $tag;?&gt;&lt;/a&gt;
+                            &lt;?php endforeach;?&gt;
+                        &lt;?php endif;?&gt;&lt;/p&gt;
+                            &lt;/section&gt;
+                            &lt;footer class=&quot;clearfix&quot;&gt;
+                                &lt;span&gt;
+                                    &lt;i class=&quot;icon-like&quot;&gt;&lt;/i&gt;
+                                    &lt;?php echo $post-&gt;likes-&gt;count;?&gt;
+                                &lt;/span&gt;
+                                &lt;span&gt;
+                                    &lt;i class=&quot;icon-comment&quot;&gt;&lt;/i&gt;
+                                    &lt;?php echo $post-&gt;comments-&gt;count;?&gt;
+                                &lt;/span&gt;
+                                &lt;span&gt;
+                                    &lt;a href=&quot;#&quot; class=&quot;share&quot;&gt;
+                                        &lt;i class=&quot;icon-share&quot;&gt;&lt;/i&gt;
+                                        Share
+                                    &lt;/a&gt;
+                                &lt;/span&gt;
+                            &lt;/footer&gt;
+                        &lt;/div&gt;
+                    &lt;/article&gt;
+                    &lt;?php 
+                }  
+            } 
+                    ?&gt;
+                    &lt;?php if ( is_active_sidebar( &#x27;post-ads&#x27; ) ) : ?&gt;
+                &lt;article class=&quot;ad&quot;&gt;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;top&quot;&gt;Advertisement&lt;/div&gt;
+                    &lt;?php dynamic_sidebar( &#x27;post-ads&#x27; ); ?&gt;
+                    &lt;div class=&quot;bottom&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+            &lt;?php endif; ?&gt;
+                    &lt;div class=&quot;ajax-data&quot;&gt;&lt;/div&gt; 
+
+                &lt;/div&gt;
+                &lt;?php if($count==0):?&gt;
+                    &lt;div class=&quot;grid-loading&quot;&gt;&lt;label class=&quot;btn&quot;&gt;No data available.&lt;/label&gt;&lt;/div&gt;
+                &lt;?php endif;?&gt;
+                &lt;?php if(!empty($pagination-&gt;next_max_id)):?&gt;
+                &lt;div class=&quot;grid-loading&quot;&gt;
+                    &lt;div class=&quot;grid-load-btn button&quot;&gt;
+                        Load More                      
+                    &lt;/div&gt;
+                    &lt;div class=&quot;grid-load&quot; data-web=&quot;posts&quot; data-end=&quot;You’ve reached the end of the list.&quot; style=&quot;display: none;&quot;&gt;&lt;span&gt;&lt;i class=&quot;icon-spinner&quot;&gt;&lt;/i&gt;Loading More...&lt;/span&gt;&lt;/div&gt;                   
+                &lt;/div&gt;
+                &lt;?php endif;?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        
+&lt;input type=&quot;hidden&quot; id=&quot;tag&quot; value=&quot;&lt;?php echo $search_name;?&gt;&quot; /&gt;
+&lt;input type=&quot;hidden&quot; id=&quot;object&quot; value=&quot;get_tag_media&quot; /&gt;
+&lt;?php if(!empty($pagination-&gt;next_max_id)):?&gt;
+&lt;input type=&quot;hidden&quot; id=&quot;more&quot; value=&quot;&lt;?php echo $pagination-&gt;next_max_id;?&gt;&quot; /&gt;
+&lt;?php endif;?&gt;
+&lt;?php
+get_footer(); 
+?&gt;</pre></details></body></html>

@@ -1,0 +1,137 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Taxonomy.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Taxonomy.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Taxonomy {
+
+	/**
+	 * @param WP_Term[]   $terms Term objects
+	 * @param null|string $post_type
+	 *
+	 * @return array
+	 */
+	public function get_term_links( $terms, $post_type = null ) {
+		if ( ! $terms || is_wp_error( $terms ) ) {
+			return array();
+		}
+
+		$values = array();
+
+		foreach ( $terms as $t ) {
+			if ( ! is_a( $t, &#x27;WP_Term&#x27; ) ) {
+				continue;
+			}
+
+			$args = array(
+				&#x27;post_type&#x27; =&gt; $post_type,
+				&#x27;taxonomy&#x27;  =&gt; $t-&gt;taxonomy,
+				&#x27;term&#x27;      =&gt; $t-&gt;slug,
+			);
+
+			$page = &#x27;attachment&#x27; === $post_type ? &#x27;upload&#x27; : &#x27;edit&#x27;;
+
+			$values[] = ac_helper()-&gt;html-&gt;link( add_query_arg( $args, $page . &#x27;.php&#x27; ), sanitize_term_field( &#x27;name&#x27;, $t-&gt;name, $t-&gt;term_id, $t-&gt;taxonomy, &#x27;display&#x27; ) );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * @param WP_Term $term
+	 *
+	 * @return false|string
+	 */
+	public function get_term_display_name( $term ) {
+		if ( ! $term || is_wp_error( $term ) ) {
+			return false;
+		}
+
+		return sanitize_term_field( &#x27;name&#x27;, $term-&gt;name, $term-&gt;term_id, $term-&gt;taxonomy, &#x27;display&#x27; );
+	}
+
+	/**
+	 * @param string $object_type post, page, user etc.
+	 * @param string $taxonomy    Taxonomy Name
+	 *
+	 * @return bool
+	 */
+	public function is_taxonomy_registered( $object_type, $taxonomy = &#x27;&#x27; ) {
+		if ( ! $object_type ) {
+			return false;
+		}
+		$taxonomies = get_object_taxonomies( $object_type );
+
+		if ( ! $taxonomies ) {
+			return false;
+		}
+
+		if ( $taxonomy ) {
+			return in_array( $taxonomy, $taxonomies );
+		}
+
+		return true;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function get_taxonomy_selection_options( $post_type ) {
+		$taxonomies = get_object_taxonomies( $post_type, &#x27;objects&#x27; );
+
+		$options = array();
+		foreach ( $taxonomies as $index =&gt; $taxonomy ) {
+			if ( $taxonomy-&gt;name == &#x27;post_format&#x27; ) {
+				unset( $taxonomies[ $index ] );
+			}
+			$options[ $taxonomy-&gt;name ] = $taxonomy-&gt;label;
+		}
+
+		natcasesort( $options );
+
+		return $options;
+	}
+
+	/**
+	 * @param string $field
+	 * @param int    $term_id
+	 * @param string $taxonomy
+	 *
+	 * @since 3.0
+	 */
+	public function get_term_field( $field, $term_id, $taxonomy ) {
+		$term = get_term_by( &#x27;id&#x27;, $term_id, $taxonomy );
+
+		if ( ! $term || is_wp_error( $term ) ) {
+			return false;
+		}
+
+		if ( ! isset( $term-&gt;{$field} ) ) {
+			return false;
+		}
+
+		return $term-&gt;{$field};
+	}
+
+	/**
+	 * @param int    $term_ids
+	 * @param string $taxonomy
+	 *
+	 * @return WP_Term[]
+	 */
+	public function get_terms_by_ids( $term_ids, $taxonomy ) {
+		$terms = array();
+
+		foreach ( (array) $term_ids as $term_id ) {
+			$term = get_term( $term_id, $taxonomy );
+			if ( $term &amp;&amp; ! is_wp_error( $term ) ) {
+				$terms[] = $term;
+			}
+		}
+
+		return $terms;
+	}
+
+}
+</pre></details></body></html>

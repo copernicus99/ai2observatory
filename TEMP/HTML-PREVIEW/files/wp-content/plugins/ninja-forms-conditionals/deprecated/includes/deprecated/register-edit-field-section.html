@@ -1,0 +1,452 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/deprecated/register-edit-field-section.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/deprecated/register-edit-field-section.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+		&lt;div id=&quot;ninja-forms-conditionals&quot;&gt;
+		&lt;span class=&quot;label&quot;&gt;
+			 - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_field__add_conditional&quot; class=&quot;ninja-forms-field-add-conditional&quot;&gt;&lt;/a&gt;
+		&lt;/span&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[conditional]&quot; value=&quot;&quot;&gt;
+		&lt;div id=&quot;ninja_forms_field__conditionals&quot; class=&quot;&quot; name=&quot;&quot;&gt;
+		
+		&lt;/div&gt;
+		&lt;/div&gt;
+		
+		&lt;div id=&quot;ninja_forms_field__conditional_&quot; class=&quot;ninja-forms-field--conditional ninja-forms-condition&quot; name=&quot;&quot;&gt;
+		&lt;div class=&quot;ninja-forms-condition-title&quot;&gt;
+		&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__remove_conditional&quot; name=&quot;&quot; class=&quot;ninja-forms-field-remove-conditional&quot; title=&quot;&quot;&gt;X&lt;/a&gt;
+			&lt;select id=&quot;ninja_forms_field__conditional__action&quot; name=&quot;ninja_forms_field_[conditional][][action]&quot; class=&quot;ninja-forms-field-conditional-action&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+				
+					&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+				
+					&lt;option value=&quot;show&quot; &gt;&lt;/option&gt;
+					&lt;option value=&quot;hide&quot; &gt;&lt;/option&gt;
+					&lt;option value=&quot;change_value&quot; &gt;&lt;/option&gt;
+				
+			&lt;/select&gt;
+			&lt;span id=&quot;ninja_forms_field___value_span&quot;&gt;
+				
+			&lt;/span&gt;
+			
+			&lt;select name=&quot;ninja_forms_field_[conditional][][connector]&quot;&gt;
+				&lt;option value=&quot;and&quot;  &gt;&lt;/option&gt;
+				&lt;option value=&quot;or&quot;  &gt;&lt;/option&gt;
+			&lt;/select&gt;
+			: &lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__add_cr&quot; name=&quot;&quot; class=&quot;ninja-forms-field-add-cr&quot;&gt;&lt;/a&gt;
+		&lt;/div&gt;
+		&lt;div id=&quot;ninja_forms_field__conditional__cr&quot; class=&quot;ninja-forms-criteria&quot;&gt;
+		
+		&lt;/div&gt;
+	&lt;/div&gt;
+	
+	&lt;div class=&quot;description-wide single-criteria ninja-forms-field--conditional--cr&quot; id=&quot;ninja_forms_field__conditional__cr_&quot;&gt;
+		&amp;nbsp;&amp;nbsp; &lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__remove_cr&quot; class=&quot;ninja-forms-field-remove-cr&quot; name=&quot;&quot; rel=&quot;&quot; title=&quot;&quot;&gt;X&lt;/a&gt; &amp;rarr;
+		&lt;select name=&quot;ninja_forms_field_[conditional][][cr][][field]&quot; class=&quot;ninja-forms-field-conditional-cr-field&quot; id=&quot;ninja_forms_field__cr_field&quot; title=&quot;_&quot;&gt;
+			&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+				
+							&lt;option value=&quot;&quot; &gt;:  - &lt;/option&gt;
+				
+		&lt;/select&gt;
+		&lt;select name=&quot;ninja_forms_field_[conditional][][cr][][operator]&quot;&gt;
+			&lt;option value=&quot;==&quot; &gt;&lt;/option&gt;
+			&lt;option value=&quot;!=&quot; &gt;&lt;/option&gt;
+			&lt;option value=&quot;&lt;&quot; &gt;&lt;/option&gt;
+			&lt;option value=&quot;&gt;&quot; &gt;&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;br /&gt;&lt;span id=&quot;ninja_forms_field__conditional__cr__value&quot; class=&quot;&quot;&gt;
+		
+		&lt;/span&gt;
+	&lt;/div&gt;
+	
+			&lt;input type=&quot;text&quot; name=&quot;&quot; id=&quot;&quot; class=&quot;&quot; value=&quot;&quot;&gt;
+			
+			&lt;textarea name=&quot;&quot; id=&quot;&quot; class=&quot;&quot;&gt;&lt;/textarea&gt;
+			
+			&lt;select name=&quot;&quot; id=&quot;&quot;&gt;
+			
+				&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+			
+			&lt;/select&gt;
+			
+			&lt;select name=&quot;&quot; id=&quot;&quot; class=&quot;&quot;&gt;
+			
+						&lt;option value=&quot;&quot; title=&quot;&quot; &gt;&lt;/option&gt;
+						
+			&lt;/select&gt;
+			
+			&lt;input type=&quot;hidden&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+			
+			&lt;input type=&quot;hidden&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+			
+			&lt;input type=&quot;hidden&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+			
+			&lt;input type=&quot;text&quot; name=&quot;&quot; id=&quot;&quot; class=&quot;&quot; value=&quot;&quot;&gt;
+			
+			&lt;textarea name=&quot;&quot; id=&quot;&quot; class=&quot;&quot;&gt;&lt;/textarea&gt;
+			
+			&lt;select name=&quot;&quot; id=&quot;&quot;&gt;
+			
+				&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+			
+			&lt;/select&gt;
+			
+			&lt;select name=&quot;&quot; id=&quot;&quot; class=&quot;&quot;&gt;
+			
+					&lt;option value=&quot;&quot; title=&quot;&quot; &gt;&lt;/option&gt;
+					
+			&lt;/select&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_edit_field_conditional&#x27;, 999);
+function ninja_forms_register_edit_field_conditional(){
+	add_action(&#x27;ninja_forms_edit_field_after_registered&#x27;, &#x27;ninja_forms_edit_field_conditional&#x27;, 11);
+}
+
+function ninja_forms_edit_field_conditional($field_id){
+	global $ninja_forms_fields;
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	$field_data = $field_row[&#x27;data&#x27;];
+	$reg_field = $ninja_forms_fields[$field_type];
+	$edit_conditional = $reg_field[&#x27;edit_conditional&#x27;];
+	if($edit_conditional){
+		?&gt;
+
+		&lt;div id=&quot;ninja-forms-conditionals&quot;&gt;
+		&lt;span class=&quot;label&quot;&gt;
+			&lt;?php _e( &#x27;Conditional Statements&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt; - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_add_conditional&quot; class=&quot;ninja-forms-field-add-conditional&quot;&gt;&lt;?php _e( &#x27;Add Conditional Statement&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/a&gt;
+		&lt;/span&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[conditional]&quot; value=&quot;&quot;&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditionals&quot; class=&quot;&quot; name=&quot;&quot;&gt;
+		&lt;?php
+			if(isset($field_data[&#x27;conditional&#x27;]) AND is_array($field_data[&#x27;conditional&#x27;])){
+				$x = 0;
+				foreach($field_data[&#x27;conditional&#x27;] as $condition){
+					ninja_forms_field_conditional_output($field_id, $x, $condition);
+					$x++;
+				}
+			}
+		?&gt;
+		&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;?php
+	}
+}
+
+
+function ninja_forms_field_conditional_output($field_id, $x, $condition = &#x27;&#x27;, $ajax = false){
+	global $wpdb, $ninja_forms_fields;
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+
+	$field_type = $field_row[&#x27;type&#x27;];
+	$field_data = $field_row[&#x27;data&#x27;];
+
+	$reg_field = $ninja_forms_fields[$field_type];
+	$conditional = $reg_field[&#x27;conditional&#x27;];
+	if( isset( $condition[&#x27;action&#x27;] ) ){
+		$selected_action = $condition[&#x27;action&#x27;];
+	}else{
+		$selected_action = &#x27;&#x27;;
+	}
+
+	?&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_&lt;?php echo $x;?&gt;&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-conditional ninja-forms-condition&quot; name=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+		&lt;div class=&quot;ninja-forms-condition-title&quot;&gt;
+		&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_remove_conditional&quot; name=&quot;&lt;?php echo $x;?&gt;&quot; class=&quot;ninja-forms-field-remove-conditional&quot; title=&quot;&lt;?php echo _e( &#x27;Remove condition&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&quot;&gt;X&lt;/a&gt;
+			&lt;select id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_&lt;?php echo $x;?&gt;_action&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[conditional][&lt;?php echo $x;?&gt;][action]&quot; class=&quot;ninja-forms-field-conditional-action&quot;&gt;
+				&lt;option value=&quot;&quot;&gt;&lt;?php _e( &#x27;-- Action&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;?php
+				if(isset($conditional[&#x27;action&#x27;]) AND is_array($conditional[&#x27;action&#x27;])){
+					foreach($conditional[&#x27;action&#x27;] as $slug =&gt; $action){
+				?&gt;
+					&lt;option value=&quot;&lt;?php echo $action[&#x27;js_function&#x27;];?&gt;&quot; &lt;?php selected( $action[&#x27;js_function&#x27;], $selected_action ); ?&gt;&gt;&lt;?php echo $action[&#x27;name&#x27;];?&gt;&lt;/option&gt;
+				&lt;?php
+					}
+				}else{
+				?&gt;
+					&lt;option value=&quot;show&quot; &lt;?php selected( $selected_action, &#x27;show&#x27; );?&gt;&gt;&lt;?php _e( &#x27;Show This&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+					&lt;option value=&quot;hide&quot; &lt;?php selected( $selected_action, &#x27;hide&#x27; );?&gt;&gt;&lt;?php _e( &#x27;Hide This&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+					&lt;option value=&quot;change_value&quot; &lt;?php selected( $selected_action, &#x27;change_value&#x27; );?&gt;&gt;&lt;?php _e( &#x27;Change Value&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;?php
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;_value_span&quot;&gt;
+				&lt;?php
+				if( isset( $conditional[&#x27;action&#x27;][$selected_action] ) ){
+					$conditional = $conditional[&#x27;action&#x27;][$selected_action];
+				}else if( $selected_action == &#x27;change_value&#x27; ){
+					$conditional = array( &#x27;output&#x27; =&gt; &#x27;text&#x27; );
+				}else{
+					$conditional = &#x27;&#x27;;
+				}
+				ninja_forms_field_conditional_action_output( $field_id, $x, $conditional, $condition, $field_data );
+				?&gt;
+			&lt;/span&gt;
+			&lt;?php _e( &#x27;If&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;
+			&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[conditional][&lt;?php echo $x;?&gt;][connector]&quot;&gt;
+				&lt;option value=&quot;and&quot; &lt;?php if(isset($condition[&#x27;connector&#x27;]) AND $condition[&#x27;connector&#x27;] == &#x27;and&#x27;){ echo &#x27;selected&#x27;;}?&gt; &gt;&lt;?php _e( &#x27;All&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;or&quot; &lt;?php if(isset($condition[&#x27;connector&#x27;]) AND $condition[&#x27;connector&#x27;] == &#x27;or&#x27;){ echo &#x27;selected&#x27;;}?&gt; &gt;&lt;?php _e( &#x27;Any&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+			&lt;/select&gt;
+			&lt;?php _e( &#x27;of the following critera are met&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;: &lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_add_cr&quot; name=&quot;&lt;?php echo $x;?&gt;&quot; class=&quot;ninja-forms-field-add-cr&quot;&gt;&lt;?php _e( &#x27;Add Criteria&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/a&gt;
+		&lt;/div&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_&lt;?php echo $x;?&gt;_cr&quot; class=&quot;ninja-forms-criteria&quot;&gt;
+		&lt;?php
+			if(isset($condition[&#x27;cr&#x27;]) AND is_array($condition[&#x27;cr&#x27;])){
+				$y = 0;
+				foreach($condition[&#x27;cr&#x27;] as $cr){
+					ninja_forms_field_conditional_cr_output($field_id, $x, $y, $cr);
+					$y++;
+				}
+			}
+		?&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;?php
+}
+
+function ninja_forms_field_conditional_cr_output($field_id, $x, $y, $cr = &#x27;&#x27;, $ajax = false){
+	global $wpdb, $ninja_forms_fields;
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$form_id = $field_row[&#x27;form_id&#x27;];
+	$field_type = $field_row[&#x27;type&#x27;];
+	$field_data = $field_row[&#x27;data&#x27;];
+
+	if( isset( $cr[&#x27;field&#x27;] ) AND $cr[&#x27;field&#x27;] != &#x27;&#x27; ){
+		$selected_row = ninja_forms_get_field_by_id( $cr[&#x27;field&#x27;] );
+		$selected_type = $selected_row[&#x27;type&#x27;];
+		if(isset($ninja_forms_fields[$selected_type][&#x27;conditional&#x27;])){
+			$conditional = $ninja_forms_fields[$selected_type][&#x27;conditional&#x27;];
+		}
+	}
+	$field_results = ninja_forms_get_fields_by_form_id( $form_id );
+
+	?&gt;
+	&lt;div class=&quot;description-wide single-criteria ninja-forms-field-&lt;?php echo $field_id;?&gt;-conditional-&lt;?php echo $x;?&gt;-cr&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_&lt;?php echo $x;?&gt;_cr_&lt;?php echo $y;?&gt;&quot;&gt;
+		&amp;nbsp;&amp;nbsp; &lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_remove_cr&quot; class=&quot;ninja-forms-field-remove-cr&quot; name=&quot;&lt;?php echo $x;?&gt;&quot; rel=&quot;&lt;?php echo $y;?&gt;&quot; title=&quot;&lt;?php echo esc_html_e( &#x27;Remove criteria&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&quot;&gt;X&lt;/a&gt; &amp;rarr;
+		&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[conditional][&lt;?php echo $x;?&gt;][cr][&lt;?php echo $y;?&gt;][field]&quot; class=&quot;ninja-forms-field-conditional-cr-field&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_cr_field&quot; title=&quot;&lt;?php echo $x;?&gt;_&lt;?php echo $y;?&gt;&quot;&gt;
+			&lt;option value=&quot;&quot;&gt;&lt;?php _e( &#x27;-- Field&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+				&lt;?php
+					if(is_array($field_results)){
+						foreach($field_results as $field){
+							$this_id = $field[&#x27;id&#x27;];
+							$field_data = $field[&#x27;data&#x27;];
+							if ( isset ( $field_data[&#x27;label&#x27;] ) ) {
+								$label = $field_data[&#x27;label&#x27;];
+							} else {
+								$label = &#x27;&#x27;;
+							}
+							$field_type = $field[&#x27;type&#x27;];
+
+							$label = htmlentities( $label );
+
+							if( strlen( $label ) &gt; 30 ){
+								$label = substr( $label, 0, 30 ).&#x27;...&#x27;;
+							}
+
+							if($ninja_forms_fields[$field_type][&#x27;process_field&#x27;] AND $this_id != $field_id){
+				?&gt;
+							&lt;option value=&quot;&lt;?php echo $this_id;?&gt;&quot; &lt;?php if(isset($cr[&#x27;field&#x27;]) AND $cr[&#x27;field&#x27;] == $this_id){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php _e( &#x27;ID&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;: &lt;?php echo $this_id;?&gt; - &lt;?php echo $label;?&gt;&lt;/option&gt;
+				&lt;?php
+							}
+						}
+					}
+				?&gt;
+		&lt;/select&gt;
+		&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[conditional][&lt;?php echo $x;?&gt;][cr][&lt;?php echo $y;?&gt;][operator]&quot;&gt;
+			&lt;option value=&quot;==&quot; &lt;?php if(isset($cr[&#x27;field&#x27;]) AND $cr[&#x27;operator&#x27;] == &#x27;==&#x27;){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php _e( &#x27;Equal To&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+			&lt;option value=&quot;!=&quot; &lt;?php if(isset($cr[&#x27;field&#x27;]) AND $cr[&#x27;operator&#x27;] == &#x27;!=&#x27;){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php _e( &#x27;Not Equal To&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+			&lt;option value=&quot;&lt;&quot; &lt;?php if(isset($cr[&#x27;field&#x27;]) AND $cr[&#x27;operator&#x27;] == &#x27;&lt;&#x27;){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php _e( &#x27;Less Than&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+			&lt;option value=&quot;&gt;&quot; &lt;?php if(isset($cr[&#x27;field&#x27;]) AND $cr[&#x27;operator&#x27;] == &#x27;&gt;&#x27;){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php _e( &#x27;Greater Than&#x27;, &#x27;ninja-forms-conditionals&#x27; ); ?&gt;&lt;/option&gt;
+		&lt;/select&gt;
+		&lt;br /&gt;&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_conditional_&lt;?php echo $x;?&gt;_cr_&lt;?php echo $y;?&gt;_value&quot; class=&quot;&quot;&gt;
+		&lt;?php
+			if(isset($conditional[&#x27;value&#x27;]) AND is_array($conditional[&#x27;value&#x27;])){
+				ninja_forms_field_conditional_cr_value_output($field_id, $x, $y, $conditional, $cr, $field_data);
+			}
+		?&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;?php
+}
+
+function ninja_forms_field_conditional_cr_value_output( $field_id, $x, $y=&quot;&quot;, $conditional, $cr = &#x27;&#x27;, $field_data = &#x27;&#x27; ){
+	global $wpdb, $ninja_forms_fields;
+
+	if(isset($cr[&#x27;field&#x27;])){
+		$cr_field = $cr[&#x27;field&#x27;];
+		$cr_row = ninja_forms_get_field_by_id($cr_field);
+		$field_data = $cr_row[&#x27;data&#x27;];
+	}
+	if($y !== &#x27;&#x27;){
+		$name = &quot;ninja_forms_field_&quot;.$field_id.&quot;[conditional][&quot;.$x.&quot;][cr][&quot;.$y.&quot;][value]&quot;;
+		$id = &quot;ninja_forms_field_&quot;.$field_id.&quot;_conditional_&quot;.$x.&quot;_cr_&quot;.$y.&quot;_value&quot;;
+		$class = &#x27;ninja-forms-field-conditional-cr-value-list&#x27;;
+	}else{
+		$name = &quot;ninja_forms_field_&quot;.$field_id.&quot;[conditional][&quot;.$x.&quot;][value]&quot;;
+		$id = &quot;ninja_forms_field_&quot;.$field_id.&quot;_conditional_&quot;.$x.&quot;_value&quot;;
+		$class = &#x27;ninja-forms-field-&#x27;.$field_id.&#x27;-conditional-value&#x27;;
+	}
+
+	$conditional = apply_filters( &#x27;nf_change_conditional_cr_field&#x27;, $conditional, $cr_field );
+
+	if( isset( $conditional[&#x27;value&#x27;][&#x27;type&#x27;] ) ){
+		$value_type = $conditional[&#x27;value&#x27;][&#x27;type&#x27;];
+	}else{
+		$value_type = &#x27;&#x27;;
+	}
+
+	switch ( $value_type ) {
+		case &#x27;&#x27;:
+
+			break;
+		case &#x27;text&#x27;:
+			?&gt;
+			&lt;input type=&quot;text&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot; value=&quot;&lt;?php if(isset($cr[&#x27;value&#x27;])){ echo $cr[&#x27;value&#x27;]; }?&gt;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;textarea&#x27;:
+			?&gt;
+			&lt;textarea name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot;&gt;&lt;?php if(isset($cr[&#x27;value&#x27;])){ echo $cr[&#x27;value&#x27;]; }?&gt;&lt;/textarea&gt;
+			&lt;?php
+			break;
+		case &#x27;select&#x27;:
+			?&gt;
+			&lt;select name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot;&gt;
+			&lt;?php
+				foreach($conditional[&#x27;value&#x27;][&#x27;options&#x27;] as $name =&gt; $value){
+			?&gt;
+				&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php if(isset($cr[&#x27;value&#x27;]) AND $cr[&#x27;value&#x27;] == $value){ echo &#x27;selected&#x27;;} ?&gt;&gt;&lt;?php echo $name;?&gt;&lt;/option&gt;
+			&lt;?php
+				}
+			?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+		case &#x27;list&#x27;:
+			?&gt;
+			&lt;select name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot;&gt;
+			&lt;?php
+			if( isset( $field_data[&#x27;list&#x27;][&#x27;options&#x27;] ) AND is_array( $field_data[&#x27;list&#x27;][&#x27;options&#x27;] ) ){
+				$i = 0;
+				if ( ! isset ( $_REQUEST[&#x27;output_options&#x27;] ) || $_REQUEST[&#x27;output_options&#x27;] == 1 ) {
+					foreach( $field_data[&#x27;list&#x27;][&#x27;options&#x27;] as $option ){
+						if( !isset( $field_data[&#x27;list_show_value&#x27;] ) OR $field_data[&#x27;list_show_value&#x27;] == 0 ){
+							$value = $option[&#x27;label&#x27;];
+						}else{
+							$value = $option[&#x27;value&#x27;];
+						}
+						?&gt;
+						&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; title=&quot;&lt;?php echo $i;?&gt;&quot; &lt;?php if(isset($cr[&#x27;value&#x27;]) AND $value == $cr[&#x27;value&#x27;]){ echo &#x27;selected&#x27;;}?&gt;&gt;&lt;?php echo $option[&#x27;label&#x27;];?&gt;&lt;/option&gt;
+						&lt;?php
+						$i++;
+					}					
+				}
+			}
+			?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+		default:
+
+			break;
+	}
+}
+
+function ninja_forms_field_conditional_action_output( $field_id, $x, $conditional, $current = &#x27;&#x27;, $field_data = &#x27;&#x27; ){
+	global $wpdb, $ninja_forms_fields;
+
+	$name = &quot;ninja_forms_field_&quot;.$field_id.&quot;[conditional][&quot;.$x.&quot;][value]&quot;;
+	$id = &quot;ninja_forms_field_&quot;.$field_id.&quot;_conditional_&quot;.$x.&quot;_value&quot;;
+	$class = &#x27;ninja-forms-field-&#x27;.$field_id.&#x27;-conditional-value&#x27;;
+
+	if( isset( $current[&#x27;value&#x27;] ) ){
+		$current_value = $current[&#x27;value&#x27;];
+	}else{
+		$current_value = &#x27;&#x27;;
+	}
+
+	if( isset( $conditional[&#x27;output&#x27;] ) ){
+		$action_output = $conditional[&#x27;output&#x27;];
+	}else{
+		$action_output = &#x27;&#x27;;
+	}
+
+	switch ( $action_output ) {
+		case &#x27;&#x27;:
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; value=&quot;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;show&#x27;:
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; value=&quot;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;hide&#x27;:
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; value=&quot;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;text&#x27;:
+			?&gt;
+			&lt;input type=&quot;text&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot; value=&quot;&lt;?php echo $current_value; ?&gt;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;textarea&#x27;:
+			?&gt;
+			&lt;textarea name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot;&gt;&lt;?php echo $current_value; ?&gt;&lt;/textarea&gt;
+			&lt;?php
+			break;
+		case &#x27;select&#x27;:
+			?&gt;
+			&lt;select name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot;&gt;
+			&lt;?php
+				foreach($conditional[&#x27;options&#x27;] as $name =&gt; $value){
+			?&gt;
+				&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php selected( $current_value, $value ); ?&gt;&gt;&lt;?php echo $name;?&gt;&lt;/option&gt;
+			&lt;?php
+				}
+			?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+		case &#x27;list&#x27;:
+			?&gt;
+			&lt;select name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot;&gt;
+			&lt;?php
+			if(isset($field_data[&#x27;list&#x27;][&#x27;options&#x27;]) AND is_array($field_data[&#x27;list&#x27;][&#x27;options&#x27;])){
+				$i = 0;
+				foreach($field_data[&#x27;list&#x27;][&#x27;options&#x27;] as $option){
+					if(!isset($field_data[&#x27;list_show_value&#x27;]) OR $field_data[&#x27;list_show_value&#x27;] == 0){
+						$value = $option[&#x27;label&#x27;];
+					}else{
+						$value = $option[&#x27;value&#x27;];
+					}
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; title=&quot;&lt;?php echo $i;?&gt;&quot; &lt;?php selected( $current_value, $value ); ?&gt;&gt;&lt;?php echo $option[&#x27;label&#x27;];?&gt;&lt;/option&gt;
+					&lt;?php
+					$i++;
+				}
+			}
+			?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+		default:
+
+			//$arguments = func_get_args();
+			//array_shift($arguments); // We need to remove the first arg ($function_name)
+			$arguments[&#x27;field_id&#x27;] = $field_id;
+			$arguments[&#x27;x&#x27;] = $x;
+			$arguments[&#x27;conditional&#x27;] = $conditional;
+			$arguments[&#x27;name&#x27;] = $name;
+			$arguments[&#x27;id&#x27;] = $id;
+			$arguments[&#x27;current&#x27;] = $current;
+			$arguments[&#x27;field_data&#x27;] = $field_data;
+
+			call_user_func_array($action_output, $arguments);
+			break;
+	}
+}</pre></details></body></html>

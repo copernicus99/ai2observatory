@@ -1,0 +1,299 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/CustomFieldType.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/CustomFieldType.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_CustomFieldType extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $field_type;
+
+	protected function define_options() {
+		return array( &#x27;field_type&#x27; );
+	}
+
+	public function get_dependent_settings() {
+		$settings = array();
+
+		switch ( $this-&gt;get_field_type() ) {
+
+			case &#x27;date&#x27; :
+				$settings[] = new AC_Settings_Column_Date( $this-&gt;column );
+
+				break;
+			case &#x27;image&#x27; :
+			case &#x27;library_id&#x27; :
+				$settings[] = new AC_Settings_Column_Image( $this-&gt;column );
+
+				break;
+			case &#x27;excerpt&#x27; :
+				$settings[] = new AC_Settings_Column_CharacterLimit( $this-&gt;column );
+
+				break;
+			case &#x27;link&#x27; :
+				$settings[] = new AC_Settings_Column_LinkLabel( $this-&gt;column );
+
+				break;
+		}
+
+		return $settings;
+	}
+
+	public function create_view() {
+		$select = $this-&gt;create_element( &#x27;select&#x27; );
+
+		$select-&gt;set_attribute( &#x27;data-refresh&#x27;, &#x27;column&#x27; )
+		       -&gt;set_options( $this-&gt;get_grouped_options() )
+		       -&gt;set_description( $this-&gt;get_description() );
+
+		$tooltip = __( &#x27;This will determine how the value will be displayed.&#x27;, &#x27;codepress-admin-columns&#x27; );
+
+		if ( null !== $this-&gt;get_field_type() ) {
+			$tooltip .= &#x27;&lt;em&gt;&#x27; . __( &#x27;Type&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;: &#x27; . $this-&gt;get_field_type() . &#x27;&lt;/em&gt;&#x27;;
+		}
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Field Type&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27; =&gt; $tooltip,
+			&#x27;setting&#x27; =&gt; $select,
+		) );
+
+		return $view;
+	}
+
+	private function get_description_object_ids( $input ) {
+		$description = sprintf( __( &quot;Uses the id from a %s to display information about it.&quot;, &#x27;codepress-admin-columns&#x27; ), &#x27;&lt;em&gt;&#x27; . $input . &#x27;&lt;/em&gt;&#x27; );
+		$description .= &#x27; &#x27; . __( &quot;Multiple ids should be separated by a comma.&quot;, &#x27;codepress-admin-columns&#x27; );
+
+		return $description;
+	}
+
+	public function get_description() {
+		$description = false;
+
+		switch ( $this-&gt;get_field_type() ) {
+			case &#x27;title_by_id&#x27; :
+				$description = $this-&gt;get_description_object_ids( __( &quot;Post Type&quot;, &#x27;codepress-admin-columns&#x27; ) );
+
+				break;
+			case &#x27;user_by_id&#x27; :
+				$description = $this-&gt;get_description_object_ids( __( &quot;User&quot;, &#x27;codepress-admin-columns&#x27; ) );
+
+				break;
+		}
+
+		return $description;
+	}
+
+	/**
+	 * Get possible field types
+	 *
+	 * @return array
+	 */
+	protected function get_field_type_options() {
+		$grouped_types = array(
+			&#x27;basic&#x27;      =&gt; array(
+				&#x27;color&#x27;   =&gt; __( &#x27;Color&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;date&#x27;    =&gt; __( &#x27;Date&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;excerpt&#x27; =&gt; __( &#x27;Text&#x27; ),
+				&#x27;image&#x27;   =&gt; __( &#x27;Image&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;link&#x27;    =&gt; __( &#x27;Url&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;numeric&#x27; =&gt; __( &#x27;Number&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			),
+			&#x27;choice&#x27;     =&gt; array(
+				&#x27;has_content&#x27; =&gt; __( &#x27;Has Content&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;checkmark&#x27;   =&gt; __( &#x27;True / False&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			),
+			&#x27;relational&#x27; =&gt; array(
+				&#x27;library_id&#x27;  =&gt; __( &#x27;Media&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;title_by_id&#x27; =&gt; __( &#x27;Post&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;user_by_id&#x27;  =&gt; __( &#x27;User&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			),
+			&#x27;multiple&#x27;   =&gt; array(
+				&#x27;count&#x27; =&gt; __( &#x27;Number of Fields&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;array&#x27; =&gt; __( &#x27;Multiple Values&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			),
+		);
+
+		/**
+		 * Filter the available custom field types for the meta (custom field) field
+		 *
+		 * @since 3.0
+		 *
+		 * @param array $field_types Available custom field types ([type] =&gt; [label])
+		 */
+		$grouped_types[&#x27;custom&#x27;] = apply_filters( &#x27;ac/column/custom_field/field_types&#x27;, array() );
+
+		foreach ( $grouped_types as $k =&gt; $fields ) {
+			natcasesort( $grouped_types[ $k ] );
+		}
+
+		return $grouped_types;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_grouped_options() {
+		$field_types = $this-&gt;get_field_type_options();
+
+		foreach ( $field_types as $fields ) {
+			asort( $fields );
+		}
+
+		$groups = array(
+			&#x27;basic&#x27;      =&gt; __( &#x27;Basic&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;relational&#x27; =&gt; __( &#x27;Relational&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;choice&#x27;     =&gt; __( &#x27;Choice&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;multiple&#x27;   =&gt; __( &#x27;Multiple&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;custom&#x27;     =&gt; __( &#x27;Custom&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		$grouped_options = array();
+		foreach ( $field_types as $group =&gt; $fields ) {
+
+			if ( ! $fields ) {
+				continue;
+			}
+
+			$grouped_options[ $group ][&#x27;title&#x27;] = $groups[ $group ];
+			$grouped_options[ $group ][&#x27;options&#x27;] = $fields;
+		}
+
+		// Default option comes first
+		$grouped_options = array_merge( array( &#x27;&#x27; =&gt; __( &#x27;Default&#x27;, &#x27;codepress-admin-columns&#x27; ) ), $grouped_options );
+
+		return $grouped_options;
+	}
+
+	/**
+	 * @param string|array $string
+	 *
+	 * @return array
+	 */
+	private function get_values_from_array_or_string( $string ) {
+		$string = ac_helper()-&gt;array-&gt;implode_recursive( &#x27;,&#x27;, $string );
+
+		return ac_helper()-&gt;string-&gt;comma_separated_to_array( $string );
+	}
+
+	/**
+	 * @param string|array $string
+	 *
+	 * @return array
+	 */
+	private function get_ids_from_array_or_string( $string ) {
+		$string = ac_helper()-&gt;array-&gt;implode_recursive( &#x27;,&#x27;, $string );
+
+		return ac_helper()-&gt;string-&gt;string_to_array_integers( $string );
+	}
+
+	public function format( $value, $original_value ) {
+
+		switch ( $this-&gt;get_field_type() ) {
+
+			case &#x27;date&#x27; :
+				if ( $timestamp = ac_helper()-&gt;date-&gt;strtotime( $value ) ) {
+					$value = date( &#x27;c&#x27;, $timestamp );
+				}
+
+				break;
+
+			case &quot;title_by_id&quot; :
+				$values = array();
+				foreach ( $this-&gt;get_ids_from_array_or_string( $value ) as $id ) {
+					$post = get_post( $id );
+					$values[] = ac_helper()-&gt;html-&gt;link( get_edit_post_link( $post ), $post-&gt;post_title );
+				}
+
+				$value = implode( ac_helper()-&gt;html-&gt;divider(), $values );
+				break;
+
+			case &quot;user_by_id&quot; :
+				$values = array();
+				foreach ( $this-&gt;get_ids_from_array_or_string( $value ) as $id ) {
+					$user = get_userdata( $id );
+					$values[] = ac_helper()-&gt;html-&gt;link( get_edit_user_link( $user ), ac_helper()-&gt;user-&gt;get_display_name( $user ) );
+				}
+
+				$value = implode( ac_helper()-&gt;html-&gt;divider(), $values );
+
+				break;
+			case &#x27;image&#x27;:
+				$value = new AC_Collection( $this-&gt;get_values_from_array_or_string( $value ) );
+
+				break;
+			case &#x27;library_id&#x27; :
+				$value = new AC_Collection( $this-&gt;get_ids_from_array_or_string( $value ) );
+
+				break;
+			case &quot;checkmark&quot; :
+				$is_true = ! empty( $value ) &amp;&amp; &#x27;false&#x27; !== $value &amp;&amp; &#x27;0&#x27; !== $value;
+				$value = ac_helper()-&gt;icon-&gt;yes_or_no( $is_true );
+
+				break;
+			case &quot;color&quot; :
+
+				if ( $value &amp;&amp; is_scalar( $value ) ) {
+					$value = ac_helper()-&gt;string-&gt;get_color_block( $value );
+				} else {
+					$value = false;
+				}
+
+				break;
+			case &quot;count&quot; :
+
+				if ( $this-&gt;column instanceof AC_Column_Meta ) {
+					$value = $this-&gt;column-&gt;get_meta_value( $original_value, $this-&gt;column-&gt;get_meta_key(), false );
+
+					if ( $value ) {
+						if ( 1 === count( $value ) &amp;&amp; is_array( $value[0] ) ) {
+
+							// Value contains a single serialized array with multiple values
+							$value = count( $value[0] );
+						} else {
+
+							// Count multiple usage of meta keys
+							$value = count( $value );
+						}
+					} else {
+						$value = false;
+					}
+				}
+
+				break;
+			case &quot;has_content&quot; :
+				$value = ac_helper()-&gt;icon-&gt;yes_or_no( $value, $value );
+
+				break;
+			default :
+				$value = ac_helper()-&gt;array-&gt;implode_recursive( __( &#x27;, &#x27; ), $value );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_field_type() {
+		return $this-&gt;field_type;
+	}
+
+	/**
+	 * @param string $field_type
+	 *
+	 * @return bool
+	 */
+	public function set_field_type( $field_type ) {
+		$this-&gt;field_type = $field_type;
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

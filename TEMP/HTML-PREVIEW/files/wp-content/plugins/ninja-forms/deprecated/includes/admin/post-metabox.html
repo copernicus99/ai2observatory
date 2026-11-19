@@ -1,0 +1,99 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/post-metabox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/post-metabox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;select id=&quot;ninja_form_select&quot; name=&quot;ninja_form_select&quot;&gt;
+		&lt;option value=&quot;0&quot;&gt;-- &lt;/option&gt;
+		
+			&lt;option value=&quot;&quot;&gt;
+			
+			&lt;/option&gt;
+			
+	&lt;/select&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+add_action(&#x27;add_meta_boxes&#x27;, &#x27;ninja_forms_add_custom_box&#x27;);
+
+/* Do something with the data entered */
+add_action(&#x27;save_post&#x27;, &#x27;ninja_forms_save_postdata&#x27;);
+
+/* Adds a box to the main column on the Post and Page edit screens */
+function ninja_forms_add_custom_box() {
+	add_meta_box(
+		&#x27;ninja_forms_selector&#x27;,
+		__( &#x27;Append A Ninja Form&#x27;, &#x27;ninja-forms&#x27;),
+		&#x27;ninja_forms_inner_custom_box&#x27;,
+		&#x27;post&#x27;,
+		&#x27;side&#x27;,
+		&#x27;low&#x27;
+	);
+	add_meta_box(
+		&#x27;ninja_forms_selector&#x27;,
+		__( &#x27;Append A Ninja Form&#x27;, &#x27;ninja-forms&#x27;),
+		&#x27;ninja_forms_inner_custom_box&#x27;,
+		&#x27;page&#x27;,
+		&#x27;side&#x27;,
+		&#x27;low&#x27;
+	);
+}
+
+/* Prints the box content */
+function ninja_forms_inner_custom_box() {
+
+	$post_id = ! empty( $_REQUEST[&#x27;post&#x27;] ) ? absint( $_REQUEST[&#x27;post&#x27;] ) : 0;
+
+	// Use nonce for verification
+	wp_nonce_field( &#x27;ninja_forms_append_form&#x27;, &#x27;nf_append_form&#x27; );
+
+	// The actual fields for data entry
+	?&gt;
+	&lt;select id=&quot;ninja_form_select&quot; name=&quot;ninja_form_select&quot;&gt;
+		&lt;option value=&quot;0&quot;&gt;-- &lt;?php _e(&#x27;None&#x27;, &#x27;ninja-forms&#x27;);?&gt;&lt;/option&gt;
+		&lt;?php
+		$all_forms = ninja_forms_get_all_forms();
+		$form_id = get_post_meta( $post_id, &#x27;ninja_forms_form&#x27;, true );
+		foreach( $all_forms as $form ){
+			$title = $form[&#x27;data&#x27;][&#x27;form_title&#x27;];
+			$id    = $form[&#x27;id&#x27;];
+			?&gt;
+			&lt;option value=&quot;&lt;?php echo esc_attr( $id );?&gt;&quot;&lt;?php selected( $id, $form_id );?&gt;&gt;
+			&lt;?php echo $title;?&gt;
+			&lt;/option&gt;
+			&lt;?php
+		}
+		?&gt;
+	&lt;/select&gt;
+	&lt;?php
+}
+
+/* When the post is saved, saves our custom data */
+function ninja_forms_save_postdata( $post_id ) {
+	global $wpdb;
+	if(isset($_POST[&#x27;nf_append_form&#x27;])){
+		// verify if this is an auto save routine.
+		// If it is our form has not been submitted, so we dont want to do anything
+		if ( defined(&#x27;DOING_AUTOSAVE&#x27;) &amp;&amp; DOING_AUTOSAVE )
+		  return $post_id;
+
+		// verify this came from the our screen and with proper authorization,
+		// because save_post can be triggered at other times
+
+		if ( !wp_verify_nonce( $_POST[&#x27;nf_append_form&#x27;], &#x27;ninja_forms_append_form&#x27; ) )
+		  return $post_id;
+
+		// Check permissions
+		if ( &#x27;page&#x27; == $_POST[&#x27;post_type&#x27;] ) {
+			if ( !current_user_can( &#x27;edit_page&#x27;, $post_id ) )
+				return $post_id;
+		} else {
+			if ( !current_user_can( &#x27;edit_post&#x27;, $post_id ) )
+				return $post_id;
+		}
+
+		// OK, we&#x27;re authenticated: we need to find and save the data
+		$post_id = absint( $_POST[&#x27;post_ID&#x27;] );
+		$form_id = absint( $_POST[&#x27;ninja_form_select&#x27;] );
+		if ( empty ( $form_id ) ) {
+			delete_post_meta( $post_id, &#x27;ninja_forms_form&#x27; );
+		} else {
+			update_post_meta( $post_id, &#x27;ninja_forms_form&#x27;, $form_id );
+		}
+	}
+}</pre></details></body></html>

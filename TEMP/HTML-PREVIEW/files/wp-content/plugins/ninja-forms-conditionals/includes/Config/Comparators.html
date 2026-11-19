@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/includes/Config/Comparators.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/includes/Config/Comparators.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+return apply_filters( &#x27;ninja_forms_conditional_logic_comparators&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Equals / Does Not Equal
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;equal&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;equal&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Equals&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_Equal()
+    ),
+
+    &#x27;notequal&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;notequal&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Does Not Equal&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_NotEqual()
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contains / Does Not Contain
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;contains&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;contains&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Contains&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_Contains()
+    ),
+
+    &#x27;notcontains&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;notcontains&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Does Not Contain&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_NotContains()
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Greater Than / Less Than
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;greater&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;greater&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Greater Than&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_Greater()
+    ),
+
+    &#x27;greaterequal&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;greaterequal&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Greater Than Or Equal&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_GreaterEqual()
+    ),
+
+    &#x27;less&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;less&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Less Than&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_Less()
+    ),
+
+    &#x27;lessequal&#x27; =&gt; array(
+        &#x27;key&#x27;      =&gt; &#x27;lessequal&#x27;,
+        &#x27;label&#x27;    =&gt; __( &#x27;Less Than Or Equal&#x27;, &#x27;ninja-forms-conditional-logic&#x27; ),
+        &#x27;instance&#x27; =&gt; new NF_ConditionalLogic_Comparators_LessEqual()
+    ),
+
+));
+</pre></details></body></html>

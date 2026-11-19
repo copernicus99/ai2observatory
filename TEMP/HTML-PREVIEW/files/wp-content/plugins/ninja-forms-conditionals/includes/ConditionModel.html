@@ -1,0 +1,109 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/includes/ConditionModel.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/includes/ConditionModel.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/**
+ * Condition Model
+ *
+ * This class handles the processing of an individual form condition.
+ *
+ * @package     Ninja Forms - Conditional Logic
+ * @subpackage  Conditions
+ * @author      Kyle B. Johnson
+ * @copyright   Copyright (c) 2016, The WP Ninjas
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       3.0.0
+ */
+
+final class NF_ConditionalLogic_ConditionModel
+{
+    private $when = array();
+    private $then = array();
+    private $else = array();
+    private $fields;
+    private $data;
+    private $result;
+
+    public function __construct( $condition, &amp;$fieldsCollection, $data = array(), $default = true )
+    {
+        if( isset( $condition[ &#x27;when&#x27; ] ) ) {
+            $this-&gt;when = $condition[ &#x27;when&#x27; ];
+        }
+
+        if( isset( $condition[ &#x27;then&#x27; ] ) ) {
+            $this-&gt;then = $condition[ &#x27;then&#x27; ];
+        }
+
+        if( isset( $condition[ &#x27;else&#x27; ] ) ) {
+            $this-&gt;else = $condition[ &#x27;else&#x27; ];
+        }
+
+        $this-&gt;result = $default;
+
+        $this-&gt;fields = $fieldsCollection;
+        $this-&gt;data = $data;
+    }
+
+    public function process()
+    {
+        array_walk( $this-&gt;when, array( $this, &#x27;compare&#x27; ) );
+        $result = array_reduce( $this-&gt;when, array( $this, &#x27;evaluate&#x27; ), $this-&gt;result );
+
+        $triggers = ( $result ) ? $this-&gt;then : $this-&gt;else;
+        array_map( array( $this, &#x27;trigger&#x27; ), $triggers );
+
+        return $result;
+    }
+
+    private function compare( &amp;$when )
+    {
+        if( ! $when[ &#x27;key&#x27; ] ) return;
+
+        /**
+         * This was originally written only with fields in mind.
+         * To handle calcs, we are using the Calcs Merge Tag global (since the values aren&#x27;t passed in).
+         */
+        switch( $when[ &#x27;type&#x27; ] ){
+            case &#x27;field&#x27;:
+                $fieldModel = $this-&gt;fields-&gt;get_field( $when[ &#x27;key&#x27; ] );
+                $value = $fieldModel-&gt;get_setting( &#x27;value&#x27; );
+                break;
+            case &#x27;calc&#x27;:
+                try {
+                    $value = Ninja_Forms()-&gt;merge_tags[ &#x27;calcs&#x27; ]-&gt;get_calc_value( $when[ &#x27;key&#x27; ] );
+                }catch( Exception $e ){
+                    $value = false;
+                }
+                break;
+            default:
+                $value = false;
+        }
+
+        $when[ &#x27;result&#x27; ] = NF_ConditionalLogic()-&gt;comparator( $when[ &#x27;comparator&#x27; ] )-&gt;compare( $value, $when[ &#x27;value&#x27; ] );
+    }
+
+    private function evaluate( $current, $when )
+    {
+        if( ! isset( $when[ &#x27;result&#x27; ] ) ) return true;
+        return ( &#x27;AND&#x27; == $when[ &#x27;connector&#x27; ] ) ? $current &amp;&amp; $when[ &#x27;result&#x27; ] : $current || $when[ &#x27;result&#x27; ];
+    }
+
+    private function trigger( $trigger )
+    {
+        $triggerModel = NF_ConditionalLogic()-&gt;trigger( $trigger[ &#x27;trigger&#x27; ] );
+
+        if( ! $triggerModel ) return;
+
+        switch( $trigger[ &#x27;type&#x27; ] ) {
+            case &#x27;field&#x27;:
+                $target = $this-&gt;fields-&gt;get_field( $trigger[&#x27;key&#x27;] );
+                break;
+            default:
+                $target = apply_filters( &#x27;ninja_forms_conditional_logic_trigger_type_&#x27; . $trigger[ &#x27;type&#x27; ], $trigger[ &#x27;key&#x27; ], $this-&gt;data );
+        }
+
+        if( ! $target ) return;
+
+        $triggerModel-&gt;process( $target, $this-&gt;fields, $this-&gt;data );
+    }
+
+}
+</pre></details></body></html>

@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/ListCountry.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/ListCountry.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_CountryList
+ */
+class NF_Fields_ListCountry extends NF_Abstracts_List
+{
+    protected $_name = &#x27;listcountry&#x27;;
+
+    protected $_type = &#x27;listcountry&#x27;;
+
+    protected $_nicename = &#x27;Country&#x27;;
+
+    protected $_section = &#x27;userinfo&#x27;;
+
+    protected $_templates = array( &#x27;listcountry&#x27;, &#x27;listselect&#x27; );
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Country&#x27;, &#x27;ninja-forms&#x27; );
+
+        $this-&gt;_settings[ &#x27;options&#x27; ][ &#x27;group&#x27; ] = &#x27;&#x27;;
+//        $this-&gt;_settings[ &#x27;options&#x27; ][ &#x27;value&#x27; ] = $this-&gt;get_options();
+
+        $this-&gt;_settings[ &#x27;default&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;default&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+            &#x27;label&#x27; =&gt; __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;options&#x27; =&gt; $this-&gt;get_default_value_options(),
+            &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+            &#x27;value&#x27; =&gt; &#x27;US&#x27;,
+        );
+
+        add_filter( &#x27;ninja_forms_custom_columns&#x27;,                          array( $this, &#x27;custom_columns&#x27;   ), 10, 2 );
+        add_filter( &#x27;ninja_forms_render_options_&#x27; . $this-&gt;_name,          array( $this, &#x27;filter_options&#x27;   ), 10, 2 );
+        add_filter( &#x27;ninja_forms_subs_export_field_value_&#x27; . $this-&gt;_name, array( $this, &#x27;filter_csv_value&#x27; ), 10, 2 );
+    }
+
+    public function custom_columns( $value, $field )
+    {
+        if( $this-&gt;_name != $field-&gt;get_setting( &#x27;type&#x27; ) ) return $value;
+
+        foreach( Ninja_Forms()-&gt;config( &#x27;CountryList&#x27; ) as $country =&gt; $abbr ){
+            if( $value == $abbr ) return $country;
+        }
+
+        return $value;
+    }
+
+    public function filter_options( $options, $settings )
+    {
+        $default_value = ( isset( $settings[ &#x27;default&#x27; ] ) ) ? $settings[ &#x27;default&#x27; ] : &#x27;&#x27;;
+
+        $options = $this-&gt;get_options(); // Overwrite the default list options.
+        foreach( $options as $key =&gt; $option ){
+            if( $default_value != $option[ &#x27;value&#x27; ] ) continue;
+            $options[ $key ][ &#x27;selected&#x27; ] = 1;
+        }
+
+		usort( $options, array($this,&#x27;sort_options_by_label&#x27;) );
+
+		return $options;
+	}
+
+	private function sort_options_by_label( $option_a, $option_b )
+	{
+		return strcasecmp( $option_a[&#x27;label&#x27;], $option_b[&#x27;label&#x27;] );
+	}
+
+    public function filter_options_preview( $field_settings )
+    {
+        $field_settings[ &#x27;settings&#x27; ][ &#x27;options&#x27; ] = $this-&gt;get_options();
+
+        foreach( $field_settings[ &#x27;settings&#x27; ][ &#x27;options&#x27; ] as $key =&gt; $option ){
+            if( $field_settings[ &#x27;settings&#x27; ][ &#x27;default&#x27; ] != $option[ &#x27;value&#x27; ] ) continue;
+            $field_settings[ &#x27;settings&#x27; ][ &#x27;options&#x27; ][ $key ][ &#x27;selected&#x27; ] = 1;
+        }
+
+        return $field_settings;
+    }
+
+    public function admin_form_element( $id, $value )
+    {
+        ob_start();
+        echo &quot;&lt;select name=&#x27;fields[$id]&#x27;&gt;&quot;;
+        foreach( Ninja_Forms()-&gt;config( &#x27;CountryList&#x27; ) as $label =&gt; $abbr ){
+            $selected = ( $value == $abbr ) ? &#x27; selected&#x27; : &#x27;&#x27;;
+            echo &quot;&lt;option value=&#x27;&quot; . $abbr . &quot;&#x27;&quot; . $selected . &quot;&gt;&quot; . $label . &quot;&lt;/option&gt;&quot;;
+        }
+        echo &quot;&lt;/select&gt;&quot;;
+        return ob_get_clean();
+    }
+
+    private function get_default_value_options()
+    {
+        $options = array();
+        foreach( Ninja_Forms()-&gt;config( &#x27;CountryList&#x27; ) as $label =&gt; $value ){
+            $options[] = array(
+                &#x27;label&#x27;  =&gt; $label,
+                &#x27;value&#x27; =&gt; $value,
+            );
+        }
+
+        return $options;
+    }
+
+    private function get_options()
+    {
+        $order = 0;
+        $options = array();
+        foreach( Ninja_Forms()-&gt;config( &#x27;CountryList&#x27; ) as $label =&gt; $value ){
+            $options[] = array(
+                &#x27;label&#x27;  =&gt; $label,
+                &#x27;value&#x27; =&gt; $value,
+                &#x27;calc&#x27; =&gt; &#x27;&#x27;,
+                &#x27;selected&#x27; =&gt; 0,
+                &#x27;order&#x27; =&gt; $order
+            );
+
+            $order++;
+        }
+
+        return $options;
+    }
+
+    public function filter_csv_value( $field_value, $field )
+    {
+        $lookup = array_flip( Ninja_Forms()-&gt;config( &#x27;CountryList&#x27; ) );
+        if( isset( $lookup[ $field_value ] ) ) $field_value = $lookup[ $field_value ];
+        return $field_value;
+    }
+}
+</pre></details></body></html>

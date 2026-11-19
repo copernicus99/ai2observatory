@@ -1,0 +1,222 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/form/display-form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/form/display-form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+ * Function that checks to see if we are processing a submission
+ *
+ * @since 2.6.2
+ * @return void
+ */
+
+function nf_check_post() {
+	if( isset ( $_POST[&#x27;_ninja_forms_display_submit&#x27;] ) AND absint ( $_POST[&#x27;_ninja_forms_display_submit&#x27;] ) == 1 ){
+		/*
+		 * Nonces don&#x27;t really secure anything from non-logged in users.
+		 * Using them for those users, however, can cause other issues.
+		 * Because of this, we are removing the nonce check for now.
+		 * 
+		 * In 3.0, we need to look at creating our own system.
+		 */
+		/*
+		// If our nonce isn&#x27;t set, bail
+		if ( !isset ( $_POST[&#x27;_wpnonce&#x27;] ) )
+			return false;
+
+		// If our nonce doesn&#x27;t validate, bail
+		if ( ! wp_verify_nonce( $_POST[&#x27;_wpnonce&#x27;], &#x27;nf_form_&#x27; . absint( $_POST[&#x27;_form_id&#x27;] ) ) )
+			return false;
+		*/
+		$ajax = Ninja_Forms()-&gt;form( absint( $_POST[&#x27;_form_id&#x27;] ) )-&gt;get_setting( &#x27;ajax&#x27; );
+
+		if( $ajax != 1 ){
+			add_action( &#x27;init&#x27;, &#x27;ninja_forms_setup_processing_class&#x27;, 5 );
+			add_action( &#x27;init&#x27;, &#x27;ninja_forms_pre_process&#x27;, 999 );
+		}else if( $ajax == 1 AND $_REQUEST[&#x27;action&#x27;] == &#x27;ninja_forms_ajax_submit&#x27; ){
+			add_action( &#x27;init&#x27;, &#x27;ninja_forms_setup_processing_class&#x27;, 5 );
+			add_action( &#x27;init&#x27;, &#x27;ninja_forms_pre_process&#x27;, 999 );
+		}
+	}
+}
+
+add_action( &#x27;plugins_loaded&#x27;, &#x27;nf_check_post&#x27; );
+
+
+/*
+ *
+ * Function that checks to see if session variables have been set that indicate we are on a success page.
+ * If we are, intialize the global processing class for access to the form&#x27;s settings and user values.
+ *
+ * @since 2.2.45
+ * @return void
+ */
+
+function ninja_forms_session_class_setup(){
+	$cache = Ninja_Forms()-&gt;session-&gt;get( &#x27;nf_cache&#x27; );
+	if ( $cache &amp;&amp; ! is_admin() ) {
+		add_action( &#x27;init&#x27;, &#x27;ninja_forms_setup_processing_class&#x27;, 5 );
+	}
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_session_class_setup&#x27;, 4 );
+
+/*
+ *
+ * Function that clears any transient values that have been stored in cache for this user.
+ *
+ * @since 2.2.45
+ * @return void
+ */
+
+function ninja_forms_clear_transient() {
+	ninja_forms_delete_transient();
+}
+
+add_action( &#x27;wp_head&#x27;, &#x27;ninja_forms_clear_transient&#x27; );
+
+function ninja_forms_page_append_check(){
+	global $post, $ninja_forms_append_page_form_id;
+
+	if ( ! empty ( $_REQUEST[&#x27;preview&#x27;] ) &amp;&amp; ! empty ( $_REQUEST[&#x27;preview&#x27;] ) ) {
+		if(is_array($ninja_forms_append_page_form_id)){
+			unset($ninja_forms_append_page_form_id);
+		}
+	}
+
+	if(!isset($ninja_forms_append_page_form_id)){
+		$ninja_forms_append_page_form_id = array();
+	}
+
+	if ( $post ) {
+		$form_ids = ninja_forms_get_form_ids_by_post_id($post-&gt;ID);
+		if(is_array($form_ids) AND !empty($form_ids)){
+			foreach($form_ids as $form_id){
+				$ninja_forms_append_page_form_id[] = $form_id;
+				//remove_filter(&#x27;the_content&#x27;, &#x27;wpautop&#x27;);
+				add_filter( &#x27;the_content&#x27;, &#x27;ninja_forms_append_to_page&#x27;, 9999 );
+			}
+		}		
+	}
+}
+
+add_action(&#x27;wp_head&#x27;, &#x27;ninja_forms_page_append_check&#x27;);
+
+function ninja_forms_append_to_page($content){
+	global $ninja_forms_append_page_form_id;
+
+	if( !is_admin() &amp;&amp; is_main_query() &amp;&amp; ( is_page() OR is_single() ) ){
+		$form = &#x27;&#x27;;
+		if(is_array($ninja_forms_append_page_form_id) &amp;&amp; !empty($ninja_forms_append_page_form_id)){
+			foreach($ninja_forms_append_page_form_id as $form_id){
+				$form .= ninja_forms_return_echo(&#x27;ninja_forms_display_form&#x27;, $form_id);
+			}
+		}else{
+			$form = ninja_forms_return_echo(&#x27;ninja_forms_display_form&#x27;, $ninja_forms_append_page_form_id);
+		}
+		$content .= $form;
+	}
+	return $content;
+}
+
+/**
+ * Main function used to display a Ninja Form.
+ * ninja_forms_display_form() can be called anywhere on in a WordPress template.
+ * By default it&#x27;s called by the ninja_forms_append_to_page() function in the main ninja_forms.php file.
+ *
+**/
+
+function ninja_forms_display_form( $form_id = &#x27;&#x27; ){
+	//Define our global variables
+	global $post, $wpdb, $ninja_forms_fields, $ninja_forms_loading, $ninja_forms_processing;
+
+	//Get the settings telling us whether or not we should clear/hide the completed form.
+	//Check to see if the form_id has been sent.
+	if($form_id == &#x27;&#x27;){
+		$function = false;
+		if(isset($_REQUEST[&#x27;form_id&#x27;])){ //If it hasn&#x27;t, set it to our requested form_id. Sometimes this function can be called without an expressly passed form_id.
+			$form_id = absint( $_REQUEST[&#x27;form_id&#x27;] );
+		}
+	}else{
+		$function = true;
+	}
+	if($form_id != &#x27;&#x27;){ //Make sure that we have an active form_id.
+		do_action( &#x27;nf_before_display_loading&#x27;, $form_id );
+
+		// Instantiate our loading global singleton.
+		if ( !isset ( $ninja_forms_processing ) or ( isset ( $ninja_forms_processing ) and $ninja_forms_processing-&gt;get_form_ID() != $form_id ) ) {
+			$ninja_forms_loading = new Ninja_Forms_Loading( $form_id );
+		}
+
+		// Run our two loading action hooks.
+		do_action( &#x27;ninja_forms_display_pre_init&#x27;, $form_id );
+		do_action( &#x27;ninja_forms_display_init&#x27;, $form_id );
+
+		if ( isset ( $ninja_forms_loading ) ) {
+			$ajax = $ninja_forms_loading-&gt;get_form_setting( &#x27;ajax&#x27; );
+		} else {
+			$ajax = $ninja_forms_processing-&gt;get_form_setting( &#x27;ajax&#x27; );
+		}
+
+		if ( !$ajax ) {
+			$ajax = 0;
+		}
+
+		if ( isset ( $ninja_forms_loading ) ) {
+			$logged_in = $ninja_forms_loading-&gt;get_form_setting( &#x27;logged_in&#x27; );
+		} else {
+			$logged_in = $ninja_forms_processing-&gt;get_form_setting( &#x27;logged_in&#x27; );
+		}
+
+		if ( !$logged_in ) {
+			$logged_in = 0;
+		}
+
+		$display = true;
+
+		if( $logged_in == 1 ){
+			if( !is_user_logged_in() ){
+				$display = false;
+			}
+		}
+
+		$display = apply_filters( &#x27;ninja_forms_display_show_form&#x27;, $display, $form_id );
+
+		if($ajax == 1){
+			$url = admin_url( &#x27;admin-ajax.php&#x27; );
+			$url = esc_url_raw( add_query_arg(&#x27;action&#x27;, &#x27;ninja_forms_ajax_submit&#x27;, $url ) );
+		}else{
+			$url = &#x27;&#x27;;
+		}
+
+		if( $display ){
+			do_action( &#x27;ninja_forms_before_form_display&#x27;, $form_id );
+
+			do_action(&#x27;ninja_forms_display_before_form_wrap&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_open_form_wrap&#x27;, $form_id);
+
+			do_action(&#x27;ninja_forms_display_before_form_title&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_form_title&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_after_form_title&#x27;, $form_id);
+
+			do_action(&#x27;ninja_forms_display_before_form&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_open_form_tag&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_after_open_form_tag&#x27;, $form_id);
+
+			do_action(&#x27;ninja_forms_display_before_fields&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_fields&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_after_fields&#x27;, $form_id);
+
+			do_action(&#x27;ninja_forms_display_close_form_tag&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_after_form&#x27;, $form_id);
+
+			do_action(&#x27;ninja_forms_display_close_form_wrap&#x27;, $form_id);
+			do_action(&#x27;ninja_forms_display_after_form_wrap&#x27;, $form_id);
+
+			do_action( &#x27;ninja_forms_after_form_display&#x27;, $form_id );
+
+			do_action( &#x27;ninja_forms_display_js&#x27;, $form_id );
+			do_action( &#x27;ninja_forms_display_css&#x27;, $form_id );
+		}else{
+			do_action( &#x27;ninja_forms_display_user_not_logged_in&#x27;, $form_id );
+		}
+	}
+}
+</pre></details></body></html>
