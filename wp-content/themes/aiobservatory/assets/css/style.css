@@ -1575,3 +1575,8 @@ nav:before {
 }
 
 .conten-wrap { overflow-wrap: break-word; }
+
+/* Original archive photos retain their native resolution on all screens. */
+.recovered-photo { margin: 32px auto; text-align: center; }
+.recovered-photo img { max-width: 100%; height: auto; }
+.recovered-photo figcaption { margin-top: 12px; }
