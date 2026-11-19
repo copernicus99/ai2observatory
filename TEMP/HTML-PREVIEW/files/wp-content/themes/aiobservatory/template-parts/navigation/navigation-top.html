@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/template-parts/navigation/navigation-top.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/template-parts/navigation/navigation-top.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+                        
+                    &lt;ul class=&quot;right&quot;&gt;
+                        &lt;li&gt;
+                            &lt;a href=&quot;#&quot; data-toggle=&quot;dropdown&quot; aria-expanded=&quot;true&quot; rel=&quot;nofollow&quot;&gt;
+                                &lt;i class=&quot;icon-more&quot;&gt;&lt;/i&gt;
+                            &lt;/a&gt;
+
+                            &lt;ul class=&quot;dropdown-menu pull-right mob&quot;&gt;
+                            &lt;li class=&quot;divider&quot;&gt;Language&lt;/li&gt;
+							
+                            	&lt;li&gt;
+                                    &lt;a href=&quot;&quot; rel=&quot;nofollow&quot;&gt;&lt;/a&gt;
+                                &lt;/li&gt;
+                                                             
+
+                            &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
+								
+                            
+                            &lt;/ul&gt;
+                        &lt;/li&gt;
+                    &lt;/ul&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Displays top navigation
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ * @version 1.0
+ */
+
+$defaults = array(
+    &#x27;theme_location&#x27;  =&gt; &#x27;top&#x27;,
+    &#x27;menu&#x27;            =&gt; &#x27;Menu Top&#x27;,
+    &#x27;container&#x27;       =&gt; &#x27;&#x27;,
+    &#x27;container_class&#x27; =&gt; &#x27;&#x27;,
+    &#x27;menu_class&#x27;      =&gt; &#x27;left mob&#x27;,
+    &#x27;echo&#x27;            =&gt; true,
+    &#x27;fallback_cb&#x27;     =&gt; &#x27;wp_page_menu&#x27;,
+    //&#x27;items_wrap&#x27;      =&gt; &#x27;&lt;ul id=\&quot;%1$s\&quot; class=\&quot;%2$s\&quot;&gt;%3$s&lt;/ul&gt;&#x27;,
+    &#x27;depth&#x27;           =&gt; 0,
+    &#x27;walker&#x27; =&gt; new My_Walker_Nav_Menu()
+
+);
+    wp_nav_menu($defaults); 
+                        ?&gt;
+                        
+                    &lt;ul class=&quot;right&quot;&gt;
+                        &lt;li&gt;
+                            &lt;a href=&quot;#&quot; data-toggle=&quot;dropdown&quot; aria-expanded=&quot;true&quot; rel=&quot;nofollow&quot;&gt;
+                                &lt;i class=&quot;icon-more&quot;&gt;&lt;/i&gt;
+                            &lt;/a&gt;
+
+                            &lt;ul class=&quot;dropdown-menu pull-right mob&quot;&gt;
+                            &lt;li class=&quot;divider&quot;&gt;Language&lt;/li&gt;
+							&lt;?php
+                            if ( function_exists( &#x27;pll_the_languages&#x27; ) ) {
+
+                            $translations = pll_the_languages( array( &#x27;raw&#x27; =&gt; 1 ) );
+                            foreach ($translations as $key =&gt; $value) { ?&gt;
+                            	&lt;li&gt;
+                                    &lt;a href=&quot;&lt;?php echo $value[&#x27;url&#x27;]?&gt;&quot; rel=&quot;nofollow&quot;&gt;&lt;?php echo $value[&#x27;name&#x27;]?&gt;&lt;/a&gt;
+                                &lt;/li&gt;
+                            &lt;?php }
+                        }
+                            ?&gt;                                 
+
+                            &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
+								&lt;?php
+								                            $righr_menu = array(
+								    &#x27;menu&#x27;            =&gt; &#x27;Menu Right&#x27;,
+								    &#x27;container&#x27;       =&gt; &#x27;&#x27;,
+								    &#x27;container_class&#x27; =&gt; &#x27;&#x27;,
+								    //&#x27;menu_class&#x27;      =&gt; &#x27;left mob&#x27;,
+								    &#x27;echo&#x27;            =&gt; true,
+								    &#x27;fallback_cb&#x27;     =&gt; &#x27;wp_page_menu&#x27;,
+								    //&#x27;items_wrap&#x27;      =&gt; &#x27;&lt;ul id=\&quot;%1$s\&quot; class=\&quot;%2$s\&quot;&gt;%3$s&lt;/ul&gt;&#x27;,
+								    &#x27;depth&#x27;           =&gt; 0,
+								    //&#x27;walker&#x27; =&gt; new My_Walker_Nav_Menu()
+
+								);
+								    wp_nav_menu($righr_menu);
+                            ?&gt;
+                            
+                            &lt;/ul&gt;
+                        &lt;/li&gt;
+                    &lt;/ul&gt;</pre></details></body></html>

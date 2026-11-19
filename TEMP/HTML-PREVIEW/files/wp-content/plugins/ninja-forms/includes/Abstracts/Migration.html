@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/Migration.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/Migration.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+require_once( ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27;);
+
+abstract class NF_Abstracts_Migration
+{
+    public $table_name = &#x27;&#x27;;
+
+    public $charset_collate = &#x27;&#x27;;
+
+    public $flag = &#x27;&#x27;;
+
+    public function __construct( $table_name, $flag )
+    {
+        $this-&gt;table_name =  $table_name;
+    }
+
+    public function table_name()
+    {
+        global $wpdb;
+        return $wpdb-&gt;prefix . $this-&gt;table_name;
+    }
+
+    public function charset_collate()
+    {
+        global $wpdb;
+        return $wpdb-&gt;get_charset_collate();
+    }
+
+    public function _run()
+    {
+        // Check the flag
+        if( get_option( $this-&gt;flag, FALSE ) ) return;
+
+        // Run the migration
+        $this-&gt;run();
+
+        // Set the Flag
+        update_option( $this-&gt;flag, TRUE );
+    }
+
+    protected abstract function run();
+
+    public function _drop()
+    {
+        global $wpdb;
+        if( ! $this-&gt;table_name ) return;
+        if( 0 == $wpdb-&gt;query( $wpdb-&gt;prepare( &quot;SHOW TABLES LIKE &#x27;%s&#x27;&quot;, $this-&gt;table_name() ) ) ) return;
+        $wpdb-&gt;query( &quot;DROP TABLE &quot; . $this-&gt;table_name() );
+        return $this-&gt;drop();
+    }
+
+    protected function drop()
+    {
+        // This section intentionally left blank.
+    }
+}
+</pre></details></body></html>

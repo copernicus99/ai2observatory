@@ -1,0 +1,999 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/styles/ninja-forms-styles.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/styles/ninja-forms-styles.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( class_exists( &#x27;NF_Styles&#x27;, false ) ) return;
+
+/**
+ * Class NF_Styles
+ */
+final class NF_Styles
+{
+    const VERSION = &#x27;3.0.25&#x27;;
+    const SLUG    = &#x27;styles&#x27;;
+    const NAME    = &#x27;Styles&#x27;;
+    const AUTHOR  = &#x27;WP Ninjas&#x27;;
+    const PREFIX  = &#x27;NF_Styles&#x27;;
+
+    /**
+     * @var NF_Layouts
+     * @since 3.0
+     */
+    private static $instance;
+
+    /**
+     * Plugin Directory
+     *
+     * @since 3.0
+     * @var string $dir
+     */
+    public static $dir = &#x27;&#x27;;
+
+    /**
+     * Plugin URL
+     *
+     * @since 3.0
+     * @var string $url
+     */
+    public static $url = &#x27;&#x27;;
+
+    /**
+     * NF_Layouts constructor.
+     */
+    public function __construct()
+    {
+        add_action( &#x27;ninja_forms_loaded&#x27;, array( $this, &#x27;ninja_forms_loaded&#x27; ) );
+
+        add_action( &#x27;ninja_forms_before_container&#x27;, array( $this, &#x27;localize_plugin_styles&#x27; ), 10, 3 );
+        add_action( &#x27;ninja_forms_before_container_preview&#x27;, array( $this, &#x27;localize_plugin_styles&#x27; ), 10, 3 );
+
+        add_action( &#x27;ninja_forms_before_container&#x27;, array( $this, &#x27;localize_form_styles&#x27; ), 10, 3 );
+        add_action( &#x27;ninja_forms_before_container_preview&#x27;, array( $this, &#x27;localize_form_styles&#x27; ), 10, 3 );
+
+        add_action( &#x27;ninja_forms_before_container&#x27;, array( $this, &#x27;localize_field_styles&#x27; ), 10, 3 );
+        add_action( &#x27;ninja_forms_before_container_preview&#x27;, array( $this, &#x27;localize_field_styles&#x27; ), 10, 3 );
+
+        add_filter( &#x27;ninja_forms_from_settings_types&#x27;, array( $this, &#x27;add_form_settings_groups&#x27; ) );
+        add_filter( &#x27;ninja_forms_localize_form_styles_settings&#x27;, array( $this, &#x27;add_form_settings&#x27; ) );
+
+        add_filter( &#x27;ninja_forms_field_settings_groups&#x27;, array( $this, &#x27;add_field_settings_groups&#x27; ) );
+        add_filter( &#x27;ninja_forms_field_load_settings&#x27;, array( $this, &#x27;add_field_settings&#x27; ), 10, 3 );
+
+
+        add_filter( &#x27;ninja_forms_styles_output_rule_border&#x27;, array( $this, &#x27;filter_output_rule_border&#x27; ) );
+        add_filter( &#x27;ninja_forms_styles_apply_standard_units&#x27;, array( $this, &#x27;apply_standard_units&#x27; ) );
+
+        add_action( &#x27;ninja_forms_save_form&#x27;, array( $this, &#x27;bust_form_styles_cache&#x27; ), 10, 1 );
+        add_action( &#x27;ninja_forms_save_form&#x27;, array( $this, &#x27;bust_field_styles_cache&#x27; ), 10, 1 );
+        add_action( &#x27;ninja_forms_save_form_preview&#x27;, array( $this, &#x27;bust_form_styles_cache&#x27; ), 10, 1 );
+        add_action( &#x27;ninja_forms_save_form_preview&#x27;, array( $this, &#x27;bust_field_styles_cache&#x27; ), 10, 1 );
+        add_action( &#x27;ninja_forms_styles_update_styles&#x27;, array( $this, &#x27;bust_plugin_styles_cache&#x27; ), 10, 1 );
+
+        /*
+         * Add a filter for importing/exporting plugin-wide styles
+         */
+        add_filter( &#x27;ninja_forms_import_export_tabs&#x27;, array( $this, &#x27;add_export_tab&#x27; ) );
+        /*
+         * Listen for importing/exporting
+         */
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;import_export&#x27; ) );
+
+
+        /*
+         * Multi-Part Integration
+         */
+        add_filter( &#x27;ninja_forms_multi_part_advanced_settings&#x27;, array( $this, &#x27;add_multi_part_settings&#x27; ) );
+    }
+
+    public function ninja_forms_loaded()
+    {
+        new NF_Styles_Admin_Submenu();
+    }
+
+    public function add_form_settings_groups( $groups )
+    {
+        $new_groups = self::config( &#x27;FormSettingsGroups&#x27; );
+        $groups = array_merge( $groups, $new_groups );
+        return $groups;
+    }
+
+    public function add_form_settings( $settings )
+    {
+        $form_settings = self::config( &#x27;FormSettings&#x27; );
+
+        foreach( $form_settings as $name =&gt; $form_setting ){
+            $form_setting[ &#x27;group&#x27; ] = &#x27;primary&#x27;;
+
+            foreach( self::config( &#x27;CommonSettings&#x27; ) as $common_setting ){
+
+                switch( $name ){
+                    case &#x27;container_styles&#x27;:
+                        $blacklist = array( &#x27;color&#x27;, &#x27;font-size&#x27;, &#x27;width&#x27; );
+                        break;
+                    case &#x27;row_styles&#x27;:
+                    case &#x27;odd_styles&#x27;:
+                        $blacklist = array( &#x27;height&#x27;, &#x27;color&#x27; );
+                        break;
+                    case &#x27;error_msg_styles&#x27;:
+                        $blacklist = array( &#x27;height&#x27; );
+                        break;
+                    default:
+                        $blacklist = array();
+                }
+
+                if( in_array( $common_setting[ &#x27;name&#x27; ], $blacklist ) ) continue;
+
+                if( &#x27;float&#x27; == $common_setting[ &#x27;name&#x27; ] &amp;&amp; in_array( $form_setting[ &#x27;name&#x27; ], array( &#x27;row_styles&#x27;, &#x27;row-odd_styles&#x27;, &#x27;success-msg_styles&#x27;, &#x27;error_msg_styles&#x27; ) ) ){
+                    continue;
+                }
+
+                $common_setting[ &#x27;name&#x27; ] = $name . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+
+                if ( isset ( $common_setting[ &#x27;deps&#x27; ] ) ) {
+                    foreach( $common_setting[ &#x27;deps&#x27; ] as $dep_name =&gt; $val ) {
+                        $common_setting[ &#x27;deps&#x27; ][ $name . &#x27;_&#x27; . $dep_name ] = $val;
+                        unset( $common_setting[ &#x27;deps&#x27; ][ $dep_name ] );
+                    }
+                }
+
+                $form_setting[ &#x27;settings&#x27; ][] = $common_setting;
+            }
+
+            $form_settings[ $name ] = $form_setting;
+        }
+
+        $settings = array_merge( $settings, $form_settings );
+        return $settings;
+    }
+
+    public function add_field_settings_groups( $groups )
+    {
+        return $groups = array_merge( $groups, self::config( &#x27;FieldSettingsGroups&#x27; ) );
+    }
+
+    public function add_field_settings( $settings, $field_type, $field_parent_type )
+    {
+        $style_settings = self::config( &#x27;FieldSettings&#x27; );
+
+        if( &#x27;list&#x27; == $field_parent_type ){
+            if( &#x27;listselect&#x27; != $field_type &amp;&amp; &#x27;listmultiselect&#x27; != $field_type ) {
+                $style_settings = array_merge( $style_settings, self::config( &#x27;ListFieldSettings&#x27; ) );
+            }
+        }
+        
+        if(&#x27;starrating&#x27; == $field_type ){
+            $style_settings = array_merge( $style_settings, self::config( &#x27;RatingFieldSettings&#x27; ) );
+        }
+
+        if( &#x27;submit&#x27; == $field_type ){
+            $style_settings = array_merge( $style_settings, self::config( &#x27;ButtonFieldSettings&#x27; ) );
+            if( isset( $style_settings[ &#x27;label_styles&#x27; ] ) ){
+                unset( $style_settings[ &#x27;label_styles&#x27; ] );
+            }
+        }
+
+        foreach( $style_settings as $name =&gt; $style_setting ){
+
+            $style_setting[ &#x27;group&#x27; ] = &#x27;styles&#x27;;
+
+            if( &#x27;recaptcha&#x27; == $field_type &amp;&amp; &#x27;element_styles&#x27; == $name ) continue;
+            if( &#x27;hr&#x27; == $field_type &amp;&amp; &#x27;label_styles&#x27; == $name ) continue;
+
+            foreach( self::config( &#x27;CommonSettings&#x27; ) as $common_setting ){
+
+                switch( $name ){
+                    case &#x27;wrap_styles&#x27;:
+                        $blacklist = array( &#x27;color&#x27;, &#x27;font-size&#x27;, &#x27;height&#x27; );
+                        break;
+                    case &#x27;label_styles&#x27;:
+                    case &#x27;element_styles&#x27;:
+                    case &#x27;submit_element_hover_styles&#x27;:
+                        $blacklist = array( &#x27;height&#x27; );
+                        break;
+                    default:
+                        $blacklist = array();
+                }
+
+                if( &#x27;hr&#x27; == $field_type &amp;&amp; &#x27;element_styles&#x27; == $name ){
+                    $blacklist = array_merge( $blacklist, array( &#x27;color&#x27;, &#x27;font-size&#x27;, &#x27;padding&#x27;) );
+                    if( isset( $blacklist[ &#x27;height&#x27; ] ) ) unset( $blacklist[ &#x27;height&#x27; ] );
+                }
+
+                if( in_array( $common_setting[ &#x27;name&#x27; ], $blacklist ) ) continue;
+
+                $common_setting[ &#x27;name&#x27; ] = $name . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+
+                if ( isset ( $common_setting[ &#x27;deps&#x27; ] ) ) {
+                    foreach( $common_setting[ &#x27;deps&#x27; ] as $dep_name =&gt; $val ) {
+                        $common_setting[ &#x27;deps&#x27; ][ $name . &#x27;_&#x27; . $dep_name ] = $val;
+                        unset( $common_setting[ &#x27;deps&#x27; ][ $dep_name ] );
+                    }
+                }
+
+                $style_setting[ &#x27;settings&#x27; ][] = $common_setting;
+            }
+
+            $settings[ $name ] = $style_setting;
+        }
+
+        return $settings;
+    }
+
+    public function localize_plugin_styles( $form_id, $settings, $fields )
+    {
+        $cache = get_transient( &#x27;ninja_forms_styles_plugin_styles&#x27; );
+        if( $cache ){
+            echo $cache;
+            return;
+        }
+
+        $style_settings = Ninja_Forms()-&gt;get_setting( &#x27;style&#x27; );
+        $settings_groups = self::config( &#x27;PluginSettingGroups&#x27; );
+
+        $styles = array();
+        foreach( $settings_groups as $setting_group ){
+
+            $use_important = ( &#x27;error_settings&#x27; == $setting_group[ &#x27;name&#x27; ] ) ? TRUE : FALSE;
+
+            if( &#x27;error_settings&#x27; == $setting_group[ &#x27;name&#x27; ] ) $setting_group[ &#x27;name&#x27; ] = &#x27;form_settings&#x27;;
+            if( &#x27;datepicker_settings&#x27; == $setting_group[ &#x27;name&#x27; ] ) $setting_group[ &#x27;name&#x27; ] = &#x27;form_settings&#x27;;
+
+            if( ! isset( $setting_group[ &#x27;sections&#x27; ] ) || ! $setting_group[ &#x27;sections&#x27; ] ) continue;
+
+            $group_name = $setting_group[ &#x27;name&#x27; ];
+
+            if( ! isset( $style_settings[ $group_name ] ) || ! $style_settings[ $group_name ] ) continue;
+
+            foreach( $setting_group[ &#x27;sections&#x27; ] as $section ){
+
+                if( ! isset( $section[ &#x27;selector&#x27; ] ) || ! $section[ &#x27;selector&#x27; ] ) continue;
+
+                $section_name = $section[ &#x27;name&#x27; ];
+
+                $selector = $section[ &#x27;selector&#x27; ];
+
+                if( ! isset( $style_settings[ $group_name ][ $section_name ] ) ) continue;
+
+                foreach( $style_settings[ $group_name ][ $section_name ] as $element =&gt; $style ){
+
+                    if( ! $style ) continue;
+
+                    if( $use_important ){
+                        $style .= &#x27; !important&#x27;;
+                    }
+
+                    $styles[ $selector ][ $element ] = $style;
+
+                    if( &#x27;field_settings&#x27; == $group_name &amp;&amp; &#x27;element&#x27; == $section_name ){
+                        if( Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+                            switch ($element) {
+                                case &#x27;background-color&#x27;:
+                                case &#x27;border&#x27;:
+                                case &#x27;border-style&#x27;:
+                                case &#x27;border-color&#x27;:
+                                    $styles[ &#x27;.nf-fields .nf-field .list-select-wrap .nf-field-element &gt; div&#x27; ][ $element ] = $style; // Select
+                                    $styles[ &#x27;.nf-fields .nf-field .checkbox-wrap .nf-field-label label::after&#x27; ][ $element ] = $style; // Checkbox
+                                    $styles[ &#x27;.nf-fields .nf-field .nf-field-element label::after&#x27; ][ $element ] = $style; // Checkbox List, Radio List
+                                    break;
+                                case &#x27;color&#x27;:
+                                case &#x27;font-size&#x27;:
+                                    $styles[ &#x27;.nf-fields .nf-field .list-select-wrap .ninja-forms-field&#x27; ][ $element ] = $style; // Select
+                                    $styles[ &#x27;.nf-field-container .checkbox-wrap .nf-field-label label.nf-checked-label::before&#x27; ][ $element ] = $style; // Checkbox
+                                    $styles[ &#x27;.nf-fields .listcheckbox-wrap .nf-field-element label.nf-checked-label::before&#x27; ][ $element ] = $style; // Checkbox List
+                                    break;
+                                case &#x27;display&#x27;:
+                                case &#x27;float&#x27;:
+                                    continue;
+                                default:
+                                    $selector = &#x27;.ninja-forms-field&#x27;;
+                                    $styles[ &#x27;.nf-field-element &gt; div&#x27; ][ $element ] = $style;
+                            }
+
+                            if( &#x27;border-color&#x27; == $element ){
+                                $styles[ &#x27;div::after&#x27; ][ &#x27;color&#x27; ] = $style;
+                            }
+
+                            if( &#x27;color&#x27; == $element ) {
+                                $styles[&#x27;.nf-fields .listradio-wrap .nf-field-element label.nf-checked-label::before&#x27;][&#x27;background-color&#x27;] = $style; // Radio List
+                                $styles[&#x27;.nf-fields .listradio-wrap .nf-field-element label.nf-checked-label::after&#x27;][&#x27;border-color&#x27;] = $style; // Radio List
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if( isset( $style_settings[ &#x27;field_type&#x27; ] ) &amp;&amp; $style_settings[ &#x27;field_type&#x27; ] ){
+
+            $base_selector = $settings_groups[ &#x27;field_type&#x27; ][ &#x27;selector&#x27; ];
+
+            $field_type_sections = NF_Styles::config( &#x27;FieldTypeSections&#x27; );
+
+            $field_type_lookup = NF_Styles::config( &#x27;FieldTypeLookup&#x27; );
+            $field_type_lookup = array_flip( $field_type_lookup );
+
+            foreach( $style_settings[ &#x27;field_type&#x27; ] as $field_type =&gt; $style_setting_field ){
+                foreach( $style_setting_field as $section =&gt; $style_setting_section ){
+
+                    if( ! is_array( $style_setting_section ) )
+                        continue;
+
+                    foreach( $style_setting_section as $rule =&gt; $value ){
+
+                        if( ! $value ) continue;
+
+                        if( ! isset( $field_type_sections[ $section ][ &#x27;selector&#x27; ] ) || ! $field_type_sections[ $section ][ &#x27;selector&#x27; ] ) continue;
+
+                        if( isset( $field_type_lookup[ $field_type ] ) ) $field_type = $field_type_lookup[ $field_type ];
+
+                        $selector = $field_type_sections[ $section ][ &#x27;selector&#x27; ];
+
+                        if( Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ) {
+
+                            if( &#x27;checkbox&#x27; == $field_type ){
+                                if( &#x27;element&#x27; == $section ){
+                                    switch( $rule ){
+                                        case &#x27;background-color&#x27;:
+                                        case &#x27;border&#x27;:
+                                        case &#x27;border-style&#x27;:
+                                        case &#x27;border-color&#x27;:
+                                            $selector = &#x27;.nf-field-label label::after&#x27;;
+                                            break;
+                                        case &#x27;color&#x27;:
+                                        case &#x27;font-size&#x27;:
+                                            $selector = &#x27;.nf-field-label label::before&#x27;;
+                                        case &#x27;display&#x27;:
+                                        case &#x27;float&#x27;:
+                                        case &#x27;height&#x27;:
+                                        case &#x27;width&#x27;:
+                                            continue;
+                                    }
+                                }
+                            }
+
+                            if( &#x27;listcheckbox&#x27; == $field_type ){
+                                if( &#x27;element&#x27; == $section ){
+                                    switch( $rule ){
+                                        case &#x27;background-color&#x27;:
+                                        case &#x27;border&#x27;:
+                                        case &#x27;border-style&#x27;:
+                                        case &#x27;border-color&#x27;:
+                                            $selector = &#x27;.nf-field-element label::after&#x27;;
+                                            break;
+                                        case &#x27;color&#x27;:
+                                        case &#x27;font-size&#x27;:
+                                            $selector = &#x27;.nf-field-element label::before&#x27;;
+                                        case &#x27;display&#x27;:
+                                        case &#x27;float&#x27;:
+                                        case &#x27;height&#x27;:
+                                        case &#x27;width&#x27;:
+                                            continue;
+                                    }
+                                }
+                            }
+
+                            if( &#x27;listradio&#x27; == $field_type ){
+                                if( &#x27;element&#x27; == $section ){
+                                    switch( $rule ){
+                                        case &#x27;background-color&#x27;:
+                                        case &#x27;border&#x27;:
+                                        case &#x27;border-style&#x27;:
+                                        case &#x27;border-color&#x27;:
+                                            $selector = &#x27;.nf-field-element label::after&#x27;;
+                                            break;
+                                        case &#x27;font-size&#x27;:
+                                            $selector = &#x27;.nf-field-element label::before&#x27;;
+                                            break;
+                                        case &#x27;display&#x27;:
+                                        case &#x27;float&#x27;:
+                                        case &#x27;height&#x27;:
+                                        case &#x27;width&#x27;:
+                                            continue;
+                                    }
+
+                                    if( &#x27;color&#x27; == $rule ){
+                                        $styles[ str_replace( &#x27;{field-type}&#x27; , $field_type, $base_selector ) . &#x27; label.nf-checked-label::before&#x27; ][ &#x27;background-color&#x27; ] = $value;
+                                    }
+
+                                    if( &#x27;border-color&#x27; == $rule ){
+                                        $styles[ str_replace( &#x27;{field-type}&#x27; , $field_type, $base_selector ) . &#x27; .nf-field-element label::after&#x27; ][ &#x27;color&#x27; ] = $value;
+                                    }
+                                }
+                            }
+
+                            if( &#x27;listselect&#x27; == $field_type ) {
+                                if (&#x27;element&#x27; == $section) {
+                                    switch ($rule) {
+                                        case &#x27;background-color&#x27;:
+                                        case &#x27;border&#x27;:
+                                        case &#x27;border-style&#x27;:
+                                        case &#x27;border-color&#x27;:
+                                            $selector = &#x27;.nf-field-element &gt; div&#x27;;
+                                            break;
+                                        case &#x27;color&#x27;:
+                                        case &#x27;font-size&#x27;:
+                                            $selector = &#x27;.ninja-forms-field&#x27;;
+                                            break;
+                                        case &#x27;display&#x27;:
+                                        case &#x27;float&#x27;:
+                                            continue;
+                                        default:
+                                            $selector = &#x27;.ninja-forms-field&#x27;;
+                                            $styles[ str_replace( &#x27;{field-type}&#x27; , $field_type, $base_selector ) . &#x27; .nf-field-element &gt; div&#x27; ][ $rule ] = $value;
+                                    }
+
+                                    if( &#x27;border-color&#x27; == $rule ){
+                                        $styles[ str_replace( &#x27;{field-type}&#x27; , $field_type, $base_selector ) . &#x27; div::after&#x27; ][ &#x27;color&#x27; ] = $value;
+                                    }
+                                }
+                            }
+
+                            if( &#x27;list-item-row&#x27; == $section ){
+                                $selector = &#x27;.nf-field-element li&#x27;;
+                            }
+
+                        }
+
+                        $selector = str_replace( &#x27;{field-type}&#x27; , $field_type, $base_selector ) . &#x27; &#x27; . $selector;
+
+                        $selector = apply_filters( &#x27;ninja_forms_styles_&#x27; . $field_type . &#x27;_selector&#x27;, $selector );
+
+                        $styles[$selector][$rule] = $value;
+
+                    }
+                }
+            }
+        }
+
+
+        ob_start();
+        $this-&gt;localize_styles( $styles, &#x27;Plugin Wide Styles&#x27; );
+        $output = ob_get_clean();
+
+        set_transient( &#x27;ninja_forms_styles_plugin_styles&#x27;, $output );
+        echo $output;
+
+    }
+
+    public function localize_form_styles( $form_id, $settings, $fields )
+    {
+        $cache = get_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_styles&#x27; );
+        if( $cache ){
+            echo $cache;
+            return;
+        }
+
+        $form_settings_groups = self::config( &#x27;FormSettings&#x27; );
+        $common_settings = self::config( &#x27;CommonSettings&#x27; );
+
+        $styles = array();
+        foreach( $form_settings_groups as $form_settings_group ){
+
+            if( ! isset( $form_settings_group[ &#x27;selector&#x27; ] ) ) continue;
+
+            $selector = str_replace( &#x27;{ID}&#x27;, $form_id, $form_settings_group[ &#x27;selector&#x27; ] );
+
+            foreach( $common_settings as $common_setting ){
+
+                $setting = $form_settings_group[ &#x27;name&#x27; ] . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+                if( ! isset( $settings[ $setting ] ) || ! $settings[ $setting ] ) continue;
+
+                $rule = $common_setting[ &#x27;name&#x27; ];
+
+                $styles[ $selector ][ $rule ] = $settings[ $setting ];
+            }
+        }
+
+        /*
+         * Multi-Part Styles
+         */
+        $part_styles = self::config( &#x27;MultiPartSettings&#x27; );
+        foreach( $part_styles as &amp;$part ){
+            foreach( self::config( &#x27;CommonSettings&#x27; ) as $common_setting ) {
+                $name =  $part[ &#x27;name&#x27; ] . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+
+                if( ! isset( $settings[ $name ] ) || ! $settings[ $name ] ) continue;
+
+                $selector = $part[ &#x27;selector&#x27; ];
+                $rule = $common_setting[ &#x27;name&#x27; ];
+                $styles[$selector][$rule] = $settings[ $name ];
+            }
+        }
+        /* End Multi-Part Styles */
+
+        ob_start();
+        $this-&gt;localize_styles( $styles, &#x27;Form Styles&#x27; );
+        $output = ob_get_clean();
+
+        set_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_styles&#x27;, $output );
+        echo $output;
+    }
+
+    public function localize_field_styles( $form_id, $settings, $fields )
+    {
+        $cache = get_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_field_styles&#x27; );
+        if( $cache ){
+            echo $cache;
+            return;
+        }
+
+        $field_settings_groups = self::config( &#x27;FieldSettings&#x27; );
+
+        $field_settings_groups = array_merge( $field_settings_groups, self::config( &#x27;ButtonFieldSettings&#x27; ) );
+        
+        $field_settings_groups = array_merge( $field_settings_groups, self::config( &#x27;ListFieldSettings&#x27; ) );
+        
+        $field_settings_groups = array_merge( $field_settings_groups, self::config( &#x27;RatingFieldSettings&#x27; ) );
+
+
+        $common_settings = self::config( &#x27;CommonSettings&#x27; );
+
+        $styles = array();
+        foreach( $fields as $field ){
+
+            if( is_object( $field ) ){
+                $field-&gt;get_settings(); // Initialize object settigns.
+            } else {
+                if (isset($field[&#x27;settings&#x27;])) $field = array_merge($field, $field[&#x27;settings&#x27;]);
+            }
+
+            foreach( $field_settings_groups as $field_settings_group ){
+
+                if( ! isset( $field_settings_group[ &#x27;selector&#x27; ] ) ) continue;
+
+                if( is_object( $field ) ){
+                    $selector = str_replace( &#x27;{ID}&#x27;, $field-&gt;get_id(), $field_settings_group[ &#x27;selector&#x27; ] );
+                } elseif( isset( $field[ &#x27;id&#x27; ] ) ){
+                    $selector = str_replace( &#x27;{ID}&#x27;, $field[ &#x27;id&#x27; ], $field_settings_group[ &#x27;selector&#x27; ] );
+                }
+
+                foreach( $common_settings as $common_setting ){
+
+                    $setting = $field_settings_group[ &#x27;name&#x27; ] . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+
+                    $field_setting = &#x27;&#x27;;
+                    if( is_object( $field ) ){
+                        $field_setting = $field-&gt;get_setting( $setting );
+                    } elseif( isset( $field[ $setting ] ) ){
+                        $field_setting = $field[ $setting ];
+                    }
+
+                    if( ! $field_setting ) continue;
+
+                    $rule = $common_setting[ &#x27;name&#x27; ];
+
+                    if( Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+
+                        if( is_object( $field ) ){
+                            $field_type = $field-&gt;get_setting( &#x27;type&#x27; );
+                        } elseif( isset( $field[ &#x27;type&#x27; ] ) ){
+                            $field_type = $field[ &#x27;type&#x27; ];
+                        }
+
+                        if( &#x27;listradio&#x27; == $field_type ){
+                                switch( $rule ){
+                                    case &#x27;background-color&#x27;:
+                                    case &#x27;border&#x27;:
+                                    case &#x27;border-style&#x27;:
+                                    case &#x27;border-color&#x27;:
+//                                        $selector = &#x27;.nf-field-element label::after&#x27;;
+                                        $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label::after&#x27; ][$rule] = $field_setting;
+                                        break;
+                                    case &#x27;font-size&#x27;:
+//                                        $selector = &#x27;.nf-field-element label::before&#x27;;
+                                        $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; .nf-field-element label::before&#x27; ][$rule] = $field_setting;
+                                        break;
+                                    case &#x27;display&#x27;:
+                                    case &#x27;float&#x27;:
+                                    case &#x27;height&#x27;:
+                                    case &#x27;width&#x27;:
+                                        continue;
+                                }
+
+                                if( &#x27;color&#x27; == $rule ){
+                                    $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label.nf-checked-label::before&#x27; ][ &#x27;background-color&#x27; ] = $field_setting;
+                                }
+
+                                if( &#x27;border-color&#x27; == $rule ){
+                                    $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; .nf-field-element label::after&#x27; ][ &#x27;color&#x27; ] = $field_setting;
+                                }
+                        }
+
+                        if( &#x27;listselect&#x27; == $field_type ){
+                            switch ($rule) {
+                                case &#x27;background-color&#x27;:
+                                case &#x27;border&#x27;:
+                                case &#x27;border-style&#x27;:
+                                case &#x27;border-color&#x27;:
+                                    $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; &gt; div&#x27; ][$rule] = $field_setting;
+                                    break;
+                                case &#x27;color&#x27;:
+                                case &#x27;font-size&#x27;:
+                                    $styles[ $selector . &#x27;&#x27;][$rule] = $field_setting;
+                                    break;
+                                case &#x27;display&#x27;:
+                                case &#x27;float&#x27;:
+                                    continue;
+                                default:
+                                    $selector = &#x27;.ninja-forms-field&#x27;;
+                                    $styles[ &#x27; .nf-field-element &gt; div&#x27; ][ $rule ] = $field_setting;
+                            }
+
+                            if( &#x27;border-color&#x27; == $rule ){
+                                $styles[ str_replace( &#x27;.ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; &gt; div&#x27; . &#x27;::after&#x27; ][ &#x27;color&#x27; ] = $field_setting;
+                            }
+                        }
+
+                        if( &#x27;checkbox&#x27; == $field_type ){
+                            switch ($rule) {
+                                case &#x27;background-color&#x27;:
+                                case &#x27;border&#x27;:
+                                case &#x27;border-style&#x27;:
+                                case &#x27;border-color&#x27;:
+                                $styles[ str_replace( &#x27;.nf-field-element .ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label:after&#x27;][$rule] = $field_setting;
+                                    break;
+                                case &#x27;color&#x27;:
+                                case &#x27;font-size&#x27;:
+                                    $styles[ str_replace( &#x27;.nf-field-element .ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label:before&#x27;][$rule] = $field_setting;
+                                    break;
+                                case &#x27;display&#x27;:
+                                case &#x27;float&#x27;:
+                                    continue;
+                            }
+                        }
+
+                        if( &#x27;listcheckbox&#x27; == $field_type ){
+                            switch( $rule ){
+                                case &#x27;background-color&#x27;:
+                                case &#x27;border&#x27;:
+                                case &#x27;border-style&#x27;:
+                                case &#x27;border-color&#x27;:
+                                    $styles[ str_replace( &#x27;.nf-field-element .ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label:after&#x27;][$rule] = $field_setting;
+                                    break;
+                                case &#x27;color&#x27;:
+                                case &#x27;font-size&#x27;:
+                                    $styles[ str_replace( &#x27;.nf-field-element .ninja-forms-field&#x27;, &#x27;&#x27;, $selector ) . &#x27; label:before&#x27;][$rule] = $field_setting;
+                                case &#x27;display&#x27;:
+                                case &#x27;float&#x27;:
+                                case &#x27;height&#x27;:
+                                case &#x27;width&#x27;:
+                                    continue;
+                            }
+                        }
+                    }
+
+                    $styles[$selector][$rule] = $field_setting;
+                }
+            }
+        }
+
+        ob_start();
+        $this-&gt;localize_styles( $styles, &#x27;Fields Styles&#x27; );
+        $output = ob_get_clean();
+
+        set_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_field_styles&#x27;, $output );
+        echo $output;
+    }
+
+    private function localize_styles( $styles, $title = &#x27;&#x27; )
+    {
+        // $styles[ $selector ][ $element ] = $style;
+        $styles = apply_filters( &#x27;ninja_forms_styles_apply_standard_units&#x27;, $styles );
+        if( $styles ) self::template( &#x27;display-form-styles.css.php&#x27;, compact( &#x27;styles&#x27;, &#x27;title&#x27; ) );
+    }
+
+    public function bust_form_styles_cache( $form_id )
+    {
+        delete_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_styles&#x27; );
+    }
+
+    public function bust_field_styles_cache( $form_id )
+    {
+        delete_transient( &#x27;ninja_forms_styles_form_&#x27; . $form_id . &#x27;_field_styles&#x27; );
+    }
+
+    public function bust_plugin_styles_cache( $style_settings )
+    {
+        delete_transient( &#x27;ninja_forms_styles_plugin_styles&#x27; );
+    }
+    
+    /**
+     * Function to apply standard units to non-specific css rules.
+     * @param (Object) $styles[ $selector ][ $element ] = $style
+     * @return (Object) the filtered rules
+     */
+    public function apply_standard_units( $styles )
+    {
+        foreach( $styles as $style =&gt; $rules ){
+            foreach( $rules as $rule =&gt; $value ) {
+                $important = &#x27;&#x27;;
+                // To prevent PHP warnings in the output buffer,
+                // bail if our value is an array instead of a string.
+                if ( is_array( $value ) ) continue;
+                if ( &#x27;border&#x27; == $rule || &#x27;height&#x27; == $rule || &#x27;width&#x27; == $rule || &#x27;margin&#x27; == $rule || &#x27;padding&#x27; == $rule ) {
+                    if ( false !== strpos( $value, &#x27; !important&#x27; ) ) {
+                        $value = substr( $value, 0, strpos( $value, &#x27; !important&#x27; ) );
+                        $important = &#x27; !important&#x27;;
+                    }
+                    if ( is_numeric( $value ) ) {
+                        $styles[ $style ][ $rule ] = $value . &#x27;px&#x27; . $important;
+                    }
+                }
+                elseif ( &#x27;font-size&#x27; == $rule ) {
+                    if ( false !== strpos( $value, &#x27; !important&#x27; ) ) {
+                        $value = substr( $value, 0, strpos( $value, &#x27; !important&#x27; ) );
+                        $important = &#x27; !important&#x27;;
+                    }
+                    if ( is_numeric( $value ) ) {
+                        $styles[ $style ][ $rule ] = $value . &#x27;pt&#x27; . $important;
+                    }
+                }
+            }
+        }
+        return $styles;
+    }
+
+    public function filter_output_rule_border( $rule )
+    {
+        return &#x27;border-width&#x27;;
+    }
+
+    /**
+     * Main Plugin Instance
+     *
+     * Insures that only one instance of a plugin class exists in memory at any one
+     * time. Also prevents needing to define globals all over the place.
+     *
+     * @since 3.0
+     * @static
+     * @static var array $instance
+     * @return NF_Layouts Highlander Instance
+     */
+    public static function instance()
+    {
+        if ( ! isset( self::$instance ) &amp;&amp; ! ( self::$instance instanceof NF_Styles ) ) {
+            self::$instance = new NF_Styles();
+            self::$dir = plugin_dir_path(__FILE__);
+            self::$url = plugin_dir_url(__FILE__);
+            spl_autoload_register( array( self::$instance, &#x27;autoloader&#x27; ) );
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Autoloader
+     *
+     * @param $class_name
+     */
+    public function autoloader( $class_name )
+    {
+        if (class_exists($class_name)) return;
+
+        if ( false === strpos( $class_name, self::PREFIX ) ) return;
+
+        $class_name = str_replace( self::PREFIX, &#x27;&#x27;, $class_name );
+        $classes_dir = realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . &#x27;includes&#x27; . DIRECTORY_SEPARATOR;
+        $class_file = str_replace(&#x27;_&#x27;, DIRECTORY_SEPARATOR, $class_name) . &#x27;.php&#x27;;
+
+        if (file_exists($classes_dir . $class_file)) {
+            require_once $classes_dir . $class_file;
+        }
+    }
+
+    /**
+     * Template
+     *
+     * @param string $file_name
+     * @param array $data
+     */
+    public static function template( $file_name = &#x27;&#x27;, array $data = array() )
+    {
+        if( ! $file_name ) return;
+
+        extract( $data );
+
+        include self::$dir . &#x27;includes/Templates/&#x27; . $file_name;
+    }
+
+    /**
+     * Config
+     *
+     * @param $file_name
+     * @return mixed
+     */
+    public static function config( $file_name )
+    {
+        return include self::$dir . &#x27;includes/Config/&#x27; . $file_name . &#x27;.php&#x27;;
+    }
+
+    /**
+     * License Setup
+     */
+    public function setup_license()
+    {
+        if ( ! class_exists( &#x27;NF_Extension_Updater&#x27; ) ) return;
+
+        new NF_Extension_Updater( self::NAME, self::VERSION, self::AUTHOR, __FILE__, self::SLUG );
+    }
+
+    /**
+     * Add a tab for styles to the import/export screen.
+     */
+    public function add_export_tab( $tabs ) {
+        $tabs[ &#x27;styles&#x27; ] = __( &#x27;Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; );
+        $this-&gt;add_export_metaboxes();
+        return $tabs;
+    }
+
+    /**
+     * Register our metaboxes
+     */
+    public function add_export_metaboxes() {
+        /*
+         * Import
+         */
+        add_meta_box(
+            &#x27;nf_import_export_styles_import&#x27;,
+            __( &#x27;Import Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+            array( $this, &#x27;template_import_styles&#x27; ),
+            &#x27;nf_import_export_styles&#x27;
+        );
+
+        /*
+         * Export
+         */
+        add_meta_box(
+            &#x27;nf_import_export_styles_export&#x27;,
+            __( &#x27;Export Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+            array( $this, &#x27;template_export_styles&#x27; ),
+            &#x27;nf_import_export_styles&#x27;
+        );
+    }
+
+    /**
+     * Output our import metabox content
+     */
+    public function template_import_styles() {
+         NF_Styles::template( &#x27;admin-settings-import-metabox.html.php&#x27; );
+    }
+
+
+    /**
+     * Output our export metabox content
+     */
+    public function template_export_styles() {
+        NF_Styles::template( &#x27;admin-settings-export-metabox.html.php&#x27; );
+    }
+
+    /**
+     * Handle import/export when the user clicks the appropriate button.
+     *
+     * @since  3.0
+     * @return bool
+     */
+    public function import_export() {
+        if ( ! current_user_can( &#x27;manage_options&#x27; ) ) {
+            return false;
+        }
+
+        if ( isset ( $_POST[ &#x27;nf_export_styles_submit&#x27; ] ) ) {
+            /*
+             * Get our current style settings.
+             */
+            $style_settings = Ninja_Forms()-&gt;get_setting( &#x27;style&#x27;, false );
+
+            /*
+             * Initiate a file download with our seralized settings.
+             */
+            header(&quot;Content-type: application/csv&quot;);
+            header(&quot;Content-Disposition: attachment; filename=ninja-forms-default-styles-&quot; . time() . &quot;.nfs&quot;);
+            header(&quot;Pragma: no-cache&quot;);
+            header(&quot;Expires: 0&quot;);
+
+            echo serialize( $style_settings );
+
+            die();
+        } else if ( isset( $_POST[ &#x27;nf_import_style_submit&#x27; ] ) ) {
+            /*
+             * Check for upload errors.
+             */
+            $this-&gt;upload_error_check( $_FILES[ &#x27;nf_import_style&#x27; ] );
+            /*
+             * Unserialise our uploaded .nfs file.
+             */
+            $import = maybe_unserialize( file_get_contents( $_FILES[ &#x27;nf_import_style&#x27; ][ &#x27;tmp_name&#x27; ] ) );
+            /*
+             * If we have an array, update our style settings with the imported array.
+             */
+            if ( is_array( $import ) ) {
+               Ninja_Forms()-&gt;update_setting( &#x27;style&#x27;, $import );
+            }
+        }
+    }
+
+    private function upload_error_check( $file )
+    {
+        if( ! $file[ &#x27;error&#x27; ] ) return;
+
+        switch ( $file[ &#x27;error&#x27; ] ) {
+            case UPLOAD_ERR_INI_SIZE:
+                $error_message = __( &#x27;The uploaded file exceeds the upload_max_filesize directive in php.ini.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $error_message = __( &#x27;The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $error_message = __( &#x27;The uploaded file was only partially uploaded.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $error_message = __( &#x27;No file was uploaded.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $error_message = __( &#x27;Missing a temporary folder.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $error_message = __( &#x27;Failed to write file to disk.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $error_message = __( &#x27;File upload stopped by extension.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+            default:
+                $error_message = __( &#x27;Unknown upload error.&#x27;, &#x27;ninja-forms&#x27; );
+                break;
+        }
+
+        $args = array(
+            &#x27;title&#x27; =&gt; __( &#x27;File Upload Error&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;message&#x27; =&gt; $error_message,
+            &#x27;debug&#x27; =&gt; $file,
+        );
+        $message = Ninja_Forms()-&gt;template( &#x27;admin-wp-die.html.php&#x27;, $args );
+        wp_die( $message, $args[ &#x27;title&#x27; ], array( &#x27;back_link&#x27; =&gt; TRUE ) );
+    }
+
+    public function add_multi_part_settings( $settings )
+    {
+        $part_styles = self::config( &#x27;MultiPartSettings&#x27; );
+
+        foreach( $part_styles as &amp;$part ){
+            $part[ &#x27;group&#x27; ] = &#x27;styles&#x27;;
+
+            switch( $part[ &#x27;name&#x27; ] ){
+                case &#x27;breadcrumb_container_styles&#x27;:
+                case &#x27;progress_bar_container_styles&#x27;:
+                case &#x27;navigation_container_styles&#x27;:
+                    $blacklist = array( &#x27;color&#x27;, &#x27;font-size&#x27; );
+                    break;
+                case &#x27;progress_bar_fill_styles&#x27;:
+                    $blacklist = array( &#x27;color&#x27;, &#x27;font-size&#x27;, &#x27;width&#x27;, &#x27;display&#x27;, &#x27;float&#x27; );
+                    break;
+                case &#x27;next_button_styles&#x27;:
+                case &#x27;previous_button_styles&#x27;:
+                case &#x27;navigation_hover_styles&#x27;:
+                    $blacklist = array( &#x27;display&#x27;, &#x27;float&#x27; );
+                    break;
+                default:
+                    $blacklist = array();
+            }
+
+            foreach( self::config( &#x27;CommonSettings&#x27; ) as $common_setting ) {
+
+                if( in_array( $common_setting[ &#x27;name&#x27; ], $blacklist ) ) continue;
+
+                if ( isset ( $common_setting[ &#x27;deps&#x27; ] ) ) {
+                    foreach( $common_setting[ &#x27;deps&#x27; ] as $dep_name =&gt; $val ) {
+                        $common_setting[ &#x27;deps&#x27; ][ $part[ &#x27;name&#x27; ] . &#x27;_&#x27; . $dep_name ] = $val;
+                        unset( $common_setting[ &#x27;deps&#x27; ][ $dep_name ] );
+                    }
+                }
+
+                $name =  $part[ &#x27;name&#x27; ] . &#x27;_&#x27; . $common_setting[ &#x27;name&#x27; ];
+                $part[ &#x27;settings&#x27; ][ $name ] = $common_setting;
+                $part[ &#x27;settings&#x27; ][ $name ][ &#x27;name&#x27; ] = $name;
+            }
+        }
+
+        $settings[ &#x27;multi_part&#x27; ] = array_merge( $settings[ &#x27;multi_part&#x27; ], $part_styles );
+        return $settings;
+    }
+
+}
+</pre></details></body></html>

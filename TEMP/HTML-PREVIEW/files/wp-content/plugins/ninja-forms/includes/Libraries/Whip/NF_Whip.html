@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Libraries/Whip/NF_Whip.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Libraries/Whip/NF_Whip.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_Whip
+{
+    /**
+     * NF_Whip constructor.
+     * Hooks into the WordPress admin notice system and calls our whip_message.
+     * @Since 3.2.19
+     */
+    public function __construct()
+    {
+        // Gets our transient
+        $transient = get_transient( &#x27;nf_dismiss_whip&#x27; );
+
+        // Checks our transient and fires the message.
+        if( false == $transient &amp;&amp; current_user_can(&#x27;administrator&#x27;) ) {
+            add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;whip_message&#x27; ) );
+            $this-&gt;set_dismiss();
+        }
+    }
+
+    /**
+     * Whip Message
+     * Builds and outputs our message.
+     * @Since 3.2.19
+     */
+    public function whip_message()
+    {
+        // Builds our Whip message.
+        $message = array();
+        $message[] = &#x27;&lt;strong&gt;&#x27; . __( &#x27;Hey, we\&#x27;ve noticed that you\&#x27;re running an outdated version of PHP.&#x27;, &#x27;ninja-forms&#x27; ) . &quot;&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&quot;;
+        $message[] = __( &#x27;PHP is the programming language that WordPress, Ninja Forms, and themes are built on. The version that is currently used for your site is no longer supported. Newer versions of PHP are both faster and more secure. In fact, your version of PHP no longer receives security updates, which is why we\&#x27;re sending you to this notice.&#x27;, &#x27;ninja-forms&#x27; ) . &quot;&lt;br /&gt;&lt;br /&gt;&quot;;
+        $message[] = &#x27;&lt;strong&gt;&#x27; . __( &#x27;Your site could be faster and more secure with a newer PHP version.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&#x27;;
+        $message[] = __( &#x27;Hosts have the ability to update your PHP version, but sometimes they don\&#x27;t dare to do that because they\&#x27;re afraid they\&#x27;ll break your site.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&lt;br /&gt;&#x27;;
+        $message[] = &#x27;&lt;strong&gt;&#x27; .__( &#x27;Which version should I update?&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&#x27;;
+        $message[] = sprintf( __( &#x27;You should update your PHP version to either 5.6 or to 7.0 or 7.1. On a normal WordPress site, switching to PHP 5.6 should never cause issues. We would however actually recommend you switch to PHP7. There are some plugins that are not ready for PHP7 though, so do some testing first. Yoast have an article on how to test whether that\&#x27;s an option for you %1$shere%2$s. PHP7 is much faster than PHP 5.6. It\&#x27;s also the only PHP version still in active development and therefore the better option for your site in the long run.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&lt;br /&gt;&#x27;,
+				&#x27;&lt;a href=&quot;https://yoa.st/wg&quot; target=&quot;_blank&quot;&gt;&#x27;,
+				&#x27;&lt;/a&gt;&#x27;
+			);
+        $message[] = &#x27;&lt;strong&gt;&#x27; . __( &#x27;Can\&#x27;t update? Ask your host!&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&#x27;;
+        $message[] = sprintf( __( &#x27;If you cannot upgrade your PHP version yourself, you can send an email to your host. Yoast has %1$sexamples here%2$s. If they don\&#x27;t want to upgrade your PHP version, we would suggest you switch hosts. Have a look at one of the recommended %3$sWordPress hosting partners%2$s.&#x27;,&#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&#x27; ,
+					&#x27;&lt;a href=&quot;https://yoa.st/wh&quot; target=&quot;_blank&quot;&gt;&#x27;,
+					&#x27;&lt;/a&gt;&#x27;,
+					sprintf( &#x27;&lt;a href=&quot;%1$s&quot; target=&quot;_blank&quot;&gt;&#x27;, esc_url( &#x27;https://wordpress.org/hosting/&#x27; ) )
+			);
+
+        // Builds our
+        $message[] = sprintf( __( &#x27;%1$sDismiss this for 4 weeks.%2$s&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;br /&gt;&#x27;,
+            &#x27;&lt;a href=&quot;&#x27; . admin_url() . &#x27;admin.php?page=ninja-forms&amp;dismiss-whip-message=true&quot; target=&quot;_self&quot;&gt;&#x27;,
+            &#x27;&lt;/a&gt;&#x27;
+        );
+
+        // Change our array to string to be displayed.
+        $message = implode( $message, &quot;\n&quot; );
+
+        // Output our message.
+        echo &#x27;&lt;div class=&quot;notice notice-error&quot; style=&quot;padding: 20px&quot;&gt;&#x27; . $message . &#x27;&lt;/div&gt;&#x27;;
+    }
+
+    /**
+     * Set Dismiss
+     * Sets a transient for 4 weeks out that will remove the whip notice.
+     * @Since 3.2.19
+     */
+    public function set_dismiss()
+    {
+        if( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; &#x27;ninja-forms&#x27; == $_GET[ &#x27;page&#x27; ]
+            &amp;&amp; isset( $_GET[ &#x27;dismiss-whip-message&#x27; ] ) &amp;&amp; &#x27;true&#x27; == $_GET[ &#x27;dismiss-whip-message&#x27; ]  ) {
+            set_transient( &#x27;nf_dismiss_whip&#x27;, 1, 60 * 60 * 24 * 28 );
+        }
+    }
+}</pre></details></body></html>

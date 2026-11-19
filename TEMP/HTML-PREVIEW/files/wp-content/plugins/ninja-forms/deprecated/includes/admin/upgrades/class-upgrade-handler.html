@@ -1,0 +1,163 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/class-upgrade-handler.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/class-upgrade-handler.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! function_exists( &#x27;nf_is_func_disabled&#x27; ) ) {
+    function nf_is_func_disabled($function)
+    {
+        $disabled = explode(&#x27;,&#x27;, ini_get(&#x27;disable_functions&#x27;));
+
+        return in_array($function, $disabled);
+    }
+}
+
+require_once( NF_PLUGIN_DIR . &#x27;includes/admin/upgrades/database-migrations.php&#x27; );
+require_once( NF_PLUGIN_DIR . &#x27;includes/admin/upgrades/convert-forms.php&#x27; );
+require_once( NF_PLUGIN_DIR . &#x27;includes/admin/upgrades/convert-notifications.php&#x27; );
+require_once( NF_PLUGIN_DIR . &#x27;includes/admin/upgrades/convert-subs.php&#x27; );
+require_once( NF_PLUGIN_DIR . &#x27;includes/admin/upgrades/update-email-settings.php&#x27; );
+
+/**
+* Class NF_Upgrade_Handler
+*/
+class NF_UpgradeHandler
+{
+    static $instance;
+
+    public $upgrades;
+
+    private $page;
+
+    public static function instance()
+    {
+        if ( ! isset( self::$instance ) ) {
+            self::$instance = new NF_UpgradeHandler();
+        }
+
+        return self::$instance;
+    }
+
+    public function __construct()
+    {
+
+        if ( function_exists( &#x27;ignore_user_abort&#x27; ) &amp;&amp; ! nf_is_func_disabled( &#x27;ignore_user_abort&#x27; ) ) {
+            ignore_user_abort( true );
+        }
+
+        $this-&gt;register_upgrades();
+
+        if ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX ) {
+            add_action( &#x27;wp_ajax_nf_upgrade_handler&#x27;, array( $this, &#x27;ajax_response&#x27; ) );
+            return;
+        } else {
+            $this-&gt;page = new NF_UpgradeHandlerPage();
+        }
+
+    }
+
+    public function register_upgrades()
+    {
+        $this-&gt;upgrades[] = new NF_Upgrade_Database_Migrations();
+        $this-&gt;upgrades[] = new NF_Upgrade_Forms();
+        $this-&gt;upgrades[] = new NF_Upgrade_Notifications();
+        $this-&gt;upgrades[] = new NF_Upgrade_Submissions();
+        $this-&gt;upgrades[] = new NF_Upgrade_Email_Settings();
+
+        $this-&gt;upgrades = apply_filters( &#x27;nf_upgrade_handler_register&#x27;, $this-&gt;upgrades );
+
+        usort( $this-&gt;upgrades, array( $this, &#x27;compare_upgrade_priority&#x27; ) ) ;
+    }
+
+    private function compare_upgrade_priority( $a, $b )
+    {
+        return version_compare( $a-&gt;priority, $b-&gt;priority );
+    }
+
+    public function ajax_response()
+    {
+        $current_step = ( isset( $_REQUEST[&#x27;step&#x27;] ) ) ? $_REQUEST[&#x27;step&#x27;] : 0;
+
+        $current_upgrade = $this-&gt;getUpgradeByName( $_REQUEST[&#x27;upgrade&#x27;] );
+
+        $current_upgrade-&gt;total_steps = $_REQUEST[&#x27;total_steps&#x27;];
+
+        if( isset( $_REQUEST[&#x27;args&#x27;] ) ) {
+            $current_upgrade-&gt;args = $_REQUEST[&#x27;args&#x27;];
+        }
+
+        if( 0 == $current_step ) {
+            $current_upgrade-&gt;loading();
+        }
+
+        $response = array(
+            &#x27;upgrade&#x27;     =&gt; $current_upgrade-&gt;name,
+            &#x27;total_steps&#x27; =&gt; (int) $current_upgrade-&gt;total_steps,
+            &#x27;args&#x27;        =&gt; $current_upgrade-&gt;args,
+        );
+
+        if( 0 != $current_step ) {
+
+            if (is_array($current_upgrade-&gt;errors) AND $current_upgrade-&gt;errors) {
+                $response[&#x27;errors&#x27;] = $current_upgrade-&gt;errors;
+            }
+
+            if ($current_upgrade-&gt;total_steps &lt; $current_step ) {
+
+                $current_upgrade-&gt;complete();
+                $response[&#x27;complete&#x27;] = TRUE;
+                $next_upgrade = $this-&gt;getNextUpgrade($current_upgrade);
+
+                if ($next_upgrade) {
+                    if( ! $next_upgrade-&gt;isComplete() ) {
+                        $response[&#x27;nextUpgrade&#x27;] = $next_upgrade-&gt;name;
+                    }
+                }
+            } else {
+
+                $current_upgrade-&gt;_step($current_step);
+
+            }
+
+        }
+
+        $response[&#x27;step&#x27;] = $current_step + 1;
+
+        echo json_encode( $response );
+        die();
+    }
+
+
+
+    /*
+     * UTILITY METHODS
+     */
+
+
+
+    public function getUpgradeByName( $name )
+    {
+        foreach ( $this-&gt;upgrades as $index =&gt; $upgrade ) {
+            if ( $name == $upgrade-&gt;name ) {
+                return $upgrade;
+            }
+        }
+    }
+
+    public function getNextUpgrade( $current_upgrade )
+    {
+        foreach ( $this-&gt;upgrades as $index =&gt; $upgrade ) {
+            if ( $current_upgrade-&gt;name == $upgrade-&gt;name ) {
+
+                if( isset( $this-&gt;upgrades[ $index + 1 ] ) ) {
+                    return $this-&gt;upgrades[ $index + 1 ];
+                }
+            }
+        }
+
+        return FALSE;
+    }
+}
+
+function NF_UpgradeHandler() {
+    return NF_UpgradeHandler::instance();
+}
+NF_UpgradeHandler();
+</pre></details></body></html>

@@ -1,0 +1,1191 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/FieldSettings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/FieldSettings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_field_settings&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Primary Settings
+    |--------------------------------------------------------------------------
+    |
+    | The most commonly used settings for a field.
+    |
+    */
+
+    /*
+     * LABEL
+     */
+
+    &#x27;label&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;label&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;Enter the label of the form field. This is how users will identify individual fields.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * LABEL POSITION
+     */
+
+    &#x27;label_pos&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;label_pos&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Label Position&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Form Default&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;default&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Above Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;above&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Below Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;below&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Left of Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;left&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Right of Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;right&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Hidden&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;hidden&#x27;
+            ),
+        ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;default&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;Select the position of your label relative to the field element itself.&#x27;, &#x27;ninja-forms&#x27; ),
+
+    ),
+
+    /*
+     * REQUIRED
+     */
+
+    &#x27;required&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;required&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Required Field&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; FALSE,
+        &#x27;help&#x27; =&gt; __( &#x27;Ensure that this field is completed before allowing the form to be submitted.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * NUMBER
+     */
+
+    &#x27;number&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;number&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Number Options&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;num_min&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Min&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;one-third&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;num_max&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Max&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;width&#x27; =&gt; &#x27;one-third&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;num_step&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Step&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;width&#x27; =&gt; &#x27;one-third&#x27;,
+                &#x27;value&#x27; =&gt; 1
+            ),
+        ),
+
+    ),
+
+    /*
+     * Checkbox Default Value
+     */
+
+    &#x27;checkbox_default_value&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;default_value&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Unchecked&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;unchecked&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Checked&#x27;, &#x27;ninja-forms&#x27;),
+                &#x27;value&#x27; =&gt; &#x27;checked&#x27;,
+            ),
+        ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;unchecked&#x27;,
+
+    ),
+
+    /*
+    * Checkbox Values
+    */
+    &#x27;checkbox_values&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;checkbox_values&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Checkbox Values&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27;  =&gt; &#x27;checked_value&#x27;,
+                &#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Checked Value&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; __( &#x27;Checked&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+            ),
+            array(
+                &#x27;name&#x27;  =&gt; &#x27;unchecked_value&#x27;,
+                &#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Unchecked Value&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; __( &#x27;Unchecked&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+            ),
+        ),
+    ),
+
+    /*
+     * OPTIONS
+     */
+
+    &#x27;options&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;options&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;option-repeater&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Options&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; &lt;a href=&quot;#&quot; class=&quot;nf-add-new&quot;&gt;&#x27; . __( &#x27;Add New&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt; &lt;a href=&quot;#&quot; class=&quot;extra nf-open-import-tooltip&quot;&gt;&lt;i class=&quot;fa fa-sign-in&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; &#x27; . __( &#x27;Import&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        // &#x27;value&#x27; =&gt; &#x27;option-repeater&#x27;,
+        &#x27;value&#x27; =&gt; array(
+            array( &#x27;label&#x27;  =&gt; __( &#x27;One&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; __( &#x27;one&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0, &#x27;order&#x27; =&gt; 0 ),
+            array( &#x27;label&#x27;  =&gt; __( &#x27;Two&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; __( &#x27;two&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0, &#x27;order&#x27; =&gt; 1 ),
+            array( &#x27;label&#x27;  =&gt; __( &#x27;Three&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; __( &#x27;three&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0, &#x27;order&#x27; =&gt; 2 ),
+        ),
+        &#x27;columns&#x27;           =&gt; array(
+            &#x27;label&#x27;          =&gt; array(
+                &#x27;header&#x27;    =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;default&#x27;   =&gt; &#x27;&#x27;,
+            ),
+
+            &#x27;value&#x27;         =&gt; array(
+                &#x27;header&#x27;    =&gt; __( &#x27;Value&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;default&#x27;   =&gt; &#x27;&#x27;,
+            ),
+            &#x27;calc&#x27;          =&gt; array(
+                &#x27;header&#x27;    =&gt;__( &#x27;Calc Value&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;default&#x27;   =&gt; &#x27;&#x27;,
+            ),
+            &#x27;selected&#x27;      =&gt; array(
+                &#x27;header&#x27;    =&gt; &#x27;&lt;span class=&quot;dashicons dashicons-yes&quot;&gt;&lt;/span&gt;&#x27;,
+                &#x27;default&#x27;   =&gt; 0,
+            ),
+        ),
+
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Restriction Settings
+    |--------------------------------------------------------------------------
+    |
+    | Limit the behavior or validation of an input.
+    |
+    */
+
+    /*
+     * MASK
+     */
+
+    &#x27;mask&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;mask&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Input Mask&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;restrictions&#x27;,
+        &#x27;help&#x27;  =&gt; __( &#x27;Restricts the kind of input your users can put into this field.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;none&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;US Phone&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;(999) 999-9999&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Date&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;99/99/9999&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Currency&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;currency&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Custom&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;custom&#x27;,
+            ),
+        ),
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+    ),
+    /*
+     * CUSTOM MASK
+     */
+
+    &#x27;custom_mask&#x27;       =&gt; array(
+        &#x27;name&#x27;          =&gt; &#x27;custom_mask&#x27;,
+        &#x27;type&#x27;          =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27;         =&gt; __( &#x27;Custom Mask&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27;         =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27;         =&gt; &#x27;restrictions&#x27;,
+        &#x27;value&#x27;         =&gt; &#x27;&#x27;,
+
+        &#x27;deps&#x27;          =&gt; array(
+            &#x27;mask&#x27;      =&gt; &#x27;custom&#x27;
+        ),
+        &#x27;placeholder&#x27;   =&gt; &#x27;&#x27;,
+        &#x27;help&#x27;  =&gt; __( &#x27;&lt;ul&gt;
+                            &lt;li&gt;a - Represents an alpha character (A-Z,a-z) - Only allows letters to be entered. &lt;/li&gt;
+                            &lt;li&gt;9 - Represents a numeric character (0-9) - Only allows numbers to be entered.&lt;/li&gt;
+                            &lt;li&gt;* - Represents an alphanumeric character (A-Z,a-z,0-9) - This allows both numbers and
+                            letters to be entered.&lt;/li&gt;
+                        &lt;/ul&gt;&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * INPUT LIMIT SET
+     */
+
+    &#x27;input_limit_set&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;input_limit_set&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Limit Input to this Number&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;restrictions&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;input_limit&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+                &#x27;label&#x27; =&gt; &#x27;&#x27;,
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;input_limit_type&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+                &#x27;options&#x27; =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Character(s)&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; &#x27;char&#x27;
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Word(s)&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; &#x27;word&#x27;
+                    ),
+                ),
+                &#x27;value&#x27; =&gt; &#x27;characters&#x27;,
+                &#x27;label&#x27; =&gt; &#x27;&#x27;,
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;input_limit_msg&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Text to Appear After Counter&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;placeholder&#x27; =&gt; __( &#x27;Character(s) left&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;value&#x27; =&gt; __( &#x27;Character(s) left&#x27;, &#x27;ninja-forms&#x27; )
+            )
+        ),
+
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Advanced Settings
+    |--------------------------------------------------------------------------
+    |
+    | The least commonly used settings for a field.
+    | These settings should only be used for specific reasons.
+    |
+    */
+
+    /*
+     * Custom Name Attribute
+     */
+
+    &#x27;custom_name_attribute&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;custom_name_attribute&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Custom Name Attribute&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;This value will be used as the HTML input &quot;name&quot; attribute.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;use_merge_tags&#x27; =&gt; FALSE,
+    ),
+
+    /*
+     * INPUT PLACEHOLDER
+     */
+
+    &#x27;placeholder&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;placeholder&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Placeholder&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;Enter text you would like displayed in the field before a user enters any data.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;use_merge_tags&#x27; =&gt; FALSE,
+    ),
+
+
+    /*
+     * DEFAULT VALUE
+     */
+
+    &#x27;default&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;default&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; array(
+            &#x27;exclude&#x27; =&gt; array(
+                &#x27;fields&#x27;
+            )
+        ),
+    ),
+
+    /*
+    * CLASSES
+    */
+    &#x27;classes&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;classes&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Custom Class Names&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;display&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;container_class&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Container&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+                &#x27;use_merge_tags&#x27; =&gt; FALSE,
+                &#x27;help&#x27; =&gt; __( &#x27;Adds an extra class to your field wrapper.&#x27;, &#x27;ninja-forms&#x27; ),
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;element_class&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+                &#x27;use_merge_tags&#x27; =&gt; FALSE,
+                &#x27;help&#x27; =&gt; __( &#x27;Adds an extra class to your field element.&#x27;, &#x27;ninja-forms&#x27; ),
+            ),
+        ),
+    ),
+
+    /*
+     * DATE FORMAT
+     */
+
+    &#x27;date_format&#x27;        =&gt; array(
+        &#x27;name&#x27;          =&gt; &#x27;date_format&#x27;,
+        &#x27;type&#x27;          =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27;         =&gt; __( &#x27;Format&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;         =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;         =&gt; &#x27;primary&#x27;,
+        &#x27;options&#x27;       =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Default&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;default&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;DD/MM/YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;DD/MM/YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;DD-MM-YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;DD-MM-YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;DD.MM.YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;DD.MM.YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;MM/DD/YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;MM/DD/YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;MM-DD-YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;MM-DD-YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;MM.DD.YYYY&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;MM.DD.YYYY&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;YYYY-MM-DD&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;YYYY-MM-DD&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;YYYY/MM/DD&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;YYYY/MM/DD&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;YYYY.MM.DD&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;YYYY.MM.DD&#x27;,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Friday, November 18, 2019&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;dddd, MMMM D YYYY&#x27;,
+            ),
+        ),
+        &#x27;value&#x27;         =&gt; &#x27;default&#x27;,
+    ),
+
+    /*
+     * DATE DEFAULT
+     */
+
+    &#x27;date_default&#x27;       =&gt; array(
+        &#x27;name&#x27;          =&gt; &#x27;date_default&#x27;,
+        &#x27;type&#x27;          =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27;         =&gt; __( &#x27;Default To Current Date&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;         =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27;         =&gt; &#x27;primary&#x27;
+    ),
+
+    /*
+     * Year Range
+     */
+
+    &#x27;year_range&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;year_range&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Year Range&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;year_range_start&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Start Year&#x27;, &#x27;ninja_forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;year_range_end&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;End Year&#x27;, &#x27;ninja_forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+        )
+    ),
+
+    /*
+     * TIME SETTING
+     */
+
+    &#x27;time_submit&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;time_submit&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Number of seconds for timed submit.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;value&#x27; =&gt; FALSE,
+
+    ),
+
+    /*
+     * KEY
+     */
+
+    &#x27;key&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;key&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Field Key&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;administration&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;Creates a unique key to identify and target your field for custom development.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * ADMIN LABEL
+     */
+
+    &#x27;admin_label&#x27;           =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;admin_label&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Admin Label&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;administration&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;&#x27;,
+        &#x27;help&#x27;              =&gt; __( &#x27;Label used when viewing and exporting submissions.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * HELP
+     */
+
+    &#x27;help&#x27;           =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;help&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Help Text&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;group&#x27;             =&gt; &#x27;display&#x27;,
+        &#x27;help&#x27;              =&gt; __( &#x27;Shown to users as a hover.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;settings&#x27;          =&gt; array(
+            /*
+             * HELP TEXT
+             */
+
+            &#x27;help_text&#x27;             =&gt; array(
+                &#x27;name&#x27;              =&gt; &#x27;help_text&#x27;,
+                &#x27;type&#x27;              =&gt; &#x27;rte&#x27;,
+                &#x27;label&#x27;             =&gt; &#x27;&#x27;,
+                &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+                &#x27;group&#x27;             =&gt; &#x27;advanced&#x27;,
+                &#x27;value&#x27;             =&gt; &#x27;&#x27;,
+                &#x27;use_merge_tags&#x27;    =&gt; true,
+            ),
+        ),
+    ),
+
+
+    /*
+     * DESCRIPTION
+     */
+    &#x27;description&#x27;           =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;description&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Description&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;group&#x27;             =&gt; &#x27;display&#x27;,
+        &#x27;settings&#x27;          =&gt; array(
+            /*
+             * DESCRIPTION TEXT
+             */
+
+            &#x27;desc_text&#x27;           =&gt; array(
+                &#x27;name&#x27;              =&gt; &#x27;desc_text&#x27;,
+                &#x27;type&#x27;              =&gt; &#x27;rte&#x27;,
+                &#x27;label&#x27;             =&gt; &#x27;&#x27;,
+                &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+                &#x27;use_merge_tags&#x27;    =&gt; true,
+            ),
+
+            /*
+             * DESCRIPTION POSITION
+             */
+
+            // &#x27;desc_pos&#x27;              =&gt; array(
+            //     &#x27;name&#x27;              =&gt; &#x27;desc_pos&#x27;,
+            //     &#x27;type&#x27;              =&gt; &#x27;select&#x27;,
+            //     &#x27;options&#x27;           =&gt; array(
+            //         array(
+            //             &#x27;label&#x27;     =&gt; __( &#x27;None&#x27;, &#x27;ninja-forms&#x27; ),
+            //             &#x27;value&#x27;     =&gt; &#x27;none&#x27;,
+            //         ),
+            //         array(
+            //             &#x27;label&#x27;     =&gt; __( &#x27;Before Everything&#x27;, &#x27;ninja-forms&#x27; ),
+            //             &#x27;value&#x27;     =&gt; &#x27;before_everything&#x27;,
+            //         ),
+            //         array(
+            //             &#x27;label&#x27;     =&gt; __( &#x27;Before Label&#x27;, &#x27;ninja-forms&#x27; ),
+            //             &#x27;value&#x27;     =&gt; &#x27;before_label&#x27;,
+            //         ),
+            //         array(
+            //             &#x27;label&#x27;     =&gt; __( &#x27;After Label&#x27;, &#x27;ninja-forms&#x27; ),
+            //             &#x27;value&#x27;     =&gt; &#x27;after_label&#x27;,
+            //         ),
+            //         array(
+            //             &#x27;label&#x27;     =&gt; __( &#x27;After Everything&#x27;, &#x27;ninja-forms&#x27; ),
+            //             &#x27;value&#x27;     =&gt; &#x27;after_everything&#x27;,
+            //         ),
+            //     ),
+            //     &#x27;label&#x27;             =&gt; __( &#x27;Display Position&#x27;, &#x27;ninja-forms&#x27; ),
+            //     &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+            //     &#x27;help&#x27;      =&gt; __( &#x27;Determines the position of the label relative to the field element.&#x27;, &#x27;ninja-forms&#x27; ),
+            // ),
+
+        ),
+    ),
+
+    /*
+     * NUMERIC SORT
+     */
+
+    &#x27;num_sort&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;num_sort&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Sort as Numeric&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;administration&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;This column in the submissions table will sort by number.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     |--------------------------------------------------------------------------
+     | Display Settings
+     |--------------------------------------------------------------------------
+     */
+
+    // Multi-Select List Only
+    &#x27;multi_size&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;multi_size&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Multi-Select Box Size&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; 5,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Un-Grouped Settings
+    |--------------------------------------------------------------------------
+    |
+    | Hidden from grouped listings, but still searchable.
+    |
+    */
+
+    &#x27;manual_key&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;manual_key&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;bool&#x27;,
+        &#x27;value&#x27; =&gt; FALSE,
+    ),
+
+    /*
+     * Timed Submit Label
+     */
+
+    // &#x27;timed_submit&#x27; =&gt; array(
+    //      &#x27;name&#x27; =&gt; &#x27;timed_submit&#x27;,
+    //      &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+    //      &#x27;label&#x27; =&gt; __( &#x27;Timed Submit&#x27;, &#x27;ninja-forms&#x27; ),
+    //      &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+    //      &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+    //      &#x27;settings&#x27; =&gt; array(
+    //          array(
+    //              &#x27;name&#x27; =&gt; &#x27;timed_submit_countdown&#x27;,
+    //              &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+    //              &#x27;label&#x27; =&gt; __( &#x27;Countdown&#x27;, &#x27;ninja-forms&#x27; ),
+    //              &#x27;value&#x27; =&gt; 10,
+    //              &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+    //              &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+    //
+    //          ),
+    //          array(
+    //              &#x27;name&#x27; =&gt; &#x27;timed_submit_label&#x27;,
+    //              &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+    //              &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+    //              &#x27;label&#x27; =&gt; __( &#x27;Timer Label&#x27;, &#x27;ninja-forms&#x27; ),
+    //              &#x27;value&#x27; =&gt; __( &#x27;Please wait %n seconds&#x27;, &#x27;ninja-forms&#x27; ),
+    //              &#x27;width&#x27; =&gt; &#x27;one-half&#x27;
+    //
+    //          ),
+    //      ),
+    //  ),
+
+    &#x27;timed_submit_label&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;timed_submit_label&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ),
+        //The following text appears below the element
+        //&#x27;Submit button text after timer expires&#x27;
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; TRUE,
+    ),
+
+    /*
+     * Timed Submit Timer
+     */
+
+    &#x27;timed_submit_timer&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;timed_submit_timer&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Label&#x27; , &#x27;ninja-forms&#x27; ),
+        // This text was located below the element &#x27;%n will be used to signfify the number of seconds&#x27;
+        &#x27;value&#x27; =&gt; __( &#x27;Please wait %n seconds&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+    /*
+     * Timed Submit Countdown
+     */
+
+    &#x27;timed_submit_countdown&#x27; =&gt; array (
+        &#x27;name&#x27; =&gt; &#x27;timed_submit_countdown&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;number&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Number of seconds for the countdown&#x27;, &#x27;ninja-forms&#x27; ),
+        //The following text appears to the right of the element
+        //&quot;This is how long the user must waitin to submit the form&quot;
+        &#x27;value&#x27; =&gt; 10,
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+    /*
+     * Password Registration checkbox
+     */
+
+    &#x27;password_registration_checkbox&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;password_registration_checkbox&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;unchecked&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Use this as a reistration password field. If this box is check, both
+                        password and re-password textboxes will be output&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+
+    /*
+     * Number of Stars Textbox
+     */
+
+    &#x27;number_of_stars&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;number_of_stars&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;value&#x27; =&gt; 5,
+        &#x27;label&#x27; =&gt; __( &#x27;Number of stars&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+    /*
+     * Disable Browser Autocomplete
+     */
+
+    &#x27;disable_browser_autocomplete&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;disable_browser_autocomplete&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Disable Browser Autocomplete&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;restrictions&#x27;,
+    ),
+
+    /*
+     * Disable input
+     */
+
+    &#x27;disable_input&#x27; =&gt; array(
+        &#x27;name&#x27;      =&gt; &#x27;disable_input&#x27;,
+        &#x27;type&#x27;      =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27;     =&gt; __( &#x27;Disable Input&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;     =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;     =&gt; &#x27;restrictions&#x27;,
+    ),
+
+    //TODO: Ask about the list of states and countries.
+    /*
+     *  Country - Use Custom First Option
+     */
+
+    &#x27;use_custom_first_option&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;use_custom_first_option&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;unchecked&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Use a custom first option&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+    /*
+     * Country - Custom first option
+     */
+
+    &#x27;custom_first_option&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;custom_first_option&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Custom first option&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; FALSE,
+
+    ),
+
+    &#x27;type&#x27;         =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;type&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;select&#x27;,
+        &#x27;options&#x27;           =&gt; array(),
+        &#x27;label&#x27;             =&gt; __( &#x27;Type&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;single&#x27;,
+    ),
+
+    &#x27;fieldset&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Settings&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;settings&#x27; =&gt; array(),
+    ),
+
+    &#x27;confirm_field&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;confirm_field&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;field-select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Confirm&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Textarea Settings
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;textarea_rte&#x27;          =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;textarea_rte&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Show Rich Text Editor&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;one-third&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;display&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;&#x27;,
+        &#x27;help&#x27;              =&gt; __( &#x27;Allows rich text input.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;textarea_media&#x27;          =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;textarea_media&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Show Media Upload Button&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;one-third&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;display&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;&#x27;,
+        &#x27;deps&#x27;              =&gt; array(
+            &#x27;textarea_rte&#x27;  =&gt; 1
+        )
+    ),
+
+    &#x27;disable_rte_mobile&#x27;    =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;disable_rte_mobile&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Disable Rich Text Editor on Mobile&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;one-third&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;display&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;&#x27;,
+        &#x27;deps&#x27;              =&gt; array(
+            &#x27;textarea_rte&#x27;  =&gt; 1
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Submit Button Settings
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;processing_label&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;processing_label&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Processing Label&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; __( &#x27;Processing&#x27;, &#x27;ninja-forms&#x27; )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Calc Value that is used for checkbox fields
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;checked_calc_value&#x27;    =&gt; array(
+        &#x27;name&#x27;      =&gt; &#x27;checked_calc_value&#x27;,
+        &#x27;type&#x27;      =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27;     =&gt; __( &#x27;Checked Calculation Value&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;     =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27;     =&gt; &#x27;advanced&#x27;,
+        &#x27;help&#x27;      =&gt; __( &#x27;This number will be used in calculations if the box is checked.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;unchecked_calc_value&#x27;    =&gt; array(
+        &#x27;name&#x27;      =&gt; &#x27;unchecked_calc_value&#x27;,
+        &#x27;type&#x27;      =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27;     =&gt; __( &#x27;Unchecked Calculation Value&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;     =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27;     =&gt; &#x27;advanced&#x27;,
+        &#x27;help&#x27;      =&gt; __( &#x27;This number will be used in calculations if the box is unchecked.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | DISPLAY CALCULATION SETTINGS
+    |--------------------------------------------------------------------------
+    */
+    &#x27;calc_var&#x27;              =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;calc_var&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Display This Calculation Variable&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;primary&#x27;,
+        &#x27;options&#x27;           =&gt; array(),
+        &#x27;select_product&#x27;    =&gt; array(
+            &#x27;value&#x27;         =&gt; &#x27;&#x27;,
+            &#x27;label&#x27;         =&gt; __( &#x27;- Select a Variable&#x27;, &#x27;ninja-forms&#x27; ),
+        ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pricing Fields Settings
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;product_price&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;product_price&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Price&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;1.00&#x27;,
+        &#x27;mask&#x27; =&gt; array(
+            &#x27;type&#x27; =&gt; &#x27;currency&#x27;, // &#x27;numeric&#x27;, &#x27;currency&#x27;, &#x27;custom&#x27;
+            &#x27;options&#x27; =&gt; array()
+        )
+    ),
+
+    &#x27;product_use_quantity&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;product_use_quantity&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Use Inline Quantity&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; TRUE,
+        &#x27;help&#x27;  =&gt; __( &#x27;Allows users to choose more than one of this product.&#x27;, &#x27;ninja-forms&#x27; ),
+
+    ),
+
+    &#x27;product_type&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;product_type&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Product Type&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Single Product (default)&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;single&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Multi Product - Dropdown&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;dropdown&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Multi Product - Choose Many&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;checkboxes&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Multi Product - Choose One&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;radiolist&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;User Entry&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;user&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Hidden&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;hidden&#x27;
+            ),
+        ),
+        &#x27;value&#x27; =&gt; &#x27;single&#x27;,
+        &#x27;use_merge_tags&#x27; =&gt; FALSE
+    ),
+
+    &#x27;shipping_cost&#x27;         =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;shipping_cost&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Cost&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;0.00&#x27;,
+        &#x27;mask&#x27; =&gt; array(
+            &#x27;type&#x27; =&gt; &#x27;currency&#x27;, // &#x27;numeric&#x27;, &#x27;currency&#x27;, &#x27;custom&#x27;
+            &#x27;options&#x27; =&gt; array()
+        ),
+        &#x27;deps&#x27;              =&gt; array(
+            &#x27;shipping_type&#x27; =&gt; &#x27;single&#x27;,
+        ),
+    ),
+
+    &#x27;shipping_options&#x27;      =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;shipping_options&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;option-repeater&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Cost Options&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; &lt;a href=&quot;#&quot; class=&quot;nf-add-new&quot;&gt;&#x27; . __( &#x27;Add New&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;,
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27;             =&gt; array(
+            array( &#x27;label&#x27;  =&gt; __( &#x27;One&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;1.00&#x27;, &#x27;order&#x27; =&gt; 0 ),
+            array( &#x27;label&#x27;  =&gt; __( &#x27;Two&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;2.00&#x27;, &#x27;order&#x27; =&gt; 1 ),
+            array( &#x27;label&#x27;  =&gt; __( &#x27;Three&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;3.00&#x27;, &#x27;order&#x27; =&gt; 2 ),
+        ),
+        &#x27;columns&#x27;          =&gt; array(
+            &#x27;label&#x27;         =&gt; array(
+                &#x27;header&#x27;    =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;default&#x27;   =&gt; &#x27;&#x27;,
+            ),
+
+            &#x27;value&#x27;         =&gt; array(
+                &#x27;header&#x27;    =&gt; __( &#x27;Value&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;default&#x27;   =&gt; &#x27;&#x27;,
+            ),
+        ),
+        &#x27;deps&#x27;              =&gt; array(
+            &#x27;shipping_type&#x27; =&gt; &#x27;select&#x27;
+        ),
+    ),
+
+    &#x27;shipping_type&#x27;         =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;shipping_type&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;select&#x27;,
+        &#x27;options&#x27;           =&gt; array(
+            array(
+                &#x27;label&#x27;     =&gt; __( &#x27;Single Cost&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27;     =&gt; &#x27;single&#x27;,
+            ),
+            array(
+                &#x27;label&#x27;     =&gt; __( &#x27;Cost Dropdown&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27;     =&gt; &#x27;select&#x27;,
+            ),
+        ),
+        &#x27;label&#x27;             =&gt; __( &#x27;Cost Type&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;&#x27;, //&#x27;primary&#x27;,
+        &#x27;value&#x27;             =&gt; &#x27;single&#x27;,
+    ),
+
+    &#x27;product_assignment&#x27;      =&gt; array(
+        &#x27;name&#x27;              =&gt; &#x27;product_assignment&#x27;,
+        &#x27;type&#x27;              =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27;             =&gt; __( &#x27;Product&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27;             =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27;             =&gt; &#x27;primary&#x27;,
+        &#x27;options&#x27;           =&gt; array(),
+        &#x27;select_product&#x27;    =&gt; array(
+            &#x27;value&#x27;         =&gt; &#x27;&#x27;,
+            &#x27;label&#x27;         =&gt; __( &#x27;- Select a Product&#x27;, &#x27;ninja-forms&#x27; ),
+        ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Anti-Spam Field Settings
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+     * Spam Answer
+     */
+
+    &#x27;spam_answer&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;spam_answer&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Answer&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27;  =&gt; __( &#x27;A case sensitive answer to help prevent spam submissions of your form.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Term Field Settings
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+     * Taxonomy
+     */
+
+    &#x27;taxonomy&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;taxonomy&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Taxonomy&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; &quot;-&quot;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            )
+        )
+    ),
+
+    /*
+     * Add New Terms
+     */
+
+    &#x27;add_new_terms&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;add_new_terms&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Add New Terms&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Backwards Compatibility Field Settings
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;user_state&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;user_state&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;This is a user\&#x27;s state.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;administration&#x27;,
+        &#x27;value&#x27; =&gt; FALSE,
+        &#x27;help&#x27; =&gt; __( &#x27;Used for marking a field for processing.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+));
+
+
+// Example of settings
+
+// Add all core settings. Fields can unset if unneeded.
+// $this-&gt;_settings = $this-&gt;load_settings(
+//     array( &#x27;label&#x27;, &#x27;label_pos&#x27;, &#x27;required&#x27;, &#x27;number&#x27;, &#x27;spam_question&#x27;, &#x27;mask&#x27;, &#x27;input_limit_set&#x27;,&#x27;rich_text_editor&#x27;, &#x27;placeholder&#x27;, &#x27;textare_placeholder&#x27;, &#x27;default&#x27;, &#x27;checkbox_default_value&#x27;, &#x27;classes&#x27;, &#x27;timed_submit&#x27; )
+// );
+</pre></details></body></html>

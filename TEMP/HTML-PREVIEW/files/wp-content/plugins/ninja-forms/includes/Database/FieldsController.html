@@ -1,0 +1,236 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/FieldsController.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/FieldsController.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+final class NF_Database_FieldsController
+{
+    private $db;
+    private $factory;
+    private $fields_data;
+    private $new_field_ids;
+    private $insert_fields;
+    private $insert_field_meta = array();
+    private $insert_field_meta_chunk = 0;
+    private $update_fields = array( &#x27;key&#x27; =&gt; &#x27;&#x27;, &#x27;label&#x27; =&gt; &#x27;&#x27;, &#x27;type&#x27; =&gt; &#x27;&#x27; );
+    private $update_field_meta = array();
+    private $update_field_meta_chunk = 0;
+    public function __construct( $form_id, $fields_data )
+    {
+        global $wpdb;
+        $this-&gt;db = $wpdb;
+        $this-&gt;form_id = $form_id;
+        $this-&gt;fields_data = $fields_data;
+    }
+    public function run()
+    {
+        $this-&gt;db-&gt;hide_errors();
+        
+        /* FIELDS */
+        $this-&gt;parse_fields();
+        
+        $insert_fields_query = $this-&gt;get_insert_fields_query();
+        if( ! empty( $insert_fields_query ) ){
+            $this-&gt;db-&gt;query( $insert_fields_query );
+            $this-&gt;update_new_field_ids();
+        }
+        
+        $update_fields_query = $this-&gt;get_update_fields_query();
+        if( ! empty( $update_fields_query ) ){
+            $this-&gt;db-&gt;query( $update_fields_query );
+        }
+
+        /* FIELD META */
+        $this-&gt;parse_field_meta();
+        $this-&gt;run_insert_field_meta_query();
+        $this-&gt;run_update_field_meta_query();
+    }
+    public function get_updated_fields_data()
+    {
+        return $this-&gt;fields_data;
+    }
+    private function parse_fields()
+    {
+        foreach( $this-&gt;fields_data as $field_data ){
+            $field_id = $field_data[ &#x27;id&#x27; ];
+            $settings = array(
+                &#x27;key&#x27; =&gt; $field_data[ &#x27;settings&#x27; ][ &#x27;key&#x27; ],
+                &#x27;label&#x27; =&gt; $field_data[ &#x27;settings&#x27; ][ &#x27;label&#x27; ],
+                &#x27;type&#x27; =&gt; $field_data[ &#x27;settings&#x27; ][ &#x27;type&#x27; ]
+            );
+            if( ! is_numeric( $field_id ) ) {
+                $this-&gt;insert_field( $settings ); // New Field.
+            } else {
+                $this-&gt;update_field( $field_id, $settings );
+            }
+        }
+    }
+    private function parse_field_meta()
+    {
+        $existing_meta = $this-&gt;get_existing_meta();
+        foreach( $this-&gt;fields_data as $field_data ){
+            $field_id = $field_data[ &#x27;id&#x27; ];
+            foreach( $field_data[ &#x27;settings&#x27; ] as $key =&gt; $value ){
+                if( isset( $existing_meta[ $field_id ][ $key ] ) ){
+                    if( $value == $existing_meta[ $field_id ][ $key ] ) continue;
+                    $this-&gt;update_field_meta( $field_id, $key, $value );
+                } else {
+                    $this-&gt;insert_field_meta( $field_id, $key, $value );
+                }
+            }
+        }
+    }
+    private function get_existing_meta()
+    {
+        $results = $this-&gt;db-&gt;get_results(&quot;
+        SELECT m.parent_id, m.key, m.value
+        FROM `{$this-&gt;db-&gt;prefix}nf3_field_meta` AS m
+        LEFT JOIN `{$this-&gt;db-&gt;prefix}nf3_fields` AS f
+            ON m.parent_id = f.id
+        WHERE f.parent_id = {$this-&gt;form_id}
+        &quot;);
+        $field_meta = array();
+        foreach( $results as $meta ){
+            if( ! isset( $field_meta[ $meta-&gt;parent_id ] ) ) $field_meta[ $meta-&gt;parent_id ] = array();
+            $field_meta[ $meta-&gt;parent_id ][ $meta-&gt;key ] = $meta-&gt;value;
+        }
+        return $field_meta;
+    }
+    private function update_new_field_ids()
+    {
+        $field_id_lookup = $this-&gt;db-&gt;get_results(&quot;
+            SELECT `key`, `id`
+            FROM {$this-&gt;db-&gt;prefix}nf3_fields
+            WHERE `parent_id` = {$this-&gt;form_id}
+        &quot;, OBJECT_K);
+        foreach( $this-&gt;fields_data as $i =&gt; $field_data ){
+            $field_key = $field_data[ &#x27;settings&#x27; ][ &#x27;key&#x27; ];
+            if( ! is_numeric( $field_data[ &#x27;id&#x27; ] ) &amp;&amp; isset( $field_id_lookup[ $field_key ] ) ){
+                $tmp_id = $field_data[ &#x27;id&#x27; ];
+                $this-&gt;fields_data[ $i ][ &#x27;id&#x27; ] = $this-&gt;new_field_ids[ $tmp_id ] = $field_id_lookup[ $field_key ]-&gt;id;
+            }
+        }
+    }
+    public function get_new_field_ids()
+    {
+        return $this-&gt;new_field_ids;
+    }
+    /*
+    |--------------------------------------------------------------------------
+    | INSERT (NEW) FIELDS
+    |--------------------------------------------------------------------------
+    */
+    private function insert_field( $settings )
+    {
+        $this-&gt;insert_fields .= &quot;(&quot;;
+        foreach ( $settings as $setting =&gt; $value ) {
+            $this-&gt;db-&gt;escape_by_ref( $value );
+            $this-&gt;insert_fields .= &quot;&#x27;{$value}&#x27;,&quot;;
+        }
+        $this-&gt;insert_fields .= &quot;&#x27;{$this-&gt;form_id}&#x27;&quot;;
+        $this-&gt;insert_fields .=  &#x27;),&#x27;;
+    }
+    public function get_insert_fields_query()
+    {
+        if( ! $this-&gt;insert_fields ) return &quot;&quot;;
+        $insert_fields = rtrim( $this-&gt;insert_fields, &#x27;,&#x27; ); // Strip trailing comma from SQl.
+        return &quot;
+            INSERT INTO {$this-&gt;db-&gt;prefix}nf3_fields ( `key`, `label`, `type`, `parent_id` )
+            VALUES {$insert_fields}
+        &quot;;
+    }
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE (EXISTING) FIELDS
+    |--------------------------------------------------------------------------
+    */
+    private function update_field( $field_id, $settings )
+    {
+        foreach ( $settings as $setting =&gt; $value ) {
+            $line = &quot;WHEN `id` = &#x27;{$field_id}&#x27; &quot;;
+            $this-&gt;db-&gt;escape_by_ref( $value );
+            $line .= &quot;THEN &#x27;{$value}&#x27;&quot;;
+            $this-&gt;update_fields[ $setting ] .= $line;
+        }
+    }
+    public function get_update_fields_query()
+    {
+        if(
+            empty( $this-&gt;update_fields[ &#x27;key&#x27;   ] ) ||
+            empty( $this-&gt;update_fields[ &#x27;label&#x27; ] ) ||
+            empty( $this-&gt;update_fields[ &#x27;type&#x27;  ] )
+            ) return &quot;&quot;;
+        return &quot;
+            UPDATE {$this-&gt;db-&gt;prefix}nf3_fields
+            SET `key` = CASE {$this-&gt;update_fields[ &#x27;key&#x27; ]}
+                ELSE `key`
+                END
+            , `label` = CASE {$this-&gt;update_fields[ &#x27;label&#x27; ]}
+                ELSE `label`
+                END
+            , `type` = CASE {$this-&gt;update_fields[ &#x27;type&#x27; ]}
+                ELSE `type`
+                END
+        &quot;;
+    }
+    /*
+    |--------------------------------------------------------------------------
+    | INSERT (NEW) META
+    |--------------------------------------------------------------------------
+    */
+    private function insert_field_meta( $field_id, $key, $value )
+    {
+        static $counter;
+        
+        $value = maybe_serialize( $value );
+        
+        $this-&gt;db-&gt;escape_by_ref( $field_id );
+        $this-&gt;db-&gt;escape_by_ref( $key );
+        $this-&gt;db-&gt;escape_by_ref( $value );
+
+        if( ! isset( $this-&gt;insert_field_meta[ $this-&gt;insert_field_meta_chunk ] ) || ! $this-&gt;insert_field_meta[ $this-&gt;insert_field_meta_chunk ] ) {
+            $this-&gt;insert_field_meta[ $this-&gt;insert_field_meta_chunk ] = &#x27;&#x27;;
+        }
+        $this-&gt;insert_field_meta[ $this-&gt;insert_field_meta_chunk ] .= &quot;(&#x27;{$field_id}&#x27;,&#x27;{$key}&#x27;,&#x27;{$value}&#x27; ),&quot;;
+        $counter++;
+        if( 0 == $counter % 5000 ) $this-&gt;insert_field_meta_chunk++;
+    }
+    public function run_insert_field_meta_query()
+    {
+        if( ! $this-&gt;insert_field_meta ) return &quot;&quot;;
+        foreach( $this-&gt;insert_field_meta as $insert_field_meta ){
+            $insert_field_meta = rtrim( $insert_field_meta, &#x27;,&#x27; ); // Strip trailing comma from SQl.
+            $this-&gt;db-&gt;query( &quot;
+                INSERT INTO {$this-&gt;db-&gt;prefix}nf3_field_meta ( `parent_id`, `key`, `value` )
+                VALUES {$insert_field_meta}
+            &quot;);
+        }
+    }
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE (EXISTING) META
+    |--------------------------------------------------------------------------
+    */
+    private function update_field_meta( $field_id, $key, $value )
+    {
+        static $counter;
+
+        $value = maybe_serialize( $value );
+        $this-&gt;db-&gt;escape_by_ref( $key   );
+        $this-&gt;db-&gt;escape_by_ref( $value );
+        if( ! isset( $this-&gt;update_field_meta[ $this-&gt;update_field_meta_chunk ] ) || ! $this-&gt;update_field_meta[ $this-&gt;update_field_meta_chunk ] ) {
+            $this-&gt;update_field_meta[ $this-&gt;update_field_meta_chunk ] = &#x27;&#x27;;
+        }
+        $this-&gt;update_field_meta[ $this-&gt;update_field_meta_chunk ] .= &quot; WHEN `parent_id` = &#x27;{$field_id}&#x27; AND `key` = &#x27;{$key}&#x27; THEN &#x27;{$value}&#x27;&quot;;
+
+        $counter++;
+        if( 0 == $counter % 5000 ) $this-&gt;update_field_meta_chunk++;
+    }
+    public function run_update_field_meta_query()
+    {
+        if( empty( $this-&gt;update_field_meta ) ) return &#x27;&#x27;;
+        foreach( $this-&gt;update_field_meta as $update_field_meta ){
+            $this-&gt;db-&gt;query(&quot;
+                UPDATE {$this-&gt;db-&gt;prefix}nf3_field_meta as field_meta
+                SET `value` = CASE {$update_field_meta} ELSE `value` END
+            &quot;);
+            return;
+        }
+    }
+}</pre></details></body></html>

@@ -1,0 +1,163 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/conditionals.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/conditionals.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if( ! function_exists( &#x27;ninja_forms_conditionals_setup_license&#x27; ) ) {
+    function ninja_forms_conditionals_setup_license()
+    {
+        if (class_exists(&#x27;NF_Extension_Updater&#x27;)) {
+            $NF_Extension_Updater = new NF_Extension_Updater(&#x27;Conditional Logic&#x27;, NINJA_FORMS_CON_VERSION, &#x27;WP Ninjas&#x27;, __FILE__, &#x27;conditionals&#x27;);
+        }
+    }
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_conditionals_setup_license&#x27; );
+
+/**
+ * Load translations for add-on.
+ * First, look in WP_LANG_DIR subfolder, then fallback to add-on plugin folder.
+ */
+if( ! function_exists( &#x27;ninja_forms_conditionals_load_translations&#x27; ) ) {
+    function ninja_forms_conditionals_load_translations()
+    {
+
+        /** Set our unique textdomain string */
+        $textdomain = &#x27;ninja-forms-conditionals&#x27;;
+
+        /** The &#x27;plugin_locale&#x27; filter is also used by default in load_plugin_textdomain() */
+        $locale = apply_filters(&#x27;plugin_locale&#x27;, get_locale(), $textdomain);
+
+        /** Set filter for WordPress languages directory */
+        $wp_lang_dir = apply_filters(
+            &#x27;ninja_forms_conditionals_wp_lang_dir&#x27;,
+            trailingslashit(WP_LANG_DIR) . &#x27;ninja-forms-conditionals/&#x27; . $textdomain . &#x27;-&#x27; . $locale . &#x27;.mo&#x27;
+        );
+
+        /** Translations: First, look in WordPress&#x27; &quot;languages&quot; folder = custom &amp; update-secure! */
+        load_textdomain($textdomain, $wp_lang_dir);
+
+        /** Translations: Secondly, look in plugin&#x27;s &quot;lang&quot; folder = default */
+        $plugin_dir = trailingslashit(basename(dirname(__FILE__)));
+        $lang_dir = apply_filters(&#x27;ninja_forms_conditionals_lang_dir&#x27;, $plugin_dir . &#x27;lang/&#x27;);
+        load_plugin_textdomain($textdomain, FALSE, $lang_dir);
+
+    }
+}
+add_action( &#x27;plugins_loaded&#x27;, &#x27;ninja_forms_conditionals_load_translations&#x27; );
+
+// Get our current Ninja Forms plugin version.
+$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+$nf_plugin_version = isset( $plugin_settings[&#x27;version&#x27;] ) ? $plugin_settings[&#x27;version&#x27;] : &#x27;&#x27;;
+
+if ( version_compare ( $nf_plugin_version, &#x27;2.9&#x27;, &#x27;&lt;&#x27; ) ) { // If our current version of Ninja Forms is before 2.9, include our deprecated files.
+	require_once( NINJA_FORMS_CON_DIR.&quot;/includes/deprecated/scripts.php&quot; );
+	require_once( NINJA_FORMS_CON_DIR.&quot;/includes/deprecated/register-edit-field-section.php&quot; );
+} else {
+	require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/scripts.php&quot; );
+	require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/register-edit-field-section.php&quot; );
+}
+
+require_once( NINJA_FORMS_CON_DIR.&quot;/classes/trigger-base.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/ajax.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/after-import.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/view-subs-header-filter.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/notifications.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/upgrades/nf-update-notice.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/admin/mp-copy-page.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/functions.php&quot; );
+
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/display/display-conditionals.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/display/scripts.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/display/field-filter.php&quot; );
+require_once( NINJA_FORMS_CON_DIR.&quot;/includes/display/field-class-filter.php&quot; );
+
+if( ! function_exists( &#x27;ninja_forms_conditional_compare&#x27; ) ) {
+    function ninja_forms_conditional_compare($param1, $param2, $operator)
+    {
+        switch ($operator) {
+            case &quot;==&quot;:
+                if (is_array($param1)) {
+                    return in_array($param2, $param1);
+                } else {
+                    return $param1 == $param2;
+                }
+            case &quot;!=&quot;:
+                if (is_array($param1)) {
+                    if (in_array($param2, $param1)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return $param1 != $param2;
+                }
+            case &quot;&lt;&quot;:
+                return $param1 &lt; $param2;
+            case &quot;&gt;&quot;:
+                return $param1 &gt; $param2;
+            case &quot;contains&quot;:
+                if (stripos($param1, $param2) !== false) {
+                    return true;
+                } else {
+                    return false;
+                }
+            case &quot;notcontains&quot;:
+                if (stripos($param1, $param2) === false) {
+                    return true;
+                } else {
+                    return false;
+                }
+            case &quot;on&quot;:
+                $plugin_settings = nf_get_settings();
+                if (strtolower(substr($plugin_settings[&#x27;date_format&#x27;], 0, 1)) == &#x27;d&#x27;) {
+                    $param1 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param1);
+                    $param2 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param2);
+                }
+
+                $date1 = new DateTime($param1);
+                $date2 = new DateTime($param2);
+
+                return $date1 == $date2;
+
+            case &quot;before&quot;:
+                $plugin_settings = nf_get_settings();
+                if (strtolower(substr($plugin_settings[&#x27;date_format&#x27;], 0, 1)) == &#x27;d&#x27;) {
+                    $param1 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param1);
+                    $param2 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param2);
+                }
+
+                $date1 = new DateTime($param1);
+                $date2 = new DateTime($param2);
+
+                return $date1 &lt; $date2;
+            case &quot;after&quot;:
+                $plugin_settings = nf_get_settings();
+                if (strtolower(substr($plugin_settings[&#x27;date_format&#x27;], 0, 1)) == &#x27;d&#x27;) {
+                    $param1 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param1);
+                    $param2 = str_replace(&#x27;/&#x27;, &#x27;-&#x27;, $param2);
+                }
+
+                $date1 = new DateTime($param1);
+                $date2 = new DateTime($param2);
+
+                return $date1 &gt; $date2;
+        }
+    }
+}
+
+/**
+ * Hook into our nf_init action and register our trigger types.
+ *
+ * @since 1.2.8
+ * @return void
+ */
+if( ! function_exists( &#x27;nf_cl_init&#x27; ) ) {
+    function nf_cl_init($instance)
+    {
+        $instance-&gt;cl_triggers = array();
+        $instance-&gt;cl_triggers[&#x27;date_submitted&#x27;] = require_once(NINJA_FORMS_CON_DIR . &#x27;/classes/trigger-date-submitted.php&#x27;);
+        // $instance-&gt;cl_triggers[&#x27;sub_count&#x27;] = require_once( NINJA_FORMS_CON_DIR . &#x27;/classes/trigger-sub-count.php&#x27; );
+
+        $instance-&gt;cl_triggers = apply_filters(&#x27;nf_cl_criteria_triggers&#x27;, $instance-&gt;cl_triggers);
+    }
+}
+
+add_action( &#x27;nf_init&#x27;, &#x27;nf_cl_init&#x27; );</pre></details></body></html>

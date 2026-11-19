@@ -1,0 +1,100 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/BeforeAfter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/BeforeAfter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_BeforeAfter extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $before;
+
+	/**
+	 * @var string
+	 */
+	private $after;
+
+	protected function set_name() {
+		$this-&gt;name = &#x27;before_after&#x27;;
+	}
+
+	protected function define_options() {
+		return array( &#x27;before&#x27;, &#x27;after&#x27; );
+	}
+
+	public function format( $value, $original_value ) {
+		if ( $this-&gt;get_before() || $this-&gt;get_after() ) {
+			$value = $this-&gt;get_before() . $value . $this-&gt;get_after();
+		}
+
+		return $value;
+	}
+
+	public function create_view() {
+		$setting = $this-&gt;create_element( &#x27;text&#x27;, &#x27;before&#x27; );
+
+		$before = new AC_View( array(
+			&#x27;label&#x27;       =&gt; __( &#x27;Before&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;description&#x27; =&gt; __( &#x27;This text will appear before the column value.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27;     =&gt; $setting,
+			&#x27;for&#x27;         =&gt; $setting-&gt;get_id(),
+		) );
+
+		$setting = $this-&gt;create_element( &#x27;text&#x27;, &#x27;after&#x27; );
+
+		$after = new AC_View( array(
+			&#x27;label&#x27;       =&gt; __( &#x27;After&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;description&#x27; =&gt; __( &#x27;This text will appear after the column value.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27;     =&gt; $setting,
+			&#x27;for&#x27;         =&gt; $setting-&gt;get_id(),
+		) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;    =&gt; __( &#x27;Display Options&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;sections&#x27; =&gt; array( $before, $after ),
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_before() {
+		return $this-&gt;before;
+	}
+
+	/**
+	 * @param $before
+	 *
+	 * @return bool
+	 */
+	public function set_before( $before ) {
+		$this-&gt;before = $before;
+
+		return true;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_after() {
+		return $this-&gt;after;
+	}
+
+	/**
+	 * @param $after
+	 *
+	 * @return bool
+	 */
+	public function set_after( $after ) {
+		$this-&gt;after = $after;
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

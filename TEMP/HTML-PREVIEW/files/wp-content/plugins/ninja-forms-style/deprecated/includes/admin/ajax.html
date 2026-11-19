@@ -1,0 +1,130 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/deprecated/includes/admin/ajax.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/deprecated/includes/admin/ajax.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;field_id&quot; value=&quot;&quot;&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+add_action(&#x27;wp_ajax_ninja_forms_style_field_styling&#x27;, &#x27;ninja_forms_style_field_styling&#x27;);
+function ninja_forms_style_field_styling(){
+	global $ninja_forms_style_metaboxes;
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+
+	?&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;field_id&quot; value=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+	&lt;?php
+	ninja_forms_style_advanced_checkbox_display();
+
+	do_action( &#x27;ninja_forms_style_field_metaboxes&#x27;, $field_id );
+
+	if( is_array( $ninja_forms_style_metaboxes[&#x27;page&#x27;][&#x27;field&#x27;] ) ){
+		foreach( $ninja_forms_style_metaboxes[&#x27;page&#x27;][&#x27;field&#x27;] as $key=&gt;$args ){
+			ninja_forms_output_tab_metabox(&#x27;&#x27;, $args[&#x27;slug&#x27;], $args);
+		}
+	}
+
+	if( isset( $ninja_forms_style_metaboxes[&#x27;field&#x27;][$field_type] ) AND is_array( $ninja_forms_style_metaboxes[&#x27;field&#x27;][$field_type] ) ){
+		foreach( $ninja_forms_style_metaboxes[&#x27;field&#x27;][$field_type] as $key=&gt;$args ){
+			ninja_forms_output_tab_metabox(&#x27;&#x27;, $args[&#x27;slug&#x27;], $args);
+		}
+	}
+
+	die();
+}
+
+function ninja_forms_style_field_metabox_output( $metabox ){
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$metabox[&#x27;field_id&#x27;] = $field_id;
+	ninja_forms_style_metabox_output( $metabox );
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_style_field_styling_save&#x27;, &#x27;ninja_forms_style_field_styling_save&#x27;);
+function ninja_forms_style_field_styling_save(){
+	$data = $_REQUEST[&#x27;data&#x27;];
+
+	$advanced = $data[&#x27;advanced&#x27;];
+	unset( $data[&#x27;advanced&#x27;] );
+	$field_id = $data[&#x27;field_id&#x27;];
+	unset( $data[&#x27;field_id&#x27;] );
+
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_data = $field_row[&#x27;data&#x27;];
+
+	$tmp_array = array();
+	foreach( $data as $group =&gt; $d ){
+		$field_data[&#x27;style&#x27;][&#x27;groups&#x27;][$group] = $d;
+	}
+
+	$field_data = serialize( $field_data );
+
+	$args = array(
+		&#x27;update_array&#x27; =&gt; array(
+			&#x27;data&#x27; =&gt; $field_data,
+			),
+		&#x27;where&#x27; =&gt; array(
+			&#x27;id&#x27; =&gt; $field_id,
+			),
+	);
+	ninja_forms_update_field( $args );
+
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+
+	$plugin_settings[&#x27;style&#x27;][&#x27;advanced&#x27;] = $advanced;
+
+	update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings);
+
+	die();
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_style_form_styling_save&#x27;, &#x27;ninja_forms_style_form_styling_save&#x27;);
+function ninja_forms_style_form_styling_save(){
+	$data = $_REQUEST[&#x27;data&#x27;];
+
+	$advanced = $data[&#x27;advanced&#x27;];
+	unset( $data[&#x27;advanced&#x27;] );
+	$form_id = $data[&#x27;form_id&#x27;];
+	unset( $data[&#x27;form_id&#x27;] );
+
+	$form_row = ninja_forms_get_form_by_id( $form_id );
+	$form_data = $form_row[&#x27;data&#x27;];
+
+	if( isset( $data[&#x27;container&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;container&#x27;] = $data[&#x27;container&#x27;];
+	}
+
+	if( isset( $data[&#x27;title&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;title&#x27;] = $data[&#x27;title&#x27;];
+	}
+
+	if( isset( $data[&#x27;row&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;row&#x27;] = $data[&#x27;row&#x27;];
+	}
+
+	if( isset( $data[&#x27;row-odd&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;row-odd&#x27;] = $data[&#x27;row-odd&#x27;];
+	}
+
+	if( isset( $data[&#x27;success-msg&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;success-msg&#x27;] = $data[&#x27;success-msg&#x27;];
+	}
+
+	if( isset( $data[&#x27;error_msg&#x27;] ) ){
+		$form_data[&#x27;style&#x27;][&#x27;groups&#x27;][&#x27;error_msg&#x27;] = $data[&#x27;error_msg&#x27;];
+	}
+
+	if ( is_array( $form_data ) ) {
+		foreach ( $form_data as $key =&gt; $val ) {
+			Ninja_Forms()-&gt;form( $form_id )-&gt;update_setting( $key, $val );
+		}
+	}
+
+	Ninja_Forms()-&gt;form( $form_id )-&gt;dump_cache();
+
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+
+	$plugin_settings[&#x27;style&#x27;][&#x27;advanced&#x27;] = $advanced;
+
+	update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings);
+
+	die();
+}
+</pre></details></body></html>

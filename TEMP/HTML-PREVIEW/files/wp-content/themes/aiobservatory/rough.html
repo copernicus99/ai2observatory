@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/rough.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/rough.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+		
+			&lt;div class=&quot;navigation-top&quot;&gt;
+				&lt;div class=&quot;wrap&quot;&gt;
+					
+				&lt;/div&gt;
+			&lt;/div&gt;
+		
+
+	&lt;/header&gt;
+
+	
+			&lt;h1 class=&quot;page-title&quot;&gt;&lt;/h1&gt;
+		
+			&lt;h1 class=&quot;page-title&quot;&gt;&lt;/h1&gt;
+		
+	&lt;/header&gt;&lt;!-- .page-header --&gt;
+
+	&lt;div id=&quot;primary&quot; class=&quot;content-area&quot;&gt;
+		&lt;main id=&quot;main&quot; class=&quot;site-main&quot; role=&quot;main&quot;&gt;
+
+		
+
+			&lt;p&gt;&lt;/p&gt;
+			
+
+		&lt;/main&gt;&lt;!-- #main --&gt;
+	&lt;/div&gt;&lt;!-- #primary --&gt;
+	
+
+	// instagram loading
+	$(&#x27;#container&#x27;).bind(&#x27;scroll&#x27;, function()
+{
+    if($(this).scrollTop() + $(this).innerHeight()&gt;=$(this)[0].scrollHeight) { }
+}
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php get_template_part( &#x27;template-parts/header/header&#x27;, &#x27;image&#x27; ); ?&gt;
+
+		&lt;?php if ( has_nav_menu( &#x27;top&#x27; ) ) : ?&gt;
+			&lt;div class=&quot;navigation-top&quot;&gt;
+				&lt;div class=&quot;wrap&quot;&gt;
+					&lt;?php get_template_part( &#x27;template-parts/navigation/navigation&#x27;, &#x27;top&#x27; ); ?&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+		&lt;?php endif; ?&gt;
+
+	&lt;/header&gt;
+
+	&lt;?php
+	if ( has_post_thumbnail() &amp;&amp; ( is_single() || ( is_page() &amp;&amp; ! twentyseventeen_is_frontpage() ) ) ) :
+		echo &#x27;&lt;div class=&quot;single-featured-image-header&quot;&gt;&#x27;;
+		the_post_thumbnail( &#x27;twentyseventeen-featured-image&#x27; );
+		echo &#x27;&lt;/div&gt;&lt;!-- .single-featured-image-header --&gt;&#x27;;
+	endif;
+
+	// search
+
+&lt;div class=&quot;wrap&quot;&gt;
+
+	&lt;header class=&quot;page-header&quot;&gt;
+		&lt;?php if ( have_posts() ) : ?&gt;
+			&lt;h1 class=&quot;page-title&quot;&gt;&lt;?php printf( __( &#x27;Search Results for: %s&#x27;, &#x27;twentyseventeen&#x27; ), &#x27;&lt;span&gt;&#x27; . get_search_query() . &#x27;&lt;/span&gt;&#x27; ); ?&gt;&lt;/h1&gt;
+		&lt;?php else : ?&gt;
+			&lt;h1 class=&quot;page-title&quot;&gt;&lt;?php _e( &#x27;Nothing Found&#x27;, &#x27;twentyseventeen&#x27; ); ?&gt;&lt;/h1&gt;
+		&lt;?php endif; ?&gt;
+	&lt;/header&gt;&lt;!-- .page-header --&gt;
+
+	&lt;div id=&quot;primary&quot; class=&quot;content-area&quot;&gt;
+		&lt;main id=&quot;main&quot; class=&quot;site-main&quot; role=&quot;main&quot;&gt;
+
+		&lt;?php
+		if ( have_posts() ) :
+			/* Start the Loop */
+			while ( have_posts() ) : the_post();
+
+				/**
+				 * Run the loop for the search to output the results.
+				 * If you want to overload this in a child theme then include a file
+				 * called content-search.php and that will be used instead.
+				 */
+				get_template_part( &#x27;template-parts/post/content&#x27;, &#x27;excerpt&#x27; );
+
+			endwhile; // End of the loop.
+
+			the_posts_pagination( array(
+				&#x27;prev_text&#x27; =&gt; twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;arrow-left&#x27; ) ) . &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Previous page&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27;,
+				&#x27;next_text&#x27; =&gt; &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27; . __( &#x27;Next page&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27;&lt;/span&gt;&#x27; . twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;arrow-right&#x27; ) ),
+				&#x27;before_page_number&#x27; =&gt; &#x27;&lt;span class=&quot;meta-nav screen-reader-text&quot;&gt;&#x27; . __( &#x27;Page&#x27;, &#x27;twentyseventeen&#x27; ) . &#x27; &lt;/span&gt;&#x27;,
+			) );
+
+		else : ?&gt;
+
+			&lt;p&gt;&lt;?php _e( &#x27;Sorry, but nothing matched your search terms. Please try again with some different keywords.&#x27;, &#x27;twentyseventeen&#x27; ); ?&gt;&lt;/p&gt;
+			&lt;?php
+				get_search_form();
+
+		endif;
+		?&gt;
+
+		&lt;/main&gt;&lt;!-- #main --&gt;
+	&lt;/div&gt;&lt;!-- #primary --&gt;
+	&lt;?php get_sidebar(); ?&gt;
+
+	// instagram loading
+	$(&#x27;#container&#x27;).bind(&#x27;scroll&#x27;, function()
+{
+    if($(this).scrollTop() + $(this).innerHeight()&gt;=$(this)[0].scrollHeight) { }
+}</pre></details></body></html>

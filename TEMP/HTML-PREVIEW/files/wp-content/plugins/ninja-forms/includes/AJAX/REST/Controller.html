@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/REST/Controller.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/REST/Controller.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * A controller extensions for mapping REST requests to an admin-ajax action.
+ */
+abstract class NF_AJAX_REST_Controller extends NF_Abstracts_Controller
+{
+    /**
+     * The name of the admin-ajax action.
+     * @var string
+     */
+    protected $action;
+
+    /**
+     * Setup admin-ajax to access the endpoint router.
+     */
+    public function __construct()
+    {
+        if( $this-&gt;action ) {
+            add_action(&#x27;wp_ajax_&#x27; . $this-&gt;action, array($this, &#x27;route&#x27;));
+        }
+    }
+
+    /**
+     * Map admin-ajax requests to the corresponding method callback.
+     */
+    public function route()
+    {
+        register_shutdown_function( array( $this, &#x27;shutdown&#x27; ) );
+
+        $method = strtolower( $_SERVER[&#x27;REQUEST_METHOD&#x27;] );
+
+        /*
+         * Request Method Override
+         * Allows for a POST request to function as another Request Method
+         *   by passing a `method_override` value as a request parameter.
+         * For example, some servers do not support the DELETE request method.
+         */
+        if( &#x27;post&#x27; == $method and isset( $_REQUEST[ &#x27;method_override&#x27; ] ) ){
+            $method = sanitize_text_field( $_REQUEST[ &#x27;method_override&#x27; ] );
+        }
+
+        if( ! method_exists( $this, $method ) ){
+            $this-&gt;_errors[] = __( &#x27;Endpoint does not exist.&#x27;, &#x27;ninja-forms&#x27; );
+            $this-&gt;_respond();
+        }
+
+        $request_data = $this-&gt;get_request_data();
+
+        try {
+            $data = $this-&gt;$method($request_data);
+            $this-&gt;_respond( $data );
+        } catch( Exception $e ) {
+            $this-&gt;_errors[] = $e-&gt;getMessage();
+        }
+        $this-&gt;_respond();
+    }
+
+    /**
+     * [OVERRIDE THIS] Get sanitized request data for use in method callbacks.
+     * @return array
+     */
+    protected function get_request_data()
+    {
+        // This section intentionally left blank.
+
+        /*
+         * [Example] FORM ID
+         */
+//        if( isset( $_REQUEST[ &#x27;form_id&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;form_id&#x27; ] ){
+//            $request_data[ &#x27;form_id&#x27; ] = absint( $_REQUEST[ &#x27;form_id&#x27; ] );
+//        }
+
+        return array();
+    }
+
+    /**
+     * Returns debugging data when a fatal error is triggered.
+     */
+    public function shutdown()
+    {
+        $error = error_get_last();
+        if( $error !== NULL &amp;&amp; in_array( $error[ &#x27;type&#x27; ], array( E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR ) ) ) {
+
+            $this-&gt;_errors[ &#x27;form&#x27; ][ &#x27;last&#x27; ] = __( &#x27;The server encountered an error during processing.&#x27;, &#x27;ninja-forms&#x27; );
+
+            if( current_user_can( &#x27;manage_options&#x27; ) &amp;&amp; isset( $error[ &#x27;message&#x27; ] ) ){
+                $this-&gt;_errors[ &#x27;form&#x27; ][ &#x27;last_admin&#x27; ] = &#x27;&lt;pre&gt;&#x27; . $error[ &#x27;message&#x27; ] . &#x27;&lt;/pre&gt;&#x27;;
+            }
+
+            $this-&gt;_errors[ &#x27;last&#x27; ] = $error;
+            $this-&gt;_respond();
+        }
+    }
+}
+</pre></details></body></html>

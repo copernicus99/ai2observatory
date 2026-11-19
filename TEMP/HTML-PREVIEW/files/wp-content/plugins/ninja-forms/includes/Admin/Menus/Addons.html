@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/Addons.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/Addons.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_Addons extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $menu_slug = &#x27;ninja-forms#apps&#x27;;
+
+    public $priority = 13;
+
+    public function __construct()
+    {
+        $disable_marketing = false;
+        if ( ! apply_filters( &#x27;ninja_forms_disable_marketing&#x27;, $disable_marketing ) ) {
+            parent::__construct();
+        }
+    }
+
+    public function get_page_title()
+    {
+        return __( &#x27;Add-Ons&#x27;, &#x27;ninja-forms&#x27; );
+    }
+
+    public function get_capability()
+    {
+        return apply_filters( &#x27;ninja_forms_admin_extend_capabilities&#x27;, $this-&gt;capability );
+    }
+
+    public function display()
+    {
+        //wp_enqueue_style( &#x27;nf-admin-addons&#x27;, Ninja_Forms::$url . &#x27;assets/css/admin-addons.css&#x27; );
+//        $items = wp_remote_get( &#x27;https://ninjaforms.com/?extend_feed=jlhrbgf89734go7387o4g3h&#x27; );
+//        $items = wp_remote_retrieve_body( $items );
+        $items = file_get_contents( Ninja_Forms::$dir . &#x27;/deprecated/addons-feed.json&#x27; );
+        $items = json_decode( $items, true );
+        //shuffle( $items );
+
+        $notices = array();
+
+        foreach ($items as $item) {
+            $plugin_data = array();
+            if( !empty( $item[&#x27;plugin&#x27;] ) &amp;&amp; file_exists( WP_PLUGIN_DIR.&#x27;/&#x27;.$item[&#x27;plugin&#x27;] ) ){
+                $plugin_data = get_plugin_data( WP_PLUGIN_DIR.&#x27;/&#x27;.$item[&#x27;plugin&#x27;], false, true );
+            }
+
+            $version = isset ( $plugin_data[&#x27;Version&#x27;] ) ? $plugin_data[&#x27;Version&#x27;] : &#x27;&#x27;;
+
+            if ( ! empty ( $version ) &amp;&amp; $version &lt; $item[&#x27;version&#x27;] ) {
+
+                $notices[] = array(
+                    &#x27;title&#x27; =&gt; $item[ &#x27;title&#x27; ],
+                    &#x27;old_version&#x27; =&gt; $version,
+                    &#x27;new_version&#x27; =&gt; $item[ &#x27;version&#x27; ]
+                );
+            }
+        }
+
+        Ninja_Forms::template( &#x27;admin-menu-addons.html.php&#x27;, compact( &#x27;items&#x27;, &#x27;notices&#x27; ) );
+    }
+
+} // End Class NF_Admin_Addons
+</pre></details></body></html>

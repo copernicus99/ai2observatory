@@ -1,0 +1,166 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/ActionNewsletter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/ActionNewsletter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Abstracts_ActionNewsletter
+ */
+abstract class NF_Abstracts_ActionNewsletter extends NF_Abstracts_Action
+{
+    /**
+     * @var array
+     */
+    protected $_tags = array( &#x27;newsletter&#x27; );
+
+    /**
+     * @var string
+     */
+    protected $_timing = &#x27;normal&#x27;;
+
+    /**
+     * @var int
+     */
+    protected $_priority = &#x27;10&#x27;;
+
+    protected $_settings = array();
+
+    protected $_transient = &#x27;&#x27;;
+
+    protected $_transient_expiration = &#x27;&#x27;;
+
+    protected $_setting_labels = array(
+        &#x27;list&#x27;   =&gt; &#x27;List&#x27;,
+        &#x27;fields&#x27; =&gt; &#x27;List Field Mapping&#x27;,
+        &#x27;groups&#x27; =&gt; &#x27;Interest Groups&#x27;,
+    );
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        if( ! $this-&gt;_transient ){
+            $this-&gt;_transient = $this-&gt;get_name() . &#x27;_newsletter_lists&#x27;;
+        }
+
+        add_action( &#x27;wp_ajax_nf_&#x27; . $this-&gt;_name . &#x27;_get_lists&#x27;, array( $this, &#x27;_get_lists&#x27; ) );
+
+        $this-&gt;get_list_settings();
+    }
+
+    /*
+    * PUBLIC METHODS
+    */
+
+    public function save( $action_settings )
+    {
+
+    }
+
+    public function process( $action_settings, $form_id, $data )
+    {
+
+    }
+
+    public function _get_lists()
+    {
+        check_ajax_referer( &#x27;ninja_forms_builder_nonce&#x27;, &#x27;security&#x27; );
+
+        $lists = $this-&gt;get_lists();
+
+        array_unshift( $lists, array( &#x27;value&#x27; =&gt; 0, &#x27;label&#x27; =&gt; &#x27;-&#x27;, &#x27;fields&#x27; =&gt; array(), &#x27;groups&#x27; =&gt; array() ) );
+
+        $this-&gt;cache_lists( $lists );
+
+        echo wp_json_encode( array( &#x27;lists&#x27; =&gt; $lists ) );
+
+        wp_die(); // this is required to terminate immediately and return a proper response
+    }
+
+    /*
+     * PROTECTED METHODS
+     */
+
+    abstract protected function get_lists();
+
+    /*
+     * PRIVATE METHODS
+     */
+
+    private function get_list_settings()
+    {
+        $label_defaults = array(
+            &#x27;list&#x27;   =&gt; &#x27;List&#x27;,
+            &#x27;fields&#x27; =&gt; &#x27;List Field Mapping&#x27;,
+            &#x27;groups&#x27; =&gt; &#x27;Interest Groups&#x27;,
+        );
+        $labels = array_merge( $label_defaults, $this-&gt;_setting_labels );
+
+        $prefix = $this-&gt;get_name();
+
+        $lists = get_transient( $this-&gt;_transient );
+
+        if( ! $lists ) {
+            $lists = $this-&gt;get_lists();
+            $this-&gt;cache_lists( $lists );
+        }
+
+        if( empty( $lists ) ) return;
+
+        $this-&gt;_settings[ $prefix . &#x27;newsletter_list&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;newsletter_list&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+            &#x27;label&#x27; =&gt; $labels[ &#x27;list&#x27; ] . &#x27; &lt;a class=&quot;js-newsletter-list-update extra&quot;&gt;&lt;span class=&quot;dashicons dashicons-update&quot;&gt;&lt;/span&gt;&lt;/a&gt;&#x27;,
+            &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+            &#x27;value&#x27; =&gt; &#x27;0&#x27;,
+            &#x27;options&#x27; =&gt; array(),
+        );
+
+        $fields = array();
+        foreach( $lists as $list ) {
+            $this-&gt;_settings[ $prefix . &#x27;newsletter_list&#x27; ][ &#x27;options&#x27; ][] = $list;
+
+            //Check to see if list has fields array set.
+            if ( isset( $list[ &#x27;fields&#x27; ] ) ) {
+
+                foreach ( $list[ &#x27;fields&#x27; ] as $field ) {
+                    $name = $list[ &#x27;value&#x27; ] . &#x27;_&#x27; . $field[ &#x27;value&#x27; ];
+                    $fields[] = array(
+                        &#x27;name&#x27; =&gt; $name,
+                        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                        &#x27;label&#x27; =&gt; $field[ &#x27;label&#x27; ],
+                        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                        &#x27;use_merge_tags&#x27; =&gt; array(
+                            &#x27;exclude&#x27; =&gt; array(
+                                &#x27;user&#x27;, &#x27;post&#x27;, &#x27;system&#x27;, &#x27;querystrings&#x27;
+                            )
+                        )
+                    );
+                }
+            }
+        }
+
+        $this-&gt;_settings[ $prefix . &#x27;newsletter_list_fields&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;newsletter_list_fields&#x27;,
+            &#x27;label&#x27; =&gt; __( &#x27;List Field Mapping&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+            &#x27;settings&#x27; =&gt; array()
+        );
+
+        $this-&gt;_settings[ $prefix . &#x27;newsletter_list_groups&#x27; ] = array(
+            &#x27;name&#x27; =&gt; &#x27;newsletter_list_groups&#x27;,
+            &#x27;label&#x27; =&gt; __( &#x27;Interest Groups&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+            &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+            &#x27;settings&#x27; =&gt; array()
+        );
+    }
+
+    private function cache_lists( $lists )
+    {
+        set_transient( $this-&gt;_transient, $lists, $this-&gt;_transient_expiration );
+    }
+}
+</pre></details></body></html>

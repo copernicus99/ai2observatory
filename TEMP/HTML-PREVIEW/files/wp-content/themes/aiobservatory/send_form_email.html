@@ -1,0 +1,313 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/send_form_email.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/send_form_email.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+ 
+ 
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+
+&lt;title&gt;Contacts&lt;/title&gt;
+
+&lt;meta charset=&quot;utf-8&quot;&gt;
+
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/camera.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/reset.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/grid.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/style.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+
+&lt;script src=&quot;js/jquery.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/jquery-migrate-1.1.1.js&quot;&gt;&lt;/script&gt;
+
+&lt;!--[if lt IE 9]&gt;
+&lt;script src=&quot;js/html5shiv.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/ie.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:300italic&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:300&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:400&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:700&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;![endif]--&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+
+&lt;header&gt;
+  &lt;div class=&quot;container_12&quot;&gt;
+    &lt;div class=&quot;grid_12&quot;&gt;
+      &lt;div class=&quot;wrapper&quot;&gt; 
+        &lt;nav&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
+
+
+
+&lt;div id=&quot;content&quot;&gt;
+  &lt;div class=&quot;inner pad1&quot;&gt;
+    &lt;div class=&quot;container_12&quot;&gt;
+      &lt;div class=&quot;wrapper h-pad&quot;&gt;
+        &lt;div class=&quot;grid_7&quot;&gt;
+          
+		  &lt;h2&gt;Thanks for the message!&lt;/h2&gt;
+		  Someone from our sales team will contact you shortly
+		  &lt;br&gt;
+		  &lt;br&gt;
+		  &lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
+		  
+            &lt;div class=&quot;wrapper&quot;&gt;
+            &lt;div class=&quot;grid_4 alpha&quot;&gt;
+				
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+		
+        &lt;div class=&quot;grid_4 prefix_1&quot;&gt;&lt;/div&gt;
+        
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+  
+ 
+
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+ 
+if(isset($_POST[&#x27;email&#x27;])) {
+ 
+     
+ 
+    // EDIT THE 2 LINES BELOW AS REQUIRED
+ 
+    $email_to = &quot;j.irwin@avionicapps.com&quot;;
+    $email_subject = &quot;AvionicApps Form Submittal&quot;;
+ 
+     
+ 
+     
+ 
+    function died($error) {
+ 
+        // your error code can go here
+ 
+        echo &quot;We are very sorry, but there were error(s) found with the form you submitted.&lt;br /&gt;&lt;br /&gt; &quot;;
+ 
+        echo &quot;These errors appear below.&lt;br /&gt;&lt;br /&gt;&quot;;
+ 
+        echo &quot;&lt;font color=&#x27;red&#x27;&gt; $error &lt;/font&gt;&lt;br /&gt;&lt;br /&gt;&quot;;
+ 
+        echo &quot;Please go back and fix these errors.&lt;br /&gt;&lt;br /&gt;&quot;;
+ 
+        die();
+ 
+    }
+ 
+     
+ //Check that data was entered
+ 
+    if(!isset($_POST[&#x27;first_name&#x27;]) ||
+ 
+        !isset($_POST[&#x27;email&#x27;]) ||
+ 
+        !isset($_POST[&#x27;telephone&#x27;]) ||
+ 
+        !isset($_POST[&#x27;comments&#x27;])) {
+ 
+        died(&#x27;No data entered&#x27;);      
+ 
+    }
+ 
+     
+ //Assign the html form fields to PHP variables
+    $first_name = $_POST[&#x27;first_name&#x27;]; 
+ 
+    $email_from = $_POST[&#x27;email&#x27;]; 
+ 
+    $telephone = $_POST[&#x27;telephone&#x27;];
+ 
+    $comments = $_POST[&#x27;comments&#x27;]; 
+ 
+     
+ 
+    $error_message = &quot;&quot;;
+	
+	
+ //---------------------------------------------------------------------------VALIDATION START
+ //Validation on email...if not error
+ 
+    $email_exp = &#x27;/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/&#x27;;
+ 
+  if(!preg_match($email_exp,$email_from)) {
+ 
+    $error_message .= &#x27;The Email Address you entered does not appear to be valid.&lt;br /&gt;&#x27;;
+ 
+  }
+ 
+ 
+ //Validation on first name...if not error
+
+    $string_exp = &quot;/^[A-Za-z .&#x27;-]+$/&quot;;
+ 
+  if(!preg_match($string_exp,$first_name)) {
+ 
+    $error_message .= &#x27;The First Name you entered does not appear to be valid.&lt;br /&gt;&#x27;;
+ 
+  }
+ 
+ 
+ 
+ //Validation on comments...if not error
+ 
+  if(strlen($comments) &lt; 2) {
+ 
+    $error_message .= &#x27;The Comments you entered do not appear to be valid.&lt;br /&gt;&#x27;;
+ 
+  }
+
+ 
+  if(strlen($error_message) &gt; 0) {
+ 
+    died($error_message);
+ 
+  }
+ 
+ //---------------------------------------------------------------------------VALIDATION END
+ 
+ 
+ 
+ 
+ 
+ 
+  // Message in body of email
+    $email_message = &quot;Form details below.\n\n&quot;;
+ 
+     
+ 
+ 
+    function clean_string($string) {
+ 
+      $bad = array(&quot;content-type&quot;,&quot;bcc:&quot;,&quot;to:&quot;,&quot;cc:&quot;,&quot;href&quot;);
+ 
+      return str_replace($bad,&quot;&quot;,$string);
+ 
+    }
+ 
+     
+	 
+ // Labels in body of email
+    $email_message .= &quot;First Name: &quot;.clean_string($first_name).&quot;\n&quot;;
+ 
+    $email_message .= &quot;Email: &quot;.clean_string($email_from).&quot;\n&quot;;
+ 
+    $email_message .= &quot;Telephone: &quot;.clean_string($telephone).&quot;\n&quot;;
+ 
+    $email_message .= &quot;Comments: &quot;.clean_string($comments).&quot;\n&quot;;
+ 
+     
+ 
+     
+ 
+// create email headers
+ 
+$headers = &#x27;From: &#x27;.$email_from.&quot;\r\n&quot;.
+ 
+&#x27;Reply-To: &#x27;.$email_to.&quot;\r\n&quot; .
+ 
+&#x27;X-Mailer: PHP/&#x27; . phpversion();
+ 
+@mail($email_to, $email_subject, $email_message, $headers); 
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ // Success html follows
+?&gt;
+ 
+ 
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+
+&lt;title&gt;Contacts&lt;/title&gt;
+
+&lt;meta charset=&quot;utf-8&quot;&gt;
+
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/camera.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/reset.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/grid.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/style.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+
+&lt;script src=&quot;js/jquery.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;js/jquery-migrate-1.1.1.js&quot;&gt;&lt;/script&gt;
+
+&lt;!--[if lt IE 9]&gt;
+&lt;script src=&quot;js/html5shiv.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;css/ie.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:300italic&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:300&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:400&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;link href=&#x27;http://fonts.googleapis.com/css?family=Lato:700&#x27; rel=&#x27;stylesheet&#x27; type=&#x27;text/css&#x27;&gt;
+&lt;![endif]--&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+
+&lt;header&gt;
+  &lt;div class=&quot;container_12&quot;&gt;
+    &lt;div class=&quot;grid_12&quot;&gt;
+      &lt;div class=&quot;wrapper&quot;&gt; 
+        &lt;nav&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
+
+
+
+&lt;div id=&quot;content&quot;&gt;
+  &lt;div class=&quot;inner pad1&quot;&gt;
+    &lt;div class=&quot;container_12&quot;&gt;
+      &lt;div class=&quot;wrapper h-pad&quot;&gt;
+        &lt;div class=&quot;grid_7&quot;&gt;
+          
+		  &lt;h2&gt;Thanks for the message!&lt;/h2&gt;
+		  Someone from our sales team will contact you shortly
+		  &lt;br&gt;
+		  &lt;br&gt;
+		  &lt;a href=&quot;index.html&quot;&gt;Home&lt;/a&gt;
+		  
+            &lt;div class=&quot;wrapper&quot;&gt;
+            &lt;div class=&quot;grid_4 alpha&quot;&gt;
+				
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+		
+        &lt;div class=&quot;grid_4 prefix_1&quot;&gt;&lt;/div&gt;
+        
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+  
+ 
+&lt;?php
+ 
+}
+ 
+?&gt;</pre></details></body></html>

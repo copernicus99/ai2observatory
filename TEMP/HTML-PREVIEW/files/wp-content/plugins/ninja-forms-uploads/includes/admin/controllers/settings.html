@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/admin/controllers/settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/admin/controllers/settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Admin_Controllers_Settings {
+
+	/**
+	 * @var array
+	 */
+	protected $settings;
+
+	/**
+	 * Get settings for the plugin
+	 *
+	 * @return array
+	 */
+	public function get_settings() {
+		if ( is_null( $this-&gt;settings ) || empty( $this-&gt;settings ) ) {
+			$this-&gt;settings = Ninja_Forms()-&gt;get_settings();
+		}
+
+		return $this-&gt;settings;
+	}
+
+	/**
+	 * Update settings for the plugin
+	 */
+	public function update_settings() {
+		update_option( &#x27;ninja_forms_settings&#x27;, $this-&gt;settings );
+	}
+
+	/**
+	 * Set a setting
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 */
+	public function set_setting( $key, $value ) {
+		$this-&gt;settings[ $key ] = $value;
+	}
+
+	/**
+	 * Remove a setting
+	 *
+	 * @param string $key
+	 */
+	public function remove_setting( $key ) {
+		unset( $this-&gt;settings[ $key ] );
+	}
+
+	/**
+	 * Get a setting
+	 *
+	 * @param string     $key
+	 * @param null|mixed $default
+	 *
+	 * @return mixed|null
+	 */
+	public function get_setting( $key, $default = null ) {
+		$settings = $this-&gt;get_settings();
+		if ( ! isset( $settings[ $key ] ) ) {
+			$config = NF_File_Uploads()-&gt;config( &#x27;settings-upload&#x27;, array( &#x27;raw&#x27; =&gt; true ) );
+
+			if ( is_null( $default ) &amp;&amp; isset( $config[ $key ][&#x27;default&#x27;] ) ) {
+				$default = $config[ $key ][&#x27;default&#x27;];
+			} else {
+				$default = &#x27;&#x27;;
+			}
+
+			return $default;
+		}
+
+		$value = $settings[ $key ];
+
+		if ( &#x27;max_filesize&#x27; === $key &amp;&amp; empty( $value ) ) {
+			return $default;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Get the custom upload directory formatted for use.
+	 *
+	 * @return mixed|null|string
+	 */
+	public function custom_upload_dir() {
+		$value = $this-&gt;get_setting( __FUNCTION__, &#x27;&#x27; );
+
+		if ( empty( $value ) ) {
+			return $value;
+		}
+
+		return &#x27;/&#x27; . trailingslashit( rtrim( $value, &#x27;/\\&#x27; ) );
+	}
+
+	/**
+	 * Get the maximum size per file
+	 *
+	 * @return mixed|null
+	 */
+	public function max_filesize( $value = null ) {
+		if ( is_null( $value ) ) {
+			$value = $this-&gt;get_setting( __FUNCTION__, 2 );
+		}
+
+		return $value * 1048576;
+	}
+
+	/**
+	 * Get max file size in MB
+	 * 
+	 * @return int|mixed|null
+	 */
+	public function get_max_file_size_mb() {
+		$max_file_size_mb = $this-&gt;get_setting( &#x27;max_filesize&#x27; );
+		if ( empty( $max_file_size_mb ) ) {
+			// If setting not saved use the server max
+			$max_file_size_mb = NF_FU_Helper::format_mb( ini_get( &#x27;upload_max_filesize&#x27; ), true );
+		}
+
+		return $max_file_size_mb;
+	}
+}</pre></details></body></html>

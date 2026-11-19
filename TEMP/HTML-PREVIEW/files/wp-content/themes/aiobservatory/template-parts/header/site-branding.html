@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/template-parts/header/site-branding.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/template-parts/header/site-branding.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+&lt;div class=&quot;site-branding&quot;&gt;
+	&lt;div class=&quot;wrap&quot;&gt;
+
+		
+
+		&lt;div class=&quot;site-branding-text&quot;&gt;
+			
+				&lt;h1 class=&quot;site-title&quot;&gt;&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+			
+				&lt;p class=&quot;site-title&quot;&gt;&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+			
+
+			
+					&lt;p class=&quot;site-description&quot;&gt;&lt;/p&gt;
+				
+		&lt;/div&gt;&lt;!-- .site-branding-text --&gt;
+
+		
+		&lt;a href=&quot;#content&quot; class=&quot;menu-scroll-down&quot;&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+	
+
+	&lt;/div&gt;&lt;!-- .wrap --&gt;
+&lt;/div&gt;&lt;!-- .site-branding --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Displays header site branding
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ * @version 1.0
+ */
+
+?&gt;
+&lt;div class=&quot;site-branding&quot;&gt;
+	&lt;div class=&quot;wrap&quot;&gt;
+
+		&lt;?php the_custom_logo(); ?&gt;
+
+		&lt;div class=&quot;site-branding-text&quot;&gt;
+			&lt;?php if ( is_front_page() ) : ?&gt;
+				&lt;h1 class=&quot;site-title&quot;&gt;&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;&lt;?php bloginfo( &#x27;name&#x27; ); ?&gt;&lt;/a&gt;&lt;/h1&gt;
+			&lt;?php else : ?&gt;
+				&lt;p class=&quot;site-title&quot;&gt;&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;&lt;?php bloginfo( &#x27;name&#x27; ); ?&gt;&lt;/a&gt;&lt;/p&gt;
+			&lt;?php endif; ?&gt;
+
+			&lt;?php $description = get_bloginfo( &#x27;description&#x27;, &#x27;display&#x27; );
+				if ( $description || is_customize_preview() ) : ?&gt;
+					&lt;p class=&quot;site-description&quot;&gt;&lt;?php echo $description; ?&gt;&lt;/p&gt;
+				&lt;?php endif; ?&gt;
+		&lt;/div&gt;&lt;!-- .site-branding-text --&gt;
+
+		&lt;?php if ( ( twentyseventeen_is_frontpage() || ( is_home() &amp;&amp; is_front_page() ) ) &amp;&amp; ! has_nav_menu( &#x27;top&#x27; ) ) : ?&gt;
+		&lt;a href=&quot;#content&quot; class=&quot;menu-scroll-down&quot;&gt;&lt;?php echo twentyseventeen_get_svg( array( &#x27;icon&#x27; =&gt; &#x27;arrow-right&#x27; ) ); ?&gt;&lt;span class=&quot;screen-reader-text&quot;&gt;&lt;?php _e( &#x27;Scroll down to content&#x27;, &#x27;twentyseventeen&#x27; ); ?&gt;&lt;/span&gt;&lt;/a&gt;
+	&lt;?php endif; ?&gt;
+
+	&lt;/div&gt;&lt;!-- .wrap --&gt;
+&lt;/div&gt;&lt;!-- .site-branding --&gt;
+</pre></details></body></html>

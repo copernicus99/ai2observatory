@@ -1,0 +1,93 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/ExifData.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/ExifData.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_ExifData extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $exif_datatype;
+
+	protected function set_name() {
+		$this-&gt;name = &#x27;exif_data&#x27;;
+	}
+
+	protected function define_options() {
+		return array( &#x27;exif_datatype&#x27; );
+	}
+
+	public function create_view() {
+		return new AC_View( array(
+			&#x27;label&#x27;   =&gt; $this-&gt;column-&gt;get_label(),
+			&#x27;setting&#x27; =&gt; $this-&gt;create_element( &#x27;select&#x27; )-&gt;set_options( $this-&gt;get_exif_types() ),
+		) );
+	}
+
+	/**
+	 * Get EXIF data
+	 *
+	 * Get extended image metadata
+	 *
+	 * @since 2.0
+	 *
+	 * @return array EXIF data types
+	 */
+	private function get_exif_types() {
+		$exif_types = array(
+			&#x27;aperture&#x27;          =&gt; __( &#x27;Aperture&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;credit&#x27;            =&gt; __( &#x27;Credit&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;camera&#x27;            =&gt; __( &#x27;Camera&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;caption&#x27;           =&gt; __( &#x27;Caption&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;created_timestamp&#x27; =&gt; __( &#x27;Timestamp&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;copyright&#x27;         =&gt; __( &#x27;Copyright EXIF&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;focal_length&#x27;      =&gt; __( &#x27;Focal Length&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;iso&#x27;               =&gt; __( &#x27;ISO&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;shutter_speed&#x27;     =&gt; __( &#x27;Shutter Speed&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;title&#x27;             =&gt; __( &#x27;Title&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		natcasesort( $exif_types );
+
+		return $exif_types;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_exif_datatype() {
+		return $this-&gt;exif_datatype;
+	}
+
+	/**
+	 * @param string $exif_datatype
+	 *
+	 * @return bool
+	 */
+	public function set_exif_datatype( $exif_datatype ) {
+		$this-&gt;exif_datatype = $exif_datatype;
+
+		return true;
+	}
+
+	public function format( $value, $original_value ) {
+		$exif_datatype = $this-&gt;get_exif_datatype();
+		$value = isset( $value[ $exif_datatype ] ) ? $value[ $exif_datatype ] : &#x27;&#x27;;
+
+		if ( false !== $value ) {
+			switch ( $exif_datatype ) {
+				case &#x27;created_timestamp&#x27; :
+					$value = date_i18n( get_option( &#x27;date_format&#x27; ) . &#x27; &#x27; . get_option( &#x27;time_format&#x27; ), strtotime( $value ) );
+
+					break;
+			}
+		}
+
+		return $value;
+	}
+
+}
+</pre></details></body></html>

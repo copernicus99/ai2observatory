@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Array.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Array.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Array {
+
+	/**
+	 * Implode for multi dimensional array
+	 *
+	 * @since 3.0
+	 *
+	 * @param string       $glue
+	 * @param string|array $pieces
+	 *
+	 * @return string Imploded array
+	 */
+	public function implode_recursive( $glue, $pieces ) {
+		if ( is_array( $pieces ) ) {
+			foreach ( $pieces as $r_pieces ) {
+				if ( is_array( $r_pieces ) ) {
+					$retVal[] = $this-&gt;implode_recursive( $glue, $r_pieces );
+				} else {
+					$retVal[] = $r_pieces;
+				}
+			}
+			if ( isset( $retVal ) &amp;&amp; is_array( $retVal ) ) {
+				return implode( $glue, $retVal );
+			}
+		}
+
+		if ( is_scalar( $pieces ) ) {
+			return $pieces;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Replace a single key in an associative array
+	 *
+	 * @since 2.2.7
+	 *
+	 * @param array      $input   Input array.
+	 * @param int|string $old_key Key to replace.
+	 * @param int|string $new_key Key to replace $old_key with
+	 */
+	public function key_replace( $input, $old_key, $new_key ) {
+		$keys = array_keys( $input );
+		$old_key_pos = array_search( $old_key, $keys );
+
+		if ( $old_key_pos === false ) {
+			return $input;
+		}
+
+		$keys[ $old_key_pos ] = $new_key;
+
+		return array_combine( $keys, array_values( $input ) );
+	}
+
+	/**
+	 * Indents any object as long as it has a unique id and that of its parent.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array  $array
+	 * @param int    $parentId
+	 * @param string $parentKey
+	 * @param string $selfKey
+	 * @param string $childrenKey
+	 *
+	 * @return array Indented Array
+	 */
+	public function indent( $array, $parentId = 0, $parentKey = &#x27;post_parent&#x27;, $selfKey = &#x27;ID&#x27;, $childrenKey = &#x27;children&#x27; ) {
+		$indent = array();
+
+		$i = 0;
+		foreach ( $array as $v ) {
+			if ( $v-&gt;$parentKey == $parentId ) {
+				$indent[ $i ] = $v;
+				$indent[ $i ]-&gt;$childrenKey = $this-&gt;indent( $array, $v-&gt;$selfKey, $parentKey, $selfKey );
+
+				$i++;
+			}
+		}
+
+		return $indent;
+	}
+
+	/**
+	 * Remove empty values from array
+	 *
+	 * @param array $array
+	 *
+	 * @return array
+	 */
+	public function filter( $array ) {
+		return array_filter( $array, array( ac_helper()-&gt;string, &#x27;is_not_empty&#x27; ) );
+	}
+
+	/**
+	 * Insert element into array at specific position
+	 *
+	 * @param array  $array
+	 * @param array  $insert
+	 * @param string $position
+	 *
+	 * @return array
+	 */
+	public function insert( $array, $insert, $position ) {
+		$new = array();
+		foreach ( $array as $key =&gt; $value ) {
+			$new[ $key ] = $value;
+			if ( $key === $position ) {
+				$new = array_merge( $new, $insert );
+			}
+
+		}
+
+		return $new;
+	}
+
+	/**
+	 * Get duplicates from array
+	 *
+	 * @param array $array
+	 *
+	 * @return array
+	 */
+	public function get_duplicates( array $array ) {
+		return array_intersect( $array, array_unique( array_diff_key( $array, array_unique( $array ) ) ) );
+	}
+
+}
+</pre></details></body></html>

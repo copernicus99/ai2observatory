@@ -1,0 +1,244 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/dropbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/dropbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+require_once(NINJA_FORMS_UPLOADS_DIR. &quot;/includes/lib/dropbox/API.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR. &quot;/includes/lib/dropbox/OAuth/Consumer/ConsumerAbstract.php&quot;);
+require_once(NINJA_FORMS_UPLOADS_DIR. &quot;/includes/lib/dropbox/OAuth/Consumer/Curl.php&quot;);
+
+class nf_dropbox
+{
+    const CONSUMER_KEY = &#x27;g80jscev5iosghi&#x27;;
+    const CONSUMER_SECRET = &#x27;hsy0xtrr3gjkd0i&#x27;;
+    const RETRY_COUNT = 3;
+
+    private static $instance = null;
+
+    private
+        $dropbox,
+        $request_token,
+        $access_token,
+        $oauth_state,
+        $oauth,
+        $account_info_cache,
+        $settings,
+        $directory_cache = array()
+    ;
+
+    public function __construct()
+    {
+        $this-&gt;init();
+    }
+
+    public function init()
+    {
+        $this-&gt;settings = get_option( &#x27;ninja_forms_settings&#x27; );
+
+        if (!extension_loaded(&#x27;curl&#x27;)) {
+            throw new Exception(sprintf(
+                __(&#x27;The cURL extension is not loaded. %sPlease ensure its installed and activated.%s&#x27;, &#x27;ninja-forms-upload&#x27;),
+                &#x27;&lt;a href=&quot;http://php.net/manual/en/curl.installation.php&quot;&gt;&#x27;,
+                &#x27;&lt;/a&gt;&#x27;
+            ));
+        }
+
+        $this-&gt;oauth = new Dropbox_OAuth_Consumer_Curl(self::CONSUMER_KEY, self::CONSUMER_SECRET);
+
+        $this-&gt;oauth_state = $this-&gt;get_option(&#x27;dropbox_oauth_state&#x27;);
+        $this-&gt;request_token = $this-&gt;get_token(&#x27;request&#x27;);
+        $this-&gt;access_token = $this-&gt;get_token(&#x27;access&#x27;);
+
+        if ($this-&gt;oauth_state == &#x27;request&#x27;) {
+            //If we have not got an access token then we need to grab one
+            try {
+                $this-&gt;oauth-&gt;setToken($this-&gt;request_token);
+                $this-&gt;access_token = $this-&gt;oauth-&gt;getAccessToken();
+                $this-&gt;oauth_state = &#x27;access&#x27;;
+                $this-&gt;oauth-&gt;setToken($this-&gt;access_token);
+                $this-&gt;save_tokens();
+                //Supress the error because unlink, then init should be called
+            } catch (Exception $e) {}
+        } elseif ($this-&gt;oauth_state == &#x27;access&#x27;) {
+            $this-&gt;oauth-&gt;setToken($this-&gt;access_token);
+        } else {
+            //If we don&#x27;t have an acess token then lets setup a new request
+            $this-&gt;request_token = $this-&gt;oauth-&gt;getRequestToken();
+            $this-&gt;oauth-&gt;setToken($this-&gt;request_token);
+            $this-&gt;oauth_state = &#x27;request&#x27;;
+            $this-&gt;save_tokens();
+        }
+
+        $this-&gt;dropbox = new Dropbox_API($this-&gt;oauth);
+    }
+
+    private function get_token($type)
+    {
+        $token = $this-&gt;get_option(&quot;dropbox_{$type}_token&quot;);
+        $token_secret = $this-&gt;get_option(&quot;dropbox_{$type}_token_secret&quot;);
+
+        $ret = new stdClass;
+        $ret-&gt;oauth_token = null;
+        $ret-&gt;oauth_token_secret = null;
+
+        if ($token &amp;&amp; $token_secret) {
+            $ret = new stdClass;
+            $ret-&gt;oauth_token = $token;
+            $ret-&gt;oauth_token_secret = $token_secret;
+        }
+
+        return $ret;
+    }
+
+    public function is_authorized()
+    {
+        try {
+            $this-&gt;get_account_info();
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function get_authorize_url( $callback_url )
+    {
+        return $this-&gt;oauth-&gt;getAuthoriseUrl( $callback_url );
+    }
+
+    public function get_account_info()
+    {
+        if (!isset($this-&gt;account_info_cache)) {
+            $response = $this-&gt;dropbox-&gt;accountInfo();
+            $this-&gt;account_info_cache = $response[&#x27;body&#x27;];
+        }
+
+        return $this-&gt;account_info_cache;
+    }
+
+    private function save_tokens()
+    {
+        $this-&gt;set_option(&#x27;dropbox_oauth_state&#x27;, $this-&gt;oauth_state);
+
+        if ($this-&gt;request_token) {
+            $this-&gt;set_option(&#x27;dropbox_request_token&#x27;, $this-&gt;request_token-&gt;oauth_token);
+            $this-&gt;set_option(&#x27;dropbox_request_token_secret&#x27;, $this-&gt;request_token-&gt;oauth_token_secret);
+        } else {
+            $this-&gt;set_option(&#x27;dropbox_request_token&#x27;, null);
+            $this-&gt;set_option(&#x27;dropbox_request_token_secret&#x27;, null);
+        }
+
+        if ($this-&gt;access_token) {
+            $this-&gt;set_option(&#x27;dropbox_access_token&#x27;, $this-&gt;access_token-&gt;oauth_token);
+            $this-&gt;set_option(&#x27;dropbox_access_token_secret&#x27;, $this-&gt;access_token-&gt;oauth_token_secret);
+        } else {
+            $this-&gt;set_option(&#x27;dropbox_access_token&#x27;, null);
+            $this-&gt;set_option(&#x27;dropbox_access_token_secret&#x27;, null);
+        }
+
+        $this-&gt;save_options();
+
+        return $this;
+    }
+
+    private function get_option( $key ) {
+        if ( isset ( $key ) &amp;&amp; isset( $this-&gt;settings[$key] ) ) {
+            return $this-&gt;settings[$key];
+        } else {
+            return false;
+        }
+        
+    }
+
+    private function set_option( $key, $value ) {
+        $this-&gt;settings[$key] = $value;
+    }
+
+    private function save_options() {
+        update_option( &#x27;ninja_forms_settings&#x27;, $this-&gt;settings );
+    }
+
+    public function upload_file( $file, $filename, $path = &#x27;&#x27; ) {
+        if ( $filename === &#x27;&#x27; ) {
+            $filename = $this-&gt;remove_secret( $file );
+        }
+        $i = 0;
+        while ( $i ++ &lt; self::RETRY_COUNT ) {
+            try {
+                return $this-&gt;dropbox-&gt;putFile( $file, $filename, $path );
+            } catch ( Exception $e ) {
+            }
+        }
+        throw $e;
+    }
+
+	public function get_link( $path ) {
+		$response = $this-&gt;dropbox-&gt;media( $path );
+		if ( $response[&#x27;code&#x27;] == 200 ) {
+			return $response[&#x27;body&#x27;]-&gt;url;
+		}
+
+		return false;
+	}
+
+    public function chunk_upload_file($path, $file, $processed_file)
+    {
+        $offest = $upload_id = null;
+        if ($processed_file) {
+            $offest = $processed_file-&gt;offset;
+            $upload_id = $processed_file-&gt;uploadid;
+        }
+
+        return $this-&gt;dropbox-&gt;chunkedUpload($file, $this-&gt;remove_secret($file), $path, true, $offest, $upload_id);
+    }
+
+    public function delete_file($file)
+    {
+        return $this-&gt;dropbox-&gt;delete($file);
+    }
+
+    public function create_directory($path)
+    {
+        try {
+            $this-&gt;dropbox-&gt;create($path);
+        } catch (Exception $e) {}
+    }
+
+    public function get_directory_contents($path)
+    {
+        if (!isset($this-&gt;directory_cache[$path])) {
+            try {
+                $this-&gt;directory_cache[$path] = array();
+                $response = $this-&gt;dropbox-&gt;metaData($path);
+
+                foreach ($response[&#x27;body&#x27;]-&gt;contents as $val) {
+                    if (!$val-&gt;is_dir) {
+                        $this-&gt;directory_cache[$path][] = basename($val-&gt;path);
+                    }
+                }
+            } catch (Exception $e) {
+                $this-&gt;create_directory($path);
+            }
+        }
+
+        return $this-&gt;directory_cache[$path];
+    }
+
+    public function unlink_account()
+    {
+        $this-&gt;oauth-&gt;resetToken();
+        $this-&gt;request_token = null;
+        $this-&gt;access_token = null;
+        $this-&gt;oauth_state = null;
+
+        return $this-&gt;save_tokens();
+    }
+
+    public static function remove_secret($file, $basename = true)
+    {
+        if (preg_match(&#x27;/-nf-secret$/&#x27;, $file))
+            $file = substr($file, 0, strrpos($file, &#x27;.&#x27;));
+
+        if ($basename)
+            return basename($file);
+
+        return $file;
+    }
+}</pre></details></body></html>

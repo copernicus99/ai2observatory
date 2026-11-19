@@ -1,0 +1,169 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Preview.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Preview.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_Controllers_Preview extends NF_Abstracts_Controller
+{
+    private static $transient_prefix = &#x27;nf_form_preview_&#x27;;
+
+    public function __construct()
+    {
+        add_action( &#x27;wp_ajax_nf_preview_update&#x27;, array( $this, &#x27;update&#x27; ) );
+
+        add_filter( &#x27;ninja_forms_run_action_settings&#x27;, array( $this, &#x27;filter_action_settings&#x27; ), 10, 4 );
+    }
+
+    public function update()
+    {
+        check_ajax_referer( &#x27;ninja_forms_builder_nonce&#x27;, &#x27;security&#x27; );
+
+        $form = json_decode( stripslashes( $_POST[&#x27;form&#x27;] ), ARRAY_A );
+
+        $form_id = $form[ &#x27;id&#x27; ];
+
+        $form_data = $this-&gt;get_form_data( $form_id );
+
+        /*
+         * Form Settings
+         */
+
+        if( isset( $form[ &#x27;settings&#x27; ] ) &amp;&amp; is_array( $form[ &#x27;settings&#x27; ] ) ) {
+
+            $old_settings = $form_data[ &#x27;settings&#x27; ];
+
+            $form_data[ &#x27;settings&#x27; ] = array_merge( $old_settings, $form[ &#x27;settings&#x27; ] );
+        }
+
+        /*
+         * Fields and Field Settings
+         */
+
+        if( isset( $form[ &#x27;fields&#x27; ] ) &amp;&amp; is_array( $form[ &#x27;fields&#x27; ] ) ) {
+
+            foreach( $form[ &#x27;fields&#x27; ] as $field ){
+
+                $id = $field[ &#x27;id&#x27; ];
+
+                $old_settings = ( isset( $form_data[ &#x27;fields&#x27; ][ $id ][ &#x27;settings&#x27; ] ) ) ? $form_data[ &#x27;fields&#x27; ][ $id ][ &#x27;settings&#x27; ] : array();
+
+                $new_settings = array_merge( $old_settings, $field[ &#x27;settings&#x27; ] );
+
+                $form_data[ &#x27;fields&#x27; ][ $id ][ &#x27;settings&#x27; ] = $new_settings;
+            }
+        }
+
+        if( isset( $form[ &#x27;deleted_fields&#x27; ] ) ) {
+
+            foreach( $form[ &#x27;deleted_fields&#x27; ] as $deleted_field ){
+
+                unset( $form_data[ &#x27;fields&#x27; ][ $deleted_field ] );
+            }
+        }
+
+        /*
+         * Actions and Action Settings
+         */
+
+        if( isset( $form[ &#x27;actions&#x27; ] ) &amp;&amp; is_array( $form[ &#x27;actions&#x27; ] ) ) {
+
+            foreach( $form[ &#x27;actions&#x27; ] as $action ){
+
+                $id = $action[ &#x27;id&#x27; ];
+
+                if( isset( $form[ &#x27;deleted_actions&#x27; ][ $id ] ) ) {
+
+                    unset( $form_data[ &#x27;actions&#x27; ][ $id ] );
+                    continue;
+                }
+
+                $old_settings = ( isset ( $form_data[ &#x27;actions&#x27; ][ $id ][ &#x27;settings&#x27; ] ) ) ? $form_data[ &#x27;actions&#x27; ][ $id ][ &#x27;settings&#x27; ]: array();
+
+                $new_settings = array_merge( $old_settings, $action[ &#x27;settings&#x27; ] );
+
+                $form_data[ &#x27;actions&#x27; ][ $id ][ &#x27;settings&#x27; ] = $new_settings;
+            }
+        }
+
+        if( isset( $form[ &#x27;deleted_actions&#x27; ] ) ) {
+
+            foreach( $form[ &#x27;deleted_actions&#x27; ] as $deleted_action ){
+
+                unset( $form_data[ &#x27;actions&#x27; ][ $deleted_action ] );
+            }
+        }
+
+
+
+        $this-&gt;update_form_data( $form_data );
+
+        $this-&gt;_data[&#x27;form&#x27;] = $form_data;
+
+        do_action( &#x27;ninja_forms_save_form_preview&#x27;, $form_id );
+
+        $this-&gt;_respond();
+    }
+
+    public function filter_action_settings( $action_settings, $form_id, $action_id, $form_settings )
+    {
+        if( ! isset( $form_settings[ &#x27;is_preview&#x27; ] ) ) return $action_settings;
+
+        $form_data = $this-&gt;get_form_data( $form_id );
+
+        if( isset( $form_data[ &#x27;actions&#x27; ][ $action_id ] ) ){
+
+            $settings = $form_data[&#x27;actions&#x27;][$action_id][&#x27;settings&#x27;];
+            $action_settings = array_merge( $action_settings, $settings );
+        }
+
+        return $action_settings;
+    }
+
+    private function get_form_data( $form_id )
+    {
+        $form_data = get_user_option( self::$transient_prefix . $form_id, FALSE );
+
+        if( ! $form_data ){
+
+            if( is_string( $form_id ) ){
+                $form = Ninja_Forms()-&gt;form()-&gt;get();
+                $form_data[&#x27;id&#x27;] = $form_id;
+                $form_data[ &#x27;settings&#x27; ] = array();
+                $form_data[ &#x27;fields&#x27; ] = array();
+                $form_data[ &#x27;actions&#x27; ] = array();
+            } else {
+                $form = Ninja_Forms()-&gt;form($form_id)-&gt;get();
+                $form_data[&#x27;id&#x27;] = $form_id;
+
+                $form_data[ &#x27;settings&#x27; ] = $form-&gt;get_settings();
+
+                $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+                foreach( $fields as $field ){
+
+                    $field_id = $field-&gt;get_id();
+                    $form_data[ &#x27;fields&#x27; ][ $field_id ][ &#x27;settings&#x27; ] = $field-&gt;get_settings();
+                }
+
+                $actions = Ninja_Forms()-&gt;form( $form_id )-&gt;get_actions();
+                foreach( $actions as $action ){
+
+                    $action_id = $action-&gt;get_id();
+                    $form_data[ &#x27;actions&#x27; ][ $action_id ][ &#x27;settings&#x27; ] = $action-&gt;get_settings();
+                }
+            }
+        }
+
+        return $form_data;
+    }
+
+    private function update_form_data( $form_data )
+    {
+        $update = update_user_option( get_current_user_id(), self::$transient_prefix . $form_data[&#x27;id&#x27;], $form_data );
+
+        $this-&gt;_data[ &#x27;updated&#x27; ] = $update;
+
+        if( ! $update ){
+            $this-&gt;_errors[ &#x27;Form Preview Not Updated&#x27; ] = $form_data;
+            $this-&gt;_errors[ &#x27;Current User&#x27; ] = get_current_user_id();
+            $this-&gt;_errors[ &#x27;Option&#x27; ] = self::$transient_prefix . $form_data[&#x27;id&#x27;];
+        }
+    }
+}
+</pre></details></body></html>

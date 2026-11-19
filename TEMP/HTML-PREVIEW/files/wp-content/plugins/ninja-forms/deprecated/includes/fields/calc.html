@@ -1,0 +1,1033 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/calc.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/calc.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+	&lt;div class=&quot;ninja-forms-calculations &quot;&gt;
+		&lt;div class=&quot;label&quot;&gt;
+			 - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_field__add_calc&quot; class=&quot;ninja-forms-field-add-calc&quot; rel=&quot;&quot;&gt;&lt;/a&gt;
+
+			&lt;span class=&quot;spinner&quot; style=&quot;float:left;&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[calc]&quot; value=&quot;&quot;&gt;
+		&lt;div id=&quot;ninja_forms_field__calc&quot; class=&quot;&quot; name=&quot;&quot;&gt;
+			
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;ninja-forms-eq &quot;&gt;
+		
+	&lt;/div&gt;
+	&lt;hr&gt;
+	
+	&lt;span id=&quot;ninja_forms_field__help_span&quot; style=&quot;&quot;&gt;
+		
+	&lt;/span&gt;
+	
+	&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&quot; value=&quot;&quot; class=&quot;&quot;&gt;
+	
+			&lt;input type=&quot;text&quot; id=&quot;ninja_forms_field_&quot; name=&quot;ninja_forms_field_&quot; value=&quot;&quot;  class=&quot;&quot; rel=&quot;&quot;&gt;
+			
+	&lt;div id=&quot;ninja_forms_field__calc_row_&quot; class=&quot;ninja-forms-calc-row&quot; rel=&quot;&quot;&gt;
+		&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__remove_calc&quot; name=&quot;&quot; rel=&quot;&quot; class=&quot;ninja-forms-field-remove-calc&quot;&gt;X&lt;/a&gt;
+
+		&lt;select name=&quot;ninja_forms_field_[calc][][op]&quot;&gt;
+			&lt;option value=&quot;add&quot; &gt;+&lt;/option&gt;
+			&lt;option value=&quot;subtract&quot; &gt;-&lt;/option&gt;
+			&lt;option value=&quot;multiply&quot; &gt;*&lt;/option&gt;
+			&lt;option value=&quot;divide&quot; &gt;/&lt;/option&gt;
+		&lt;/select&gt;
+
+		&lt;select name=&quot;ninja_forms_field_[calc][][field]&quot; class=&quot;ninja-forms-calc-select&quot;&gt;
+			&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+			
+					&lt;option value=&quot;&quot; &gt; - &lt;/option&gt;
+					
+		&lt;/select&gt;
+	&lt;/div&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Function to register a new field for calculations
+ *
+ * @since 2.2.28
+ * @return void
+ */
+function ninja_forms_register_field_calc() {
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Calculation&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_function&#x27; =&gt; &#x27;ninja_forms_field_calc_edit&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_calc_display&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; false,
+		&#x27;edit_label&#x27; =&gt; false,
+		&#x27;edit_label_pos&#x27; =&gt; false,
+		&#x27;edit_custom_class&#x27; =&gt; false,
+		&#x27;edit_help&#x27; =&gt; false,
+		//&#x27;process_field&#x27; =&gt; false,
+		//&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_calc_strip_currency_symbol&#x27;,
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;payment_field_group&#x27;,
+				&#x27;default&#x27; =&gt; 1,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;payment_total&#x27;,
+				//&#x27;label&#x27; =&gt; __( &#x27;Total&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;payment_sub_total&#x27;,
+				//&#x27;label&#x27; =&gt; __( &#x27;Sub Total&#x27;, &#x27;ninja-forms&#x27; ),
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;calc_places&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Number of decimal places.&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default&#x27; =&gt; 2,
+			),
+		),
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+	);
+
+	ninja_forms_register_field( &#x27;_calc&#x27;, $args );
+}
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_field_calc&#x27; );
+
+
+/**
+ * Function that filters the field LI label on the edit field back-end.
+ *
+ * @since 2.2.28
+ * @return $li_label
+ */
+function ninja_forms_calc_edit_label_filter( $li_label, $field_id ) {
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	if ( $field_row[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+		if ( isset ( $field_row[&#x27;data&#x27;][&#x27;calc_name&#x27;] ) ) {
+			$li_label = $field_row[&#x27;data&#x27;][&#x27;calc_name&#x27;];
+		} else {
+			$li_label = __( &#x27;Calculation&#x27;, &#x27;ninja-forms&#x27; );
+		}
+
+	}
+	return $li_label;
+}
+add_filter( &#x27;ninja_forms_edit_field_li_label&#x27;, &#x27;ninja_forms_calc_edit_label_filter&#x27;, 10, 2 );
+
+
+/**
+ * Function that outputs the edit options for our calculation field
+ *
+ * @since 2.2.28
+ * @return void
+ */
+function ninja_forms_field_calc_edit( $field_id, $data ) {
+	$calc_name = isset ( $data[&#x27;calc_name&#x27;] ) ? $data[&#x27;calc_name&#x27;] : &#x27;calc_name&#x27;;
+	$default_value = isset ( $data[&#x27;default_value&#x27;] ) ? $data[&#x27;default_value&#x27;] : &#x27;&#x27;; 
+	$calc_payment = isset ( $data[&#x27;calc_payment&#x27;] ) ? $data[&#x27;calc_payment&#x27;] : &#x27;&#x27;;
+	$calc_autho = isset ( $data[&#x27;calc_auto&#x27;] ) ? $data[&#x27;calc_auto&#x27;] : 0;
+
+	// Output calculation display type
+	$options = array(
+		array( &#x27;name&#x27; =&gt; __( &#x27;- None&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;hidden&#x27; ),
+		array( &#x27;name&#x27; =&gt; __( &#x27;Textbox&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;text&#x27;),
+		array( &#x27;name&#x27; =&gt; __( &#x27;HTML&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;html&#x27;),
+	);
+
+	$calc_display_type = isset ( $data[&#x27;calc_display_type&#x27;] ) ? $data[&#x27;calc_display_type&#x27;] : &#x27;text&#x27;;
+
+	ninja_forms_edit_field_el_output($field_id, &#x27;select&#x27;, __( &#x27;Output calculation as&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc_display_type&#x27;, $calc_display_type, &#x27;wide&#x27;, $options, &#x27;widefat ninja-forms-calc-display&#x27;);
+
+	// If the calc_display_type is set to text, then we have several options to output.
+	// Set the output to hidden for these options if the calc_display_type is not set to text.
+	if ( $calc_display_type != &#x27;text&#x27; ) {
+		$class = &#x27;hidden&#x27;;
+	} else {
+		$class = &#x27;&#x27;;
+	}
+	echo &#x27;&lt;div id=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;_calc_text_display&quot; class=&quot;&#x27;.$class.&#x27;&quot;&gt;&#x27;;
+	// Output a label input textbox.
+	$label = isset ( $data[&#x27;label&#x27;] ) ? stripslashes( $data[&#x27;label&#x27;] ) : __( &#x27;Calculation&#x27;, &#x27;ninja-forms&#x27; );
+
+	ninja_forms_edit_field_el_output($field_id, &#x27;text&#x27;, __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ), &#x27;label&#x27;, $label, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27;);
+
+	// Output a label position select box.
+	if ( isset ( $data[&#x27;label_pos&#x27;] ) ) {
+		$label_pos = $data[&#x27;label_pos&#x27;];
+	} else {
+		$label_pos = &#x27;&#x27;;
+	}
+	$options = array(
+		array(&#x27;name&#x27; =&gt; __( &#x27;Left of Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;left&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Above Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;above&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Below Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;below&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Right of Element&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;right&#x27;),
+	);
+	ninja_forms_edit_field_el_output($field_id, &#x27;select&#x27;, __( &#x27;Label Position&#x27;, &#x27;ninja-forms&#x27; ), &#x27;label_pos&#x27;, $label_pos, &#x27;wide&#x27;, $options, &#x27;widefat&#x27;);
+
+	// Output a disabled option checkbox.
+	if( isset ( $data[&#x27;calc_display_text_disabled&#x27;] ) ) {
+		$calc_display_text_disabled = $data[&#x27;calc_display_text_disabled&#x27;];
+	} else {
+		$calc_display_text_disabled = 1;
+	}
+	ninja_forms_edit_field_el_output($field_id, &#x27;checkbox&#x27;, __( &#x27;Disable input?&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc_display_text_disabled&#x27;, $calc_display_text_disabled, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;&#x27;);
+	echo &#x27;&lt;/div&gt;&#x27;;
+
+	// Set the output to hidden for the HTML RTE if the calc_display_type is not set to HTML.
+	if ( $calc_display_type != &#x27;html&#x27; ) {
+		$class = &#x27;hidden&#x27;;
+	} else {
+		$class = &#x27;&#x27;;
+	}
+	// Output our RTE. This is the only extra setting needed if the calc_display_type is set to HTML.
+	if ( isset ( $data[&#x27;calc_display_html&#x27;] ) ) {
+		$calc_display_html = $data[&#x27;calc_display_html&#x27;];
+	} else {
+		$calc_display_html = &#x27;[ninja_forms_calc]&#x27;;
+	}
+	echo &#x27;&lt;div id=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;_calc_html_display&quot; class=&quot;&#x27;.$class.&#x27;&quot;&gt;&#x27;;
+	ninja_forms_edit_field_el_output($field_id, &#x27;rte&#x27;, &#x27;&#x27;, &#x27;calc_display_html&#x27;, $calc_display_html, &#x27;&#x27;, &#x27;&#x27;, &#x27;&#x27;, __( &#x27;Use the following shortcode to insert the final calculation: [ninja_forms_calc]&#x27;, &#x27;ninja-forms&#x27; ) );
+	echo &#x27;&lt;/div&gt;&#x27;;
+
+	if ( isset ( $data[&#x27;calc_method&#x27;] ) ) {
+		$calc_method = $data[&#x27;calc_method&#x27;];
+	} else {
+		$calc_method = &#x27;auto&#x27;;
+	}
+
+	switch ( $calc_method ) {
+		case &#x27;auto&#x27;:
+			$eq_class = &#x27;hidden&#x27;;
+			$field_class = &#x27;hidden&#x27;;
+			break;
+		case &#x27;fields&#x27;:
+			$eq_class = &#x27;hidden&#x27;;
+			$field_class = &#x27;&#x27;;
+			break;
+		case &#x27;eq&#x27;:
+			$eq_class = &#x27;&#x27;;
+			$field_class = &#x27;hidden&#x27;;
+			break;
+	}
+
+
+	if ( isset ( $data[&#x27;calc_eq&#x27;] ) ) {
+		$calc_eq = $data[&#x27;calc_eq&#x27;];
+	} else {
+		$calc_eq = &#x27;&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;calc&#x27;] ) AND $data[&#x27;calc&#x27;] != &#x27;&#x27; ) {
+		$calc = $data[&#x27;calc&#x27;];
+	} else {
+		$calc = array();
+	}
+
+	$desc = &#x27;&lt;p&gt;&#x27; . sprintf( __( &#x27;You can enter calculation equations here using field_x where x is the ID of the field you want to use. For example, %sfield_53 + field_28 + field_65%s.&#x27;, &#x27;field_ should NOT be translated.&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;strong&gt;&#x27;, &#x27;&lt;/strong&gt;&#x27; ) . &#x27;&lt;/p&gt;&#x27;;
+	$desc .= &#x27;&lt;p&gt;&#x27; . sprintf( __( &#x27;Complex equations can be created by adding parentheses: %s( field_45 * field_2 ) / 2%s.&#x27;, &#x27;field_ should NOT be translated.&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;strong&gt;&#x27;, &#x27;&lt;/strong&gt;&#x27; ) . &#x27;&lt;/p&gt;&#x27;;
+	$desc .= &#x27;&lt;p&gt;&#x27; .__( &#x27;Please use these operators: + - * /. This is an advanced feature. Watch out for things like division by 0.&#x27;, &#x27;ninja-forms&#x27; ).&#x27;&lt;/p&gt;&#x27;;
+	$options = array(
+		array( &#x27;name&#x27; =&gt; __( &#x27;Automatically Total Calculation Values&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;auto&#x27; ),
+		array( &#x27;name&#x27; =&gt; __( &#x27;Specify Operations And Fields (Advanced)&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;fields&#x27; ),
+		array( &#x27;name&#x27; =&gt; __( &#x27;Use An Equation (Advanced)&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;eq&#x27; ),
+	);
+	ninja_forms_edit_field_el_output($field_id, &#x27;select&#x27;, __( &#x27;Calculation Method&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc_method&#x27;, $calc_method, &#x27;wide&#x27;, $options, &#x27;widefat ninja-forms-calc-method&#x27;);
+
+	?&gt;
+
+	&lt;div class=&quot;ninja-forms-calculations &lt;?php echo $field_class;?&gt;&quot;&gt;
+		&lt;div class=&quot;label&quot;&gt;
+			&lt;?php _e( &#x27;Field Operations&#x27;, &#x27;ninja-forms&#x27; );?&gt; - &lt;a href=&quot;#&quot; name=&quot;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_add_calc&quot; class=&quot;ninja-forms-field-add-calc&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;&lt;?php _e( &#x27;Add Operation&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/a&gt;
+
+			&lt;span class=&quot;spinner&quot; style=&quot;float:left;&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+
+		&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[calc]&quot; value=&quot;&quot;&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_calc&quot; class=&quot;&quot; name=&quot;&quot;&gt;
+			&lt;?php
+			$x = 0;
+			foreach ( $calc as $c ) {
+				ninja_forms_output_field_calc_row( $field_id, $c, $x );
+			 	$x++;
+			}
+			?&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;ninja-forms-eq &lt;?php echo $eq_class;?&gt;&quot;&gt;
+		&lt;?php
+		ninja_forms_edit_field_el_output($field_id, &#x27;textarea&#x27;, __( &#x27;Advanced Equation&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc_eq&#x27;, $calc_eq, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27;, $desc);
+		?&gt;
+	&lt;/div&gt;
+	&lt;hr&gt;
+	&lt;?php
+}
+
+function nf_field_calc_advanced_settings( $field_id, $data ) {
+	$field = ninja_forms_get_field_by_id( $field_id );
+	if ( &#x27;_calc&#x27; != $field[&#x27;type&#x27;] )
+		return false;
+
+	$calc_name = isset ( $data[&#x27;calc_name&#x27;] ) ? $data[&#x27;calc_name&#x27;] : &#x27;calc_name&#x27;;
+	$default_value = isset ( $data[&#x27;default_value&#x27;] ) ? $data[&#x27;default_value&#x27;] : &#x27;&#x27;; 
+	$calc_payment = isset ( $data[&#x27;calc_payment&#x27;] ) ? $data[&#x27;calc_payment&#x27;] : &#x27;&#x27;;
+	$calc_autho = isset ( $data[&#x27;calc_auto&#x27;] ) ? $data[&#x27;calc_auto&#x27;] : 0;
+	$calc_display_type = isset ( $data[&#x27;calc_display_type&#x27;] ) ? $data[&#x27;calc_display_type&#x27;] : &#x27;text&#x27;;
+
+	ninja_forms_edit_field_el_output($field_id, &#x27;text&#x27;, __( &#x27;Calculation name&#x27;, &#x27;ninja-forms&#x27; ), &#x27;calc_name&#x27;, $calc_name, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat ninja-forms-calc-name&#x27;, __( &#x27;This is the programmatic name of your field. Examples are: my_calc, price_total, user-total.&#x27;, &#x27;ninja-forms&#x27; ));
+	ninja_forms_edit_field_el_output($field_id, &#x27;text&#x27;, __( &#x27;Default Value&#x27;, &#x27;ninja-forms&#x27; ), &#x27;default_value&#x27;, $default_value, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27; );
+
+	
+	// If any option besides &quot;none&quot; is selected, then show our custom class and help options.
+	if ( $calc_display_type == &#x27;hidden&#x27; ) {
+		$class = &#x27;hidden&#x27;;
+	} else {
+		$class = &#x27;&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;class&#x27;] ) ) {
+		$custom_class = $data[&#x27;class&#x27;];
+	} else {
+		$custom_class = &#x27;&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;show_help&#x27;] ) ) {
+		$show_help = $data[&#x27;show_help&#x27;];
+	} else {
+		$show_help = 0;
+	}
+
+	if ( isset ( $data[&#x27;help_text&#x27;] ) ) {
+		$help_text = $data[&#x27;help_text&#x27;];
+	} else {
+		$help_text = &#x27;&#x27;;
+	}
+
+	if( $show_help == 1 ){
+		$display_span = &#x27;&#x27;;
+	} else {
+		$display_span = &#x27;display:none;&#x27;;
+	}
+
+	echo &#x27;&lt;div id=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;_calc_extra_display&quot; class=&quot;&#x27;.$class.&#x27;&quot;&gt;&#x27;;
+	// Output our custom class textbox.
+	ninja_forms_edit_field_el_output($field_id, &#x27;text&#x27;, __( &#x27;Custom CSS Class&#x27;, &#x27;ninja-forms&#x27; ), &#x27;class&#x27;, $custom_class, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27;);
+
+	// Output our help text options.
+	$help_desc = sprintf(__(&#x27;If &quot;help text&quot; is enabled, there will be a question mark %s placed next to the input field. Hovering over this question mark will show the help text.&#x27;, &#x27;ninja-forms&#x27;), &#x27;&lt;img src=&quot;&#x27;.NINJA_FORMS_URL.&#x27;images/question-ico.gif&quot;&gt;&#x27;);
+	ninja_forms_edit_field_el_output($field_id, &#x27;checkbox&#x27;, __( &#x27;Show Help Text&#x27;, &#x27;ninja-forms&#x27; ), &#x27;show_help&#x27;, $show_help, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;ninja-forms-show-help&#x27;);
+	?&gt;
+	&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_help_span&quot; style=&quot;&lt;?php echo $display_span;?&gt;&quot;&gt;
+		&lt;?php
+		ninja_forms_edit_field_el_output($field_id, &#x27;textarea&#x27;, __( &#x27;Help Text&#x27;, &#x27;ninja-forms&#x27; ), &#x27;help_text&#x27;, $help_text, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27;, $help_desc);
+		?&gt;
+	&lt;/span&gt;
+	&lt;?php
+	echo &#x27;&lt;/div&gt;&#x27;;
+}
+
+add_action( &#x27;nf_edit_field_advanced&#x27;, &#x27;nf_field_calc_advanced_settings&#x27;, 7, 2 );
+
+/**
+ * Function that outputs the display for our calculation field
+ *
+ * @since 2.2.28
+ * @return void
+ */
+function ninja_forms_field_calc_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+
+	if ( isset( $data[&#x27;default_value&#x27;] ) ) {
+		$default_value = $data[&#x27;default_value&#x27;];
+	} else {
+		$default_value = 0;
+	}
+
+	if ( $default_value == &#x27;&#x27; ) {
+		$default_value = 0;
+	}
+
+	if ( isset ( $data[&#x27;calc_display_text_disabled&#x27;] ) AND $data[&#x27;calc_display_text_disabled&#x27;] == 1 ) {
+		$disabled = &quot;disabled&quot;;
+	} else {
+		$disabled = &#x27;&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;calc_display_type&#x27;] ) ) {
+		$calc_display_type = $data[&#x27;calc_display_type&#x27;];
+	} else {
+		$calc_display_type = &#x27;text&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;calc_display_html&#x27;] ) ) {
+		$calc_display_html = $data[&#x27;calc_display_html&#x27;];
+	} else {
+		$calc_display_html = &#x27;&#x27;;
+	}
+
+	if ( isset ( $data[&#x27;calc_method&#x27;] ) ) {
+		$calc_method = $data[&#x27;calc_method&#x27;];
+	} else {
+		$calc_method = &#x27;&#x27;;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+
+	?&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot;&gt;
+	&lt;?php
+
+	switch ( $calc_display_type ) {
+		case &#x27;text&#x27;:
+			?&gt;
+			&lt;input type=&quot;text&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; &lt;?php echo $disabled;?&gt; class=&quot;&lt;?php echo $field_class;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+			&lt;?php
+			break;
+		case &#x27;html&#x27;:
+			$calc_display_html = str_replace( &#x27;[ninja_forms_calc]&#x27;, &#x27;&lt;span id=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;&quot; class=&quot;&#x27;.$field_class.&#x27;&quot; rel=&quot;&#x27;.$field_id.&#x27;&quot;&gt;&#x27;.$default_value.&#x27;&lt;/span&gt;&#x27;, $calc_display_html );
+			echo $calc_display_html;
+			break;
+	}
+}
+
+/**
+ * Function to output specific calculation options for a given field
+ *
+ * @param int $field_id - ID of the field being edited.
+ * @param array $c - Array containing the data.
+ * @param int $x - Index for this row of the calc array.
+ * @since 2.2.28
+ * @returns void
+ */
+function ninja_forms_output_field_calc_row( $field_id, $c = array(), $x = 0 ){
+	global $ninja_forms_fields;
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+	$form_id = $field_row[&#x27;form_id&#x27;];
+
+	if ( isset ( $c[&#x27;field&#x27;] ) ) {
+		$calc_field = $c[&#x27;field&#x27;];
+	} else {
+		$calc_field = &#x27;&#x27;;
+	}
+
+	if ( isset ( $c[&#x27;op&#x27;] ) ) {
+		$op = $c[&#x27;op&#x27;];
+	} else {
+		$op = &#x27;&#x27;;
+	}
+
+	?&gt;
+	&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_calc_row_&lt;?php echo $x;?&gt;&quot; class=&quot;ninja-forms-calc-row&quot; rel=&quot;&lt;?php echo $x;?&gt;&quot;&gt;
+		&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_remove_calc&quot; name=&quot;&lt;?php echo $x;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; class=&quot;ninja-forms-field-remove-calc&quot;&gt;X&lt;/a&gt;
+
+		&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[calc][&lt;?php echo $x;?&gt;][op]&quot;&gt;
+			&lt;option value=&quot;add&quot; &lt;?php selected( $op, &#x27;add&#x27; );?&gt;&gt;+&lt;/option&gt;
+			&lt;option value=&quot;subtract&quot; &lt;?php selected( $op, &#x27;subtract&#x27; );?&gt;&gt;-&lt;/option&gt;
+			&lt;option value=&quot;multiply&quot; &lt;?php selected( $op, &#x27;multiply&#x27; );?&gt;&gt;*&lt;/option&gt;
+			&lt;option value=&quot;divide&quot; &lt;?php selected( $op, &#x27;divide&#x27; );?&gt;&gt;/&lt;/option&gt;
+		&lt;/select&gt;
+
+		&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[calc][&lt;?php echo $x;?&gt;][field]&quot; class=&quot;ninja-forms-calc-select&quot;&gt;
+			&lt;option value=&quot;&quot;&gt;&lt;?php _e( &#x27;- Select a Field&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/option&gt;
+			&lt;?php
+			// Loop through our fields and output all of our calculation fields.
+			$fields = ninja_forms_get_fields_by_form_id( $form_id );
+			foreach ( $fields as $field ) {
+				if ( isset ( $field[&#x27;data&#x27;][&#x27;label&#x27;] ) ) {
+					$label = $field[&#x27;data&#x27;][&#x27;label&#x27;];
+				} else {
+					$label = &#x27;&#x27;;
+				}
+				if ( strlen ( $label ) &gt; 15 ) {
+					$label = substr ( $label, 0, 15 );
+					$label .= &#x27;...&#x27;;
+				}
+				$process_field = $ninja_forms_fields[$field[&#x27;type&#x27;]][&#x27;process_field&#x27;];
+				if ( $field[&#x27;id&#x27;] != $field_id AND $process_field ) {
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $field[&#x27;id&#x27;];?&gt;&quot; &lt;?php selected( $calc_field, $field[&#x27;id&#x27;] );?&gt;&gt;&lt;?php echo $field[&#x27;id&#x27;];?&gt; - &lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+				}
+			}
+			?&gt;
+		&lt;/select&gt;
+	&lt;/div&gt;
+	&lt;?php
+}
+
+
+/**
+ * Function that runs during pre_processing and calcuates the value of this field.
+ *
+ * @since 2.2.30
+ * @return void
+ */
+function ninja_forms_field_calc_pre_process(){
+	global $ninja_forms_loading, $ninja_forms_processing, $wp_locale;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_id = $ninja_forms_loading-&gt;get_form_ID();
+		$all_fields = $ninja_forms_loading-&gt;get_all_fields();
+	} else {
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+		$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+	}
+
+
+	if ( is_array ( $all_fields ) ) {
+		foreach ( $all_fields as $field_id =&gt; $user_value ) {
+
+			if ( isset ( $ninja_forms_loading ) ) {
+				$field_row = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+			} else {
+				$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			}
+
+			if ( isset ( $field_row[&#x27;type&#x27;] ) ) {
+				$field_type = $field_row[&#x27;type&#x27;];
+			} else {
+				$field_type = &#x27;&#x27;;
+			}
+
+
+			if ( $field_type == &#x27;_calc&#x27; ) {
+				$field_data = $field_row[&#x27;data&#x27;];
+				if ( isset ( $field_data[&#x27;default_value&#x27;] ) ){
+					$default_value = $field_data[&#x27;default_value&#x27;];
+				} else {
+					$default_value = 0;
+				}
+
+				$result = $default_value;
+
+				// Figure out which method we are using to calculate this field.
+				if ( isset ( $field_data[&#x27;calc_method&#x27;] ) ) {
+					$calc_method = $field_data[&#x27;calc_method&#x27;];
+				} else {
+					$calc_method = &#x27;auto&#x27;;
+				}
+
+				// Get our advanced field op settings if they exist.
+				if ( isset ( $field_data[&#x27;calc&#x27;] ) ) {
+					$calc_fields = $field_data[&#x27;calc&#x27;];
+				} else {
+					$calc_fields = array();
+				}
+
+				// Get our calculation equation if it exists.
+				if ( isset ( $field_data[&#x27;calc_eq&#x27;] ) ) {
+					$calc_eq = $field_data[&#x27;calc_eq&#x27;];
+				} else {
+					$calc_eq = array();
+				}
+
+				// Get our calculation equation if it exists.
+				if ( isset ( $field_data[&#x27;calc_places&#x27;] ) ) {
+					$calc_places = $field_data[&#x27;calc_places&#x27;];
+				} else {
+					$calc_places = 0;
+				}
+
+				// Figure out if there is a sub_total and a tax field. If there are, and this is a total field set to calc_method auto, we&#x27;re using an equation, not auto.
+				$tax = false;
+				$sub_total = false;
+				if ( is_array ( $all_fields ) ) {
+					foreach ( $all_fields as $f_id =&gt; $user_value ) {
+						if ( isset ( $ninja_forms_loading ) ) {
+							$field = $ninja_forms_loading-&gt;get_field_settings( $f_id );
+						} else {
+							$field = $ninja_forms_processing-&gt;get_field_settings( $f_id );
+						}
+
+						if ( isset ( $field[&#x27;type&#x27;] ) ) {
+							$f_type = $field[&#x27;type&#x27;];
+						} else {
+							$f_type = &#x27;&#x27;;
+						}
+
+						$data = apply_filters( &#x27;ninja_forms_field&#x27;, $field[&#x27;data&#x27;], $f_id );
+						if ( $f_type == &#x27;_tax&#x27; ) {
+							// There is a tax field; save its field_id.
+							$tax = $field[&#x27;id&#x27;];
+						} else if ( isset ( $data[&#x27;payment_sub_total&#x27;] ) AND $data[&#x27;payment_sub_total&#x27;] == 1 ) {
+							// There is a sub_total field; save its field_id.
+							$sub_total = $field[&#x27;id&#x27;];
+						}
+					}
+				}
+
+
+				// If the tax and sub_total have been found, and this is a total field set to auto, change the calc_method and calc_eq.
+				if ( $tax AND $sub_total AND isset ( $field_data[&#x27;payment_total&#x27;] ) AND $field_data[&#x27;payment_total&#x27;] == 1 AND $calc_method == &#x27;auto&#x27; ) {
+					$calc_method = &#x27;eq&#x27;;
+					if ( isset ( $ninja_forms_loading ) ) {
+						$tax_rate = $ninja_forms_loading-&gt;get_field_value( $tax );
+					} else {
+						$tax_rate = $ninja_forms_processing-&gt;get_field_value( $tax );
+					}
+
+					if ( strpos( $tax_rate, &quot;%&quot; ) !== false ) {
+						$tax_rate = str_replace( &quot;%&quot;, &quot;&quot;, $tax_rate );
+						$tax_rate = $tax_rate / 100;
+					}
+					$calc_eq = &#x27;field_&#x27;.$sub_total.&#x27; + ( field_&#x27;.$sub_total.&#x27; * &#x27;.$tax_rate.&#x27; )&#x27;;
+
+					if ( isset ( $ninja_forms_loading ) ) {
+						$field_settings = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+					} else {
+						$field_settings = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+					}
+
+					$field_settings[&#x27;data&#x27;][&#x27;calc_method&#x27;] = $calc_method;
+					$field_settings[&#x27;data&#x27;][&#x27;calc_eq&#x27;] = $calc_eq;
+					if ( isset ( $ninja_forms_loading ) ) {
+						$ninja_forms_loading-&gt;update_field_settings( $field_id, $field_settings );
+					} else {
+						$ninja_forms_processing-&gt;update_field_settings( $field_id, $field_settings );
+					}
+				}
+
+				// Loop through our fields and see which ones should be used for calculations.
+				if ( is_array ( $all_fields ) ) {
+					foreach ( $all_fields as $f_id =&gt; $user_value ) {
+						if ( isset ( $ninja_forms_loading ) ) {
+							$field = $ninja_forms_loading-&gt;get_field_settings( $f_id );
+							$field_value = $ninja_forms_loading-&gt;get_field_value( $f_id );
+						} else {
+							$field = $ninja_forms_processing-&gt;get_field_settings( $f_id );
+							$field_value = $ninja_forms_processing-&gt;get_field_value( $f_id );
+						}
+
+						$field_data = $field[&#x27;data&#x27;];
+						if ( $f_id == $tax ) {
+							$tax = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, &#x27;auto&#x27; );;
+						}
+
+						switch ( $calc_method ) {
+							case &#x27;auto&#x27;: // We are automatically totalling the fields that have a calc_auto_include set to 1.
+								if ( isset ( $field_data[&#x27;calc_auto_include&#x27;] ) AND $field_data[&#x27;calc_auto_include&#x27;] == 1 &amp;&amp; $field_value ) {
+
+									if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+										$calc_value = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], &#x27;&#x27;, $result );
+									} else {
+										$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+									}
+
+									if ( $calc_value !== false ) {
+										$result = ninja_forms_calc_evaluate( &#x27;add&#x27;, $result, $calc_value );
+									}
+
+								}
+								break;
+							case &#x27;fields&#x27;: // We are performing a specific set of operations on a set of fields.
+								if ( is_array ( $calc_fields ) ) {
+									foreach ( $calc_fields as $c ) {
+										if ( $c[&#x27;field&#x27;] == $field[&#x27;id&#x27;] ) {
+											if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+												$calc_value = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], &#x27;&#x27;, $result );
+											}
+											$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+											if ( $calc_value !== false ) {
+												$result = ninja_forms_calc_evaluate( $c[&#x27;op&#x27;], $result, $calc_value );
+											}
+										}
+									}
+								}
+								break;
+							case &#x27;eq&#x27;:
+								if (preg_match(&quot;/\bfield_&quot;.$f_id.&quot;\b/i&quot;, $calc_eq ) ) {
+									if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+										$calc_value = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], $calc_eq );
+									} else {
+										$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+									}
+
+									if ( $calc_value !== false ) {
+										$calc_eq = preg_replace(&#x27;/\bfield_&#x27;.$field[&#x27;id&#x27;].&#x27;\b/&#x27;, $calc_value, $calc_eq );
+									}
+								}
+								break;
+						}
+					}
+				}
+
+				if ( $calc_method == &#x27;eq&#x27; ) {
+					$eq = new eqEOS();
+
+					// Swap out decimal separator
+					$decimal_point = $wp_locale-&gt;number_format[&#x27;decimal_point&#x27;];
+					$calc_eq = str_replace( $decimal_point, &#x27;.&#x27;, $calc_eq );
+
+					$result = $eq-&gt;solveIF($calc_eq);
+
+					// Swap back decimal separator
+					$result = str_replace( &#x27;.&#x27;, $decimal_point, $result );
+				}
+
+				if ( isset ( $calc_places ) ) {
+					if ( empty( $calc_places ) ) {
+						$calc_places = 0;
+					}
+
+					// Swap out decimal separator
+					$decimal_point = $wp_locale-&gt;number_format[&#x27;decimal_point&#x27;];
+					$result = str_replace( $decimal_point, &#x27;.&#x27;, $result );
+
+					// Round and Format
+					$result = number_format( round( $result, $calc_places ), $calc_places );
+
+					// Swap back decimal separator
+					$result = str_replace( &#x27;.&#x27;, $decimal_point, $result );
+				}
+				$result = str_replace( $wp_locale-&gt;number_format[&#x27;thousands_sep&#x27;], &#x27;&#x27;, $result );
+
+				if ( isset ( $ninja_forms_loading ) ) {
+					$ninja_forms_loading-&gt;update_field_value( $field_id, $result );
+				} else {
+					$ninja_forms_processing-&gt;update_field_value( $field_id, $result );
+				}
+
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_field_calc_pre_process&#x27;, 999 );
+
+function ninja_forms_calc_check_load() {
+	global $ninja_forms_processing;
+
+	if ( ! is_object ( $ninja_forms_processing ) ) {
+		ninja_forms_field_calc_pre_process();
+	}
+}
+
+add_action( &#x27;ninja_forms_display_pre_init&#x27;, &#x27;ninja_forms_calc_check_load&#x27;, 999 );
+
+
+function ninja_forms_calc_field_loop( $field_id, $calc_eq = &#x27;&#x27;, $result = &#x27;&#x27; ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$field_settings = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+	} else {
+		$field_settings = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+	}
+
+	$calc_data = $field_settings[&#x27;data&#x27;];
+
+	// Figure out which method we are using to calculate this field.
+	if ( isset ( $calc_data[&#x27;calc_method&#x27;] ) ) {
+		$calc_method = $calc_data[&#x27;calc_method&#x27;];
+	} else {
+		$calc_method = &#x27;auto&#x27;;
+	}
+
+	// Get our advanced field op settings if they exist.
+	if ( isset ( $calc_data[&#x27;calc&#x27;] ) ) {
+		$calc_fields = $calc_data[&#x27;calc&#x27;];
+	} else {
+		$calc_fields = array();
+	}
+
+	// Get our calculation equation if it exists.
+	if ( isset ( $calc_data[&#x27;calc_eq&#x27;] ) ) {
+		$calc_eq = $calc_data[&#x27;calc_eq&#x27;];
+	} else {
+		$calc_eq = array();
+	}
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_id = $ninja_forms_loading-&gt;get_form_ID();
+		$all_fields = $ninja_forms_loading-&gt;get_all_fields();
+	} else {
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+		$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+	}
+
+
+	// Figure out if there is a sub_total and a tax field. If there are, and this is a total field set to calc_method auto, we&#x27;re using an equation, not auto.
+	$tax = false;
+	$sub_total = false;
+	foreach ( $all_fields as $f_id =&gt; $user_value ) {
+
+		if ( isset ( $ninja_forms_loading ) ) {
+			$field = $ninja_forms_loading-&gt;get_field_settings( $f_id );
+		} else {
+			$field = $ninja_forms_processing-&gt;get_field_settings( $f_id );
+		}
+
+		$field_value = $user_value;
+		$data = $field[&#x27;data&#x27;];
+		if ( $field[&#x27;type&#x27;] == &#x27;_tax&#x27; ) {
+			// There is a tax field; save its field_id.
+			$tax = $field[&#x27;id&#x27;];
+		} else if ( isset ( $data[&#x27;payment_sub_total&#x27;] ) AND $data[&#x27;payment_sub_total&#x27;] == 1 ) {
+			// There is a sub_total field; save its field_id.
+			$sub_total = $field[&#x27;id&#x27;];
+		}
+	}
+
+	// If the tax and sub_total have been found, and this is a total field set to auto, change the calc_method and calc_eq.
+	if ( $tax AND $sub_total AND isset ( $calc_data[&#x27;payment_total&#x27;] ) AND $calc_data[&#x27;payment_total&#x27;] == 1 AND $calc_method == &#x27;auto&#x27; ) {
+		$calc_method = &#x27;eq&#x27;;
+		if ( isset ( $ninja_forms_loading ) ) {
+			$tax_rate = $ninja_forms_loading-&gt;get_field_value( $tax );
+		} else {
+			$tax_rate = $ninja_forms_processing-&gt;get_field_value( $tax );
+		}
+
+		if ( strpos( $tax_rate, &quot;%&quot; ) !== false ) {
+			$tax_rate = str_replace( &quot;%&quot;, &quot;&quot;, $tax_rate );
+			$tax_rate = $tax_rate / 100;
+		}
+		$calc_eq = &#x27;field_&#x27;.$sub_total.&#x27; + ( field_&#x27;.$sub_total.&#x27; * &#x27;.$tax_rate.&#x27; )&#x27;;
+	}
+
+	// Figure out how many calculation fields we have and run
+	foreach ( $all_fields as $f_id =&gt; $user_value ) {
+		if ( isset ( $ninja_forms_loading ) ) {
+			$field = $ninja_forms_loading-&gt;get_field_settings( $f_id );
+			$field_value = $ninja_forms_loading-&gt;get_field_value( $f_id );
+		} else {
+			$field = $ninja_forms_processing-&gt;get_field_settings( $f_id );
+			$field_value = $ninja_forms_processing-&gt;get_field_value( $f_id );
+		}
+
+		$field_data = $field[&#x27;data&#x27;];
+		if ( $f_id != $field_id ) {
+			switch ( $calc_method ) {
+				case &#x27;auto&#x27;: // We are automatically totalling the fields that have a calc_auto_include set to 1.
+					if ( isset ( $field_data[&#x27;calc_auto_include&#x27;] ) AND $field_data[&#x27;calc_auto_include&#x27;] == 1 ) {
+
+						if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+							$calc_value = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], &#x27;&#x27;, $result );
+						} else {
+							$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+						}
+
+						if ( $calc_value !== false ) {
+							$result = ninja_forms_calc_evaluate( &#x27;add&#x27;, $result, $calc_value );
+						}
+
+					}
+					break;
+				case &#x27;fields&#x27;: // We are performing a specific set of operations on a set of fields.
+					if ( is_array ( $calc_fields ) ) {
+						foreach ( $calc_fields as $c ) {
+							if ( $c[&#x27;field&#x27;] == $field[&#x27;id&#x27;] ) {
+								if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+									$result = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], &#x27;&#x27;, $result );
+								} else {
+									$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+									if ( $calc_value !== false ) {
+										$result = ninja_forms_calc_evaluate( $c[&#x27;op&#x27;], $result, $calc_value );
+									}
+								}
+							}
+						}
+					}
+					break;
+				case &#x27;eq&#x27;:
+					if (preg_match(&quot;/\bfield_&quot;.$field[&#x27;id&#x27;].&quot;\b/i&quot;, $calc_eq ) ) {
+						if ( $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+							$calc_value = ninja_forms_calc_field_loop( $field[&#x27;id&#x27;], $calc_eq, $result );
+						} else {
+							$calc_value = ninja_forms_field_calc_value( $field[&#x27;id&#x27;], $field_value, $calc_method );
+						}
+						if ( $calc_value !== false ) {
+							$calc_eq = preg_replace(&#x27;/\bfield_&#x27;.$field[&#x27;id&#x27;].&#x27;\b/&#x27;, $calc_value, $calc_eq );
+						}
+					}
+					break;
+			}
+		}
+	}
+	if ( $calc_method == &#x27;eq&#x27; ) {
+		$eq = new eqEOS();
+		$result = $eq-&gt;solveIF($calc_eq);
+	}
+
+	if ( $result == &#x27;&#x27; ) {
+		$result = 0;
+	}
+
+	return $result;
+}
+
+
+/**
+ * Function that filters the list options span and adds the appropriate listener class if there is a calc needed for the field.
+ *
+ * @since 2.2.28
+ * @return $class
+ */
+function ninja_forms_calc_filter_list_options_span( $class, $field_id ) {
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$field_row = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+	} else {
+		$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+	}
+
+	$add_class = false;
+	// Check to see if this field has cal_auto_include set to 1. If it does, we want to output a class name.
+	if ( isset ( $field_row[&#x27;data&#x27;][&#x27;calc_auto_include&#x27;] ) AND !empty ( $field_row[&#x27;data&#x27;][&#x27;calc_auto_include&#x27;] ) ) {
+		$add_class = true;
+	}
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$all_fields = $ninja_forms_loading-&gt;get_all_fields();
+	} else {
+		$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+	}
+
+	foreach ( $all_fields as $f_id =&gt; $user_value ) {
+
+		if ( isset ( $ninja_forms_loading ) ) {
+			$field = $ninja_forms_loading-&gt;get_field_settings( $f_id );
+		} else {
+			$field = $ninja_forms_processing-&gt;get_field_settings( $f_id );
+		}
+
+		if ( isset ( $field[&#x27;type&#x27;] ) &amp;&amp; $field[&#x27;type&#x27;] == &#x27;_calc&#x27; ) {
+			if ( isset ( $field[&#x27;data&#x27;][&#x27;calc_method&#x27;] ) ) {
+				$calc_method = $field[&#x27;data&#x27;][&#x27;calc_method&#x27;];
+			} else {
+				$calc_method = &#x27;auto&#x27;;
+			}
+
+			switch ( $calc_method ) {
+				case &#x27;fields&#x27;:
+					if ( isset ( $field[&#x27;data&#x27;][&#x27;calc&#x27;] ) ) {
+						foreach ( $field[&#x27;data&#x27;][&#x27;calc&#x27;] as $calc ) {
+							if ( $calc[&#x27;field&#x27;] == $field_id ) {
+								$add_class = true;
+								break;
+							}
+						}
+					}
+					break;
+				case &#x27;eq&#x27;:
+					$eq = $field[&#x27;data&#x27;][&#x27;calc_eq&#x27;];
+					if (preg_match(&quot;/\bfield_&quot;.$field_id.&quot;\b/i&quot;, $eq ) ) {
+						$add_class = true;
+						break;
+					}
+					break;
+			}
+		}
+	}
+	if ( $add_class ) {
+		$class .= &#x27; ninja-forms-field-list-options-span-calc-listen&#x27;;
+	}
+
+	return $class;
+}
+add_filter( &#x27;ninja_forms_display_list_options_span_class&#x27;, &#x27;ninja_forms_calc_filter_list_options_span&#x27;, 10, 2 );
+
+
+/**
+ * Function that takes two variables and our calculation string operator and returns the result.
+ *
+ * @since 2.2.28
+ * @return int value
+ */
+function ninja_forms_calc_evaluate( $op, $value1, $value2 ) {
+	switch ( $op ) {
+		case &#x27;add&#x27;:
+			return $value1 + $value2;
+			break;
+		case &#x27;subtract&#x27;:
+			return $value1 - $value2;
+			break;
+		case &#x27;multiply&#x27;:
+			return $value1 * $value2;
+			break;
+		case &#x27;divide&#x27;:
+			return $value1 / $value2;
+			break;
+	}
+}
+
+
+/**
+ * Function that returns the calculation value of a field given by field_id if it is to be included in the auto total.
+ *
+ * @since 2.2.30
+ * @return calc_value
+ */
+function ninja_forms_field_calc_value( $field_id, $field_value = &#x27;&#x27;, $calc_method = &#x27;auto&#x27; ) {
+	global $ninja_forms_loading, $ninja_forms_processing, $wp_locale;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$field = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+	} else {
+		$field = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+	}
+
+	$field_data = apply_filters( &#x27;ninja_forms_field&#x27;, $field[&#x27;data&#x27;], $field_id );
+
+	if ( isset ( $field_data[&#x27;default_value&#x27;] ) ) {
+		$default_value = $field_data[&#x27;default_value&#x27;];
+	} else {
+		$default_value = &#x27;&#x27;;
+	}
+
+	if ( $field_value == &#x27;&#x27; ) {
+		$field_value = $default_value;
+	}
+
+	$calc_value = 0;
+	if ( $field[&#x27;type&#x27;] == &#x27;_list&#x27; ) {
+		if ( isset ( $field_data[&#x27;list&#x27;][&#x27;options&#x27;] ) ) {
+			foreach ( $field_data[&#x27;list&#x27;][&#x27;options&#x27;] as $option ) {
+				if ( isset ( $field_data[&#x27;list_show_value&#x27;] ) AND $field_data[&#x27;list_show_value&#x27;] == 1 ) {
+					$option_value = $option[&#x27;value&#x27;];
+				} else {
+					$option_value = $option[&#x27;label&#x27;];
+				}
+				if ( $option_value == $field_value OR ( is_array ( $field_value ) AND in_array ( $option_value, $field_value ) ) ) {
+					$calc_value += $option[&#x27;calc&#x27;];
+				}
+			}
+		}
+	} else if ( $field[&#x27;type&#x27;] == &#x27;_checkbox&#x27; ) {
+		if ( $field_value == &#x27;checked&#x27; ){
+			$calc_value = $field_data[&#x27;calc_value&#x27;][&#x27;checked&#x27;];
+		} else {
+			if ( $calc_method == &#x27;auto&#x27; ) {
+				return false;
+			} else {
+				$calc_value = $field_data[&#x27;calc_value&#x27;][&#x27;unchecked&#x27;];
+			}
+		}
+	} else {
+		if ( !$field_value OR $field_value == &#x27;&#x27; ) {
+			$field_value = 0;
+		}
+		$decimal_point = $wp_locale-&gt;number_format[&#x27;decimal_point&#x27;];
+
+		/* Casting to a Float removes decimal */
+//		$calc_value = (float) preg_replace(&#x27;/[^0-9&#x27; . $decimal_point . &#x27;-]*/&#x27;,&#x27;&#x27;,$field_value);
+		$calc_value = preg_replace(&#x27;/[^0-9&#x27; . $decimal_point . &#x27;-]*/&#x27;,&#x27;&#x27;,$field_value);
+
+	}
+
+	if ( is_string( $calc_value ) AND strpos( $calc_value, &quot;%&quot; ) !== false ) {
+		$calc_value = str_replace( &quot;%&quot;, &quot;&quot;, $calc_value );
+		$calc_value = $calc_value / 100;
+	}
+	if ( $calc_value == &#x27;&#x27; OR !$calc_value ) {
+		$calc_value = 0;
+	}
+
+	return $calc_value;
+}
+</pre></details></body></html>

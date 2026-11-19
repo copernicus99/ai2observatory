@@ -1,0 +1,187 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/User.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/User.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_User extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $display_author_as;
+
+	/**
+	 * @var string
+	 */
+	private $user_link_to;
+
+	protected function set_name() {
+		$this-&gt;name = &#x27;user&#x27;;
+	}
+
+	protected function define_options() {
+		return array( &#x27;display_author_as&#x27;, &#x27;user_link_to&#x27; );
+	}
+
+	/**
+	 * @return AC_View
+	 */
+	public function create_view() {
+		$select = $this-&gt;create_element( &#x27;select&#x27;, &#x27;display_author_as&#x27; )
+		               -&gt;set_attribute( &#x27;data-refresh&#x27;, &#x27;column&#x27; )
+		               -&gt;set_options( $this-&gt;get_display_options() );
+
+		$display_format = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Display&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $select,
+			&#x27;for&#x27;     =&gt; $select-&gt;get_id(),
+		) );
+
+		$select = $this-&gt;create_element( &#x27;select&#x27;, &#x27;user_link_to&#x27; )
+		               -&gt;set_attribute( &#x27;data-refresh&#x27;, &#x27;column&#x27; )
+		               -&gt;set_options( $this-&gt;get_link_options() );
+
+		$link_format = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Link To&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $select,
+			&#x27;for&#x27;     =&gt; $select-&gt;get_id(),
+		) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;    =&gt; __( &#x27;User&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;sections&#x27; =&gt; array( $display_format, $link_format ),
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @param int $user_id
+	 *
+	 * @return false|string
+	 */
+	public function get_user_name( $user_id ) {
+		return ac_helper()-&gt;user-&gt;get_display_name( $user_id, $this-&gt;get_display_author_as() );
+	}
+
+	/**
+	 * @param $user_id
+	 *
+	 * @return bool|string
+	 */
+	private function get_user_link( $user_id ) {
+		$link = false;
+
+		switch ( $this-&gt;get_user_link_to() ) {
+
+			case &#x27;edit_user&#x27; :
+				$link = get_edit_user_link( $user_id );
+
+				break;
+			case &#x27;view_user_posts&#x27; :
+				$link = add_query_arg( array(
+					&#x27;post_type&#x27; =&gt; $this-&gt;column-&gt;get_post_type(),
+					&#x27;author&#x27;    =&gt; get_the_author_meta( &#x27;ID&#x27; ),
+				), &#x27;edit.php&#x27; );
+
+				break;
+			case &#x27;view_author&#x27; :
+				$link = get_author_posts_url( $user_id );
+
+				break;
+			case &#x27;email_user&#x27; :
+				if ( $email = get_the_author_meta( &#x27;email&#x27;, $user_id ) ) {
+					$link = &#x27;mailto:&#x27; . $email;
+				}
+
+				break;
+		}
+
+		return $link;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_display_options() {
+		$options = array(
+			&#x27;display_name&#x27;    =&gt; __( &#x27;Display Name&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;first_name&#x27;      =&gt; __( &#x27;First Name&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;last_name&#x27;       =&gt; __( &#x27;Last Name&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;nickname&#x27;        =&gt; __( &#x27;Nickname&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;user_login&#x27;      =&gt; __( &#x27;User Login&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;user_email&#x27;      =&gt; __( &#x27;User Email&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;ID&#x27;              =&gt; __( &#x27;User ID&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;first_last_name&#x27; =&gt; __( &#x27;First and Last Name&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;user_nicename&#x27;   =&gt; __( &#x27;User Nicename&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		// resort for possible translations
+		natcasesort( $options );
+
+		return $options;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_link_options() {
+		$options = array(
+			&#x27;edit_user&#x27;       =&gt; __( &#x27;Edit User Profile&#x27; ),
+			&#x27;email_user&#x27;      =&gt; __( &#x27;User Email&#x27; ),
+			&#x27;view_user_posts&#x27; =&gt; __( &#x27;View User Posts&#x27; ),
+			&#x27;view_author&#x27;     =&gt; __( &#x27;View Public Author Page&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		// resort for possible translations
+		natcasesort( $options );
+
+		$options = array_merge( array( &#x27;&#x27; =&gt; __( &#x27;None&#x27; ) ), $options );
+
+		return $options;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_display_author_as() {
+		return $this-&gt;display_author_as;
+	}
+
+	/**
+	 * @param string $display_author_as
+	 *
+	 * @return bool
+	 */
+	public function set_display_author_as( $display_author_as ) {
+		$this-&gt;display_author_as = $display_author_as;
+
+		return true;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_user_link_to() {
+		return $this-&gt;user_link_to;
+	}
+
+	/**
+	 * @param string $user_link_to
+	 *
+	 * @return bool
+	 */
+	public function set_user_link_to( $user_link_to ) {
+		$this-&gt;user_link_to = $user_link_to;
+
+		return true;
+	}
+
+	public function format( $value, $original_value ) {
+		return ac_helper()-&gt;html-&gt;link( $this-&gt;get_user_link( $value ), $this-&gt;get_user_name( $value ) );
+	}
+
+}
+</pre></details></body></html>

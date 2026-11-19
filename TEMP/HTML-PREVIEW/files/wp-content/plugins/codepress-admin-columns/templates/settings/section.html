@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/templates/settings/section.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/templates/settings/section.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+&lt;table class=&quot;ac-column-setting&quot; data-setting=&quot;&quot;&gt;
+	&lt;tr&gt;
+		&lt;td class=&quot;col-label&quot;&gt;
+			&lt;label for=&quot;&quot;&gt;
+				&lt;span class=&quot;label &quot;&gt;
+					
+				&lt;/span&gt;
+
+				
+					&lt;div class=&quot;tooltip&quot;&gt;
+						
+					&lt;/div&gt;
+				
+
+				
+					&lt;a title=&quot;&quot; href=&quot;&quot; target=&quot;_blank&quot; class=&quot;more-link&quot;&gt;
+						&lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;
+					&lt;/a&gt;
+				
+			&lt;/label&gt;
+		&lt;/td&gt;
+		&lt;td class=&quot;col-input&quot;&gt;
+			
+				&lt;div class=&quot;ac-setting-input&quot;&gt;
+					
+				&lt;/div&gt;
+			
+
+			
+		&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+?&gt;
+&lt;table class=&quot;ac-column-setting&lt;?php echo $this-&gt;name ? esc_attr( &#x27; ac-column-setting--&#x27; . $this-&gt;name ) : &#x27;&#x27;; ?&gt;&quot; data-setting=&quot;&lt;?php echo esc_attr( $this-&gt;name ); ?&gt;&quot;&gt;
+	&lt;tr&gt;
+		&lt;td class=&quot;col-label&quot;&gt;
+			&lt;label for=&quot;&lt;?php echo esc_attr( $this-&gt;for ); ?&gt;&quot;&gt;
+				&lt;span class=&quot;label &lt;?php echo esc_attr( $this-&gt;tooltip ? &#x27;tooltip&#x27; : &#x27;&#x27; ); ?&gt;&quot;&gt;
+					&lt;?php echo $this-&gt;label; ?&gt;
+				&lt;/span&gt;
+
+				&lt;?php if ( $this-&gt;tooltip ) : ?&gt;
+					&lt;div class=&quot;tooltip&quot;&gt;
+						&lt;?php echo $this-&gt;tooltip; ?&gt;
+					&lt;/div&gt;
+				&lt;?php endif; ?&gt;
+
+				&lt;?php if ( $this-&gt;read_more ) : ?&gt;
+					&lt;a title=&quot;&lt;?php esc_attr_e( &#x27;View more&#x27;, &#x27;codepress-admin-columns&#x27; ); ?&gt;&quot; href=&quot;&lt;?php echo esc_url( $this-&gt;read_more ); ?&gt;&quot; target=&quot;_blank&quot; class=&quot;more-link&quot;&gt;
+						&lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;
+					&lt;/a&gt;
+				&lt;?php endif; ?&gt;
+			&lt;/label&gt;
+		&lt;/td&gt;
+		&lt;td class=&quot;col-input&quot;&gt;
+			&lt;?php if ( $this-&gt;setting ) : ?&gt;
+				&lt;div class=&quot;ac-setting-input&quot;&gt;
+					&lt;?php echo $this-&gt;setting; ?&gt;
+				&lt;/div&gt;
+			&lt;?php endif; ?&gt;
+
+			&lt;?php
+
+			if ( is_array( $this-&gt;sections ) ) {
+				foreach ( $this-&gt;sections as $section ) {
+					echo $section;
+				}
+			}
+
+			?&gt;
+		&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+</pre></details></body></html>

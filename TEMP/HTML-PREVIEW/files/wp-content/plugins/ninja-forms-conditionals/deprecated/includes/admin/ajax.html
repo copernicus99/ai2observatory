@@ -1,0 +1,109 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/ajax.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/ajax.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+add_action(&#x27;wp_ajax_ninja_forms_add_conditional&#x27;, &#x27;ninja_forms_add_conditional&#x27;);
+function ninja_forms_add_conditional(){
+	global $wpdb, $ninja_forms_fields;
+
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$x = $_REQUEST[&#x27;x&#x27;];
+	ninja_forms_field_conditional_output($field_id, $x);
+	die();
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_add_cr&#x27;, &#x27;ninja_forms_add_cr&#x27;);
+function ninja_forms_add_cr(){
+	global $wpdb, $ninja_forms_fields;
+
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$x = $_REQUEST[&#x27;x&#x27;];
+	$y = $_REQUEST[&#x27;y&#x27;];
+	$new_html = ninja_forms_return_echo(&#x27;ninja_forms_field_conditional_cr_output&#x27;, $field_id, $x, $y);
+	$new_html = utf8_encode( $new_html );
+	header(&quot;Content-type: application/json&quot;);
+	$array = array (&#x27;new_html&#x27; =&gt; $new_html, &#x27;field_id&#x27; =&gt; $field_id, &#x27;x&#x27; =&gt; $x, &#x27;y&#x27; =&gt; $y);
+	echo json_encode($array);
+	die();
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_change_action&#x27;, &#x27;ninja_forms_change_action&#x27;);
+function ninja_forms_change_action(){
+	global $wpdb, $ninja_forms_fields;
+
+	$form_id = $_REQUEST[&#x27;form_id&#x27;];
+	$action_slug = $_REQUEST[&#x27;action_slug&#x27;];
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$x = $_REQUEST[&#x27;x&#x27;];
+	$field_data = $_REQUEST[&#x27;field_data&#x27;];
+
+	$field_data = $field_data[&#x27;ninja_forms_field_&#x27;.$field_id];
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$type = $field_row[&#x27;type&#x27;];
+	$reg_field = $ninja_forms_fields[$type];
+	if( isset( $reg_field[&#x27;conditional&#x27;][&#x27;action&#x27;][$action_slug] ) ){
+		$conditional = $reg_field[&#x27;conditional&#x27;][&#x27;action&#x27;][$action_slug];
+	}else if( $action_slug == &#x27;change_value&#x27;){
+		$conditional = array( &#x27;output&#x27; =&gt; &#x27;text&#x27; );
+	}else{
+		$conditional = &#x27;&#x27;;
+	}
+
+	$conditional = apply_filters( &#x27;nf_change_conditional_action_output&#x27;, $conditional, $field_id, $action_slug );
+
+	header(&quot;Content-type: application/json&quot;);
+
+	if( isset( $conditional[&#x27;output&#x27;] ) ){
+		$new_type = $conditional[&#x27;output&#x27;];
+	}else{
+		$new_type = &#x27;&#x27;;
+	}
+
+	$new_html = ninja_forms_return_echo( &#x27;ninja_forms_field_conditional_action_output&#x27;, $field_id, $x, $conditional, &#x27;&#x27;, $field_data );
+	$new_html = utf8_encode( $new_html );
+	$array = array(&#x27;new_html&#x27; =&gt; $new_html, &#x27;new_type&#x27; =&gt; $new_type );
+	echo json_encode($array);
+
+	die();
+
+}
+
+add_action(&#x27;wp_ajax_ninja_forms_change_cr_field&#x27;, &#x27;ninja_forms_change_cr_field&#x27;);
+function ninja_forms_change_cr_field(){
+	global $wpdb, $ninja_forms_fields;
+
+	$field_id = $_REQUEST[&#x27;field_id&#x27;];
+	$field_value = $_REQUEST[&#x27;field_value&#x27;];
+	$x = $_REQUEST[&#x27;x&#x27;];
+	$y = $_REQUEST[&#x27;y&#x27;];
+
+	$field_row = ninja_forms_get_field_by_id($field_value);
+	$type = $field_row[&#x27;type&#x27;];
+	$reg_field = $ninja_forms_fields[$type];
+	$conditional = $reg_field[&#x27;conditional&#x27;];
+	$cr = array( &#x27;field&#x27; =&gt; $field_value );
+	header(&quot;Content-type: application/json&quot;);
+
+	$new_html = &#x27;&#x27;;
+
+	if(isset($conditional[&#x27;value&#x27;]) AND is_array($conditional[&#x27;value&#x27;])){
+		$new_html = ninja_forms_return_echo(&#x27;ninja_forms_field_conditional_cr_value_output&#x27;, $field_id, $x, $y, $conditional, $cr );
+		$new_html = utf8_encode( $new_html );
+		$array = array(&#x27;new_html&#x27; =&gt; $new_html, &#x27;new_type&#x27; =&gt; $conditional[&#x27;value&#x27;][&#x27;type&#x27;] );
+		echo json_encode($array);
+	}
+	die();
+}
+
+function nf_cl_add_criteria() {
+	// Bail if we aren&#x27;t in the admin.
+	if ( ! is_admin() )
+		return false;
+
+	// Bail if our nonce isn&#x27;t correct.
+	check_ajax_referer( &#x27;nf_ajax&#x27;, &#x27;nf_ajax_nonce&#x27; );
+
+	echo &quot;HELLO WORLD&quot;;
+	die();
+}
+
+add_action(&#x27;wp_ajax_nf_cl_add_criteria&#x27;, &#x27;nf_cl_add_criteria&#x27;);</pre></details></body></html>

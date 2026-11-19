@@ -1,0 +1,180 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/OAuth/Consumer/Curl.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/lib/dropbox/OAuth/Consumer/Curl.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/**
+* OAuth consumer using PHP cURL
+* @author Ben Tadiar &lt;ben@handcraftedbyben.co.uk&gt;
+* @link https://github.com/benthedesigner/dropbox
+* @package Dropbox\OAuth
+* @subpackage Consumer
+*/
+
+class Dropbox_OAuth_Consumer_Curl extends Dropbox_OAuth_Consumer_ConsumerAbstract
+{
+    /**
+     * Default cURL options
+     * @var array
+     */
+    protected $defaultOptions = array(
+        CURLOPT_SSL_VERIFYPEER =&gt; true,
+        CURLOPT_VERBOSE        =&gt; true,
+        CURLOPT_HEADER         =&gt; true,
+        CURLINFO_HEADER_OUT    =&gt; false,
+        CURLOPT_RETURNTRANSFER =&gt; true,
+        CURLOPT_FOLLOWLOCATION =&gt; false,
+    );
+
+    /**
+     * Store the last response form the API
+     * @var mixed
+     */
+    protected $lastResponse = null;
+
+   /**
+     * Set properties and begin authentication
+     * @param string $key
+     * @param string $secret
+     */
+    public function __construct($key, $secret)
+    {
+        // Check the cURL extension is loaded
+        if (!extension_loaded(&#x27;curl&#x27;)) {
+            throw new Exception(&#x27;The cURL OAuth consumer requires the cURL extension&#x27;);
+        }
+
+        $this-&gt;consumerKey = $key;
+        $this-&gt;consumerSecret = $secret;
+    }
+
+    /**
+     * Execute an API call
+     * @todo Improve error handling
+     * @param  string        $method     The HTTP method
+     * @param  string        $url        The API endpoint
+     * @param  string        $call       The API method to call
+     * @param  array         $additional Additional parameters
+     * @return string|object stdClass
+     */
+    public function fetch($method, $url, $call, $additional = array())
+    {
+        // Get the signed request URL
+        $request = $this-&gt;getSignedRequest($method, $url, $call, $additional);
+
+        // Initialise and execute a cURL request
+        $handle = curl_init($request[&#x27;url&#x27;]);
+
+        // Get the default options array
+        $options = $this-&gt;defaultOptions;
+        $options[CURLOPT_CAINFO] = dirname(__FILE__) . &#x27;/ca-bundle.pem&#x27;;
+
+        if ($method == &#x27;GET&#x27; &amp;&amp; $this-&gt;outFile) { // GET
+            $options[CURLOPT_RETURNTRANSFER] = false;
+            $options[CURLOPT_HEADER] = false;
+            $options[CURLOPT_FILE] = $this-&gt;outFile;
+            $options[CURLOPT_BINARYTRANSFER] = true;
+            $this-&gt;outFile = null;
+        } elseif ($method == &#x27;POST&#x27;) { // POST
+            $options[CURLOPT_POST] = true;
+            $options[CURLOPT_POSTFIELDS] = $request[&#x27;postfields&#x27;];
+        } elseif ($method == &#x27;PUT&#x27; &amp;&amp; $this-&gt;inFile) { // PUT
+            $options[CURLOPT_PUT] = true;
+            $options[CURLOPT_INFILE] = $this-&gt;inFile;
+            // @todo Update so the data is not loaded into memory to get its size
+            $options[CURLOPT_INFILESIZE] = strlen(stream_get_contents($this-&gt;inFile));
+            fseek($this-&gt;inFile, 0);
+            $this-&gt;inFile = null;
+        }
+
+        // Set the cURL options at once
+        @curl_setopt_array($handle, $options);
+
+        // Execute and parse the response
+        $response = curl_exec($handle);
+
+        //Check if a curl error has occured
+        if ($response === false)
+            throw new Exception(&quot;Error Processing Request: &quot; . curl_error($handle));
+
+        curl_close($handle);
+
+        // Parse the response if it is a string
+        if (is_string($response)) {
+            $response = $this-&gt;parse($response);
+        }
+
+        // Set the last response
+        $this-&gt;lastResponse = $response;
+
+        // Check if an error occurred and throw an Exception
+        if (!empty($response[&#x27;body&#x27;]-&gt;error)) {
+            // var_dump( $response[&#x27;body&#x27;]-&gt;error );
+            // die();
+            // Dropbox returns error messages inconsistently...
+            if ($response[&#x27;body&#x27;]-&gt;error instanceof stdClass) {
+                $array = array_values((array) $response[&#x27;body&#x27;]-&gt;error);
+                $response[&#x27;body&#x27;]-&gt;error = $array[0];
+            }
+
+            // Throw an Exception with the appropriate with the appropriate code
+            throw new Exception($response[&#x27;body&#x27;]-&gt;error, $response[&#x27;code&#x27;]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Parse a cURL response
+     * @param  string $response
+     * @return array
+     */
+    private function parse($response)
+    {
+        // cURL automatically handles Proxy rewrites, remove the &quot;HTTP/1.0 200 Connection established&quot; string
+        if (stripos($response, &quot;HTTP/1.0 200 Connection established\r\n\r\n&quot;) !== false) {
+            $response = str_ireplace(&quot;HTTP/1.0 200 Connection established\r\n\r\n&quot;, &#x27;&#x27;, $response);
+        }
+
+        // Explode the response into headers and body parts (separated by double EOL)
+        list($headers, $response) = explode(&quot;\r\n\r\n&quot;, $response, 2);
+
+        // Explode response headers
+        $lines = explode(&quot;\r\n&quot;, $headers);
+
+        // If the status code is 100, the API server must send a final response
+        // We need to explode the response again to get the actual response
+        if (preg_match(&#x27;#^HTTP/1.1 100#&#x27;, $lines[0])) {
+            list($headers, $response) = explode(&quot;\r\n\r\n&quot;, $response, 2);
+            $lines = explode(&quot;\r\n&quot;, $headers);
+        }
+
+        // Get the HTTP response code from the first line
+        $first = array_shift($lines);
+        $pattern = &#x27;#^HTTP/1.1 ([0-9]{3})#&#x27;;
+        preg_match($pattern, $first, $matches);
+        $code = $matches[1];
+
+        // Parse the remaining headers into an associative array
+        $headers = array();
+        foreach ($lines as $line) {
+            list($k, $v) = explode(&#x27;: &#x27;, $line, 2);
+            $headers[strtolower($k)] = $v;
+        }
+
+        // If the response body is not a JSON encoded string
+        // we&#x27;ll return the entire response body
+        if (!$body = json_decode($response)) {
+            $body = $response;
+        }
+
+        return array(&#x27;code&#x27; =&gt; $code, &#x27;body&#x27; =&gt; $body, &#x27;headers&#x27; =&gt; $headers);
+    }
+
+    /**
+     * Return the response for the last API request
+     * @return mixed
+     */
+    public function getlastResponse()
+    {
+        return $this-&gt;lastResponse;
+    }
+}
+</pre></details></body></html>

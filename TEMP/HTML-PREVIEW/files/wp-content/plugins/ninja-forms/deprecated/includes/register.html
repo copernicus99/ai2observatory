@@ -1,0 +1,294 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/register.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/register.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field($slug, $args = array()){
+	global $ninja_forms_fields;
+
+	if( !isset( $ninja_forms_fields ) ){
+		$ninja_forms_fields = array();
+	}
+
+	$defaults = array(
+		&#x27;conditional&#x27; =&gt; &#x27;&#x27;,
+		&#x27;default_label&#x27; =&gt; &#x27;&#x27;,		
+		&#x27;default_label_pos&#x27; =&gt; &#x27;&#x27;,
+		&#x27;default_value&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;display_label&#x27; =&gt; true,
+ 		&#x27;display_wrap&#x27; =&gt; true,
+ 		&#x27;edit_autocomplete_off&#x27; =&gt; false,
+ 		&#x27;edit_conditional&#x27; =&gt; true,
+ 		&#x27;edit_custom_class&#x27; =&gt; true,
+ 		&#x27;edit_function&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;edit_help&#x27; =&gt; true,
+ 		&#x27;edit_label&#x27; =&gt; true,
+ 		&#x27;edit_label_pos&#x27; =&gt; true,
+ 		&#x27;edit_meta&#x27; =&gt; true,
+ 		&#x27;edit_options&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;edit_placeholder&#x27; =&gt; false,
+ 		&#x27;edit_req&#x27; =&gt; true,
+ 		&#x27;edit_settings&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;edit_sub_post_process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;edit_sub_pre_process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;edit_sub_process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;esc_html&#x27; =&gt; true,
+		&#x27;group&#x27; =&gt; &#x27;&#x27;,
+		&#x27;interact&#x27; =&gt; true,
+		&#x27;label_pos_options&#x27; =&gt; &#x27;&#x27;,
+		&#x27;li_class&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;limit&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;name&#x27; =&gt; $slug,
+		&#x27;nesting&#x27; =&gt; false,
+		&#x27;post_process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;pre_process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;process&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;process_field&#x27; =&gt; true,
+ 		&#x27;req&#x27; =&gt; false,
+ 		&#x27;req_validation&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;save_sub&#x27; =&gt; true,
+ 		&#x27;show_fav&#x27; =&gt; true,
+ 		&#x27;show_field_id&#x27; =&gt; true,
+ 		&#x27;show_remove&#x27; =&gt; true,
+	 	&#x27;sub_edit&#x27; =&gt; &#x27;text&#x27;,
+ 		&#x27;sub_edit_function&#x27; =&gt; &#x27;&#x27;,
+ 		&#x27;use_li&#x27; =&gt; true,
+ 		&#x27;visible&#x27; =&gt; 1,
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	foreach( $args as $key =&gt; $val ){
+		$ninja_forms_fields[$slug][$key] = $val;
+	}
+
+}
+
+function ninja_forms_register_field_type_group( $slug, $args ){
+	global $ninja_forms_field_type_groups;
+
+	foreach( $args as $key =&gt; $val ){
+		$ninja_forms_field_type_groups[$slug][$key] = $val;
+	}
+}
+
+function ninja_forms_register_tab( $slug, $args ){
+	global $ninja_forms_tabs;
+
+	if(!is_array($ninja_forms_tabs)){
+		$ninja_forms_tabs = array();
+	}
+
+	$defaults = array(
+		&#x27;active_class&#x27; =&gt; &#x27;&#x27;,
+		&#x27;add_form_id&#x27; =&gt; true,
+		&#x27;disable_no_form_id&#x27; =&gt; false,
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;inactive_class&#x27; =&gt; &#x27;&#x27;,
+		&#x27;name&#x27; =&gt; &#x27;&#x27;,
+		&#x27;page&#x27; =&gt; &#x27;&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;show_on_no_form_id&#x27; =&gt; true,
+		&#x27;show_save&#x27; =&gt; true,
+		&#x27;show_tab_links&#x27; =&gt; true,
+		&#x27;show_this_tab_link&#x27; =&gt; true,
+		&#x27;tab_reload&#x27; =&gt; false,
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	$page = $args[&#x27;page&#x27;];
+
+	foreach( $args as $key =&gt; $val ){
+		$ninja_forms_tabs[$page][$slug][$key] = $val;
+	}
+}
+
+function ninja_forms_register_sidebar( $slug, $args ){
+	global $ninja_forms_sidebars;
+
+	if( !is_array($ninja_forms_sidebars ) ){
+		$ninja_forms_sidebars = array();
+	}
+
+	$defaults = array(
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_sidebar_display_fields&#x27;,
+		&#x27;name&#x27; =&gt; &#x27;&#x27;,
+		&#x27;order&#x27; =&gt; &#x27;&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;settings&#x27; =&gt; &#x27;&#x27;
+	);
+
+
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	extract( $args );
+
+	foreach( $args as $key =&gt; $val ){
+		$ninja_forms_sidebars[$page][$tab][$slug][$key] = $val;
+	}
+
+}
+
+function ninja_forms_register_sidebar_option( $slug, $args ){
+	global $ninja_forms_sidebars;
+
+	if( !is_array($ninja_forms_sidebars ) ){
+		$ninja_forms_sidebars = array();
+	}
+
+	$defaults = array(
+		&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;help&#x27; =&gt; &#x27;&#x27;,
+		&#x27;name&#x27; =&gt; &#x27;&#x27;
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	extract( $args );
+
+	foreach( $args as $key =&gt; $val ){
+		$ninja_forms_sidebars[$page][$tab][$sidebar][&#x27;settings&#x27;][$slug][$key] = $val;
+	}
+}
+
+function ninja_forms_register_sidebar_options( $args ){
+	global $ninja_forms_sidebars;
+
+	extract( $args );
+
+	foreach( $args[&#x27;settings&#x27;] as $setting ){
+
+		$defaults = array(
+			&#x27;desc&#x27; =&gt; &#x27;&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+			&#x27;help&#x27; =&gt; &#x27;&#x27;,
+			&#x27;name&#x27; =&gt; &#x27;&#x27;
+		);
+
+		$slug = $setting[&#x27;name&#x27;];
+
+		// Parse incomming $setting into an array and merge it with $defaults
+		$setting = wp_parse_args( $setting, $defaults );
+
+		foreach( $setting as $key =&gt; $val ){
+			$ninja_forms_sidebars[$page][$tab][$sidebar][&#x27;settings&#x27;][$slug][$key] = $val;
+		}
+	}
+
+}
+
+function ninja_forms_field_edit( $slug ){
+	global $ninja_forms_fields;
+	$function_name = $ninja_forms_fields[$slug][&#x27;edit_function&#x27;];
+	$arguments = func_get_args();
+    array_shift( $arguments ); // We need to remove the first arg ($function_name)
+    call_user_func_array( $function_name, $arguments );
+}
+
+//Screen option registration function
+function ninja_forms_register_screen_option( $id, $args ){
+	global $ninja_forms_screen_options;
+
+	$defaults = array(
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;order&#x27; =&gt; &#x27;&#x27;,
+		&#x27;page&#x27; =&gt; &#x27;&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;&#x27;,
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	extract( $args );
+
+	if($page == &#x27;&#x27; AND $tab == &#x27;&#x27;){
+		$ninja_forms_screen_options[&#x27;_universal_&#x27;][$id][&#x27;display_function&#x27;] = $display_function;
+		$ninja_forms_screen_options[&#x27;_universal_&#x27;][$id][&#x27;save_function&#x27;] = $save_function;
+	}elseif($page != &#x27;&#x27; AND $tab == &#x27;&#x27;){
+		$ninja_forms_screen_options[$page][&#x27;_universal_&#x27;][$id][&#x27;display_function&#x27;] = $display_function;
+		$ninja_forms_screen_options[$page][&#x27;_universal_&#x27;][$id][&#x27;save_function&#x27;] = $save_function;
+	}elseif($page != &#x27;&#x27; AND $tab != &#x27;&#x27;){
+		$ninja_forms_screen_options[$page][$tab][$id][&#x27;display_function&#x27;] = $display_function;
+		$ninja_forms_screen_options[$page][$tab][$id][&#x27;save_function&#x27;] = $save_function;
+	}
+}
+
+//Help tab registration function
+function ninja_forms_register_help_screen_tab( $id, $args ){
+	global $ninja_forms_help_screen_tabs;
+
+	$defaults = array(
+		&#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;order&#x27; =&gt; &#x27;&#x27;,
+		&#x27;page&#x27; =&gt; &#x27;&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;&#x27;,
+		&#x27;title&#x27; =&gt; &#x27;&#x27;,
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	extract( $args );
+
+	if($page == &#x27;&#x27; AND $tab == &#x27;&#x27;){
+		$ninja_forms_help_screen_tabs[&#x27;_universal_&#x27;][$id][&#x27;title&#x27;] = $title;
+		$ninja_forms_help_screen_tabs[&#x27;_universal_&#x27;][$id][&#x27;content&#x27;] = $display_function;
+	}elseif($page != &#x27;&#x27; AND $tab == &#x27;&#x27;){
+		$ninja_forms_help_screen_tabs[$page][&#x27;_universal_&#x27;][$id][&#x27;title&#x27;] = $title;
+		$ninja_forms_help_screen_tabs[$page][&#x27;_universal_&#x27;][$id][&#x27;content&#x27;] = $display_function;
+	}elseif($page != &#x27;&#x27; AND $tab != &#x27;&#x27;){
+		$ninja_forms_help_screen_tabs[$page][$tab][$id][&#x27;title&#x27;] = $title;
+		$ninja_forms_help_screen_tabs[$page][$tab][$id][&#x27;content&#x27;] = $display_function;
+	}
+}
+
+//Tab - Metaboxes Registration function
+function ninja_forms_register_tab_metabox($args = array()){
+	global $ninja_forms_tabs_metaboxes;
+
+	$defaults = array(
+		&#x27;display_container&#x27; =&gt; true,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;state&#x27; =&gt; &#x27;&#x27;
+	);
+
+	// Parse incomming $args into an array and merge it with $defaults
+	$args = wp_parse_args( $args, $defaults );
+
+	extract( $args );
+
+	foreach($args as $key =&gt; $val){
+		$ninja_forms_tabs_metaboxes[$page][$tab][$slug][$key] = $val;
+	}
+}
+
+//Register Tab Metabox Options
+function ninja_forms_register_tab_metabox_options( $args = array() ){
+	global $ninja_forms_tabs_metaboxes;
+
+	extract( $args );
+
+	$new_settings = $args[&#x27;settings&#x27;];
+
+	if( isset( $ninja_forms_tabs_metaboxes[$page][$tab][$slug][&#x27;settings&#x27;] ) ){
+		$settings = $ninja_forms_tabs_metaboxes[$page][$tab][$slug][&#x27;settings&#x27;];
+	}else{
+		$settings = array();
+	}
+
+	if( is_array( $new_settings ) AND !empty( $new_settings ) ){
+		foreach( $new_settings as $s ){
+			if( is_array( $settings ) ){
+				array_push( $settings, $s );
+			}
+		}
+	}
+
+	$ninja_forms_tabs_metaboxes[$page][$tab][$slug][&#x27;settings&#x27;] = $settings;
+}</pre></details></body></html>

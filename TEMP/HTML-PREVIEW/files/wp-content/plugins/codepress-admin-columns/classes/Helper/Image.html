@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Image.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Image.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;span class=&quot;ac-image cpac-cover&quot; data-media-id=&quot;&quot; style=&quot;width:px;height:px;background-size:cover;background-image:url();background-position:center;&quot;&gt;&lt;/span&gt;
+
+		
+		&lt;span class=&quot;ac-image&quot; data-media-id=&quot;&quot;&gt;
+			&lt;img style=&quot;max-width:px;max-height:px;&quot; src=&quot;&quot;&gt;
+
+			
+				&lt;span class=&quot;ac-extension&quot;&gt;&lt;/span&gt;
+			
+
+		&lt;/span&gt;
+
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Image {
+
+	/**
+	 * Resize image
+	 *
+	 * @param string      $file
+	 * @param int         $max_w
+	 * @param int         $max_h
+	 * @param bool        $crop
+	 * @param null|string $suffix
+	 * @param null|string $dest_path
+	 * @param int         $jpeg_quality
+	 *
+	 * @return bool|string|WP_Error
+	 */
+	public function resize( $file, $max_w, $max_h, $crop = false, $suffix = null, $dest_path = null, $jpeg_quality = 90 ) {
+		$editor = wp_get_image_editor( $file );
+
+		if ( is_wp_error( $editor ) ) {
+			return false;
+		}
+
+		$editor-&gt;set_quality( $jpeg_quality );
+
+		$resized = $editor-&gt;resize( $max_w, $max_h, $crop );
+
+		if ( is_wp_error( $resized ) ) {
+			return false;
+		}
+
+		$dest_file = $editor-&gt;generate_filename( $suffix, $dest_path );
+		$saved = $editor-&gt;save( $dest_file );
+
+		if ( is_wp_error( $saved ) ) {
+			return false;
+		}
+
+		return $dest_file;
+	}
+
+	/**
+	 * @param int[]|int    $ids
+	 * @param array|string $size
+	 *
+	 * @return string HTML Images
+	 */
+	public function get_images_by_ids( $ids, $size ) {
+		$images = array();
+
+		$ids = is_array( $ids ) ? $ids : array( $ids );
+		foreach ( $ids as $id ) {
+			$images[] = $this-&gt;get_image_by_id( $id, $size );
+		}
+
+		return implode( $images );
+	}
+
+	/**
+	 * @param int          $id
+	 * @param string|array $size
+	 *
+	 * @return string
+	 */
+	public function get_image_by_id( $id, $size ) {
+		$image = false;
+
+		if ( ! is_numeric( $id ) ) {
+			return false;
+		}
+
+		// Is Image
+		if ( $attributes = wp_get_attachment_image_src( $id, $size ) ) {
+			$src = $attributes[0];
+
+			if ( is_array( $size ) ) {
+				$image = $this-&gt;markup_cover( $src, $size[0], $size[1], $id );
+			} else {
+				$image = $this-&gt;markup( $src, $attributes[1], $attributes[2], $id );
+			}
+		} // Is File, use icon
+		else if ( $attributes = wp_get_attachment_image_src( $id, $size, true ) ) {
+			$image = $this-&gt;markup( $attributes[0], $this-&gt;scale_size( $attributes[1], 0.8 ), $this-&gt;scale_size( $attributes[2], 0.8 ), $id, true );
+		}
+
+		return $image;
+	}
+
+	/**
+	 * @param     $size
+	 * @param int $scale
+	 *
+	 * @return float
+	 */
+	private function scale_size( $size, $scale = 1 ) {
+		return round( absint( $size ) * $scale );
+	}
+
+	/**
+	 * @param string       $url
+	 * @param array|string $size
+	 *
+	 * @return string
+	 */
+	public function get_image_by_url( $url, $size ) {
+		$dimensions = array( 80, 80 );
+
+		if ( is_string( $size ) &amp;&amp; ( $sizes = $this-&gt;get_image_sizes_by_name( $size ) ) ) {
+			$dimensions = array( $sizes[&#x27;width&#x27;], $sizes[&#x27;height&#x27;] );
+		} else if ( is_array( $size ) ) {
+			$dimensions = $size;
+		}
+
+		$image_path = str_replace( WP_CONTENT_URL, WP_CONTENT_DIR, $url );
+
+		if ( is_file( $image_path ) ) {
+			// try to resize image
+			if ( $resized = $this-&gt;resize( $image_path, $dimensions[0], $dimensions[1], true ) ) {
+				$src = str_replace( WP_CONTENT_DIR, WP_CONTENT_URL, $resized );
+
+				$image = $this-&gt;markup( $src, $dimensions[0], $dimensions[1] );
+			} else {
+
+				$image = $this-&gt;markup( $url, $dimensions[0], $dimensions[1] );
+			}
+		} // External image
+		else {
+			$image = $this-&gt;markup_cover( $image_path, $dimensions[0], $dimensions[1] );
+		}
+
+		return $image;
+	}
+
+	/**
+	 * @param mixed        $images
+	 * @param array|string $size
+	 * @param bool         $skip_image_check Skips image check. Useful when the url does not have an image extension like jpg or gif (e.g. gravatar).
+	 *
+	 * @return array
+	 */
+	public function get_images( $images, $size = &#x27;thumbnail&#x27;, $skip_image_check = false ) {
+		$thumbnails = array();
+
+		foreach ( (array) $images as $value ) {
+			if ( $skip_image_check &amp;&amp; $value &amp;&amp; is_string( $value ) ) {
+				$thumbnails[] = $this-&gt;get_image_by_url( $value, $size );
+			}
+			else if ( ac_helper()-&gt;string-&gt;is_image( $value ) ) {
+				$thumbnails[] = $this-&gt;get_image_by_url( $value, $size );
+			} // Media Attachment
+			else if ( is_numeric( $value ) &amp;&amp; wp_get_attachment_url( $value ) ) {
+				$thumbnails[] = $this-&gt;get_image_by_id( $value, $size );
+			}
+		}
+
+		return $thumbnails;
+	}
+
+	/**
+	 * @param int|string $image ID of Url
+	 * @param string     $size
+	 *
+	 * @return string
+	 */
+	public function get_image( $image, $size = &#x27;thumbnail&#x27;, $skip_image_check = false ) {
+		return implode( $this-&gt;get_images( $image, $size, $skip_image_check ) );
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return array Image sizes
+	 */
+	public function get_image_sizes_by_name( $name ) {
+		global $_wp_additional_image_sizes;
+
+		$sizes = false;
+
+		if ( is_scalar( $name ) &amp;&amp; isset( $_wp_additional_image_sizes[ $name ] ) ) {
+			$sizes = $_wp_additional_image_sizes[ $name ];
+		}
+
+		return $sizes;
+	}
+
+	/**
+	 * @param int $attachment_id
+	 *
+	 * @return bool|string
+	 */
+	public function get_file_name( $attachment_id ) {
+		$file = get_post_meta( $attachment_id, &#x27;_wp_attached_file&#x27;, true );
+
+		if ( ! $file ) {
+			return false;
+		}
+
+		return basename( $file );
+	}
+
+	/**
+	 * @param int $attachment_id
+	 *
+	 * @return string File extension
+	 */
+	public function get_file_extension( $attachment_id ) {
+		return pathinfo( $this-&gt;get_file_name( $attachment_id ), PATHINFO_EXTENSION );
+	}
+
+	// Helpers
+
+	private function get_file_tooltip_attr( $media_id ) {
+		return ac_helper()-&gt;html-&gt;get_tooltip_attr( $this-&gt;get_file_name( $media_id ) );
+	}
+
+	private function markup_cover( $src, $width, $height, $media_id = null ) {
+		ob_start(); ?&gt;
+		&lt;span class=&quot;ac-image cpac-cover&quot; data-media-id=&quot;&lt;?php echo esc_attr( $media_id ); ?&gt;&quot; style=&quot;width:&lt;?php echo esc_attr( $width ); ?&gt;px;height:&lt;?php echo esc_attr( $height ); ?&gt;px;background-size:cover;background-image:url(&lt;?php echo esc_attr( $src ); ?&gt;);background-position:center;&quot;&lt;?php echo $this-&gt;get_file_tooltip_attr( $media_id ); ?&gt;&gt;&lt;/span&gt;
+
+		&lt;?php
+		return ob_get_clean();
+	}
+
+	private function markup( $src, $width, $height, $media_id = null, $add_extension = false ) {
+		$class = false;
+
+		if ( $media_id &amp;&amp; ! wp_attachment_is_image( $media_id ) ) {
+			$class = &#x27; ac-icon&#x27;;
+		}
+
+		ob_start(); ?&gt;
+		&lt;span class=&quot;ac-image&lt;?php echo $class; ?&gt;&quot; data-media-id=&quot;&lt;?php echo esc_attr( $media_id ); ?&gt;&quot;&lt;?php echo $this-&gt;get_file_tooltip_attr( $media_id ); ?&gt;&gt;
+			&lt;img style=&quot;max-width:&lt;?php echo esc_attr( $width ); ?&gt;px;max-height:&lt;?php echo esc_attr( $height ); ?&gt;px;&quot; src=&quot;&lt;?php echo esc_attr( $src ); ?&gt;&quot;&gt;
+
+			&lt;?php if ( $add_extension ) : ?&gt;
+				&lt;span class=&quot;ac-extension&quot;&gt;&lt;?php echo esc_attr( $this-&gt;get_file_extension( $media_id ) ); ?&gt;&lt;/span&gt;
+			&lt;?php endif; ?&gt;
+
+		&lt;/span&gt;
+
+		&lt;?php
+		return ob_get_clean();
+	}
+
+}
+</pre></details></body></html>

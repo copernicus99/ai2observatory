@@ -1,0 +1,164 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Libraries/BackgroundProcessing/classes/wp-async-request.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Libraries/BackgroundProcessing/classes/wp-async-request.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * WP Async Request
+ *
+ * @package WP-Background-Processing
+ */
+
+if ( ! class_exists( &#x27;WP_Async_Request&#x27; ) ) {
+
+	/**
+	 * Abstract WP_Async_Request class.
+	 *
+	 * @abstract
+	 */
+	abstract class WP_Async_Request {
+
+		/**
+		 * Prefix
+		 *
+		 * (default value: &#x27;wp&#x27;)
+		 *
+		 * @var string
+		 * @access protected
+		 */
+		protected $prefix = &#x27;wp&#x27;;
+
+		/**
+		 * Action
+		 *
+		 * (default value: &#x27;async_request&#x27;)
+		 *
+		 * @var string
+		 * @access protected
+		 */
+		protected $action = &#x27;async_request&#x27;;
+
+		/**
+		 * Identifier
+		 *
+		 * @var mixed
+		 * @access protected
+		 */
+		protected $identifier;
+
+		/**
+		 * Data
+		 *
+		 * (default value: array())
+		 *
+		 * @var array
+		 * @access protected
+		 */
+		protected $data = array();
+
+		/**
+		 * Initiate new async request
+		 */
+		public function __construct() {
+			$this-&gt;identifier = $this-&gt;prefix . &#x27;_&#x27; . $this-&gt;action;
+
+			add_action( &#x27;wp_ajax_&#x27; . $this-&gt;identifier, array( $this, &#x27;maybe_handle&#x27; ) );
+			add_action( &#x27;wp_ajax_nopriv_&#x27; . $this-&gt;identifier, array( $this, &#x27;maybe_handle&#x27; ) );
+		}
+
+		/**
+		 * Set data used during the request
+		 *
+		 * @param array $data Data.
+		 *
+		 * @return $this
+		 */
+		public function data( $data ) {
+			$this-&gt;data = $data;
+
+			return $this;
+		}
+
+		/**
+		 * Dispatch the async request
+		 *
+		 * @return array|WP_Error
+		 */
+		public function dispatch() {
+			$url  = add_query_arg( $this-&gt;get_query_args(), $this-&gt;get_query_url() );
+			$args = $this-&gt;get_post_args();
+
+			return wp_remote_post( esc_url_raw( $url ), $args );
+		}
+
+		/**
+		 * Get query args
+		 *
+		 * @return array
+		 */
+		protected function get_query_args() {
+			if ( property_exists( $this, &#x27;query_args&#x27; ) ) {
+				return $this-&gt;query_args;
+			}
+
+			return array(
+				&#x27;action&#x27; =&gt; $this-&gt;identifier,
+				&#x27;nonce&#x27;  =&gt; wp_create_nonce( $this-&gt;identifier ),
+			);
+		}
+
+		/**
+		 * Get query URL
+		 *
+		 * @return string
+		 */
+		protected function get_query_url() {
+			if ( property_exists( $this, &#x27;query_url&#x27; ) ) {
+				return $this-&gt;query_url;
+			}
+
+			return admin_url( &#x27;admin-ajax.php&#x27; );
+		}
+
+		/**
+		 * Get post args
+		 *
+		 * @return array
+		 */
+		protected function get_post_args() {
+			if ( property_exists( $this, &#x27;post_args&#x27; ) ) {
+				return $this-&gt;post_args;
+			}
+
+			return array(
+				&#x27;timeout&#x27;   =&gt; 0.01,
+				&#x27;blocking&#x27;  =&gt; false,
+				&#x27;body&#x27;      =&gt; $this-&gt;data,
+				&#x27;cookies&#x27;   =&gt; $_COOKIE,
+				&#x27;sslverify&#x27; =&gt; apply_filters( &#x27;https_local_ssl_verify&#x27;, false ),
+			);
+		}
+
+		/**
+		 * Maybe handle
+		 *
+		 * Check for correct nonce and pass to handler.
+		 */
+		public function maybe_handle() {
+			// Don&#x27;t lock up other requests while processing
+			session_write_close();
+
+			check_ajax_referer( $this-&gt;identifier, &#x27;nonce&#x27; );
+
+			$this-&gt;handle();
+
+			wp_die();
+		}
+
+		/**
+		 * Handle
+		 *
+		 * Override this method to perform any actions required
+		 * during the async request.
+		 */
+		abstract protected function handle();
+
+	}
+}
+</pre></details></body></html>

@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/submit.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/submit.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div id=&quot;nf_submit_&quot;&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;_ninja_forms_field_&quot; class=&quot;&quot; id=&quot;ninja_forms_field_&quot; value=&quot;&quot; rel=&quot;&quot; &gt;
+	&lt;/div&gt;
+	&lt;div id=&quot;nf_processing_&quot; style=&quot;display:none;&quot;&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;_ninja_forms_field_&quot; class=&quot;&quot; id=&quot;ninja_forms_field_&quot; value=&quot;&quot; rel=&quot;&quot; disabled&gt;
+	&lt;/div&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_submit(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_submit_display&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; false,
+		&#x27;edit_req&#x27; =&gt; false,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;display_label&#x27; =&gt; false,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;process_field&#x27; =&gt; false,
+		&#x27;limit&#x27; =&gt; 1,
+	);
+
+	ninja_forms_register_field(&#x27;_submit&#x27;, $args);
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_submit&#x27;);
+
+function ninja_forms_field_submit_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$form_id = $ninja_forms_loading-&gt;get_form_ID();
+	} else {
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	}
+
+	if(isset($data[&#x27;show_field&#x27;])){
+		$show_field = $data[&#x27;show_field&#x27;];
+	}else{
+		$show_field = true;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+	if(isset($data[&#x27;label&#x27;]) AND $data[&#x27;label&#x27;] != &#x27;&#x27;){
+		$label = $data[&#x27;label&#x27;];
+	}else{
+		$label = &#x27;Submit&#x27;;
+	}
+	$plugin_settings = nf_get_settings();
+	if ( isset ( $plugin_settings[&#x27;process_label&#x27;] ) ) {
+		$processing_msg = $plugin_settings[&#x27;process_label&#x27;];
+	}
+	?&gt;
+	&lt;div id=&quot;nf_submit_&lt;?php echo $form_id; ?&gt;&quot;&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;_ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $label;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+	&lt;/div&gt;
+	&lt;div id=&quot;nf_processing_&lt;?php echo $form_id; ?&gt;&quot; style=&quot;display:none;&quot;&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;_ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $field_class; ?&gt;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $processing_msg; ?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; disabled&gt;
+	&lt;/div&gt;
+	&lt;?php
+
+}
+</pre></details></body></html>

@@ -1,0 +1,119 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Post.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Post.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Post {
+
+	/**
+	 * @param int $id
+	 *
+	 * @return bool
+	 */
+	public function exists( $id ) {
+		return $this-&gt;get_raw_field( &#x27;ID&#x27;, $id ) ? true : false;
+	}
+
+	/**
+	 * @param int $id Post ID
+	 *
+	 * @return false|string Post Title
+	 */
+	public function get_raw_post_title( $id ) {
+		return ac_helper()-&gt;post-&gt;get_raw_field( &#x27;post_title&#x27;, $id );
+	}
+
+	/**
+	 * @since 1.0
+	 *
+	 * @param int $post_id Post ID
+	 *
+	 * @return string Post Excerpt.
+	 */
+	public function excerpt( $post_id, $words = 400 ) {
+		global $post;
+
+		$save_post = $post;
+		$post = get_post( $post_id );
+
+		setup_postdata( $post );
+
+		$excerpt = get_the_excerpt();
+		$post = $save_post;
+
+		if ( $post ) {
+			setup_postdata( $post );
+		}
+
+		return ac_helper()-&gt;string-&gt;trim_words( $excerpt, $words );
+	}
+
+	/**
+	 * @param string $post_type
+	 * @param bool   $plural
+	 *
+	 * @return bool
+	 */
+	public function get_post_type_label( $post_type, $plural = false ) {
+		$post_type = get_post_type_object( $post_type );
+
+		if ( ! $post_type ) {
+			return false;
+		}
+
+		if ( $plural ) {
+			return $post_type-&gt;labels-&gt;name;
+		}
+
+		return $post_type-&gt;labels-&gt;singular_name;
+	}
+
+	/**
+	 * @param string $field Field
+	 * @param int    $id    Post ID
+	 *
+	 * @return string|false
+	 */
+	public function get_raw_field( $field, $id ) {
+		global $wpdb;
+
+		if ( ! $id || ! is_numeric( $id ) ) {
+			return false;
+		}
+
+		$sql = &quot;
+			SELECT &quot; . $wpdb-&gt;_real_escape( $field ) . &quot;
+			FROM $wpdb-&gt;posts
+			WHERE ID = %d
+			LIMIT 1
+		&quot;;
+
+		return $wpdb-&gt;get_var( $wpdb-&gt;prepare( $sql, $id ) );
+	}
+
+	/**
+	 * Get Post Title or Media Filename
+	 *
+	 * @param int|WP_Post $post
+	 *
+	 * @return bool|string
+	 */
+	public function get_title( $post ) {
+		$post = get_post( $post );
+
+		if ( ! $post ) {
+			return false;
+		}
+
+		$title = $post-&gt;post_title;
+
+		if ( &#x27;attachment&#x27; == $post-&gt;post_type ) {
+			$title = ac_helper()-&gt;image-&gt;get_file_name( $post-&gt;ID );
+		}
+
+		return $title;
+	}
+
+}
+</pre></details></body></html>

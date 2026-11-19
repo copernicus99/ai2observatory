@@ -1,0 +1,202 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/admin/upgrade.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/admin/upgrade.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Admin_Upgrade {
+
+
+	/**
+	 * NF_FU_Admin_Upgrade constructor.
+	 */
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_upgrade_settings&#x27;, array( $this, &#x27;upgrade&#x27; ), 99 );
+		add_filter( &#x27;ninja_forms_after_upgrade_settings&#x27;, array( $this, &#x27;after_upgrade&#x27; ), 99 );
+	}
+
+	/**
+	 * Get all the custom action defaults
+	 *
+	 * @return array
+	 */
+	protected function new_actions() {
+		$actions = array(
+			&#x27;file-upload-external&#x27;      =&gt; array(
+				&#x27;type&#x27;   =&gt; &#x27;file-upload-external&#x27;,
+				&#x27;label&#x27;  =&gt; &#x27;External File Upload&#x27;,
+				&#x27;active&#x27; =&gt; &#x27;1&#x27;,
+			),
+		);
+
+		return $actions;
+	}
+
+	/**
+	 * Upgrade the settings and field settings when NF core is upgraded to 3.0
+	 *
+	 * @param array $form
+	 *
+	 * @return array
+	 */
+	public function upgrade( $form ) {
+		$actions = $this-&gt;new_actions();
+
+		foreach ( $form[&#x27;actions&#x27;] as $action_key =&gt; $action ) {
+			// Email attachments
+			$action = $this-&gt;email_attachments( $action, $form );
+
+			// Create Post
+			$action = $this-&gt;create_post( $action, $form );
+
+			$form[&#x27;actions&#x27;][ $action_key ] = $action;
+		}
+
+		foreach ( $form[&#x27;fields&#x27;] as $key =&gt; $field ) {
+
+			if ( &#x27;_upload&#x27; !== $field[&#x27;type&#x27;] ) {
+				// Not an upload field
+				continue;
+			}
+
+			// Convert field type
+			$field[&#x27;type&#x27;] = NF_FU_File_Uploads::TYPE;
+
+			if ( 0 == $field[&#x27;data&#x27;][&#x27;upload_multi&#x27;] || empty( $field[&#x27;data&#x27;][&#x27;upload_multi_count&#x27;] ) ) {
+				// Default for single upload
+				$field[&#x27;data&#x27;][&#x27;upload_multi_count&#x27;] = 1;
+			}
+			unset( $field[&#x27;data&#x27;][&#x27;upload_multi&#x27;] );
+
+			if ( isset( $field[&#x27;data&#x27;][&#x27;upload_location&#x27;] ) ) {
+				$location = $field[&#x27;data&#x27;][&#x27;upload_location&#x27;];
+
+				$field[&#x27;data&#x27;][&#x27;save_to_server&#x27;] = 1;
+				if ( &#x27;none&#x27; === $location ) {
+					// No upload location is now an action
+					$field[&#x27;data&#x27;][&#x27;save_to_server&#x27;] = false;
+				} else if ( &#x27;server&#x27; !== $location ) {
+					// External location
+					$service = &#x27;amazon&#x27; === $location ? &#x27;s3&#x27; : &#x27;dropbox&#x27;;
+
+					$actions[ &#x27;file-upload-external&#x27; ][ $key ] = $service;
+				}
+
+				unset( $field[&#x27;data&#x27;][&#x27;upload_location&#x27;] );
+			}
+
+			$form[&#x27;fields&#x27;][ $key ] = $field;
+		}
+
+		foreach ( $actions as $action_key =&gt; $action ) {
+			if ( 3 === count( $action ) ) {
+				// Remove unused actions
+				unset( $actions[ $action_key ] );
+			}
+		}
+
+		$form[&#x27;actions&#x27;] = array_merge( $form[&#x27;actions&#x27;], array_values( $actions ) );
+
+		return $form;
+	}
+
+	/**
+	 * Replace old keys with new Field keys
+	 *
+	 * @param array $form
+	 *
+	 * @return array
+	 */
+	public function after_upgrade( $form ) {
+		$actions = array_keys( $this-&gt;new_actions() );
+		// Replace field IDs with keys in actions
+		foreach ( $form[&#x27;actions&#x27;] as $action_key =&gt; $action ) {
+			if ( &#x27;email&#x27; === $action[&#x27;type&#x27;] ) {
+				// Email attachments
+				foreach ( $form[&#x27;fields&#x27;] as $field_key =&gt; $field ) {
+					if ( isset( $action[ &#x27;field_list_fu_email_attachments-&#x27; . $field_key ] ) ) {
+						$new_key = &#x27;field_list_fu_email_attachments-&#x27; . $field[&#x27;key&#x27;];
+
+						$action[ $new_key ] = $action[ &#x27;field_list_fu_email_attachments-&#x27; . $field_key ];
+						unset( $action[ &#x27;field_list_fu_email_attachments-&#x27; . $field_key ] );
+					}
+				}
+			} else if ( &#x27;create-post&#x27; === $action[&#x27;type&#x27;] ) {
+				// Create Post featured image
+				foreach ( $form[&#x27;fields&#x27;] as $field_key =&gt; $field ) {
+					if ( isset( $action[&#x27;featured_image&#x27;] ) &amp;&amp; $field_key === $action[&#x27;featured_image&#x27;] ) {
+						$action[&#x27;featured_image&#x27;] = $field[&#x27;key&#x27;];
+					}
+				}
+			} else if ( in_array( $action[&#x27;type&#x27;], $actions ) ) {
+				// FU actions
+				foreach ( $form[&#x27;fields&#x27;] as $field_key =&gt; $field ) {
+					if ( isset( $action[ $field_key ] ) ) {
+						$new_key = &#x27;field_list_&#x27; . $action[ $field_key ] . &#x27;-&#x27; . $field[&#x27;key&#x27;];
+
+						$action[ $new_key ] = &#x27;1&#x27;;
+						unset( $action[ $field_key ] );
+					}
+				}
+			}
+
+			$form[&#x27;actions&#x27;][ $action_key ] = $action;
+		}
+
+
+		return $form;
+	}
+
+	/**
+	 * Add email attachments to the action
+	 *
+	 * @param array $action
+	 * @param array $form
+	 *
+	 * @return array
+	 */
+	protected function email_attachments( $action, $form ) {
+		if ( &#x27;email&#x27; !== $action[&#x27;type&#x27;] ) {
+			return $action;
+		}
+
+		foreach ( $form[&#x27;fields&#x27;] as $key =&gt; $field ) {
+			if ( &#x27;_upload&#x27; !== $field[&#x27;type&#x27;] ) {
+				// Not an upload field
+				continue;
+			}
+
+			if ( isset( $action[ &#x27;file_upload_&#x27; . $field[&#x27;id&#x27;] ] ) ) {
+				$action[ &#x27;field_list_fu_email_attachments-&#x27; . $key ] = $action[ &#x27;file_upload_&#x27; . $field[&#x27;id&#x27;] ];
+				unset( $action[ &#x27;file_upload_&#x27; . $field[&#x27;id&#x27;] ] );
+			}
+		}
+
+		return $action;
+	}
+
+	/**
+	 * Add featured_image to Create Post action
+	 *
+	 * @param array $action
+	 * @param array $form
+	 *
+	 * @return array
+	 */
+	protected function create_post( $action, $form ) {
+		if ( &#x27;create-post&#x27; !== $action[&#x27;type&#x27;] ) {
+			return $action;
+		}
+
+		foreach ( $form[&#x27;fields&#x27;] as $key =&gt; $field ) {
+			if ( &#x27;_upload&#x27; !== $field[&#x27;type&#x27;] ) {
+				// Not an upload field
+				continue;
+			}
+
+			if ( isset( $field[&#x27;data&#x27;][&#x27;featured_image&#x27;] ) &amp;&amp; 1 == $field[&#x27;data&#x27;][&#x27;featured_image&#x27;] ) {
+				$action[&#x27;featured_image&#x27;] = $key;
+			}
+		}
+
+		return $action;
+	}
+}</pre></details></body></html>

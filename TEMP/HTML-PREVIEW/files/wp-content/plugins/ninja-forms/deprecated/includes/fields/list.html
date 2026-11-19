@@ -1,0 +1,1090 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/list.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/list.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field__list_type&quot; value=&quot;&quot;&gt;
+		
+	&lt;input type=&quot;text&quot; name=&quot;[label]&quot; id=&quot;&quot; class=&quot;&quot; value=&quot;&quot;&gt;
+	
+		&lt;input type=&quot;text&quot; name=&quot;[value]&quot; id=&quot;&quot; class=&quot;ninja-forms-field--list-option-value&quot; value=&quot;&quot;&gt;
+		
+		&lt;input type=&quot;hidden&quot; name=&quot;[value]&quot; value=&quot;_ninja_forms_no_value&quot;&gt;
+		
+	&lt;input type=&quot;text&quot; name=&quot;[calc]&quot; id=&quot;&quot; class=&quot;&quot; value=&quot;&quot;&gt;
+	
+	
+	&lt;p id=&quot;ninja_forms_field__multi_size_p&quot; class=&quot;description description-wide&quot; style=&quot;&quot;&gt;
+		: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;ninja_forms_field_[multi_size]&quot; value=&quot;&quot;&gt;
+	&lt;/p&gt;
+	&lt;span id=&quot;ninja_forms_field__list_span&quot; class=&quot;ninja-forms-list-span&quot;&gt;
+		&lt;!-- &lt;p class=&quot;description description-wide&quot;&gt; --&gt;
+			&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__list_add_option&quot; class=&quot;ninja-forms-field-add-list-option button-secondary&quot;&gt;&lt;/a&gt;
+			&lt;a href=&quot;#TB_inline?width=640&amp;height=530&amp;inlineId=ninja_forms_field__import_options_div&quot; class=&quot;thickbox button-secondary&quot; title=&quot;&quot; id=&quot;&quot;&gt;&lt;/a&gt;
+		&lt;!-- &lt;/p&gt; --&gt;
+
+		&lt;p class=&quot;description description-wide&quot;&gt;
+			&lt;input type=&quot;hidden&quot; id=&quot;&quot; name=&quot;ninja_forms_field_[list_show_value]&quot; value=&quot;0&quot;&gt;
+			&lt;label for=&quot;ninja_forms_field__list_show_value&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; id=&quot;ninja_forms_field__list_show_value&quot; name=&quot;ninja_forms_field_[list_show_value]&quot; class=&quot;ninja-forms-field-list-show-value&quot; &gt;
+			 &lt;/label&gt;
+		&lt;/p&gt;
+		&lt;div id=&quot;ninja_forms_field__list_options&quot; class=&quot;ninja-forms-field-list-options description description-wide&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_[list][options]&quot; value=&quot;&quot;&gt;
+			
+
+		&lt;/div&gt;
+	&lt;/span&gt;
+	
+		&lt;div id=&quot;ninja_forms_field__import_options_div&quot; style=&quot;display:none;&quot;&gt;
+			&lt;textarea id=&quot;test&quot; class=&quot;list-import-textarea&quot;&gt;&lt;/textarea&gt;
+			&lt;input type=&quot;button&quot; class=&quot;save-list-import button-secondary&quot; value=&quot;&quot; rel=&quot;&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;cancel-list-import button-secondary&quot; value=&quot;&quot;&gt;
+			&lt;p&gt;&lt;/p&gt;
+			&lt;p&gt;&lt;/p&gt;
+&lt;pre&gt;
+
+&lt;/pre&gt;
+
+			&lt;p&gt;&lt;/p&gt;
+&lt;pre&gt;
+
+&lt;/pre&gt;
+
+
+		&lt;/div&gt;
+	
+				
+					&lt;option value=&quot;&quot;  style=&quot;&quot; &gt;&lt;/option&gt;
+				
+			&lt;/select&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&quot; value=&quot;&quot;&gt;&lt;span id=&quot;ninja_forms_field__options_span&quot; class=&quot;&quot; rel=&quot;&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;label id=&quot;ninja_forms_field___label&quot; class=&quot;ninja-forms-field--options&quot; style=&quot;&quot; for=&quot;ninja_forms_field__&quot;&gt;&lt;input id=&quot;ninja_forms_field__&quot; name=&quot;ninja_forms_field_&quot; type=&quot;radio&quot; class=&quot;&quot; value=&quot;&quot;  rel=&quot;&quot; /&gt;&lt;/label&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/span&gt;&lt;li style=&quot;display:none;&quot; id=&quot;ninja_forms_field__template&quot;&gt;&lt;label&gt;&lt;input id=&quot;ninja_forms_field__&quot; name=&quot;&quot; type=&quot;radio&quot; class=&quot;&quot; value=&quot;&quot; rel=&quot;&quot; /&gt;&lt;/label&gt;&lt;/li&gt;
+			&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&quot; name=&quot;ninja_forms_field_&quot; value=&quot;&quot;&gt;&lt;span id=&quot;ninja_forms_field__options_span&quot; class=&quot;&quot; rel=&quot;&quot;&gt;&lt;ul&gt;&lt;li&gt;&lt;label id=&quot;ninja_forms_field___label&quot; class=&quot;ninja-forms-field--options&quot; style=&quot;&quot;&gt;&lt;input id=&quot;ninja_forms_field__&quot; name=&quot;ninja_forms_field_[]&quot; type=&quot;checkbox&quot; class=&quot; ninja_forms_field_&quot; value=&quot;&quot;  rel=&quot;&quot;/&gt;&lt;/label&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/span&gt;&lt;li style=&quot;display:none;&quot; id=&quot;ninja_forms_field__template&quot;&gt;&lt;label&gt;&lt;input id=&quot;ninja_forms_field__&quot; name=&quot;&quot; type=&quot;checkbox&quot; class=&quot;&quot; value=&quot;&quot; rel=&quot;&quot; /&gt;&lt;/label&gt;&lt;/li&gt;
+			
+			&lt;select name=&quot;ninja_forms_field_[]&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; multiple size=&quot;&quot; rel=&quot;&quot; &gt;
+				
+					&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+					
+					&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+					
+			&lt;/select&gt;
+			&lt;select id=&quot;ninja_forms_field__clone&quot; style=&quot;display:none;&quot; rel=&quot;&quot; &gt;
+				
+					&lt;option value=&quot;&quot; title=&quot;&quot; &gt;&lt;/option&gt;
+					
+			&lt;/select&gt;
+			
+	&lt;div id=&quot;ninja_forms_field__list_option_&quot; class=&quot;ninja-forms-field--list-option ninja-forms-field-list-option&quot;  data-field=&quot;&quot;&gt;
+		&lt;table class=&quot;list-options&quot;&gt;
+			&lt;tr&gt;
+				&lt;td class=&quot;ninja-forms-delete-list-option-td&quot;&gt;
+					&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field__list_remove_option&quot; class=&quot;nf-remove-list-option&quot;&gt;&lt;span class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-label-td&quot;&gt;
+					: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_[list][options][][label]&quot; id=&quot;ninja_forms_field__list_option_label&quot; class=&quot;ninja-forms-field-list-option-label&quot; value=&quot;&quot;&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-value-td&quot;&gt;
+					&lt;span id=&quot;ninja_forms_field__list_option__value_span&quot; name=&quot;&quot; class=&quot;ninja-forms-field--list-option-value&quot; style=&quot;&quot;&gt;: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_[list][options][][value]&quot; id=&quot;ninja_forms_field__list_option_value&quot; class=&quot;ninja-forms-field-list-option-value&quot; value=&quot;&quot;&gt;&lt;/span&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-calc-td&quot;&gt;
+					: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_[list][options][][calc]&quot; id=&quot;ninja_forms_field__list_option_calc&quot; class=&quot;ninja-forms-field-list-option-calc&quot; value=&quot;&quot;&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-selected-td&quot;&gt;
+					&lt;label for=&quot;ninja_forms_field__options__selected&quot;&gt; &lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;ninja_forms_field_[list][options][][selected]&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; name=&quot;ninja_forms_field_[list][options][][selected]&quot; id=&quot;ninja_forms_field__options__selected&quot; class=&quot;ninja-forms-field-list-option-selected&quot; &gt;&lt;/label&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-drag-td&quot;&gt;
+					&lt;span class=&quot;ninja-forms-drag&quot;&gt;&lt;span class=&quot;dashicons dashicons-menu&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/table&gt;
+		&lt;/div&gt;
+
+	
+			&lt;select name=&quot;fields[]&quot; id=&quot;ninja_forms_field_&quot; class=&quot;&quot; rel=&quot;&quot;&gt;
+				
+					&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+					
+					&lt;option value=&quot;&quot;  style=&quot;&quot; &gt;&lt;/option&gt;
+				
+			&lt;/select&gt;
+			
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[]&quot; value=&quot;&quot;&gt;&lt;ul&gt;
+				&lt;li&gt;
+					&lt;label&gt;&lt;input id=&quot;&quot; name=&quot;fields[]&quot; type=&quot;radio&quot; class=&quot;&quot; value=&quot;&quot;  /&gt;&lt;/label&gt;
+				&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[][]&quot; value=&quot;&quot;&gt;&lt;ul&gt;
+				&lt;li&gt;
+					&lt;label&gt;
+						&lt;input id=&quot;&quot; name=&quot;fields[][]&quot; type=&quot;checkbox&quot; value=&quot;&quot;  /&gt; 
+					&lt;/label&gt;
+
+				&lt;/li&gt;
+				&lt;/ul&gt;
+			
+			&lt;select name=&quot;fields[][]&quot; multiple size=&quot;5&quot;&gt;
+				
+					&lt;option value=&quot;&quot;&gt;&lt;/option&gt;
+					
+					&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+					
+			&lt;/select&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_list(){
+	$args = array(
+		&#x27;name&#x27;          =&gt; __( &#x27;List&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_function&#x27; =&gt; &#x27;ninja_forms_field_list_edit&#x27;,
+		&#x27;edit_options&#x27;  =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_info_field_group&#x27;,
+			),
+		),
+		&#x27;edit_settings&#x27; =&gt; array(
+			&#x27;advanced&#x27; =&gt; array(
+				array(
+					&#x27;type&#x27;  =&gt; &#x27;checkbox&#x27;,
+					&#x27;name&#x27;  =&gt; &#x27;user_state&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;This is the user\&#x27;s state&#x27;, &#x27;ninja-forms&#x27; ),
+				),
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_list_display&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;action&#x27; =&gt; array(
+				&#x27;show&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Show This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;show&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;hide&#x27;,
+				),
+				&#x27;hide&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Hide This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;hide&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;hide&#x27;,
+				),
+				&#x27;change_value&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Selected Value&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;change_value&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;list&#x27;,
+				),
+				&#x27;add_value&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Add Value&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;add_value&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;ninja_forms_field_list_add_value&#x27;,
+				),
+				&#x27;remove_value&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Remove Value&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;remove_value&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;list&#x27;,
+				),
+			),
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;list&#x27;,
+			),
+		),
+		&#x27;edit_sub_value&#x27; =&gt; &#x27;nf_field_list_edit_sub_value&#x27;,
+		&#x27;sub_table_value&#x27; =&gt; &#x27;nf_field_list_sub_table_value&#x27;,
+	);
+
+	ninja_forms_register_field(&#x27;_list&#x27;, $args);
+	add_filter( &#x27;ninja_forms_field_wrap_class&#x27;, &#x27;ninja_forms_field_filter_list_wrap_class&#x27;, 10, 2 );
+	add_action(&#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_list_type&#x27;, 10, 2);
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_list&#x27;);
+
+function ninja_forms_display_list_type( $field_id, $data ){
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+	if( $field_type == &#x27;_list&#x27; ){
+		if ( isset( $data[&#x27;list_type&#x27;] ) ){
+			$list_type = $data[&#x27;list_type&#x27;];
+		} else{
+			$list_type = &#x27;&#x27;;
+		}
+
+		?&gt;
+		&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_type&quot; value=&quot;&lt;?php echo $list_type;?&gt;&quot;&gt;
+		&lt;?php
+	}
+}
+
+function ninja_forms_field_list_add_value( $field_id, $x, $conditional, $name, $id, $current = &#x27;&#x27;, $field_data = &#x27;&#x27; ){
+	$current_value = isset( $current[&#x27;value&#x27;][&#x27;value&#x27;] ) ? $current[&#x27;value&#x27;][&#x27;value&#x27;] : &#x27;&#x27;;
+	$current_label = isset( $current[&#x27;value&#x27;][&#x27;label&#x27;] ) ? $current[&#x27;value&#x27;][&#x27;label&#x27;] : &#x27;&#x27;;
+	$current_calc = isset ( $current[&#x27;value&#x27;][&#x27;calc&#x27;] ) ? $current[&#x27;value&#x27;][&#x27;calc&#x27;] : &#x27;&#x27;;
+
+	$list_show_value = isset( $field_data[&#x27;list_show_value&#x27;] ) ? $field_data[&#x27;list_show_value&#x27;] : &#x27;&#x27;;
+
+	_e( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; );
+	?&gt;
+	&lt;input type=&quot;text&quot; name=&quot;&lt;?php echo $name;?&gt;[label]&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot; value=&quot;&lt;?php echo $current_label;?&gt;&quot;&gt;
+	&lt;?php
+	if( $list_show_value == 1 ){
+		_e( &#x27;Value&#x27;, &#x27;ninja-forms&#x27; );
+		?&gt;
+		&lt;input type=&quot;text&quot; name=&quot;&lt;?php echo $name;?&gt;[value]&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-list-option-value&quot; value=&quot;&lt;?php echo $current_value;?&gt;&quot;&gt;
+		&lt;?php
+	}else{
+		?&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;&lt;?php echo $name;?&gt;[value]&quot; value=&quot;_ninja_forms_no_value&quot;&gt;
+		&lt;?php
+	}
+	_e( &#x27;Calc&#x27;, &#x27;ninja-forms&#x27; );
+	?&gt;
+	&lt;input type=&quot;text&quot; name=&quot;&lt;?php echo $name;?&gt;[calc]&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&quot; value=&quot;&lt;?php echo $current_calc;?&gt;&quot;&gt;
+	&lt;?php
+
+}
+
+function ninja_forms_field_list_edit( $field_id, $data ) {
+	global $wpdb;
+
+	$list_type = isset( $data[&#x27;list_type&#x27;] ) ? $data[&#x27;list_type&#x27;] : &#x27;&#x27;;
+	$hidden = isset( $data[&#x27;list_show_value&#x27;] ) ? $data[&#x27;list_show_value&#x27;] : 0;
+	$multi_size = isset( $data[&#x27;multi_size&#x27;] ) ? $data[&#x27;multi_size&#x27;] : 5;
+	$default_options = array(
+		array( &#x27;label&#x27; =&gt; &#x27;Option 1&#x27;, &#x27;value&#x27; =&gt; &#x27;&#x27;, &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0 ),
+		array( &#x27;label&#x27; =&gt; &#x27;Option 2&#x27;, &#x27;value&#x27; =&gt; &#x27;&#x27;, &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0 ),
+		array( &#x27;label&#x27; =&gt; &#x27;Option 3&#x27;, &#x27;value&#x27; =&gt; &#x27;&#x27;, &#x27;calc&#x27; =&gt; &#x27;&#x27;, &#x27;selected&#x27; =&gt; 0 ),
+	);
+
+	$list_options = isset ( $data[&#x27;list&#x27;][&#x27;options&#x27;] ) ? $data[&#x27;list&#x27;][&#x27;options&#x27;] : $default_options;
+
+	$list_type_options = array(
+		array(&#x27;name&#x27; =&gt; __( &#x27;Dropdown&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;dropdown&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Radio&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;radio&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Checkboxes&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;checkbox&#x27;),
+		array(&#x27;name&#x27; =&gt; __( &#x27;Multi-Select&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;multi&#x27;),
+	);
+	
+	ninja_forms_edit_field_el_output( $field_id, &#x27;select&#x27;, __( &#x27;List Type&#x27;, &#x27;ninja-forms&#x27; ), &#x27;list_type&#x27;, $list_type, &#x27;wide&#x27;, $list_type_options, &#x27;widefat&#x27; );
+	
+	?&gt;
+	
+	&lt;p id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_multi_size_p&quot; class=&quot;description description-wide&quot; style=&quot;&lt;?php if($list_type != &#x27;multi&#x27;){ echo &#x27;display:none;&#x27;;}?&gt;&quot;&gt;
+		&lt;?php _e( &#x27;Multi-Select Box Size&#x27;, &#x27;ninja-forms&#x27; );?&gt;: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[multi_size]&quot; value=&quot;&lt;?php echo $multi_size;?&gt;&quot;&gt;
+	&lt;/p&gt;
+	&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_span&quot; class=&quot;ninja-forms-list-span&quot;&gt;
+		&lt;!-- &lt;p class=&quot;description description-wide&quot;&gt; --&gt;
+			&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_add_option&quot; class=&quot;ninja-forms-field-add-list-option button-secondary&quot;&gt;&lt;?php _e( &#x27;Add New&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/a&gt;
+			&lt;a href=&quot;#TB_inline?width=640&amp;height=530&amp;inlineId=ninja_forms_field_&lt;?php echo $field_id;?&gt;_import_options_div&quot; class=&quot;thickbox button-secondary&quot; title=&quot;&lt;?php _e( &#x27;Import List Items&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; id=&quot;&quot;&gt;&lt;?php _e( &#x27;Import List Items&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/a&gt;
+		&lt;!-- &lt;/p&gt; --&gt;
+
+		&lt;p class=&quot;description description-wide&quot;&gt;
+			&lt;input type=&quot;hidden&quot; id=&quot;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list_show_value]&quot; value=&quot;0&quot;&gt;
+			&lt;label for=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_show_value&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_show_value&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list_show_value]&quot; class=&quot;ninja-forms-field-list-show-value&quot; &lt;?php if(isset($data[&#x27;list_show_value&#x27;]) AND $data[&#x27;list_show_value&#x27;] == 1){ echo &quot;checked=&#x27;checked&#x27;&quot;;}?&gt;&gt;
+			&lt;?php _e( &#x27;Show list item values&#x27;, &#x27;ninja-forms&#x27; );?&gt; &lt;/label&gt;
+		&lt;/p&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_options&quot; class=&quot;ninja-forms-field-list-options description description-wide&quot;&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options]&quot; value=&quot;&quot;&gt;
+			&lt;?php
+			if( isset( $list_options ) AND is_array( $list_options ) AND $list_options != &#x27;&#x27; ){
+				$x = 0;
+				foreach( $list_options as $option ) {
+					ninja_forms_field_list_option_output( $field_id, $x, $option, $hidden );
+					$x++;
+				}
+			}
+			?&gt;
+
+		&lt;/div&gt;
+	&lt;/span&gt;
+	&lt;?php add_thickbox(); ?&gt;
+		&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_import_options_div&quot; style=&quot;display:none;&quot;&gt;
+			&lt;textarea id=&quot;test&quot; class=&quot;list-import-textarea&quot;&gt;&lt;/textarea&gt;
+			&lt;input type=&quot;button&quot; class=&quot;save-list-import button-secondary&quot; value=&quot;&lt;?php _e( &#x27;Import&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;cancel-list-import button-secondary&quot; value=&quot;&lt;?php _e( &#x27;Cancel&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&quot;&gt;
+			&lt;p&gt;&lt;?php _e( &#x27;To use this feature, you can paste your CSV into the textarea above.&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/p&gt;
+			&lt;p&gt;&lt;?php _e( &#x27;The format should look like the following:&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/p&gt;
+&lt;pre&gt;
+&lt;?php
+$example1 = _x( &#x27;Label,Value,Calc&#x27;, &#x27;Example for list importing. Leave puncation in place.&#x27;, &#x27;ninja-forms&#x27; );
+echo $example1;
+echo &#x27;&lt;br /&gt;&#x27;;
+echo $example1;
+echo &#x27;&lt;br /&gt;&#x27;;
+echo $example1;
+?&gt;
+&lt;/pre&gt;
+
+			&lt;p&gt;&lt;?php _e( &quot;If you want to send an empty value or calc, you should use &#x27;&#x27; for those.&quot;, &#x27;ninja-forms&#x27; );?&gt;&lt;/p&gt;
+&lt;pre&gt;
+&lt;?php
+$example2 = __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ) . &quot;,&#x27;&#x27;,&#x27;&#x27;&quot;;
+echo $example2;
+echo &#x27;&lt;br /&gt;&#x27;;
+echo $example2;
+echo &#x27;&lt;br /&gt;&#x27;;
+echo $example2;
+?&gt;
+&lt;/pre&gt;
+
+
+		&lt;/div&gt;
+	&lt;?php
+}
+
+function ninja_forms_field_list_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+	global $wpdb, $ninja_forms_fields;
+
+	if(isset($data[&#x27;show_field&#x27;])){
+		$show_field = $data[&#x27;show_field&#x27;];
+	}else{
+		$show_field = true;
+	}
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+	$field_row = ninja_forms_get_field_by_id($field_id);
+
+	$type = $field_row[&#x27;type&#x27;];
+	$type_name = $ninja_forms_fields[$type][&#x27;name&#x27;];
+
+	if ( isset( $data[&#x27;list_type&#x27;] ) ) {
+		$list_type = $data[&#x27;list_type&#x27;];
+	} else {
+		$list_type = &#x27;&#x27;;
+	}
+
+	if(isset($data[&#x27;list_show_value&#x27;])){
+		$list_show_value = $data[&#x27;list_show_value&#x27;];
+	}else{
+		$list_show_value = 0;
+	}
+
+	if( isset( $data[&#x27;list&#x27;][&#x27;options&#x27;] ) AND $data[&#x27;list&#x27;][&#x27;options&#x27;] != &#x27;&#x27; ){
+		$options = $data[&#x27;list&#x27;][&#x27;options&#x27;];
+	}else{
+		$options = array();
+	}
+
+	if(isset($data[&#x27;label_pos&#x27;])){
+		$label_pos = $data[&#x27;label_pos&#x27;];
+	}else{
+		$label_pos = &#x27;left&#x27;;
+	}
+
+	if(isset($data[&#x27;label&#x27;])){
+		$label = $data[&#x27;label&#x27;];
+	}else{
+		$label = $type_name;
+	}
+
+	if( isset( $data[&#x27;multi_size&#x27;] ) ){
+		$multi_size = $data[&#x27;multi_size&#x27;];
+	}else{
+		$multi_size = 5;
+	}
+
+	if( isset( $data[&#x27;default_value&#x27;] ) AND !empty( $data[&#x27;default_value&#x27;] ) ){
+		$selected_value = $data[&#x27;default_value&#x27;];
+	}else{
+		$selected_value = &#x27;&#x27;;
+	}
+
+	$list_options_span_class = apply_filters( &#x27;ninja_forms_display_list_options_span_class&#x27;, &#x27;&#x27;, $field_id );
+
+	switch($list_type){
+		case &#x27;dropdown&#x27;:
+			echo apply_filters( &#x27;ninja_forms_dropdown_open_tag&#x27;, &#x27;&lt;select name=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;&quot; id=&quot;ninja_forms_field_&#x27;.$field_id.&#x27;&quot; class=&quot;&#x27;.$field_class.&#x27;&quot; rel=&quot;&#x27;.$field_id.&#x27;&quot;&gt;&#x27;, $field_id, $field_class, $data, $ninja_forms_fields, $options );
+			?&gt;
+				&lt;?php
+				$select_placeholder = &#x27;&#x27;;
+				if($label_pos == &#x27;inside&#x27;){
+					$select_placeholder = &#x27;&lt;option value=&quot;&quot;&gt;&#x27;.$label.&#x27;&lt;/option&gt;&#x27;;
+				}
+				echo apply_filters( &#x27;ninja_forms_dropdown_placeholder&#x27;, $select_placeholder, $label, $label_pos, $field_id, $field_class, $data, $ninja_forms_fields, $options );
+				foreach($options as $option){
+
+					if(isset($option[&#x27;value&#x27;])){
+						$value = $option[&#x27;value&#x27;];
+					}else{
+						$value = $option[&#x27;label&#x27;];
+					}
+
+					$value = htmlspecialchars( $value, ENT_QUOTES );
+
+					if(isset($option[&#x27;label&#x27;])){
+						$label = $option[&#x27;label&#x27;];
+					}else{
+						$label = &#x27;&#x27;;
+					}
+
+					if(isset($option[&#x27;display_style&#x27;])){
+						$display_style = $option[&#x27;display_style&#x27;];
+					}else{
+						$display_style = &#x27;&#x27;;
+					}
+
+					if ( isset( $option[&#x27;disabled&#x27;] ) AND $option[&#x27;disabled&#x27;] ){
+						$disabled = &#x27;disabled&#x27;;
+					}else{
+						$disabled = &#x27;&#x27;;
+					}
+
+					$label = htmlspecialchars( $label, ENT_QUOTES );
+
+					$label = stripslashes( $label );
+
+					$label = str_replace( &#x27;&amp;amp;&#x27;, &#x27;&amp;&#x27;, $label );
+
+					$field_label = $data[&#x27;label&#x27;];
+
+					if($list_show_value == 0){
+						$value = $label;
+					}
+
+
+					if ( $selected_value == $value OR ( is_array( $selected_value ) AND in_array( $value, $selected_value ) ) ) {
+						$selected = &#x27;selected&#x27;;
+					}else if( ( $selected_value == &#x27;&#x27; OR $selected_value == $field_label ) AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+						$selected = &#x27;selected&#x27;;
+					}else{
+						$selected = &#x27;&#x27;;
+					}
+
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt; style=&quot;&lt;?php echo $display_style;?&gt;&quot; &lt;?php echo $disabled;?&gt;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+				&lt;?php
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+		case &#x27;radio&#x27;:
+			$x = 0;
+			if( $label_pos == &#x27;left&#x27; OR $label_pos == &#x27;above&#x27; ){
+				?&gt;&lt;?php
+
+			}
+			?&gt;&lt;input type=&quot;hidden&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&quot;&gt;&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_options_span&quot; class=&quot;&lt;?php echo $list_options_span_class;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;&lt;ul&gt;&lt;?php
+			foreach($options as $option){
+
+				if(isset($option[&#x27;value&#x27;])){
+					$value = $option[&#x27;value&#x27;];
+				}else{
+					$value = $option[&#x27;label&#x27;];
+				}
+
+				$value = htmlspecialchars( $value, ENT_QUOTES );
+
+				if(isset($option[&#x27;label&#x27;])){
+					$label = $option[&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				if(isset($option[&#x27;display_style&#x27;])){
+					$display_style = $option[&#x27;display_style&#x27;];
+				}else{
+					$display_style = &#x27;&#x27;;
+				}
+
+				//$label = htmlspecialchars( $label, ENT_QUOTES );
+
+				$label = stripslashes($label);
+
+				if($list_show_value == 0){
+					$value = $label;
+				}
+
+				if ( $selected_value == $value OR ( is_array( $selected_value ) AND in_array( $value, $selected_value ) ) ) {
+					$selected = &#x27;checked&#x27;;
+				}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$selected = &#x27;checked&#x27;;
+				}else{
+					$selected = &#x27;&#x27;;
+				}
+				?&gt;&lt;li&gt;&lt;label id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;_label&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-options&quot; style=&quot;&lt;?php echo $display_style;?&gt;&quot; for=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;&quot;&gt;&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;radio&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; /&gt;&lt;?php echo $label;?&gt;&lt;/label&gt;&lt;/li&gt;&lt;?php
+				$x++;
+			}
+			?&gt;&lt;/ul&gt;&lt;/span&gt;&lt;li style=&quot;display:none;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_template&quot;&gt;&lt;label&gt;&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&quot; name=&quot;&quot; type=&quot;radio&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; /&gt;&lt;/label&gt;&lt;/li&gt;
+			&lt;?php
+			break;
+		case &#x27;checkbox&#x27;:
+			$x = 0;
+			?&gt;&lt;input type=&quot;hidden&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&quot;&gt;&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_options_span&quot; class=&quot;&lt;?php echo $list_options_span_class;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;&lt;ul&gt;&lt;?php
+			foreach($options as $option){
+
+				if(isset($option[&#x27;value&#x27;])){
+					$value = $option[&#x27;value&#x27;];
+				}else{
+					$value = $option[&#x27;label&#x27;];
+				}
+
+				$value = htmlspecialchars( $value, ENT_QUOTES );
+
+				if(isset($option[&#x27;label&#x27;])){
+					$label = $option[&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				if(isset($option[&#x27;display_style&#x27;])){
+					$display_style = $option[&#x27;display_style&#x27;];
+				}else{
+					$display_style = &#x27;&#x27;;
+				}
+
+				//$label = htmlspecialchars( $label, ENT_QUOTES );
+
+				$label = stripslashes( $label) ;
+
+				if($list_show_value == 0){
+					$value = $label;
+				}
+
+				if( isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$checked = &#x27;checked&#x27;;
+				}
+
+				if( is_array( $selected_value ) AND in_array($value, $selected_value) ){
+					$checked = &#x27;checked&#x27;;
+				}else if($selected_value == $value){
+					$checked = &#x27;checked&#x27;;
+				}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$checked = &#x27;checked&#x27;;
+				}else{
+					$checked = &#x27;&#x27;;
+				}
+
+				?&gt;&lt;li&gt;&lt;label id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;_label&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-options&quot; style=&quot;&lt;?php echo $display_style;?&gt;&quot;&gt;&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&lt;?php echo $x;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[]&quot; type=&quot;checkbox&quot; class=&quot;&lt;?php echo $field_class;?&gt; ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $checked;?&gt; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;/&gt;&lt;?php echo $label;?&gt;&lt;/label&gt;&lt;/li&gt;&lt;?php
+				$x++;
+			}
+			?&gt;&lt;/ul&gt;&lt;/span&gt;&lt;li style=&quot;display:none;&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_template&quot;&gt;&lt;label&gt;&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_&quot; name=&quot;&quot; type=&quot;checkbox&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; /&gt;&lt;/label&gt;&lt;/li&gt;
+			&lt;?php
+			break;
+		case &#x27;multi&#x27;:
+			?&gt;
+			&lt;select name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; multiple size=&quot;&lt;?php echo $multi_size;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+				&lt;?php
+				if($label_pos == &#x27;inside&#x27;){
+					?&gt;
+					&lt;option value=&quot;&quot;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+				}
+				foreach($options as $option){
+
+					if(isset($option[&#x27;value&#x27;])){
+						$value = $option[&#x27;value&#x27;];
+					}else{
+						$value = $option[&#x27;label&#x27;];
+					}
+
+					$value = htmlspecialchars( $value, ENT_QUOTES );
+
+					if(isset($option[&#x27;label&#x27;])){
+						$label = $option[&#x27;label&#x27;];
+					}else{
+						$label = &#x27;&#x27;;
+					}
+
+					if(isset($option[&#x27;display_style&#x27;])){
+						$display_style = $option[&#x27;display_style&#x27;];
+					}else{
+						$display_style = &#x27;&#x27;;
+					}
+
+					$label = htmlspecialchars( $label, ENT_QUOTES );
+
+					$label = stripslashes($label);
+
+					if($list_show_value == 0){
+						$value = $label;
+					}
+
+					if(is_array($selected_value) AND in_array($value, $selected_value)){
+						$selected = &#x27;selected&#x27;;
+					}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+						$selected = &#x27;selected&#x27;;
+					}else{
+						$selected = &#x27;&#x27;;
+					}
+
+					if( $display_style == &#x27;&#x27; ){
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+					}
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;select id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_clone&quot; style=&quot;display:none;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &gt;
+				&lt;?php
+				$x = 0;
+				foreach($options as $option){
+
+					if(isset($option[&#x27;value&#x27;])){
+						$value = $option[&#x27;value&#x27;];
+					}else{
+						$value = $option[&#x27;label&#x27;];
+					}
+
+					$value = htmlspecialchars( $value, ENT_QUOTES );
+
+					if(isset($option[&#x27;label&#x27;])){
+						$label = $option[&#x27;label&#x27;];
+					}else{
+						$label = &#x27;&#x27;;
+					}
+
+					if(isset($option[&#x27;display_style&#x27;])){
+						$display_style = $option[&#x27;display_style&#x27;];
+					}else{
+						$display_style = &#x27;&#x27;;
+					}
+
+					$label = htmlspecialchars( $label, ENT_QUOTES );
+
+					$label = stripslashes( $label );
+
+					if($list_show_value == 0){
+						$value = $label;
+					}
+
+					if(is_array($selected_value) AND in_array($value, $selected_value)){
+						$selected = &#x27;selected&#x27;;
+					}else{
+						$selected = &#x27;&#x27;;
+					}
+
+					if( $display_style != &#x27;&#x27; ){
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; title=&quot;&lt;?php echo $x;?&gt;&quot; &lt;?php echo $selected;?&gt;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+					}
+					$x++;
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;?php
+			break;
+	}
+}
+
+function ninja_forms_field_list_option_output($field_id, $x, $option = &#x27;&#x27;, $hidden = &#x27;&#x27;){
+	if($hidden == 1){
+		$hidden = &#x27;&#x27;;
+	}else{
+		$hidden = &#x27;display:none&#x27;;
+	}
+	if(is_array($option)){
+		$label = htmlspecialchars( $option[&#x27;label&#x27;] );
+		$label = str_replace( &#x27;&amp;amp;&#x27;, &#x27;&amp;&#x27;, $label );
+		$value = htmlspecialchars( $option[&#x27;value&#x27;] );
+		$value = str_replace( &#x27;&amp;amp;&#x27;, &#x27;&amp;&#x27;, $value );
+		if ( isset ( $option[&#x27;calc&#x27;] ) ) {
+			$calc = $option[&#x27;calc&#x27;];
+		} else {
+			$calc = &#x27;&#x27;;
+		}
+		if( isset( $option[&#x27;selected&#x27;] ) ){
+			$selected = $option[&#x27;selected&#x27;];
+		}else{
+			$selected = &#x27;&#x27;;
+		}
+		$hide = &#x27;&#x27;;
+	}else{
+		$label = &#x27;&#x27;;
+		$value = &#x27;&#x27;;
+		$selected = &#x27;&#x27;;
+		$calc = &#x27;&#x27;;
+		$hide = &#x27;style=&quot;display:none;&quot;&#x27;;
+	}
+	if($selected == 1){
+		$selected = &quot;checked=&#x27;checked&#x27;&quot;;
+	}
+
+	?&gt;
+	&lt;div id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_option_&lt;?php echo $x;?&gt;&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-list-option ninja-forms-field-list-option&quot; &lt;?php echo $hide;?&gt; data-field=&quot;&lt;?php echo $field_id; ?&gt;&quot;&gt;
+		&lt;table class=&quot;list-options&quot;&gt;
+			&lt;tr&gt;
+				&lt;td class=&quot;ninja-forms-delete-list-option-td&quot;&gt;
+					&lt;a href=&quot;#&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_remove_option&quot; class=&quot;nf-remove-list-option&quot;&gt;&lt;span class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-label-td&quot;&gt;
+					&lt;?php _e( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; );?&gt;: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options][&lt;?php echo $x;?&gt;][label]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_option_label&quot; class=&quot;ninja-forms-field-list-option-label&quot; value=&quot;&lt;?php echo $label;?&gt;&quot;&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-value-td&quot;&gt;
+					&lt;span id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_option_&lt;?php echo $x;?&gt;_value_span&quot; name=&quot;&quot; class=&quot;ninja-forms-field-&lt;?php echo $field_id;?&gt;-list-option-value&quot; style=&quot;&lt;?php echo $hidden;?&gt;&quot;&gt;&lt;?php _e( &#x27;Value&#x27;, &#x27;ninja-forms&#x27; );?&gt;: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options][&lt;?php echo $x;?&gt;][value]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_option_value&quot; class=&quot;ninja-forms-field-list-option-value&quot; value=&quot;&lt;?php echo $value;?&gt;&quot;&gt;&lt;/span&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-calc-td&quot;&gt;
+					&lt;?php _ex( &#x27;Calc&#x27;, &#x27;Short for calculation&#x27;, &#x27;ninja-forms&#x27; );?&gt;: &lt;input type=&quot;text&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options][&lt;?php echo $x;?&gt;][calc]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_list_option_calc&quot; class=&quot;ninja-forms-field-list-option-calc&quot; value=&quot;&lt;?php echo $calc;?&gt;&quot;&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-selected-td&quot;&gt;
+					&lt;label for=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_options_&lt;?php echo $x;?&gt;_selected&quot;&gt;&lt;?php _e( &#x27;Selected&#x27;, &#x27;ninja-forms&#x27; );?&gt; &lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options][&lt;?php echo $x;?&gt;][selected]&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[list][options][&lt;?php echo $x;?&gt;][selected]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_options_&lt;?php echo $x;?&gt;_selected&quot; class=&quot;ninja-forms-field-list-option-selected&quot; &lt;?php echo $selected;?&gt;&gt;&lt;/label&gt;
+				&lt;/td&gt;
+				&lt;td class=&quot;ninja-forms-list-option-drag-td&quot;&gt;
+					&lt;span class=&quot;ninja-forms-drag&quot;&gt;&lt;span class=&quot;dashicons dashicons-menu&quot;&gt;&lt;/span&gt;&lt;/span&gt;
+				&lt;/td&gt;
+			&lt;/tr&gt;
+		&lt;/table&gt;
+		&lt;/div&gt;
+
+	&lt;?php
+}
+
+function ninja_forms_field_filter_list_wrap_class( $field_wrap_class, $field_id ){
+	$field_row = ninja_forms_get_field_by_id( $field_id );
+	$field_type = $field_row[&#x27;type&#x27;];
+	if( $field_type == &#x27;_list&#x27; ){
+		$field_data = $field_row[&#x27;data&#x27;];
+		if( isset( $field_data[&#x27;list_type&#x27;] ) ){
+			$list_type = $field_data[&#x27;list_type&#x27;];
+		}else{
+			$list_type = &#x27;&#x27;;
+		}
+
+		$field_wrap_class = str_replace( &#x27;list-wrap&#x27;, &#x27;list-&#x27;.$list_type.&#x27;-wrap&#x27;, $field_wrap_class );
+	}
+
+	return $field_wrap_class;
+}
+
+// Add a filter to change the current field_value to the &quot;selected&quot; list elements on form load, if any exist.
+function ninja_forms_field_filter_list_data( $form_id ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$all_fields = $ninja_forms_loading-&gt;get_all_fields();
+	} else {
+		return false;
+	}
+
+	// Make sure we have some fields before displaying them!
+	if ( ! $all_fields ) {
+		return;
+	}
+
+	// Loop through all of our fields and see if we have any list fields.
+
+	foreach( $all_fields as $field_id =&gt; $user_value ) {
+		$tmp_array = array();
+		if ( isset ( $ninja_forms_loading ) ) {
+			$field = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+		} else {
+			// $field = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+		}
+
+		$field_type = $field[&#x27;type&#x27;];
+		$data = $field[&#x27;data&#x27;];
+		// Check to see if we are working with a list. If so, filter the default_value
+		if( $field_type == &#x27;_list&#x27; &amp;&amp; empty( $user_value ) ){
+			if( isset( $data[&#x27;list&#x27;][&#x27;options&#x27;] ) AND is_array( $data[&#x27;list&#x27;][&#x27;options&#x27;] ) AND !empty( $data[&#x27;list&#x27;][&#x27;options&#x27;] ) ){
+				foreach( $data[&#x27;list&#x27;][&#x27;options&#x27;] as $option ){
+					if( isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+						if( isset( $data[&#x27;list_show_value&#x27;] ) AND $data[&#x27;list_show_value&#x27;] == 1 ){
+							$tmp_array[] = $option[&#x27;value&#x27;];
+						}else{
+							$tmp_array[] = $option[&#x27;label&#x27;];
+						}
+					}
+				}
+				if ( empty( $tmp_array ) AND $data[&#x27;list_type&#x27;] == &#x27;dropdown&#x27; AND $data[&#x27;label_pos&#x27;] != &#x27;inside&#x27; ) {
+					if ( isset ( $data[&#x27;list_show_value&#x27;] ) AND $data[&#x27;list_show_value&#x27;] == 1 AND $data[&#x27;label_pos&#x27;] != &#x27;inside&#x27; ) {
+						$tmp_array[] = $data[&#x27;list&#x27;][&#x27;options&#x27;][0][&#x27;value&#x27;];
+					} else {
+						$tmp_array[] = $data[&#x27;list&#x27;][&#x27;options&#x27;][0][&#x27;label&#x27;];
+					}
+				}
+			}
+			if ( isset ( $ninja_forms_loading ) ) {
+				if ( $ninja_forms_loading-&gt;get_field_settings( $field_id ) ) {
+					$ninja_forms_loading-&gt;update_field_value( $field_id, $tmp_array );
+				}
+			} else {
+				// if ( !$ninja_forms_processing-&gt;get_field_value( $field_id ) ) {
+				// 	$ninja_forms_processing-&gt;update_field_value( $field_id, $tmp_array );
+				// }
+			}
+		}
+	}
+}
+
+add_action( &#x27;ninja_forms_display_pre_init&#x27;, &#x27;ninja_forms_field_filter_list_data&#x27;, 8 );
+
+/**
+ * Edit submission value output function
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_list_edit_sub_value( $field_id, $user_value, $field ) {
+	$label = $field[&#x27;data&#x27;][&#x27;label&#x27;];
+	$label_pos = $field[&#x27;data&#x27;][&#x27;label_pos&#x27;];
+	$selected_value = $user_value;
+	$options = $field[&#x27;data&#x27;][&#x27;list&#x27;][&#x27;options&#x27;];
+
+	$field_class = isset( $field[&#x27;data&#x27;][&#x27;class&#x27;] ) ? $field[&#x27;data&#x27;][&#x27;class&#x27;] : &#x27;&#x27;;
+	
+	if( isset( $field[&#x27;data&#x27;][&#x27;list_show_value&#x27;] ) ){
+		$list_show_value = $field[&#x27;data&#x27;][&#x27;list_show_value&#x27;];
+	}else{
+		$list_show_value = 0;
+	}
+	switch( $field[&#x27;data&#x27;][&#x27;list_type&#x27;] ) {
+		case &#x27;dropdown&#x27;:
+			?&gt;
+			&lt;select name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot;&gt;
+				&lt;?php
+				if($label_pos == &#x27;inside&#x27;){
+					?&gt;
+					&lt;option value=&quot;&quot;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+				}
+				foreach( $options as $option ){
+
+					if(isset($option[&#x27;value&#x27;])){
+						$value = $option[&#x27;value&#x27;];
+					}else{
+						$value = $option[&#x27;label&#x27;];
+					}
+
+					$value = htmlspecialchars( $value, ENT_QUOTES );
+
+					if(isset($option[&#x27;label&#x27;])){
+						$label = $option[&#x27;label&#x27;];
+					}else{
+						$label = &#x27;&#x27;;
+					}
+
+					if(isset($option[&#x27;display_style&#x27;])){
+						$display_style = $option[&#x27;display_style&#x27;];
+					}else{
+						$display_style = &#x27;&#x27;;
+					}
+
+					if ( isset( $option[&#x27;disabled&#x27;] ) AND $option[&#x27;disabled&#x27;] ){
+						$disabled = &#x27;disabled&#x27;;
+					}else{
+						$disabled = &#x27;&#x27;;
+					}
+
+					$label = htmlspecialchars( $label, ENT_QUOTES );
+
+					$label = stripslashes( $label );
+
+					$label = str_replace( &#x27;&amp;amp;&#x27;, &#x27;&amp;&#x27;, $label );
+
+					$field_label = $field[&#x27;data&#x27;][&#x27;label&#x27;];
+
+					if($list_show_value == 0){
+						$value = $label;
+					}
+
+					if ( $selected_value == $value OR ( is_array( $selected_value ) AND in_array( $value, $selected_value ) ) ) {
+						$selected = &#x27;selected&#x27;;
+					}else if( ( $selected_value == &#x27;&#x27; OR $selected_value == $field_label ) AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+						$selected = &#x27;selected&#x27;;
+					}else{
+						$selected = &#x27;&#x27;;
+					}
+
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt; style=&quot;&lt;?php echo $display_style;?&gt;&quot; &lt;?php echo $disabled;?&gt;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+				&lt;?php
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;?php
+		break;
+		case &#x27;radio&#x27;:
+			?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; value=&quot;&quot;&gt;&lt;ul&gt;&lt;?php
+			foreach($options as $option){
+
+				if(isset($option[&#x27;value&#x27;])){
+					$value = $option[&#x27;value&#x27;];
+				}else{
+					$value = $option[&#x27;label&#x27;];
+				}
+
+				$value = htmlspecialchars( $value, ENT_QUOTES );
+
+				if(isset($option[&#x27;label&#x27;])){
+					$label = $option[&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				if(isset($option[&#x27;display_style&#x27;])){
+					$display_style = $option[&#x27;display_style&#x27;];
+				}else{
+					$display_style = &#x27;&#x27;;
+				}
+
+				$label = htmlspecialchars( $label, ENT_QUOTES );
+
+				$label = stripslashes($label);
+
+				if($list_show_value == 0){
+					$value = $label;
+				}
+
+				if ( $selected_value == $value OR ( is_array( $selected_value ) AND in_array( $value, $selected_value ) ) ) {
+					$selected = &#x27;checked&#x27;;
+				}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$selected = &#x27;checked&#x27;;
+				}else{
+					$selected = &#x27;&#x27;;
+				}
+				?&gt;
+				&lt;li&gt;
+					&lt;label&gt;&lt;input id=&quot;&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; type=&quot;radio&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt; /&gt;&lt;?php echo $label;?&gt;&lt;/label&gt;
+				&lt;/li&gt;
+				&lt;?php
+
+			}
+			?&gt;&lt;/ul&gt;
+			&lt;?php
+		break;
+		case &#x27;checkbox&#x27;:
+
+			?&gt;&lt;input type=&quot;hidden&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][]&quot; value=&quot;&quot;&gt;&lt;ul&gt;&lt;?php
+			foreach($options as $option){
+
+				if(isset($option[&#x27;value&#x27;])){
+					$value = $option[&#x27;value&#x27;];
+				}else{
+					$value = $option[&#x27;label&#x27;];
+				}
+
+				$value = htmlspecialchars( $value, ENT_QUOTES );
+
+				if(isset($option[&#x27;label&#x27;])){
+					$label = $option[&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				if(isset($option[&#x27;display_style&#x27;])){
+					$display_style = $option[&#x27;display_style&#x27;];
+				}else{
+					$display_style = &#x27;&#x27;;
+				}
+
+				$label = htmlspecialchars( $label, ENT_QUOTES );
+
+				$label = stripslashes( $label) ;
+
+				if($list_show_value == 0){
+					$value = $label;
+				}
+
+				if( isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$checked = &#x27;checked&#x27;;
+				}
+
+				if( is_array( $selected_value ) AND in_array($value, $selected_value) ){
+					$checked = &#x27;checked&#x27;;
+				}else if($selected_value == $value){
+					$checked = &#x27;checked&#x27;;
+				}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+					$checked = &#x27;checked&#x27;;
+				}else{
+					$checked = &#x27;&#x27;;
+				}
+
+				?&gt;
+				&lt;li&gt;
+					&lt;label&gt;
+						&lt;input id=&quot;&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;][]&quot; type=&quot;checkbox&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $checked;?&gt; /&gt; &lt;?php echo $label;?&gt;
+					&lt;/label&gt;
+
+				&lt;/li&gt;
+				&lt;?php
+			}
+			?&gt;&lt;/ul&gt;
+			&lt;?php
+		break;
+		case &#x27;multi&#x27;;
+			?&gt;
+			&lt;select name=&quot;fields[&lt;?php echo $field_id; ?&gt;][]&quot; multiple size=&quot;5&quot;&gt;
+				&lt;?php
+				if($label_pos == &#x27;inside&#x27;){
+					?&gt;
+					&lt;option value=&quot;&quot;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+				}
+				foreach($options as $option){
+
+					if(isset($option[&#x27;value&#x27;])){
+						$value = $option[&#x27;value&#x27;];
+					}else{
+						$value = $option[&#x27;label&#x27;];
+					}
+
+					$value = htmlspecialchars( $value, ENT_QUOTES );
+
+					if(isset($option[&#x27;label&#x27;])){
+						$label = $option[&#x27;label&#x27;];
+					}else{
+						$label = &#x27;&#x27;;
+					}
+
+					if(isset($option[&#x27;display_style&#x27;])){
+						$display_style = $option[&#x27;display_style&#x27;];
+					}else{
+						$display_style = &#x27;&#x27;;
+					}
+
+					$label = htmlspecialchars( $label, ENT_QUOTES );
+
+					$label = stripslashes($label);
+
+					if($list_show_value == 0){
+						$value = $label;
+					}
+
+					if(is_array($selected_value) AND in_array($value, $selected_value)){
+						$selected = &#x27;selected&#x27;;
+					}else if( $selected_value == &#x27;&#x27; AND isset( $option[&#x27;selected&#x27;] ) AND $option[&#x27;selected&#x27;] == 1 ){
+						$selected = &#x27;selected&#x27;;
+					}else{
+						$selected = &#x27;&#x27;;
+					}
+
+					if( $display_style == &#x27;&#x27; ){
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $value;?&gt;&quot; &lt;?php echo $selected;?&gt;&gt;&lt;?php echo $label;?&gt;&lt;/option&gt;
+					&lt;?php
+					}
+				}
+				?&gt;
+			&lt;/select&gt;
+			&lt;?php
+		break;
+	}
+}
+
+/**
+ * Output our user value on the sub table
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_list_sub_table_value( $field_id, $user_value ) {
+	if ( is_array ( $user_value ) ) {
+		echo &#x27;&lt;ul&gt;&#x27;;
+		$max_items = apply_filters( &#x27;nf_sub_table_user_value_max_items&#x27;, 3, $field_id );
+		$x = 0;
+
+		while ( $x &lt; $max_items &amp;&amp; $x &lt;= count( $user_value ) - 1 ) {
+			echo &#x27;&lt;li&gt;&#x27; . $user_value[$x] . &#x27;&lt;/li&gt;&#x27;;
+			$x++;
+		}
+		echo &#x27;&lt;/ul&gt;&#x27;;
+	} else {
+		$max_len = apply_filters( &#x27;nf_sub_table_user_value_max_len&#x27;, 140, $field_id );
+		if ( strlen( $user_value ) &gt; 140 )
+			$user_value = substr( $user_value, 0, 140 );
+
+		echo nl2br( $user_value );
+	}
+}
+</pre></details></body></html>

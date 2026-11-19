@@ -1,0 +1,172 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/vendor/polevaultweb/wp-oauth2/admin-handler.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/vendor/polevaultweb/wp-oauth2/admin-handler.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+namespace Polevaultweb\WP_OAuth2;
+
+class Admin_Handler {
+
+	protected $redirect;
+
+	/**
+	 * Admin_Handler constructor.
+	 *
+	 * @param $redirect
+	 */
+	public function __construct( $redirect ) {
+		$this-&gt;redirect = $redirect;
+	}
+
+	public function init() {
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;handle_redirect&#x27; ) );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;handle_disconnect&#x27; ) );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;handle_render_notice&#x27; ) );
+	}
+
+	public function handle_render_notice() {
+		if ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX ) {
+			return;
+		}
+
+		if ( ! $this-&gt;is_callback_page() ) {
+			return;
+		}
+
+		$notice = filter_input( INPUT_GET, &#x27;notice&#x27; );
+		if ( empty( $notice ) ) {
+			return;
+		}
+
+		add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;render_&#x27; . $notice . &#x27;_notice&#x27; ) );
+	}
+
+	public function handle_disconnect() {
+		if ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX ) {
+			return;
+		}
+
+		if ( ! $this-&gt;is_callback_page() ) {
+			return;
+		}
+
+		$provider = filter_input( INPUT_GET, &#x27;wp-oauth2&#x27; );
+		if ( empty( $provider ) ) {
+			return;
+		}
+
+		$action = filter_input( INPUT_GET, &#x27;action&#x27; );
+		if ( empty( $action ) || &#x27;disconnect&#x27; !== $action ) {
+			return;
+		}
+
+		WP_OAuth2::disconnect( $provider );
+
+		$this-&gt;redirect( &#x27;disconnection&#x27; );
+	}
+
+	protected function redirect( $notice = null ) {
+		$url = add_query_arg( array( &#x27;notice&#x27; =&gt; $notice ), $this-&gt;redirect );
+		wp_redirect( $url );
+		exit;
+	}
+
+	protected function is_callback_page() {
+		$parts = parse_url( $this-&gt;redirect );
+
+		if ( ! isset( $parts[&#x27;query&#x27;] ) ) {
+			// Check for full path? admin_url?
+		}
+
+		global $pagenow;
+		if ( ! isset( $pagenow ) ) {
+			return false;
+		}
+		if ( $pagenow !== basename( $parts[&#x27;path&#x27;] ) ) {
+			return false;
+		}
+
+		parse_str( $parts[&#x27;query&#x27;], $query );
+		foreach ( $query as $key =&gt; $value ) {
+			$param = filter_input( INPUT_GET, $key );
+			if ( empty( $param ) ) {
+				return false;
+			}
+
+			if ( $param != $value ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public function handle_redirect() {
+		if ( defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX ) {
+			return;
+		}
+
+		if ( ! $this-&gt;is_callback_page() ) {
+			return;
+		}
+
+		$provider = filter_input( INPUT_GET, &#x27;wp-oauth2&#x27; );
+		if ( empty( $provider ) ) {
+			return;
+		}
+
+		$action = filter_input( INPUT_GET, &#x27;action&#x27; );
+		if ( empty( $action ) || &#x27;connect&#x27; !== $action ) {
+			return;
+		}
+
+		$error = filter_input( INPUT_GET, &#x27;error&#x27; );
+		if ( $error ) {
+			// Show error notice
+			$this-&gt;redirect( &#x27;error&#x27; );
+		}
+
+		$token = filter_input( INPUT_GET, &#x27;token&#x27; );
+		$iv    = filter_input( INPUT_GET, &#x27;iv&#x27; );
+		if ( empty( $token ) || empty( $iv ) ) {
+			$this-&gt;redirect( &#x27;error&#x27; );
+		}
+
+		$method = OAuth2_Client::get_method();
+		$key    = get_site_transient( &#x27;wp-oauth2-key&#x27; );
+		$token  = openssl_decrypt( $token, $method, $key, 0, $iv );
+		if ( empty( $token ) ) {
+			$this-&gt;redirect( &#x27;error&#x27; );
+		}
+
+		$token = new Access_Token( $provider, $token );
+		$token-&gt;save();
+
+		$this-&gt;redirect( &#x27;connection&#x27; );
+	}
+
+	protected function get_provider_display_name() {
+		$provider = filter_input( INPUT_GET, &#x27;wp-oauth2&#x27; );
+
+		return ucwords( str_replace( array( &#x27;_&#x27;, &#x27;-&#x27; ), &#x27; &#x27;, $provider ) );
+	}
+
+	public function render_error_notice() {
+		$provider = $this-&gt;get_provider_display_name();
+
+		$error_description = filter_input( INPUT_GET, &#x27;error_description&#x27; );
+		$message           = $error_description ? $error_description : __( &#x27;An unknown error occurred.&#x27; );
+		printf( &#x27;&lt;div class=&quot;error&quot;&gt;&lt;p&gt;&lt;strong&gt;&#x27; . $provider . &#x27; %s&lt;/strong&gt; &amp;mdash; %s&lt;/p&gt;&lt;/div&gt;&#x27;, __( &#x27;Connection Error&#x27; ), $message );
+	}
+
+	public function render_connection_notice() {
+		$provider = $this-&gt;get_provider_display_name();
+
+		$message = sprintf( __( &#x27;You have successfully connected with your %s account.&#x27; ), $provider );
+		printf( &#x27;&lt;div class=&quot;updated&quot;&gt;&lt;p&gt;&lt;strong&gt;&#x27; . $provider . &#x27; %s&lt;/strong&gt; &amp;mdash; %s&lt;/p&gt;&lt;/div&gt;&#x27;, __( &#x27;Connected&#x27; ), $message );
+	}
+
+	public function render_disconnection_notice() {
+		$provider = $this-&gt;get_provider_display_name();
+
+		$message = sprintf( __( &#x27;You have successfully disconnected your %s account.&#x27; ), $provider );
+		printf( &#x27;&lt;div class=&quot;updated&quot;&gt;&lt;p&gt;&lt;strong&gt;&#x27; . $provider . &#x27; %s&lt;/strong&gt; &amp;mdash; %s&lt;/p&gt;&lt;/div&gt;&#x27;, __( &#x27;Disconnected&#x27; ), $message );
+	}
+}</pre></details></body></html>

@@ -1,0 +1,206 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/edit-field.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/edit-field.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div class=&quot;description description- &quot; id=&quot;_p&quot;&gt;
+	
+		&lt;span class=&quot;field-option&quot;&gt;
+			
+		&lt;label for=&quot;&quot; id=&quot;_label&quot; class=&quot;&quot;&gt;
+			&lt;/label&gt;&lt;br/&gt;
+		
+			&lt;input type=&quot;text&quot; class=&quot;&quot; name=&quot;&quot; id=&quot;&quot; value=&quot;&quot; /&gt;
+		
+			&lt;input type=&quot;number&quot; class=&quot;&quot; name=&quot;&quot; id=&quot;&quot; value=&quot;&quot; /&gt;
+		
+			&lt;label for=&quot;&quot; id=&quot;_label&quot;&gt;
+				&lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;&quot;&gt;
+				&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; name=&quot;&quot; id=&quot;&quot; class=&quot;&quot; &gt;
+				
+			&lt;/label&gt;
+		
+			&lt;select id=&quot;&quot; name=&quot;&quot; class=&quot;&quot;&gt;
+				
+						&lt;option value=&quot;&quot;  &gt;&lt;/option&gt;
+						
+			&lt;/select&gt;
+		
+			&lt;select multiple=&quot;multiple&quot; id=&quot;&quot; name=&quot;&quot; class=&quot;&quot;&gt;
+				
+						&lt;option value=&quot;&quot;  &gt;&lt;/option&gt;
+						
+			&lt;/select&gt;
+		
+			&lt;textarea id=&quot;&quot; name=&quot;&quot; class=&quot;&quot; rows=&quot;3&quot; cols=&quot;20&quot; &gt;&lt;/textarea&gt;
+		
+			&lt;input type=&quot;hidden&quot; name=&quot;&quot; value=&quot;&quot;&gt;
+		
+			&lt;span class=&quot;desc&quot;&gt;&lt;label for=&quot;&quot; id=&quot;_label&quot;&gt;&lt;/label&gt;&lt;/span&gt;
+		
+				&lt;textarea id=&quot;&quot; name=&quot;&quot; class=&quot;&quot; rows=&quot;3&quot; cols=&quot;20&quot; &gt;&lt;/textarea&gt;
+				
+		&lt;span class=&quot;description&quot;&gt;
+			
+		&lt;/span&gt;
+	
+		&lt;/span&gt;
+		
+	&lt;/div&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_edit_field( $field_id, $new = false ){
+	global $wpdb, $ninja_forms_fields;
+
+	do_action( &#x27;ninja_forms_edit_field_before_li&#x27;, $field_id, $new );
+	do_action( &#x27;ninja_forms_edit_field_li&#x27;, $field_id, $new );
+	do_action( &#x27;ninja_forms_edit_field_after_li&#x27;, $field_id, $new );
+
+}
+
+function ninja_forms_edit_field_el_output($field_id, $type, $label = &#x27;&#x27;, $name = &#x27;&#x27;, $value = &#x27;&#x27;, $width = &#x27;wide&#x27;, $options = &#x27;&#x27;, $class = &#x27;&#x27;, $desc = &#x27;&#x27;, $label_class = &#x27;&#x27; ){
+	global $ninja_forms_fields, $nf_rte_editors;
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	$reg_field = $ninja_forms_fields[$field_type];
+
+	$class = &#x27;code ninja-forms-&#x27;.$field_type.&#x27;-&#x27;.$name.&#x27; &#x27;.$class;
+	$id = &#x27;ninja_forms_field_&#x27;.$field_id.&#x27;_&#x27;.$name;
+	if ( strpos( $name, &#x27;[&#x27; ) !== false ) {
+		str_replace( &#x27;]&#x27;, &#x27;&#x27;, $name );
+		$name = explode( &#x27;[&#x27;, $name );
+		if ( is_array ( $name ) ) {
+			$tmp_name = &#x27;ninja_forms_field_&#x27;.$field_id;
+			foreach ( $name as $n ) {
+				$tmp_name .= &#x27;[&#x27;.$n.&#x27;]&#x27;;
+			}
+			$name = $tmp_name;
+		} else {
+			$name = &#x27;ninja_forms_field_&#x27;.$field_id.&#x27;[&#x27;.$name.&#x27;]&#x27;;
+		}
+	} else {
+		$name = &#x27;ninja_forms_field_&#x27;.$field_id.&#x27;[&#x27;.$name.&#x27;]&#x27;;
+	}
+
+	?&gt;
+	&lt;div class=&quot;description description-&lt;?php echo $width;?&gt; &lt;?php echo $type;?&gt;&quot; id=&quot;&lt;?php echo $name;?&gt;_p&quot;&gt;
+	&lt;?php
+	if($type != &#x27;rte&#x27;){
+		$value = ninja_forms_esc_html_deep( $value );
+	?&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+			&lt;?php
+	}
+	if($type != &#x27;checkbox&#x27; AND $type != &#x27;desc&#x27;){
+		?&gt;
+		&lt;label for=&quot;&lt;?php echo $id;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;_label&quot; class=&quot;&lt;?php echo $label_class;?&gt;&quot;&gt;
+			&lt;?php _e( $label , &#x27;ninja-forms&#x27;); ?&gt;&lt;/label&gt;&lt;br/&gt;
+		&lt;?php
+	}
+	switch($type){
+		case &#x27;text&#x27;:
+		?&gt;
+			&lt;input type=&quot;text&quot; class=&quot;&lt;?php echo $class;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; /&gt;
+		&lt;?php
+		break;
+		case &#x27;number&#x27;:
+		?&gt;
+			&lt;input type=&quot;number&quot; class=&quot;&lt;?php echo $class;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot; /&gt;
+		&lt;?php
+		break;
+		case &#x27;checkbox&#x27;:
+		?&gt;
+			&lt;label for=&quot;&lt;?php echo $id;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;_label&quot;&gt;
+				&lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;&lt;?php echo $name;?&gt;&quot;&gt;
+				&lt;input type=&quot;checkbox&quot; value=&quot;1&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot; &lt;?php checked($value, 1);?&gt;&gt;
+				&lt;?php _e( $label , &#x27;ninja-forms&#x27;); ?&gt;
+			&lt;/label&gt;
+		&lt;?php
+		break;
+		case &#x27;select&#x27;:
+		?&gt;
+			&lt;select id=&quot;&lt;?php echo $id;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot;&gt;
+				&lt;?php
+				if(is_array($options) AND !empty($options)){
+					foreach($options as $opt){
+						?&gt;
+						&lt;option value=&quot;&lt;?php echo $opt[&#x27;value&#x27;];?&gt;&quot; &lt;?php selected($opt[&#x27;value&#x27;], $value); ?&gt; &gt;&lt;?php _e( $opt[&#x27;name&#x27;], &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+						&lt;?php
+					}
+				}
+			?&gt;
+			&lt;/select&gt;
+		&lt;?php
+		break;
+		case &#x27;multi&#x27;:
+		?&gt;
+			&lt;select multiple=&quot;multiple&quot; id=&quot;&lt;?php echo $id;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot;&gt;
+				&lt;?php
+				if(is_array($options) AND !empty($options)){
+					foreach($options as $opt){
+						?&gt;
+						&lt;option value=&quot;&lt;?php echo $opt[&#x27;value&#x27;];?&gt;&quot; &lt;?php selected($opt[&#x27;value&#x27;], $value); ?&gt; &gt;&lt;?php _e( $opt[&#x27;name&#x27;], &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+						&lt;?php
+					}
+				}
+			?&gt;
+			&lt;/select&gt;
+		&lt;?php
+		break;
+		case &#x27;textarea&#x27;:
+		?&gt;
+			&lt;textarea id=&quot;&lt;?php echo $id;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot; rows=&quot;3&quot; cols=&quot;20&quot; &gt;&lt;?php echo $value;?&gt;&lt;/textarea&gt;
+		&lt;?php
+		break;
+		case &#x27;hidden&#x27;:
+		?&gt;
+			&lt;input type=&quot;hidden&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; value=&quot;&lt;?php echo $value;?&gt;&quot;&gt;
+		&lt;?php
+		break;
+		case &#x27;desc&#x27;:
+		?&gt;
+			&lt;span class=&quot;desc&quot;&gt;&lt;label for=&quot;&lt;?php echo $id;?&gt;&quot; id=&quot;&lt;?php echo $id;?&gt;_label&quot;&gt;&lt;?php _e($label, &#x27;ninja-forms&#x27;); ?&gt;&lt;/label&gt;&lt;/span&gt;
+		&lt;?php
+		break;
+		case &#x27;rte&#x27;:
+			// Check if our current user has the RTE disabled.
+			$user_id = get_current_user_id();
+			$rich_editing = get_user_meta( $user_id, &#x27;rich_editing&#x27;, true );
+			if ( &#x27;true&#x27; == $rich_editing ) {
+				$editor_id = str_replace( &#x27;[&#x27;, &#x27;_&#x27;, $name );
+				$editor_id = str_replace( &#x27;]&#x27;, &#x27;&#x27;, $editor_id );
+				
+				$plugin_settings = nf_get_settings();
+				if ( !isset( $plugin_settings[&#x27;version_2_2_25_rte_fix&#x27;] ) OR $plugin_settings[&#x27;version_2_2_25_rte_fix&#x27;] == &#x27;&#x27; ) {
+					$value = html_entity_decode( $value );
+					$plugin_settings[&#x27;version_2_2_25_rte_fix&#x27;] = 1;
+					update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings );
+				}
+
+				$args = apply_filters( &#x27;ninja_forms_edit_field_rte&#x27;, array( &#x27;textarea_name&#x27; =&gt; $name ) );
+				wp_editor( $value, $editor_id, $args );				
+
+				// If we&#x27;re using ajax, add this editor ID to our global var so that we can instantiate it on the front-end.
+				if ( isset ( $_POST[&#x27;action&#x27;] ) &amp;&amp; ( $_POST[&#x27;action&#x27;] == &#x27;ninja_forms_new_field&#x27; || $_POST[&#x27;action&#x27;] == &#x27;nf_output_field_settings_html&#x27; ) )
+					$nf_rte_editors[] = $editor_id;
+			} else {
+				?&gt;
+				&lt;textarea id=&quot;&lt;?php echo $id;?&gt;&quot; name=&quot;&lt;?php echo $name;?&gt;&quot; class=&quot;&lt;?php echo $class;?&gt;&quot; rows=&quot;3&quot; cols=&quot;20&quot; &gt;&lt;?php echo $value;?&gt;&lt;/textarea&gt;
+				&lt;?php
+			}
+
+		break;
+	}
+
+	if($desc != &#x27;&#x27;){
+	?&gt;
+		&lt;span class=&quot;description&quot;&gt;
+			&lt;?php _e($desc, &#x27;ninja-forms&#x27;); ?&gt;
+		&lt;/span&gt;
+	&lt;?php
+		}
+	if($type != &#x27;rte&#x27;){
+		?&gt;
+		&lt;/span&gt;
+		&lt;?php
+	}
+	?&gt;
+	&lt;/div&gt;
+	&lt;?php
+}</pre></details></body></html>

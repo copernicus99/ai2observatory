@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/libraries/class-recursive-arrayaccess.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/libraries/class-recursive-arrayaccess.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Multidimensional ArrayAccess
+ *
+ * Allows ArrayAccess-like functionality with multidimensional arrays.  Fully supports
+ * both sets and unsets.
+ *
+ * @package WordPress
+ * @subpackage Session
+ * @since 3.6.0
+ */
+
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Recursive array class to allow multidimensional array access.
+ *
+ * @package WordPress
+ * @since 3.6.0
+ */
+class Recursive_ArrayAccess implements ArrayAccess {
+	/**
+	 * Internal data collection.
+	 *
+	 * @var array
+	 */
+	protected $container = array();
+
+	/**
+	 * Flag whether or not the internal collection has been changed.
+	 *
+	 * @var bool
+	 */
+	protected $dirty = false;
+
+	/**
+	 * Default object constructor.
+	 *
+	 * @param array $data
+	 */
+	protected function __construct( $data = array() ) {
+		foreach ( $data as $key =&gt; $value ) {
+			$this[ $key ] = $value;
+		}
+	}
+
+	/**
+	 * Allow deep copies of objects
+	 */
+	public function __clone() {
+		foreach ( $this-&gt;container as $key =&gt; $value ) {
+			if ( $value instanceof self ) {
+				$this[ $key ] = clone $value;
+			}
+		}
+	}
+
+	/**
+	 * Output the data container as a multidimensional array.
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+		$data = $this-&gt;container;
+		foreach ( $data as $key =&gt; $value ) {
+			if ( $value instanceof self ) {
+				$data[ $key ] = $value-&gt;toArray();
+			}
+		}
+		return $data;
+	}
+
+	/**
+	* ArrayAccess Implementation
+	**/
+
+	/**
+	 * Whether a offset exists
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+	 *
+	 * @param mixed $offset An offset to check for.
+	 *
+	 * @return boolean true on success or false on failure.
+	 */
+	public function offsetExists( $offset ) {
+		return isset( $this-&gt;container[ $offset ]) ;
+	}
+
+	/**
+	 * Offset to retrieve
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
+	 *
+	 * @param mixed $offset The offset to retrieve.
+	 *
+	 * @return mixed Can return all value types.
+	 */
+	public function offsetGet( $offset ) {
+		return isset( $this-&gt;container[ $offset ] ) ? $this-&gt;container[ $offset ] : null;
+	}
+
+	/**
+	 * Offset to set
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 *
+	 * @param mixed $offset The offset to assign the value to.
+	 * @param mixed $value  The value to set.
+	 *
+	 * @return void
+	 */
+	public function offsetSet( $offset, $data ) {
+		if ( is_array( $data ) ) {
+			$data = new self( $data );
+		}
+		if ( $offset === null ) { // don&#x27;t forget this!
+			$this-&gt;container[] = $data;
+		} else {
+			$this-&gt;container[ $offset ] = $data;
+		}
+
+		$this-&gt;dirty = true;
+	}
+
+	/**
+	 * Offset to unset
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 *
+	 * @param mixed $offset The offset to unset.
+	 *
+	 * @return void
+	 */
+	public function offsetUnset( $offset ) {
+		unset( $this-&gt;container[ $offset ] );
+	}
+}
+</pre></details></body></html>

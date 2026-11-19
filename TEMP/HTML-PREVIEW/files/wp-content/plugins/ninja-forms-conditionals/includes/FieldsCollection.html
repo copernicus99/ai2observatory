@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/includes/FieldsCollection.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/includes/FieldsCollection.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+final class NF_ConditionalLogic_FieldsCollection
+{
+    private $fields;
+
+    public function __construct( $fields = array(), $form_id )
+    {
+        foreach( $fields as $field ){
+
+            $fieldModel = Ninja_Forms()-&gt;form( $form_id )-&gt;get_field( $field[ &#x27;id&#x27; ] );
+            $fieldModel-&gt;get_settings(); // Initialized field settings from the database, if needed.
+            unset( $field[ &#x27;id&#x27; ] );
+
+            if( isset( $field[ &#x27;settings&#x27; ][ &#x27;value&#x27; ] ) ){
+                $field_value = $field[ &#x27;settings&#x27; ][ &#x27;value&#x27; ];
+            } elseif( isset( $field[ &#x27;value&#x27; ] ) ){
+                $field_value = $field[ &#x27;value&#x27; ];
+            } else {
+                $field_value =  null;
+            }
+
+            $fieldModel-&gt;update_setting( &#x27;value&#x27;, $field_value );
+
+            if( $fieldModel-&gt;get_tmp_id() &amp;&amp; isset( $field[ &#x27;key&#x27; ] ) ){
+                $fieldModel-&gt;update_setting( &#x27;key&#x27;, $field[ &#x27;key&#x27; ] );
+            }
+
+            if( isset( $field[ &#x27;settings&#x27; ] ) ) {
+                $settings = array_merge( $field[ &#x27;settings&#x27; ], $fieldModel-&gt;get_settings());
+            } else {
+                $settings = array_merge( $field, $fieldModel-&gt;get_settings());
+            }
+
+            $fieldModel-&gt;update_settings( $settings );
+
+            $this-&gt;fields[] = $fieldModel;
+        }
+    }
+
+    public function get_field( $key_or_id )
+    {
+        $property = ( is_numeric( $key_or_id ) ) ? &#x27;id&#x27; : &#x27;key&#x27;;
+        foreach( $this-&gt;fields as $field ){
+            $setting = $field-&gt;get_setting( $property );
+            if( $key_or_id == $setting ) return $field;
+        }
+        return Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+    }
+
+    public function to_array()
+    {
+        $fields = array();
+        foreach( $this-&gt;fields as $field ){
+            $settings = $field-&gt;get_settings();
+            $settings[ &#x27;id&#x27; ] = ( $field-&gt;get_tmp_id() ) ? $field-&gt;get_tmp_id() : $field-&gt;get_id();
+            $fields[ $field-&gt;get_id() ] = $settings;
+        }
+        return $fields;
+    }
+}
+</pre></details></body></html>

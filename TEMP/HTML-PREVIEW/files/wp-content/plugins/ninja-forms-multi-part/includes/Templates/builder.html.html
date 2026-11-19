@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/includes/Templates/builder.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/includes/Templates/builder.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;script id=&quot;nf-tmpl-mp-layout&quot; type=&quot;text/template&quot;&gt;
+	&lt;div id=&quot;nf-mp-main-content&quot;&gt;&lt;/div&gt;
+	&lt;div id=&quot;nf-mp-drawer&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-main-content-fields-empty&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-fields-empty&quot;&gt;
+		&lt;h3&gt;&lt;/h3&gt;
+		&lt;p&gt; &lt;a class=&quot;nf-open-drawer&quot; title=&quot;Add New Field&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;&lt;/a&gt;
+	&lt;/div&gt;
+&lt;/script&gt;
+	
+&lt;script id=&quot;nf-tmpl-mp-drawer-layout&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-mp-drawer-scroll-previous nf-mp-drawer-scroll&quot; style=&quot;&quot;&gt;
+		&lt;i class=&quot;fa fa-chevron-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;/div&gt;
+
+	&lt;div id=&quot;nf-mp-drawer-viewport&quot; class=&quot;als-viewport&quot;&gt;&lt;/div&gt;
+
+	&lt;div class=&quot;nf-mp-drawer-scroll-next nf-mp-drawer-scroll&quot; style=&quot;&quot;&gt;
+		&lt;i class=&quot;fa fa-chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;/div&gt;
+&lt;/script&gt;
+
+
+
+&lt;script id=&quot;nf-tmpl-mp-gutter-left&quot; type=&quot;text/template&quot;&gt;
+	&lt;# if ( data.hasPrevious() ) { #&gt;
+	&lt;i class=&quot;fa fa-chevron-circle-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;# } #&gt;
+&lt;/script&gt;
+
+
+&lt;script id=&quot;nf-tmpl-mp-gutter-right&quot; type=&quot;text/template&quot;&gt;
+	&lt;# if ( data.hasNext() ) { #&gt;
+	&lt;i class=&quot;fa fa-chevron-circle-right next&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;# } else if ( data.hasContent() ) { #&gt;
+	&lt;i class=&quot;fa fa-plus-circle new&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;#} #&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-drawer-item&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.title }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-form-title&quot; type=&quot;text/template&quot;&gt;
+	&lt;h2&gt;{{{ data.renderFormTitle() }}} - &lt;i class=&quot;fa fa-cog&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; {{{ data.renderPartTitle() }}}&lt;/h2&gt;
+&lt;/script&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;script id=&quot;nf-tmpl-mp-layout&quot; type=&quot;text/template&quot;&gt;
+	&lt;div id=&quot;nf-mp-main-content&quot;&gt;&lt;/div&gt;
+	&lt;div id=&quot;nf-mp-drawer&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-main-content-fields-empty&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-fields-empty&quot;&gt;
+		&lt;h3&gt;&lt;?php _e( &#x27;Add form fields&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/h3&gt;
+		&lt;p&gt;&lt;?php _e( &#x27;Get started by adding your first form field.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;a class=&quot;nf-open-drawer&quot; title=&quot;Add New Field&quot; href=&quot;#&quot; data-drawerid=&quot;addField&quot;&gt;&lt;?php _e( &#x27;Just click here and select the fields you want.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+	&lt;/div&gt;
+&lt;/script&gt;
+	
+&lt;script id=&quot;nf-tmpl-mp-drawer-layout&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-mp-drawer-scroll-previous nf-mp-drawer-scroll&quot; style=&quot;&quot;&gt;
+		&lt;i class=&quot;fa fa-chevron-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;/div&gt;
+
+	&lt;div id=&quot;nf-mp-drawer-viewport&quot; class=&quot;als-viewport&quot;&gt;&lt;/div&gt;
+
+	&lt;div class=&quot;nf-mp-drawer-scroll-next nf-mp-drawer-scroll&quot; style=&quot;&quot;&gt;
+		&lt;i class=&quot;fa fa-chevron-right&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;?php 
+if ( ! version_compare( get_option( &#x27;ninja_forms_version&#x27;, &#x27;0&#x27; ), &#x27;3.0&#x27;, &#x27;&gt;&#x27; ) ) {
+    /* 
+     * If we&#x27;re using the RC codebase of Ninja Forms, load the older, &lt;% %&gt; style templates.
+     */
+    require_once( NF_MultiPart::$dir . &#x27;includes/Templates/builder-old.html.php&#x27; );
+    return false;
+}
+?&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-gutter-left&quot; type=&quot;text/template&quot;&gt;
+	&lt;# if ( data.hasPrevious() ) { #&gt;
+	&lt;i class=&quot;fa fa-chevron-circle-left&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;# } #&gt;
+&lt;/script&gt;
+
+
+&lt;script id=&quot;nf-tmpl-mp-gutter-right&quot; type=&quot;text/template&quot;&gt;
+	&lt;# if ( data.hasNext() ) { #&gt;
+	&lt;i class=&quot;fa fa-chevron-circle-right next&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;# } else if ( data.hasContent() ) { #&gt;
+	&lt;i class=&quot;fa fa-plus-circle new&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+	&lt;#} #&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-drawer-item&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.title }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;nf-tmpl-mp-form-title&quot; type=&quot;text/template&quot;&gt;
+	&lt;h2&gt;{{{ data.renderFormTitle() }}} - &lt;i class=&quot;fa fa-cog&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; {{{ data.renderPartTitle() }}}&lt;/h2&gt;
+&lt;/script&gt;</pre></details></body></html>

@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/list-term-filter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/list-term-filter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/*
+ *
+ * Function to hook into our field filter and add the selected terms if the field is set to populate_term.
+ *
+ * @since 2.2.51
+ * @return void
+ */
+
+// Make sure that this function isn&#x27;t already defined.
+if ( !function_exists ( &#x27;ninja_forms_field_filter_populate_term&#x27; ) ) {
+    function ninja_forms_field_filter_populate_term( $data, $field_id ){
+        global $post, $ninja_forms_loading, $ninja_forms_processing;
+
+        $add_field = apply_filters( &#x27;ninja_forms_use_post_fields&#x27;, false );
+        if ( !$add_field )
+            return $data;
+
+        if ( isset ( $ninja_forms_loading ) ) {
+            $field_row = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+        } else if ( isset ( $ninja_forms_processing ) ) {
+            $field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+        }
+        
+        $field_type = $field_row[&#x27;type&#x27;];
+        $field_data = $field_row[&#x27;data&#x27;];
+
+        if ( isset ( $field_data[&#x27;exclude_terms&#x27;] ) ) {
+            $exclude_terms = $field_data[&#x27;exclude_terms&#x27;];
+        } else {
+            $exclude_terms = array();
+        }
+
+        if( $field_type == &#x27;_list&#x27; AND isset( $field_data[&#x27;populate_term&#x27;] ) AND $field_data[&#x27;populate_term&#x27;] != &#x27;&#x27; ){
+            // Set the selected option if we are editing a post.
+            if( is_object( $post ) ){
+                $selected_terms = get_the_terms( $post-&gt;ID, $field_data[&#x27;populate_term&#x27;] );
+            }else{
+                $selected_term = &#x27;&#x27;;
+            }
+
+            if( is_array( $selected_terms ) ){
+                foreach( $selected_terms as $term ){
+                    $selected_term = $term-&gt;term_id;
+                    break;
+                }
+            } else {
+            	$selected_term = &#x27;&#x27;;
+            }
+            if ( $field_data[&#x27;list_type&#x27;] == &#x27;dropdown&#x27; ) {
+                $tmp_array = array( array( &#x27;label&#x27; =&gt; __( &#x27;- Select One&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;&#x27; ) );  
+            } else {
+                $tmp_array = array();
+            }
+            
+            $populate_term = $field_data[&#x27;populate_term&#x27;];
+            $taxonomies = array( $populate_term );
+            $args = array(
+                &#x27;hide_empty&#x27; =&gt; false,
+                &#x27;parent&#x27; =&gt; 0
+            );
+            $data[&#x27;default_value&#x27;] = $selected_term;
+            foreach( get_terms( $taxonomies, $args ) as $parent_term ){
+                $tmp_array[] = array( &#x27;label&#x27; =&gt; $parent_term-&gt;name, &#x27;value&#x27; =&gt; $parent_term-&gt;term_id );
+                $child_args = array(
+                    &#x27;hide_empty&#x27; =&gt; false,
+                    &#x27;child_of&#x27; =&gt; $parent_term-&gt;term_id
+                );
+                foreach( get_terms( $taxonomies, $child_args ) as $child_term ) {
+                   $tmp_array[] = array( &#x27;label&#x27; =&gt; &#x27;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&#x27;.$child_term-&gt;name, &#x27;value&#x27; =&gt; $child_term-&gt;term_id ); 
+                }
+                
+            }
+            $data[&#x27;list&#x27;][&#x27;options&#x27;] = apply_filters( &#x27;ninja_forms_list_terms&#x27;, $tmp_array, $field_id );
+            $data[&#x27;list_show_value&#x27;] = 1;
+        }
+        return $data;
+    }
+
+    add_filter( &#x27;ninja_forms_field&#x27;, &#x27;ninja_forms_field_filter_populate_term&#x27;, 11, 2 );
+}</pre></details></body></html>

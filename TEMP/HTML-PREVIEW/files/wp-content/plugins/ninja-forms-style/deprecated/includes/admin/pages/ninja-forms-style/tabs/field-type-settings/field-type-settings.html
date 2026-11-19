@@ -1,0 +1,812 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/deprecated/includes/admin/pages/ninja-forms-style/tabs/field-type-settings/field-type-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/deprecated/includes/admin/pages/ninja-forms-style/tabs/field-type-settings/field-type-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_tab_style_field_type_settings&#x27; );
+function ninja_forms_register_tab_style_field_type_settings(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Field Type Styles&#x27;, &#x27;ninja-forms-style&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_advanced_checkbox_display&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_style_field_type_settings&#x27;,
+		&#x27;show_save&#x27; =&gt; true,
+	);
+	if( !isset( $_REQUEST[&#x27;field_type&#x27;] ) OR $_REQUEST[&#x27;field_type&#x27;] == &#x27;&#x27; ){
+		$args[&#x27;show_save&#x27;] = false;
+		unset( $args[&#x27;display_function&#x27;] );
+	}
+	if( function_exists( &#x27;ninja_forms_register_tab&#x27; ) ){
+		ninja_forms_register_tab( &#x27;field_type_settings&#x27;, $args );
+	}
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_style_field_type_metaboxes&#x27;, 1001 );
+function ninja_forms_register_style_field_type_metaboxes(){
+
+	if( is_admin() ){
+		if( isset( $_REQUEST[&#x27;field_type&#x27;] ) AND $_REQUEST[&#x27;field_type&#x27;] != &#x27;&#x27; ) {
+			if( $_REQUEST[&#x27;field_type&#x27;] != &#x27;_hr&#x27; &amp;&amp; $_REQUEST[&#x27;field_type&#x27;] != &#x27;_desc&#x27; ) {
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;wrap&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Wrap Styles&#x27;, &#x27;ninja-forms-style&#x27; ),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_wrap_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap&#x27;,
+				);
+
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox($args);
+				}
+				if ( $_REQUEST[&#x27;field_type&#x27;] != &#x27;_profile_pass&#x27; ) {
+					$args = array(
+						&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+						&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+						&#x27;slug&#x27; =&gt; &#x27;label&#x27;,
+						&#x27;title&#x27; =&gt; __( &#x27;Label Styles&#x27;, &#x27;ninja-forms-style&#x27; ),
+						&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+						&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_label_display&#x27;,
+						&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+						&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap label&#x27;,
+					);
+
+					if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+						ninja_forms_register_tab_metabox($args);
+					}
+				}
+
+				if ( $_REQUEST[&#x27;field_type&#x27;] != &#x27;_rating&#x27; AND $_REQUEST[&#x27;field_type&#x27;] != &#x27;_profile_pass&#x27;  ) {
+					$args = array(
+						&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+						&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+						&#x27;slug&#x27; =&gt; &#x27;field&#x27;,
+						&#x27;title&#x27; =&gt; __( &#x27;Element Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+						&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+						&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+						&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+						&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap .ninja-forms-field&#x27;,
+					);
+
+					if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+						ninja_forms_register_tab_metabox($args);
+					}
+				}
+			}
+
+
+			if( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_hr&#x27; ){
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;hr-element&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;HR Element&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;hr.ninja-forms-field&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+			}
+
+			if( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_rating&#x27; ){
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;rating-item&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Rating Item&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating a&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;rating-item-hover&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Rating Item Hover&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating-hover a&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;rating-item-selected&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Rating Item Selected&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating-on a&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;rating-cancel&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Cancel Ratings&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.rating-cancel a&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;rating-cancel-hover&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Cancel Ratings Hover&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.rating-cancel a:hover&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+			}
+
+			if( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_profile_pass&#x27; ){
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;password-wrap&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Password Wrap&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;password-label&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Password Label&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1 label&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;password-element&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Password Field&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1 input[type=password]&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;confirm-wrap&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Wrap&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;confirm-label&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Label&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2 label&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;confirm-element&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Field&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2 input[type=password]&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator-short&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Very Weak&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.short&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator-bad&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Weak&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.bad&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator-good&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Medium&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.good&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator-strong&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Strong&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.strong&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;strength-indicator-hint&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Hint&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap .indicator-hint&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox( $args );
+				}
+			}
+
+			if( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_list-radio&#x27; || $_REQUEST[&#x27;field_type&#x27;] == &#x27;_list-checkbox&#x27; ){
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;list-item-row&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;List Item Row&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox($args);
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;list-item-label&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;List Item Label&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li label&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox($args);
+				}
+
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;list-item-element&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;List Item Element&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li input&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox($args);
+				}
+			}
+
+			if( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_submit&#x27; ){
+				$args = array(
+					&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+					&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+					&#x27;slug&#x27; =&gt; &#x27;submit-hover&#x27;,
+					&#x27;title&#x27; =&gt; __( &#x27;Element Hover Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+					&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+					&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+					&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+					&#x27;css_selector&#x27; =&gt; &#x27;submit_hover&#x27;,
+				);
+				if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+					ninja_forms_register_tab_metabox($args);
+				}
+			}
+
+			if ( $_REQUEST[&#x27;field_type&#x27;] == &#x27;_desc&#x27; ) {
+					$args = array(
+						&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+						&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+						&#x27;slug&#x27; =&gt; &#x27;desc_field&#x27;,
+						&#x27;title&#x27; =&gt; __( &#x27;Element Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+						&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+						&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+						&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+						&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-field .nf-[type_slug]&#x27;,
+					);
+
+					if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+						ninja_forms_register_tab_metabox($args);
+					}
+			}
+		}
+	}else{
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;wrap&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Wrap Styles&#x27;, &#x27;ninja-forms-style&#x27; ),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_wrap_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap&#x27;,
+		);
+
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;label&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Label Styles&#x27;, &#x27;ninja-forms-style&#x27; ),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_label_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap label&#x27;,
+		);
+
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;field&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Element Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap.field-wrap .ninja-forms-field&#x27;,
+		);
+
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;list-item-row&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;List Item Row&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;list-item-label&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;List Item Label&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li label&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;list-item-element&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;List Item Element&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.[type_slug]-wrap ul li input&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;submit-hover&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Element Hover Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;submit_hover&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;hr-element&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;HR Element&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;hr.ninja-forms-field&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;rating-item&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Rating Item&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating a&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;rating-item-hover&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Rating Item Hover&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating-hover a&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;rating-item-selected&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Rating Item Selected&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-star-rating-on a&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;rating-cancel&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Cancel Ratings&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.rating-cancel a&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;rating-cancel-hover&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Cancel Ratings Hover&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.rating-cancel a:hover&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;password-wrap&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Password Wrap&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;password-label&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Password Label&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1 label&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;password-element&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Password Field&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass1 input[type=password]&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;confirm-wrap&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Wrap&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;confirm-label&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Label&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2 label&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;confirm-element&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Confirm Password Field&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;div.ninja-forms-pass2 input[type=password]&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator-short&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Very Weak&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.short&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator-bad&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Weak&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.bad&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator-good&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Medium&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.good&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator-strong&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Strong&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap #pass-strength-result.strong&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;strength-indicator-hint&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Strength Indicator - Hint&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.ninja-forms-form div.[type_slug]-wrap .indicator-hint&#x27;,
+		);
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox( $args );
+		}
+
+		$args = array(
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms-style&#x27;,
+			&#x27;tab&#x27; =&gt; &#x27;field_type_settings&#x27;,
+			&#x27;slug&#x27; =&gt; &#x27;desc_field&#x27;,
+			&#x27;title&#x27; =&gt; __( &#x27;Element Styles&#x27;, &#x27;ninja-forms-style&#x27;),
+			&#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+			&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_style_field_type_field_display&#x27;,
+			&#x27;save_page&#x27; =&gt; &#x27;field_type&#x27;,
+			&#x27;css_selector&#x27; =&gt; &#x27;.nf-[type_slug]&#x27;,
+		);
+
+		if( function_exists( &#x27;ninja_forms_register_tab_metabox&#x27; ) ){
+			ninja_forms_register_tab_metabox($args);
+		}
+	}
+}
+
+function ninja_forms_style_field_type_wrap_display( $metabox ){
+	if( isset( $_REQUEST[&#x27;field_type&#x27;] ) AND $_REQUEST[&#x27;field_type&#x27;] != &#x27;&#x27; ){
+		$field_type = $_REQUEST[&#x27;field_type&#x27;];
+		$metabox[&#x27;field_type&#x27;] = $field_type;
+		ninja_forms_style_metabox_output( $metabox );
+	}else{
+		$field_type = &#x27;&#x27;;
+	}
+}
+
+function ninja_forms_style_field_type_label_display( $metabox ){
+	if( isset( $_REQUEST[&#x27;field_type&#x27;] ) AND $_REQUEST[&#x27;field_type&#x27;] != &#x27;&#x27; ){
+		$field_type = $_REQUEST[&#x27;field_type&#x27;];
+		$metabox[&#x27;field_type&#x27;] = $field_type;
+		ninja_forms_style_metabox_output( $metabox );
+	}else{
+		$field_type = &#x27;&#x27;;
+	}
+}
+
+function ninja_forms_style_field_type_field_display( $metabox ){
+	if( isset( $_REQUEST[&#x27;field_type&#x27;] ) AND $_REQUEST[&#x27;field_type&#x27;] != &#x27;&#x27; ){
+		$field_type = $_REQUEST[&#x27;field_type&#x27;];
+		$metabox[&#x27;field_type&#x27;] = $field_type;
+		ninja_forms_style_metabox_output( $metabox );
+	}else{
+		$field_type = &#x27;&#x27;;
+	}
+}
+
+function ninja_forms_save_style_field_type_settings( $data ){
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+	$tmp_array = array();
+	$field_type = $data[&#x27;field_type&#x27;];
+	unset( $data[&#x27;field_type&#x27;] );
+
+	$plugin_settings[&#x27;style&#x27;][&#x27;field_type&#x27;][$field_type] = $data;
+
+	update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings);
+}
+</pre></details></body></html>

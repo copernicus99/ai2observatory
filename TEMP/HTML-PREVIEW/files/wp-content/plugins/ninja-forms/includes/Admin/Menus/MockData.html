@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Menus/MockData.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Menus/MockData.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Admin_Menus_MockData extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $page_title = &#x27;Mock Data&#x27;;
+
+    public $priority = 9002;
+
+    public function __construct()
+    {
+        if( ! defined( &#x27;NF_DEV&#x27; ) || ! NF_DEV ) return;
+
+        parent::__construct();
+
+        if( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; &#x27;nf-mock-data&#x27; == $_GET[ &#x27;page&#x27; ] ) {
+            add_action(&#x27;admin_init&#x27;, array($this, &#x27;mock_and_redirect&#x27;));
+        }
+    }
+
+    public function mock_and_redirect()
+    {
+        $this-&gt;mock_data();
+        wp_redirect( admin_url( &#x27;admin.php?page=ninja-forms&#x27; ) );
+        exit;
+    }
+
+    public function display()
+    {
+        // Fallback if not redirected.
+        $this-&gt;mock_data();
+        echo &#x27;&lt;div class=&quot;wrap&quot;&gt;&#x27; . __( &#x27;Migrations and Mock Data complete. &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;a href=&quot;&#x27; .
+            admin_url( &quot;admin.php?page=ninja-forms&quot; ) . &#x27;&quot;&gt;&#x27; . __( &#x27;View Forms&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&lt;/div&gt;&#x27;;
+    }
+
+    private function mock_data()
+    {
+        $mock_data = new NF_Database_MockData();
+
+        $mock_data-&gt;saved_fields();
+        $mock_data-&gt;form_blank_form();
+        $mock_data-&gt;form_contact_form_1();
+        $mock_data-&gt;form_contact_form_2();
+        $mock_data-&gt;form_product_1();
+        $mock_data-&gt;form_product_2();
+        $mock_data-&gt;form_product_3();
+        $mock_data-&gt;form_email_submission();
+        $mock_data-&gt;form_long_form( 100 );
+        $mock_data-&gt;form_long_form( 300 );
+        $mock_data-&gt;form_long_form( 500 );
+        $mock_data-&gt;form_kitchen_sink();
+        $mock_data-&gt;form_bathroom_sink();
+        $mock_data-&gt;form_calc_form();
+    }
+
+} // End Class NF_Admin_Settings
+</pre></details></body></html>

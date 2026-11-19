@@ -1,0 +1,162 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/scripts.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/scripts.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+add_action( &#x27;admin_enqueue_scripts&#x27;, &#x27;ninja_forms_conditionals_admin_js&#x27;, 10, 2 );
+function ninja_forms_conditionals_admin_js( $page ){
+	global $ninja_forms_fields;
+
+	if( isset( $_REQUEST[&#x27;page&#x27;] ) &amp;&amp; $_REQUEST[&#x27;page&#x27;] == &#x27;ninja-forms&#x27; &amp;&amp; isset ( $_REQUEST[&#x27;tab&#x27;] ) &amp;&amp; $_REQUEST[&#x27;tab&#x27;] != &#x27;&#x27; ){
+
+		$form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? $_REQUEST[&#x27;form_id&#x27;] : &#x27;&#x27;;
+
+		if ( defined( &#x27;NINJA_FORMS_JS_DEBUG&#x27; ) &amp;&amp; NINJA_FORMS_JS_DEBUG ) {
+			$suffix = &#x27;&#x27;;
+			$src = &#x27;dev&#x27;;
+		} else {
+			$suffix = &#x27;.min&#x27;;
+			$src = &#x27;min&#x27;;
+		}
+
+		wp_enqueue_script( &#x27;nf-cl-admin&#x27;,
+			NINJA_FORMS_CON_URL .&#x27;/js/&#x27; . $src . &#x27;/ninja-forms-conditionals-admin&#x27; . $suffix . &#x27;.js?nf_ver=&#x27; . NINJA_FORMS_CON_VERSION,
+			array( &#x27;jquery&#x27;, &#x27;ninja-forms-admin&#x27;, &#x27;backbone&#x27;, &#x27;underscore&#x27; ) );
+
+		if ( empty ( $form_id ) )
+			return false;
+
+		$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+		/**
+		 * We need to localize our script so that we have the appropriate JSON values to work with our backbone/underscore templates.
+		 * First, we&#x27;ll get a list of conditionals currently on this object.
+		 * We need to check and see if we are on a notification page or editing a form.
+		 */
+		$conditions_json = array();
+		if ( isset ( $_REQUEST[&#x27;notification-action&#x27;] ) &amp;&amp; &#x27;edit&#x27; == $_REQUEST[&#x27;notification-action&#x27;] ) {
+			$n_id = isset ( $_REQUEST[&#x27;id&#x27;] ) ? $_REQUEST[&#x27;id&#x27;] : &#x27;&#x27;;
+			if ( ! empty ( $n_id ) ) {
+				$conditionals = nf_cl_get_conditions( $n_id );
+				foreach ( $conditionals as $cond_id ) {
+					$action = nf_get_object_meta_value( $cond_id, &#x27;action&#x27; );
+					$criteria = nf_cl_get_criteria( $cond_id );
+					$criteria_json = array();
+					foreach ( $criteria as $cr_id ) {
+						$selected_param = nf_get_object_meta_value( $cr_id, &#x27;param&#x27; );
+						$compare = nf_get_object_meta_value( $cr_id, &#x27;compare&#x27; );
+						$value = nf_get_object_meta_value( $cr_id, &#x27;value&#x27; );
+						$criteria_json[] = array( &#x27;id&#x27; =&gt; $cr_id, &#x27;param&#x27; =&gt; $selected_param, &#x27;compare&#x27; =&gt; $compare, &#x27;value&#x27; =&gt; $value );
+					}
+					$connector = nf_get_object_meta_value( $cond_id, &#x27;connector&#x27; );
+					$conditions_json[ $cond_id ] = array( &#x27;id&#x27; =&gt; $cond_id, &#x27;action&#x27; =&gt; $action, &#x27;connector&#x27; =&gt; $connector, &#x27;criteria&#x27; =&gt; $criteria_json );
+				}
+			}
+		}
+
+		/**
+		 * Now we get a list of all of our fields and their conditional values.
+		 * $cl_fields will hold our fields and their labels.
+		 * $field_conditions will hold our field type conditional settings.
+		 */
+		$cl_fields = array();
+		$field_conditions = array();
+		foreach ( $fields as $field ) {
+			$field_type = $field[&#x27;type&#x27;];
+			$field_id = $field[&#x27;id&#x27;];
+			if ( isset ( $ninja_forms_fields[ $field_type ][&#x27;process_field&#x27;] ) &amp;&amp; $ninja_forms_fields[ $field_type ][&#x27;process_field&#x27;] ) {
+				$label = nf_get_field_admin_label( $field_id );
+				$con_value = isset ( $ninja_forms_fields[ $field_type ][&#x27;conditional&#x27;][&#x27;value&#x27;] ) ? $ninja_forms_fields[ $field_type ][&#x27;conditional&#x27;][&#x27;value&#x27;] : array( &#x27;type&#x27; =&gt; &#x27;text&#x27; );
+				$compare = array( 
+					&#x27;==&#x27; 			=&gt; __( &#x27;Equal To&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;!=&#x27; 			=&gt; __( &#x27;Not Equal To&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;&lt;&#x27; 			=&gt; __( &#x27;Less Than&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;&gt;&#x27;				=&gt; __( &#x27;Greater Than&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;contains&#x27;		=&gt; __( &#x27;Contains&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;notcontains&#x27;	=&gt; __( &#x27;Does Not Contain&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;on&#x27;			=&gt; __( &#x27;On&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;before&#x27;		=&gt; __( &#x27;Before&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+					&#x27;after&#x27;			=&gt; __( &#x27;After&#x27;, &#x27;ninja-forms-conditionals&#x27; ),
+				);
+				$type = $con_value[&#x27;type&#x27;];
+				if ( &#x27;list&#x27; == $type ) {
+					if ( isset ( $field[&#x27;data&#x27;][&#x27;list&#x27;][&#x27;options&#x27;] ) &amp;&amp; is_array ( $field[&#x27;data&#x27;][&#x27;list&#x27;][&#x27;options&#x27;] ) ) {
+						$list_options = array();
+						foreach ( $field[&#x27;data&#x27;][&#x27;list&#x27;][&#x27;options&#x27;] as $opt ) {
+							$opt_label = $opt[&#x27;label&#x27;];
+							$opt_value = $opt[&#x27;value&#x27;];
+							if ( ! isset ( $field[&#x27;data&#x27;][&#x27;list_show_value&#x27;] ) || $field[&#x27;data&#x27;][&#x27;list_show_value&#x27;] != 1 ) {
+								$opt_value = $opt[&#x27;label&#x27;];
+							}
+							$list_options[] = array( &#x27;value&#x27; =&gt; $opt_value, &#x27;label&#x27; =&gt; $opt_label );
+						}
+						$con_value = array( &#x27;type&#x27; =&gt; &#x27;select&#x27;, &#x27;options&#x27; =&gt; $list_options );
+					}
+
+					unset( $compare[&#x27;contains&#x27;] );
+					unset( $compare[&#x27;notcontains&#x27;] );
+					unset( $compare[&#x27;on&#x27;] );
+					unset( $compare[&#x27;before&#x27;] );
+					unset( $compare[&#x27;after&#x27;] );
+
+				} else if ( &#x27;_checkbox&#x27; == $field_type ) {
+					$options[] = array( &#x27;value&#x27; =&gt; &#x27;checked&#x27;, &#x27;label&#x27; =&gt; __( &#x27;Checked&#x27;, &#x27;ninja-forms&#x27; ) );
+					$options[] = array( &#x27;value&#x27; =&gt; &#x27;unchecked&#x27;, &#x27;label&#x27; =&gt; __( &#x27;Unchecked&#x27;, &#x27;ninja-forms&#x27; ) );
+					$con_value = array( &#x27;type&#x27; =&gt; &#x27;select&#x27;, &#x27;options&#x27; =&gt; $options );
+
+					unset( $compare[&#x27;&lt;&#x27;] );
+					unset( $compare[&#x27;&gt;&#x27;] );
+					unset( $compare[&#x27;contains&#x27;] );
+					unset( $compare[&#x27;notcontains&#x27;] );
+					unset( $compare[&#x27;on&#x27;] );
+					unset( $compare[&#x27;before&#x27;] );
+					unset( $compare[&#x27;after&#x27;] );
+				} else if ( &#x27;_text&#x27; == $field_type ) {
+					if ( isset ( $field[&#x27;data&#x27;][&#x27;datepicker&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;datepicker&#x27;] == 1 ) {
+						$field_type = &#x27;date&#x27;;
+						unset( $compare[&#x27;==&#x27;] );
+						unset( $compare[&#x27;!=&#x27;] );
+						unset( $compare[&#x27;&lt;&#x27;] );
+						unset( $compare[&#x27;&gt;&#x27;] );
+						unset( $compare[&#x27;contains&#x27;] );
+						unset( $compare[&#x27;notcontains&#x27;] );
+					} else {
+						unset( $compare[&#x27;on&#x27;] );
+						unset( $compare[&#x27;before&#x27;] );
+						unset( $compare[&#x27;after&#x27;] );
+					}
+				}
+				$compare = apply_filters( &#x27;nf_cl_compare_array&#x27;, $compare, $field_id );
+				$cl_fields[] = array( &#x27;id&#x27; =&gt; $field_id, &#x27;label&#x27; =&gt; $label . &#x27; ID - &#x27; . $field_id, &#x27;conditions&#x27; =&gt; $con_value, &#x27;compare&#x27; =&gt; $compare, &#x27;type&#x27; =&gt; $field_type );
+			}
+		}
+
+		$cl_fields = apply_filters( &#x27;nf_cl_criteria_fields&#x27;, $cl_fields );
+
+		usort( $cl_fields, &#x27;nf_cl_sort_by_label&#x27; );
+		
+		$triggers = array();
+
+		if ( isset ( Ninja_Forms()-&gt;cl_triggers ) ) {
+			foreach ( Ninja_Forms()-&gt;cl_triggers as $slug =&gt; $trigger ) {
+				$triggers[] = array(
+					&#x27;id&#x27; 			=&gt; $slug,
+					&#x27;label&#x27; 		=&gt; $trigger-&gt;label,
+					&#x27;type&#x27;			=&gt; $trigger-&gt;type,
+					&#x27;compare&#x27;		=&gt; $trigger-&gt;comparison_operators,
+					&#x27;conditions&#x27;	=&gt; $trigger-&gt;conditions,
+				);
+			}			
+		}
+
+		$cr_param_groups = apply_filters( &#x27;nf_cl_criteria_param_groups&#x27;, array(
+			__( &#x27;Triggers&#x27;, &#x27;ninja-forms-conditionals&#x27; ) 	=&gt; $triggers,
+			__( &#x27;Fields&#x27;, &#x27;ninja-forms-conditionals&#x27; ) 		=&gt; $cl_fields,
+		) );
+
+		wp_localize_script( &#x27;nf-cl-admin&#x27;, &#x27;nf_cl&#x27;, array( &#x27;cr_param_groups&#x27; =&gt; $cr_param_groups, &#x27;conditions&#x27; =&gt; $conditions_json ) );
+	}
+}
+
+add_action( &#x27;admin_enqueue_scripts&#x27;, &#x27;ninja_forms_conditionals_admin_css&#x27; );
+function ninja_forms_conditionals_admin_css(){
+	if( isset( $_REQUEST[&#x27;page&#x27;] ) AND $_REQUEST[&#x27;page&#x27;] == &#x27;ninja-forms&#x27; ){
+		wp_enqueue_style(&#x27;ninja-forms-conditionals-admin&#x27;, NINJA_FORMS_CON_URL .&#x27;/css/ninja-forms-conditionals-admin.css?nf_ver=&#x27; . NINJA_FORMS_CON_VERSION, array( &#x27;ninja-forms-admin&#x27; ) );
+	}
+}</pre></details></body></html>

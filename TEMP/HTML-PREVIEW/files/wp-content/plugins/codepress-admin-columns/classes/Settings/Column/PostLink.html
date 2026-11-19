@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/PostLink.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/PostLink.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_PostLink extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $post_link_to;
+
+	protected function define_options() {
+		return array(
+			&#x27;post_link_to&#x27; =&gt; &#x27;edit_post&#x27;,
+		);
+	}
+
+	public function format( $value, $original_value ) {
+		$id = $original_value;
+
+		switch ( $this-&gt;get_post_link_to() ) {
+			case &#x27;edit_post&#x27; :
+				$link = get_edit_post_link( $id );
+
+				break;
+			case &#x27;view_post&#x27; :
+				$link = get_permalink( $id );
+
+				break;
+			case &#x27;edit_author&#x27; :
+				$link = get_edit_user_link( ac_helper()-&gt;post-&gt;get_raw_field( &#x27;post_author&#x27;, $id ) );
+
+				break;
+			case &#x27;view_author&#x27; :
+				$link = get_author_posts_url( ac_helper()-&gt;post-&gt;get_raw_field( &#x27;post_author&#x27;, $id ) );
+
+				break;
+			default :
+				$link = false;
+		}
+
+		if ( $link ) {
+			$value = ac_helper()-&gt;html-&gt;link( $link, $value );
+		}
+
+		return $value;
+	}
+
+	public function create_view() {
+		$select = $this-&gt;create_element( &#x27;select&#x27; )-&gt;set_options( $this-&gt;get_display_options() );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Link To&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $select,
+		) );
+
+		return $view;
+	}
+
+	private function get_display_options() {
+		$options = array(
+			&#x27;edit_post&#x27;   =&gt; __( &#x27;Edit Post&#x27; ),
+			&#x27;view_post&#x27;   =&gt; __( &#x27;View Post&#x27; ),
+			&#x27;edit_author&#x27; =&gt; __( &#x27;Edit Post Author&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;view_author&#x27; =&gt; __( &#x27;View Public Post Author Page&#x27;, &#x27;codepress-admin-columns&#x27; ),
+		);
+
+		asort( $options );
+
+		$options = array_merge( array( &#x27;&#x27; =&gt; __( &#x27;None&#x27; ) ), $options );
+
+		return $options;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_post_link_to() {
+		return $this-&gt;post_link_to;
+	}
+
+	/**
+	 * @param string $post_link_to
+	 *
+	 * @return bool
+	 */
+	public function set_post_link_to( $post_link_to ) {
+		$this-&gt;post_link_to = $post_link_to;
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

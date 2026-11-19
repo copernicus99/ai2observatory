@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/ListScreen/Comment.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/ListScreen/Comment.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * @since 2.0
+ */
+class AC_ListScreen_Comment extends AC_ListScreen {
+
+	public function __construct() {
+
+		$this-&gt;set_label( __( &#x27;Comments&#x27; ) );
+		$this-&gt;set_singular_label( __( &#x27;Comment&#x27; ) );
+		$this-&gt;set_meta_type( &#x27;comment&#x27; );
+		$this-&gt;set_screen_base( &#x27;edit-comments&#x27; );
+		$this-&gt;set_key( &#x27;wp-comments&#x27; );
+		$this-&gt;set_screen_id( &#x27;edit-comments&#x27; );
+		$this-&gt;set_group( &#x27;comment&#x27; );
+
+		/* @see WP_Comments_List_Table */
+		$this-&gt;set_list_table_class( &#x27;WP_Comments_List_Table&#x27; );
+	}
+
+	public function get_list_table() {
+		$table = parent::get_list_table();
+
+		// Since 4.4 the `floated_admin_avatar` filter is added in the constructor of the `WP_Comments_List_Table` class.
+		// Here we remove the filter from the constructor.
+		remove_filter( &#x27;comment_author&#x27;, array( $table, &#x27;floated_admin_avatar&#x27; ), 10 );
+
+		return $table;
+	}
+
+	public function set_manage_value_callback() {
+		add_action( &#x27;manage_comments_custom_column&#x27;, array( $this, &#x27;manage_value&#x27; ), 100, 2 );
+	}
+
+	/**
+	 * @since 3.5
+	 */
+	public function get_table_attr_id() {
+		return &#x27;#the-comment-list&#x27;;
+	}
+
+	/**
+	 * @since 3.0
+	 * @return WP_Comment Comment
+	 */
+	protected function get_object_by_id( $comment_id ) {
+		return get_comment( $comment_id );
+	}
+
+	/**
+	 * @param string $column_name
+	 * @param int $id
+	 */
+	public function manage_value( $column_name, $id ) {
+		echo $this-&gt;get_display_value_by_column_name( $column_name, $id );
+	}
+
+	protected function register_column_types() {
+		$this-&gt;register_column_type( new AC_Column_CustomField() );
+		$this-&gt;register_column_type( new AC_Column_UsedByMenu() );
+
+		$this-&gt;register_column_types_from_dir( AC()-&gt;get_plugin_dir() . &#x27;classes/Column/Comment&#x27;, &#x27;AC_&#x27; );
+	}
+
+}
+</pre></details></body></html>

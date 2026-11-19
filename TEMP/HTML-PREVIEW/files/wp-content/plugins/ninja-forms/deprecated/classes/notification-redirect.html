@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/notification-redirect.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/notification-redirect.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-redirect_url&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;&lt;input type=&quot;text&quot; name=&quot;settings[redirect_url]&quot; id=&quot;settings-redirect_url&quot; value=&quot;&quot; class=&quot;regular-text&quot;/&gt;&lt;/td&gt;
+		&lt;/tr&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Class for our redirect notification type.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Notifications
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.8
+*/
+
+class NF_Notification_Redirect extends NF_Notification_Base_Type
+{
+
+	/**
+	 * Get things rolling
+	 */
+	function __construct() {
+		$this-&gt;name = __( &#x27;Redirect&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	/**
+	 * Output our edit screen
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function edit_screen( $id = &#x27;&#x27; ) {
+		$redirect_url = trim( Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;redirect_url&#x27; ) );
+		?&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;settings-redirect_url&quot;&gt;&lt;?php _e( &#x27;Url&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;&lt;input type=&quot;text&quot; name=&quot;settings[redirect_url]&quot; id=&quot;settings-redirect_url&quot; value=&quot;&lt;?php echo esc_attr( $redirect_url ); ?&gt;&quot; class=&quot;regular-text&quot;/&gt;&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;?php
+	}
+
+	/**
+	 * Process our Redirect notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function process( $id ) {
+		global $ninja_forms_processing;
+
+		$redirect_url = trim( Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;redirect_url&#x27; ) );
+
+		$ninja_forms_processing-&gt;update_form_setting( &#x27;landing_page&#x27;, $redirect_url );
+	}
+
+}
+
+return new NF_Notification_Redirect();</pre></details></body></html>

@@ -1,0 +1,67 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/simple-newsletter-br/views/user_form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/simple-newsletter-br/views/user_form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div class=&quot;simplenewsletter&quot; data-showon=&#x27;&#x27;&gt;
+	
+	&lt;form method=&#x27;POST&#x27; id=&#x27;subscribe-form&#x27; class=&#x27;&#x27;&gt;
+		
+				&lt;input  name=&#x27;simplenewsletter[name]&#x27; type=&#x27;hidden&#x27; placeholder=&#x27;&#x27; value=&quot;Subscriber&quot;/&gt;
+		
+			
+		&lt;div class=&quot;form-group&quot;&gt;
+                  &lt;div class=&quot;input-group animated&quot; 
+                    data-animation=&quot;fadeInUp&quot; 
+                    data-delay=&quot;500&quot;&gt;
+                    &lt;input type=&quot;email&quot; name=&quot;simplenewsletter[email]&quot; class=&quot;form-control&quot; id=&quot;subscribe-email&quot; placeholder=&quot;&quot;&gt;
+                    &lt;span class=&quot;input-group-btn&quot;&gt;
+                      &lt;button type=&quot;submit&quot; class=&quot;btn btn-subscribe simplenewsleter-field-submit&quot;&gt;
+                        &lt;i class=&quot;fa fa-fw fa-paper-plane submit&quot;&gt;&lt;/i&gt;
+                      &lt;/button&gt;
+                    &lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;label class=&quot;subscribe-notice animated&quot; for=&quot;subscribe-email&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;600&quot;&gt;&lt;/label&gt;
+
+	&lt;/form&gt;
+	&lt;div class=&quot;simplenewsletter_spinner&quot; style=&quot;display:none;&quot;&gt;
+		&lt;img src=&quot;&quot; style=&quot;margin-left:45%;&quot;&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+	/** initSimpleNewsletter(&#x27;.&#x27;); **/
+&lt;/script&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div class=&quot;simplenewsletter&quot; data-showon=&#x27;&lt;?php echo get_option(&#x27;simplenewsletter_showon&#x27;); ?&gt;&#x27;&gt;
+	&lt;?php $formID = uniqid(&#x27;form_simplenewsletter-&#x27;); ?&gt;
+	&lt;form method=&#x27;POST&#x27; id=&#x27;subscribe-form&#x27; class=&#x27;&lt;?php echo $formID ?&gt;&#x27;&gt;
+		&lt;?php 
+		if(get_option(&#x27;simplenewsletter_showname&#x27;) == 1)
+		{
+			?&gt;
+				&lt;input  name=&#x27;simplenewsletter[name]&#x27; type=&#x27;hidden&#x27; placeholder=&#x27;&lt;?php echo __(&quot;Name&quot;, &#x27;simple-newsletter-br&#x27;) ?&gt;&#x27; value=&quot;Subscriber&quot;/&gt;
+		
+			&lt;?php 
+		} ?&gt;
+		&lt;div class=&quot;form-group&quot;&gt;
+                  &lt;div class=&quot;input-group animated&quot; 
+                    data-animation=&quot;fadeInUp&quot; 
+                    data-delay=&quot;500&quot;&gt;
+                    &lt;input type=&quot;email&quot; name=&quot;simplenewsletter[email]&quot; class=&quot;form-control&quot; id=&quot;subscribe-email&quot; placeholder=&quot;&lt;?php echo __(&quot;Email&quot;, &#x27;simple-newsletter-br&#x27;) ?&gt;&quot;&gt;
+                    &lt;span class=&quot;input-group-btn&quot;&gt;
+                      &lt;button type=&quot;submit&quot; class=&quot;btn btn-subscribe simplenewsleter-field-submit&quot;&gt;
+                        &lt;i class=&quot;fa fa-fw fa-paper-plane submit&quot;&gt;&lt;/i&gt;
+                      &lt;/button&gt;
+                    &lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;label class=&quot;subscribe-notice animated&quot; for=&quot;subscribe-email&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;600&quot;&gt;&lt;/label&gt;
+
+	&lt;/form&gt;
+	&lt;div class=&quot;simplenewsletter_spinner&quot; style=&quot;display:none;&quot;&gt;
+		&lt;img src=&quot;&lt;?php echo plugins_url(&#x27;../images/loading_spinner.gif&#x27;, __FILE__) ?&gt;&quot; style=&quot;margin-left:45%;&quot;&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+	/** initSimpleNewsletter(&#x27;.&lt;?php echo $formID; ?&gt;&#x27;); **/
+&lt;/script&gt;
+</pre></details></body></html>

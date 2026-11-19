@@ -1,0 +1,498 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Submission.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/Submission.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_Controllers_Submission extends NF_Abstracts_Controller
+{
+    protected $_form_data = array();
+
+    protected $_form_cache = array();
+
+    protected $_preview_data = array();
+
+    protected $_form_id = &#x27;&#x27;;
+
+    public function __construct()
+    {
+        if( isset( $_POST[ &#x27;nf_resume&#x27; ] ) &amp;&amp; isset( $_COOKIE[ &#x27;nf_wp_session&#x27; ] ) ){
+            add_action( &#x27;ninja_forms_loaded&#x27;, array( $this, &#x27;resume&#x27; ) );
+            return;
+        }
+
+        if( isset( $_POST[&#x27;formData&#x27;] ) ) {
+            $this-&gt;_form_data = json_decode( $_POST[&#x27;formData&#x27;], TRUE  );
+
+            // php5.2 fallback
+            if( ! $this-&gt;_form_data ) $this-&gt;_form_data = json_decode( stripslashes( $_POST[&#x27;formData&#x27;] ), TRUE  );
+        }
+
+
+        add_action( &#x27;wp_ajax_nf_ajax_submit&#x27;,   array( $this, &#x27;submit&#x27; )  );
+        add_action( &#x27;wp_ajax_nopriv_nf_ajax_submit&#x27;,   array( $this, &#x27;submit&#x27; )  );
+
+        add_action( &#x27;wp_ajax_nf_ajax_resume&#x27;,   array( $this, &#x27;resume&#x27; )  );
+        add_action( &#x27;wp_ajax_nopriv_nf_ajax_resume&#x27;,   array( $this, &#x27;resume&#x27; )  );
+    }
+
+    public function submit()
+    {
+    	$nonce_name = &#x27;ninja_forms_display_nonce&#x27;;
+    	/**
+	     * We&#x27;ve got to get the &#x27;nonce_ts&#x27; to append to the nonce name to get
+	     * the unique nonce we created
+	     * */
+    	if( isset( $_REQUEST[ &#x27;nonce_ts&#x27; ] ) &amp;&amp; 0 &lt; strlen( $_REQUEST[ &#x27;nonce_ts&#x27; ] ) ) {
+    		$nonce_name = $nonce_name . &quot;_&quot; . $_REQUEST[ &#x27;nonce_ts&#x27; ];
+	    }
+        check_ajax_referer( $nonce_name, &#x27;security&#x27; );
+
+        register_shutdown_function( array( $this, &#x27;shutdown&#x27; ) );
+
+        $this-&gt;form_data_check();
+
+        $this-&gt;_form_id = $this-&gt;_form_data[&#x27;id&#x27;];
+
+        // If we don&#x27;t have a numeric form ID...
+        if ( ! is_numeric( $this-&gt;_form_id ) ) {
+            // Kick the request out without processing.
+            $this-&gt;_errors[] = __( &#x27;Form does not exist.&#x27;, &#x27;ninja-forms&#x27; );
+            $this-&gt;_respond();
+        }
+
+        if( $this-&gt;is_preview() ) {
+
+            $this-&gt;_form_cache = get_user_option( &#x27;nf_form_preview_&#x27; . $this-&gt;_form_id );
+
+            if( ! $this-&gt;_form_cache ){
+                $this-&gt;_errors[ &#x27;preview&#x27; ] = __( &#x27;Preview does not exist.&#x27;, &#x27;ninja-forms&#x27; );
+                $this-&gt;_respond();
+            }
+        } else {
+            $this-&gt;_form_cache = get_option( &#x27;nf_form_&#x27; . $this-&gt;_form_id );
+        }
+
+        // TODO: Update Conditional Logic to preserve field ID =&gt; [ Settings, ID ] structure.
+        $this-&gt;_form_data = apply_filters( &#x27;ninja_forms_submit_data&#x27;, $this-&gt;_form_data );
+
+        $this-&gt;process();
+    }
+
+    public function resume()
+    {
+        $this-&gt;_form_data = Ninja_Forms()-&gt;session()-&gt;get( &#x27;nf_processing_form_data&#x27; );
+        $this-&gt;_form_cache = Ninja_Forms()-&gt;session()-&gt;get( &#x27;nf_processing_form_cache&#x27; );
+        $this-&gt;_data = Ninja_Forms()-&gt;session()-&gt;get( &#x27;nf_processing_data&#x27; );
+        $this-&gt;_data[ &#x27;resume&#x27; ] = $_POST[ &#x27;nf_resume&#x27; ];
+
+        $this-&gt;_form_id = $this-&gt;_data[ &#x27;form_id&#x27; ];
+
+        unset( $this-&gt;_data[ &#x27;halt&#x27; ] );
+        unset( $this-&gt;_data[ &#x27;actions&#x27; ][ &#x27;redirect&#x27; ] );
+
+        $this-&gt;process();
+    }
+
+    protected function process()
+    {
+        // Init Field Merge Tags.
+        $field_merge_tags = Ninja_Forms()-&gt;merge_tags[ &#x27;fields&#x27; ];
+        $field_merge_tags-&gt;set_form_id( $this-&gt;_form_id );
+
+        // Init Calc Merge Tags.
+        $calcs_merge_tags = Ninja_Forms()-&gt;merge_tags[ &#x27;calcs&#x27; ];
+
+        $form_settings = $this-&gt;_form_cache[ &#x27;settings&#x27; ];
+        if( ! $form_settings ){
+            $form = Ninja_Forms()-&gt;form( $this-&gt;_form_id )-&gt;get();
+            $form_settings = $form-&gt;get_settings();
+        }
+
+        $this-&gt;_data[ &#x27;form_id&#x27; ] = $this-&gt;_form_data[ &#x27;form_id&#x27; ] = $this-&gt;_form_id;
+        $this-&gt;_data[ &#x27;settings&#x27; ] = $form_settings;
+        $this-&gt;_data[ &#x27;settings&#x27; ][ &#x27;is_preview&#x27; ] = $this-&gt;is_preview();
+        $this-&gt;_data[ &#x27;extra&#x27; ] = $this-&gt;_form_data[ &#x27;extra&#x27; ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fields
+        |--------------------------------------------------------------------------
+        */
+
+        if( $this-&gt;is_preview() ){
+            $form_fields = $this-&gt;_form_cache[ &#x27;fields&#x27; ];
+        } else {
+            $form_fields = Ninja_Forms()-&gt;form($this-&gt;_form_id)-&gt;get_fields();
+        }
+
+        /**
+         * The Field Processing Loop.
+         *
+         * There can only be one!
+         * For performance reasons, this should be the only time that the fields array is traversed.
+         * Anything needing to loop through fields should integrate here.
+         */
+        $validate_fields = apply_filters( &#x27;ninja_forms_validate_fields&#x27;, true, $this-&gt;_data );
+        foreach( $form_fields as $key =&gt; $field ){
+
+            if( is_object( $field ) ) {
+                $field = array(
+                    &#x27;id&#x27; =&gt; $field-&gt;get_id(),
+                    &#x27;settings&#x27; =&gt; $field-&gt;get_settings()
+                );
+            }
+
+            /** Get the field ID */
+            /*
+             * TODO: Refactor data structures to match.
+             * Preview: Field IDs are stored as the associated array key.
+             * Publish: Field IDs are stored as an array key=&gt;value pair.
+             */
+            if( $this-&gt;is_preview() ){
+                $field[ &#x27;id&#x27; ] = $key;
+            }
+
+            // Duplicate field ID as single variable for more readable array access.
+            $field_id = $field[ &#x27;id&#x27; ];
+
+            // Check that the field ID exists in the submitted for data and has a submitted value.
+            if( isset( $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ] ) &amp;&amp; isset( $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ][ &#x27;value&#x27; ] ) ){
+                $field[ &#x27;value&#x27; ] = $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ][ &#x27;value&#x27; ];
+            } else {
+                $field[ &#x27;value&#x27; ] = &#x27;&#x27;;
+            }
+
+            // Duplicate field value to settings and top level array item for backwards compatible access (ie Save Action).
+            $field[ &#x27;settings&#x27; ][ &#x27;value&#x27; ] = $field[ &#x27;value&#x27; ];
+
+            // Duplicate field value to form cache for passing to the action filter.
+            $this-&gt;_form_cache[ &#x27;fields&#x27; ][ $key ][ &#x27;settings&#x27; ][ &#x27;value&#x27; ] = $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ][ &#x27;value&#x27; ];
+
+            // Duplicate the Field ID for access as a setting.
+            $field[ &#x27;settings&#x27; ][ &#x27;id&#x27; ] = $field[ &#x27;id&#x27; ];
+
+            // Combine with submitted data.
+            $field = array_merge( $field, $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ] );
+
+            // Flatten the field array.
+            $field = array_merge( $field, $field[ &#x27;settings&#x27; ] );
+
+            /** Validate the Field */
+            if( $validate_fields &amp;&amp; ! isset( $this-&gt;_data[ &#x27;resume&#x27; ] ) ){
+                $this-&gt;validate_field( $field );
+            }
+
+            /** Process the Field */
+            if( ! isset( $this-&gt;_data[ &#x27;resume&#x27; ] ) ) {
+                $this-&gt;process_field($field);
+            }
+            $field = array_merge( $field, $this-&gt;_form_data[ &#x27;fields&#x27; ][ $field_id ] );
+
+	        // Check for field errors after processing.
+	        if ( isset( $this-&gt;_form_data[&#x27;errors&#x27;][&#x27;fields&#x27;][ $field_id ] ) ) {
+		        $this-&gt;_errors[&#x27;fields&#x27;][ $field_id ] = $this-&gt;_form_data[&#x27;errors&#x27;][&#x27;fields&#x27;][ $field_id ];
+		        $this-&gt;_respond();
+	        }
+
+            /** Populate Field Merge Tag */
+            $field_merge_tags-&gt;add_field( $field );
+
+            $this-&gt;_data[ &#x27;fields&#x27; ][ $field_id ] = $field;
+            $this-&gt;_data[ &#x27;fields_by_key&#x27; ][ $field[ &#x27;key&#x27; ] ] = $field;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check for unique field settings.
+        |--------------------------------------------------------------------------
+        */
+        if ( isset ( $this-&gt;_data[ &#x27;settings&#x27; ][ &#x27;unique_field&#x27; ] ) &amp;&amp; ! empty( $this-&gt;_data[ &#x27;settings&#x27; ][ &#x27;unique_field&#x27; ] ) ) {
+            /*
+             * Get our unique field
+             */
+            $unique_field_key = $this-&gt;_data[ &#x27;settings&#x27; ][ &#x27;unique_field&#x27; ];
+            $unique_field_error = $this-&gt;_data[ &#x27;settings&#x27; ][ &#x27;unique_field_error&#x27; ];
+            $unique_field_id = $this-&gt;_data[ &#x27;fields_by_key&#x27; ][ $unique_field_key ][ &#x27;id&#x27; ];
+            $unique_field_value = $this-&gt;_data[ &#x27;fields_by_key&#x27; ][ $unique_field_key ][ &#x27;value&#x27; ];
+            if ( is_array( $unique_field_value ) ) {
+                $unique_field_value = serialize( $unique_field_value );
+            }
+
+            /*
+             * Check our db for the value submitted.
+             */
+            
+            global $wpdb;
+            $sql = $wpdb-&gt;prepare( &quot;SELECT COUNT(m.meta_id) FROM `&quot; . $wpdb-&gt;prefix . &quot;postmeta` AS m LEFT JOIN `&quot; . $wpdb-&gt;prefix . &quot;posts` AS p ON p.id = m.post_id WHERE m.meta_key = &#x27;_field_%d&#x27; AND m.meta_value = &#x27;%s&#x27; AND p.post_status = &#x27;publish&#x27;&quot;, $unique_field_id, $unique_field_value );
+            $result = $wpdb-&gt;get_results( $sql, &#x27;ARRAY_N&#x27; );
+            if ( intval( $result[ 0 ][ 0 ] ) &gt; 0 ) {
+                $this-&gt;_errors[&#x27;fields&#x27;][ $unique_field_id ] = array( &#x27;slug&#x27; =&gt; &#x27;unique_field&#x27;, &#x27;message&#x27; =&gt; $unique_field_error );
+                $this-&gt;_respond();
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Calculations
+        |--------------------------------------------------------------------------
+        */
+
+        if( isset( $this-&gt;_form_cache[ &#x27;settings&#x27; ][ &#x27;calculations&#x27; ] ) ) {
+
+            /**
+             * The Calculation Processing Loop
+             */
+            foreach( $this-&gt;_form_cache[ &#x27;settings&#x27; ][ &#x27;calculations&#x27; ] as $calc ){
+                $eq = apply_filters( &#x27;ninja_forms_calc_setting&#x27;, $calc[ &#x27;eq&#x27; ] );
+
+                // Scrub unmerged tags (ie deleted/non-existent fields/calcs, etc).
+                $eq = preg_replace( &#x27;/{([a-zA-Z0-9]|:|_|-)*}/&#x27;, 0, $eq);
+
+				/**
+				 * PHP doesn&#x27;t evaluate empty strings to numbers. So check
+	             * for any string for the decimal place
+				**/
+                $dec = ( isset( $calc[ &#x27;dec&#x27; ] ) &amp;&amp; &#x27;&#x27; != $calc[ &#x27;dec&#x27; ] ) ?
+	                $calc[ &#x27;dec&#x27; ] : 2;
+                
+                $calcs_merge_tags-&gt;set_merge_tags( $calc[ &#x27;name&#x27; ], $eq, $dec, $this-&gt;_form_data[&#x27;settings&#x27;][&#x27;decimal_point&#x27;], $this-&gt;_form_data[&#x27;settings&#x27;][&#x27;thousands_sep&#x27;] );
+                $this-&gt;_data[ &#x27;extra&#x27; ][ &#x27;calculations&#x27; ][ $calc[ &#x27;name&#x27; ] ] = array(
+                    &#x27;raw&#x27; =&gt; $calc[ &#x27;eq&#x27; ],
+                    &#x27;parsed&#x27; =&gt; $eq,
+                    &#x27;value&#x27; =&gt; $calcs_merge_tags-&gt;get_formatted_calc_value( $calc[ &#x27;name&#x27; ], $dec, $this-&gt;_form_data[&#x27;settings&#x27;][&#x27;decimal_point&#x27;], $this-&gt;_form_data[&#x27;settings&#x27;][&#x27;thousands_sep&#x27;] ),
+                );
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Actions
+        |--------------------------------------------------------------------------
+        */
+
+        /*
+         * TODO: This section has become convoluted, but will be refactored along with the submission controller.
+         */
+
+        if( isset( $this-&gt;_data[ &#x27;resume&#x27; ] ) &amp;&amp; $this-&gt;_data[ &#x27;resume&#x27; ] ){
+            // On Resume Submission, the action data is loaded form the session.
+            // This section intentionally left blank.
+        } elseif( ! $this-&gt;is_preview() ) {
+            // Published forms rely on the Database for the &quot;truth&quot; about Actions.
+            $actions = Ninja_Forms()-&gt;form($this-&gt;_form_id)-&gt;get_actions();
+            $this-&gt;_form_cache[ &#x27;actions&#x27; ] = array();
+            foreach( $actions as $action ){
+                $action_id = $action-&gt;get_id();
+                $this-&gt;_form_cache[ &#x27;actions&#x27; ][ $action_id ] = array(
+                    &#x27;id&#x27; =&gt; $action_id,
+                    &#x27;settings&#x27; =&gt; $action-&gt;get_settings()
+                );
+            }
+        } else {
+            // Previews uses user option for stored data.
+            $preview_data = get_user_option( &#x27;nf_form_preview_&#x27; . $this-&gt;_form_id );
+            $this-&gt;_form_cache[ &#x27;actions&#x27; ] = $preview_data[ &#x27;actions&#x27; ];
+        }
+        /* END form cache bypass. */
+
+        // Sort Actions by Timing Order, then by Priority Order.
+        usort( $this-&gt;_form_cache[ &#x27;actions&#x27; ], array( $this, &#x27;sort_form_actions&#x27; ) );
+
+        /*
+         * Filter Actions so that they can be pragmatically disabled by add-ons.
+         *
+         * ninja_forms_submission_actions
+         * ninja_forms_submission_actions_preview
+         */
+        $this-&gt;_form_cache[ &#x27;actions&#x27; ] = apply_filters( &#x27;ninja_forms_submission_actions&#x27;, $this-&gt;_form_cache[ &#x27;actions&#x27; ], $this-&gt;_form_cache, $this-&gt;_form_data );
+        if( $this-&gt;is_preview() ) {
+            $this-&gt;_form_cache[&#x27;actions&#x27;] = apply_filters(&#x27;ninja_forms_submission_actions_preview&#x27;, $this-&gt;_form_cache[&#x27;actions&#x27;], $this-&gt;_form_cache);
+        }
+
+        // Initialize the process actions log.
+        if( ! isset( $this-&gt;_data[ &#x27;processed_actions&#x27; ] ) ) $this-&gt;_data[ &#x27;processed_actions&#x27; ] = array();
+
+        /*
+         * Merging extra data that may have been added by fields during processing so that the values aren&#x27;t lost when we enter the action loop.
+         */
+        $this-&gt;_data[ &#x27;extra&#x27; ] = array_merge( $this-&gt;_data[ &#x27;extra&#x27; ], $this-&gt;_form_data[ &#x27;extra&#x27; ] );
+
+        /**
+         * The Action Processing Loop
+         */
+        foreach( $this-&gt;_form_cache[ &#x27;actions&#x27; ] as $key =&gt; $action ){
+
+            /** Get the action ID */
+            /*
+             * TODO: Refactor data structures to match.
+             * Preview: Action IDs are stored as the associated array key.
+             * Publish: Action IDs are stored as an array key=&gt;value pair.
+             */
+            if( $this-&gt;is_preview() ){
+                $action[ &#x27;id&#x27; ] = $key;
+            }
+
+            // Duplicate the Action ID for access as a setting.
+            $action[ &#x27;settings&#x27; ][ &#x27;id&#x27; ] = $action[ &#x27;id&#x27; ];
+
+            // Duplicate action ID as single variable for more readable array access.
+            $action_id = $action[ &#x27;id&#x27; ];
+
+            // If an action has already run (ie resume submission), do not re-process.
+            if( in_array( $action[ &#x27;id&#x27; ], $this-&gt;_data[ &#x27;processed_actions&#x27; ] ) ) continue;
+
+            $action[ &#x27;settings&#x27; ] = apply_filters( &#x27;ninja_forms_run_action_settings&#x27;, $action[ &#x27;settings&#x27; ], $this-&gt;_form_id, $action[ &#x27;id&#x27; ], $this-&gt;_form_data[&#x27;settings&#x27;] );
+            if( $this-&gt;is_preview() ){
+                $action[ &#x27;settings&#x27; ] = apply_filters( &#x27;ninja_forms_run_action_settings_preview&#x27;, $action[ &#x27;settings&#x27; ], $this-&gt;_form_id, $action[ &#x27;id&#x27; ], $this-&gt;_form_data[&#x27;settings&#x27;] );
+            }
+
+            if( ! $action[ &#x27;settings&#x27; ][ &#x27;active&#x27; ] ) continue;
+
+            if( ! apply_filters( &#x27;ninja_forms_run_action_type_&#x27; . $action[ &#x27;settings&#x27; ][ &#x27;type&#x27; ], TRUE ) ) continue;
+
+            $type = $action[ &#x27;settings&#x27; ][ &#x27;type&#x27; ];
+
+            if( ! is_string( $type ) ) continue;
+
+            $action_class = Ninja_Forms()-&gt;actions[ $type ];
+
+            if( ! method_exists( $action_class, &#x27;process&#x27; ) ) continue;
+
+            if( $data = $action_class-&gt;process($action[ &#x27;settings&#x27; ], $this-&gt;_form_id, $this-&gt;_data ) ){
+                $this-&gt;_data = apply_filters( &#x27;ninja_forms_post_run_action_type_&#x27; . $action[ &#x27;settings&#x27; ][ &#x27;type&#x27; ], $data );
+            }
+
+//            $this-&gt;_data[ &#x27;actions&#x27; ][ $type ][] = $action;
+
+            $this-&gt;maybe_halt( $action[ &#x27;id&#x27; ] );
+        }
+
+        do_action( &#x27;ninja_forms_after_submission&#x27;, $this-&gt;_data );
+
+        $this-&gt;_respond();
+    }
+
+    protected function validate_field( $field_settings )
+    {
+        $field_settings = apply_filters( &#x27;ninja_forms_pre_validate_field_settings&#x27;, $field_settings );
+
+        if( ! is_string( $field_settings[&#x27;type&#x27;] ) ) return;
+
+        $field_class = Ninja_Forms()-&gt;fields[ $field_settings[&#x27;type&#x27;] ];
+
+        if( ! method_exists( $field_class, &#x27;validate&#x27; ) ) return;
+
+        if( $errors = $field_class-&gt;validate( $field_settings, $this-&gt;_form_data ) ){
+            $field_id = $field_settings[ &#x27;id&#x27; ];
+            $this-&gt;_errors[ &#x27;fields&#x27; ][ $field_id ] = $errors;
+            $this-&gt;_respond();
+        }
+    }
+
+    protected function process_field( $field_settings )
+    {
+        if( ! is_string( $field_settings[&#x27;type&#x27;] ) ) return;
+
+        $field_class = Ninja_Forms()-&gt;fields[ $field_settings[&#x27;type&#x27;] ];
+
+        if( ! method_exists( $field_class, &#x27;process&#x27; ) ) return;
+
+        if( $data = $field_class-&gt;process( $field_settings, $this-&gt;_form_data ) ){
+            $this-&gt;_form_data = $data;
+        }
+    }
+
+    protected function maybe_halt( $action_id )
+    {
+        if( isset( $this-&gt;_data[ &#x27;errors&#x27; ] ) &amp;&amp; $this-&gt;_data[ &#x27;errors&#x27; ] ){
+            $this-&gt;_respond();
+        }
+
+        if( isset( $this-&gt;_data[ &#x27;halt&#x27; ] ) &amp;&amp; $this-&gt;_data[ &#x27;halt&#x27; ] ){
+
+            Ninja_Forms()-&gt;session()-&gt;set( &#x27;nf_processing_data&#x27;, $this-&gt;_data );
+            Ninja_Forms()-&gt;session()-&gt;set( &#x27;nf_processing_form_data&#x27;, $this-&gt;_form_data );
+            Ninja_Forms()-&gt;session()-&gt;set( &#x27;nf_processing_form_cache&#x27;, $this-&gt;_form_cache );
+
+            $this-&gt;_respond();
+        }
+
+        array_push( $this-&gt;_data[ &#x27;processed_actions&#x27; ], $action_id );
+    }
+
+    protected function sort_form_actions( $a, $b )
+    {
+        if( is_object( $a ) ) {
+            if( ! isset( Ninja_Forms()-&gt;actions[ $a-&gt;get_setting( &#x27;type&#x27; ) ] ) ) return -1;
+            $a = Ninja_Forms()-&gt;actions[ $a-&gt;get_setting( &#x27;type&#x27; ) ];
+        } else {
+            if( ! isset( Ninja_Forms()-&gt;actions[ $a[ &#x27;settings&#x27; ][ &#x27;type&#x27; ] ] ) ) return -1;
+            $a = Ninja_Forms()-&gt;actions[ $a[ &#x27;settings&#x27; ][ &#x27;type&#x27; ] ];
+        }
+
+        if( is_object( $b ) ) {
+            if( ! isset( Ninja_Forms()-&gt;actions[ $b-&gt;get_setting( &#x27;type&#x27; ) ] ) ) return 1;
+            $b = Ninja_Forms()-&gt;actions[ $b-&gt;get_setting( &#x27;type&#x27; ) ];
+        } else {
+            if( ! isset( Ninja_Forms()-&gt;actions[ $b[ &#x27;settings&#x27; ][ &#x27;type&#x27; ] ] ) ) return 1;
+            $b = Ninja_Forms()-&gt;actions[ $b[ &#x27;settings&#x27; ][ &#x27;type&#x27; ] ];
+        }
+
+        if ( $a-&gt;get_timing() == $b-&gt;get_timing() ) {
+            if ( $a-&gt;get_priority() == $b-&gt;get_priority() ) {
+                return 0;
+            }
+            return ( $a-&gt;get_priority() &lt; $b-&gt;get_priority() ) ? -1 : 1;
+        }
+
+        return ( $a-&gt;get_timing() &lt; $b-&gt;get_timing() ) ? -1 : 1;
+    }
+
+    public function shutdown()
+    {
+        $error = error_get_last();
+        if( $error !== NULL &amp;&amp; in_array( $error[ &#x27;type&#x27; ], array( E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR ) ) ) {
+
+            $this-&gt;_errors[ &#x27;form&#x27; ][ &#x27;last&#x27; ] = __( &#x27;The server encountered an error during processing.&#x27;, &#x27;ninja-forms&#x27; );
+
+            if( current_user_can( &#x27;manage_options&#x27; ) &amp;&amp; isset( $error[ &#x27;message&#x27; ] ) ){
+                $this-&gt;_errors[ &#x27;form&#x27; ][ &#x27;last_admin&#x27; ] = &#x27;&lt;pre&gt;&#x27; . $error[ &#x27;message&#x27; ] . &#x27;&lt;/pre&gt;&#x27;;
+            }
+
+            $this-&gt;_errors[ &#x27;last&#x27; ] = $error;
+            Ninja_Forms()-&gt;logger()-&gt;emergency( $error[ &#x27;message&#x27; ] );
+            $this-&gt;_respond();
+        }
+    }
+
+    protected function form_data_check()
+    {
+        if( $this-&gt;_form_data ) return;
+
+        if( function_exists( &#x27;json_last_error&#x27; ) // Function not supported in php5.2
+            &amp;&amp; function_exists( &#x27;json_last_error_msg&#x27; )// Function not supported in php5.4
+            &amp;&amp; json_last_error() ){
+            $this-&gt;_errors[] = json_last_error_msg();
+        } else {
+            $this-&gt;_errors[] = __( &#x27;An unexpected error occurred.&#x27;, &#x27;ninja-forms&#x27; );
+        }
+
+        $this-&gt;_respond();
+    }
+
+    protected function is_preview()
+    {
+        if( ! isset( $this-&gt;_form_data[ &#x27;settings&#x27; ][ &#x27;is_preview&#x27; ] ) ) return false;
+        return $this-&gt;_form_data[ &#x27;settings&#x27; ][ &#x27;is_preview&#x27; ];
+    }
+
+    /*
+     * Overwrite method for parent class.
+     */
+    protected function _respond( $data = array() )
+    {
+        // Set a content type of JSON for the purpose of previnting XSS attacks.
+        header( &#x27;Content-Type: application/json&#x27; );
+        // Call the parent method.
+        parent::_respond();
+    }
+}
+</pre></details></body></html>

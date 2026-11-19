@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Column/Link/Actions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Column/Link/Actions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * @since 2.0
+ */
+class AC_Column_Link_Actions extends AC_Column {
+
+	public function __construct() {
+		$this-&gt;set_type( &#x27;column-actions&#x27; );
+		$this-&gt;set_label( __( &#x27;Actions&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+	}
+
+	public function get_value( $id ) {
+		$bookmark = get_bookmark( $id );
+
+		return $this-&gt;get_column_value_actions( $bookmark );
+	}
+
+	/**
+	 * Get column value of link actions
+	 *
+	 * This part is copied from the Link List Table class
+	 *
+	 * @since 1.4.2
+	 *
+	 * @param object $link
+	 *
+	 * @return string Actions
+	 */
+	public function get_column_value_actions( $link ) {
+		$actions = array();
+
+		$edit_link = get_edit_bookmark_link( $link );
+
+		$actions[&#x27;edit&#x27;] = &#x27;&lt;a href=&quot;&#x27; . $edit_link . &#x27;&quot;&gt;&#x27; . __( &#x27;Edit&#x27; ) . &#x27;&lt;/a&gt;&#x27;;
+		$actions[&#x27;delete&#x27;] = &quot;&lt;a class=&#x27;submitdelete&#x27; href=&#x27;&quot; . wp_nonce_url( &quot;link.php?action=delete&amp;amp;link_id=$link-&gt;link_id&quot;, &#x27;delete-bookmark_&#x27; . $link-&gt;link_id ) . &quot;&#x27; onclick=\&quot;if ( confirm( &#x27;&quot; . esc_js( sprintf( __( &quot;You are about to delete this link &#x27;%s&#x27;\n  &#x27;Cancel&#x27; to stop, &#x27;OK&#x27; to delete.&quot; ), $link-&gt;link_name ) ) . &quot;&#x27; ) ) { return true;}return false;\&quot;&gt;&quot; . __( &#x27;Delete&#x27; ) . &quot;&lt;/a&gt;&quot;;
+
+		return implode( &#x27; | &#x27;, $actions );
+	}
+
+}
+</pre></details></body></html>

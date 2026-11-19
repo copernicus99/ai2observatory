@@ -1,0 +1,138 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Widget.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Widget.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;p&gt;
+            &lt;label&gt;
+                
+                &lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;&quot;&gt;
+                &lt;input type=&quot;checkbox&quot; value=&quot;1&quot; id=&quot;&quot; name=&quot;&quot; &gt;
+            &lt;/label&gt;
+        &lt;/p&gt;
+        &lt;p&gt;
+            &lt;select id=&quot;&quot; name=&quot;&quot;&gt;
+                &lt;option value=&quot;0&quot;&gt;-- &lt;/option&gt;
+                
+                    &lt;option value=&quot;&quot; &gt;
+                        
+                    &lt;/option&gt;
+                    
+            &lt;/select&gt;
+        &lt;/p&gt;
+
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Adds Ninja Forms widget.
+ */
+class NF_Widget extends WP_Widget {
+
+    /**
+     * Register widget with WordPress.
+     */
+    public function __construct() {
+        parent::__construct(
+            &#x27;ninja_forms_widget&#x27;, // Base ID
+            &#x27;Ninja Forms Widget&#x27;, // Name
+            array( &#x27;description&#x27; =&gt; __( &#x27;Ninja Forms Widget&#x27;, &#x27;ninja-forms&#x27; ), ) // Args
+        );
+    }
+
+    /**
+     * Front-end display of widget.
+     *
+     * @see WP_Widget::widget()
+     *
+     * @param array $args     Widget arguments.
+     * @param array $instance Saved values from database.
+     */
+    public function widget( $args, $instance ) {
+        $form = Ninja_Forms()-&gt;form( $instance[&#x27;form_id&#x27;] )-&gt;get();
+        $title = $form-&gt;get_setting( &#x27;title&#x27; );
+
+        $title = apply_filters( &#x27;widget_title&#x27;, $title );
+        $display_title = $instance[&#x27;display_title&#x27;];
+
+        echo $args[ &#x27;before_widget&#x27; ];
+        if ( ! empty( $title ) AND $display_title == 1 )
+            echo $args[ &#x27;before_title&#x27; ] . esc_html( $title ) . $args[ &#x27;after_title&#x27; ];
+        Ninja_Forms()-&gt;display( $instance[&#x27;form_id&#x27;] );
+        echo $args[ &#x27;after_widget&#x27; ];
+    }
+
+    /**
+     * Sanitize widget form values as they are saved.
+     *
+     * @see WP_Widget::update()
+     *
+     * @param array $new_instance Values just sent to be saved.
+     * @param array $old_instance Previously saved values from database.
+     *
+     * @return array Updated safe values to be saved.
+     */
+    public function update( $new_instance, $old_instance ) {
+
+        $instance = array();
+        $instance[&#x27;form_id&#x27;] = $new_instance[&#x27;form_id&#x27;];
+        $instance[&#x27;display_title&#x27;] = $new_instance[&#x27;display_title&#x27;];
+
+        return $instance;
+    }
+
+    /**
+     * Back-end widget form.
+     *
+     * @see WP_Widget::form()
+     *
+     * @param array $instance Previously saved values from database.
+     */
+    public function form( $instance ) {
+        if( isset( $instance[&#x27;form_id&#x27;] ) ){
+            $form_id = $instance[&#x27;form_id&#x27;];
+        }else{
+            $form_id = &#x27;&#x27;;
+        }
+
+        if( isset( $instance[&#x27;display_title&#x27;] ) ){
+            $display_title = $instance[&#x27;display_title&#x27;];
+        }else{
+            $display_title = 0;
+        }
+
+        ?&gt;
+        &lt;p&gt;
+            &lt;label&gt;
+                &lt;?php _e( &#x27;Display Title&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+                &lt;input type=&quot;hidden&quot; value=&quot;0&quot; name=&quot;&lt;?php echo esc_attr( $this-&gt;get_field_name( &#x27;display_title&#x27; ) ); ?&gt;&quot;&gt;
+                &lt;input type=&quot;checkbox&quot; value=&quot;1&quot; id=&quot;&lt;?php echo esc_attr( $this-&gt;get_field_id( &#x27;display_title&#x27; ) ); ?&gt;&quot; name=&quot;&lt;?php echo esc_attr( $this-&gt;get_field_name( &#x27;display_title&#x27; ) ); ?&gt;&quot; &lt;?php checked( $display_title, 1 );?&gt;&gt;
+            &lt;/label&gt;
+        &lt;/p&gt;
+        &lt;p&gt;
+            &lt;select id=&quot;&lt;?php echo esc_attr( $this-&gt;get_field_id( &#x27;form_id&#x27; ) ); ?&gt;&quot; name=&quot;&lt;?php echo esc_attr( $this-&gt;get_field_name( &#x27;form_id&#x27; ) ); ?&gt;&quot;&gt;
+                &lt;option value=&quot;0&quot;&gt;-- &lt;?php _e(&#x27;None&#x27;, &#x27;ninja-forms&#x27;);?&gt;&lt;/option&gt;
+                &lt;?php
+                $all_forms = Ninja_Forms()-&gt;form()-&gt;get_forms();
+
+                foreach($all_forms as $form){
+                    ?&gt;
+                    &lt;option value=&quot;&lt;?php echo intval( $form-&gt;get_id() );?&gt;&quot; &lt;?php selected( $form-&gt;get_id(), $form_id );?&gt;&gt;
+                        &lt;?php echo esc_html( $form-&gt;get_setting( &#x27;title&#x27; ) );?&gt;
+                    &lt;/option&gt;
+                    &lt;?php
+                }
+                ?&gt;
+            &lt;/select&gt;
+        &lt;/p&gt;
+
+        &lt;?php
+    }
+
+} // class Foo_Widget
+
+/**
+ * Register NF widget
+ *
+ * @see &#x27;widgets_init&#x27;
+ */
+function NF_register_widgets() {
+    register_widget( &#x27;NF_Widget&#x27; );
+}
+
+add_action( &#x27;widgets_init&#x27;, &#x27;NF_register_widgets&#x27; );
+</pre></details></body></html>

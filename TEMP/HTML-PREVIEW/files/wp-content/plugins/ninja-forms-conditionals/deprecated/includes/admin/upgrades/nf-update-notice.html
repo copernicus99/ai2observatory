@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/upgrades/nf-update-notice.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/upgrades/nf-update-notice.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+function nf_cl_show_upgrade_notices() {
+	// Show an update notice if the user&#x27;s version of Ninja Forms is below 2.8.6.
+	// Compare our Ninja Forms version.
+
+	if ( defined( &#x27;NF_PLUGIN_VERSION&#x27; ) ) {
+		if ( version_compare( NF_PLUGIN_VERSION, &#x27;2.8.6&#x27;, &#x27;&lt;&#x27; ) ) {
+			$display = true;
+		} else {
+			$display = false;
+		}
+	} else {
+		$display = false;
+	}
+	
+	if ( $display ) {
+		printf( &#x27;&lt;div class=&quot;update-nag&quot;&gt;&#x27; . __( &#x27;This version of Conditional Logic requires at least version 2.8.6 of Ninja Forms. Please visit your &lt;a href=&quot;%s&quot;&gt;plugins page&lt;/a&gt; to update.&#x27;, &#x27;ninja-forms-conditionals&#x27; ) . &#x27;&lt;/div&gt;&#x27;,
+			admin_url( &#x27;plugins.php&#x27; )		
+		);
+	}
+}
+
+add_action( &#x27;admin_notices&#x27;, &#x27;nf_cl_show_upgrade_notices&#x27; );
+</pre></details></body></html>

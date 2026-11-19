@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/download-all-subs.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/download-all-subs.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_Download_All_Subs extends NF_Step_Processing {
+
+	function __construct() {
+		$this-&gt;action = &#x27;download_all_subs&#x27;;
+
+		parent::__construct();
+	}
+
+	public function loading() {
+		$form_id  = isset( $this-&gt;args[&#x27;form_id&#x27;] ) ? absint( $this-&gt;args[&#x27;form_id&#x27;] ) : 0;
+
+		if ( empty( $form_id ) ) {
+
+			return array( &#x27;complete&#x27; =&gt; true );
+		}
+
+		$sub_count = nf_get_sub_count( $form_id );
+
+		if( empty( $this-&gt;total_steps ) || $this-&gt;total_steps &lt;= 1 ) {
+			$this-&gt;total_steps = round( ( $sub_count / 250 ), 0 ) + 2;
+		}
+
+		$args = array(
+			&#x27;total_steps&#x27; =&gt; $this-&gt;total_steps,
+		);
+
+		$this-&gt;args[&#x27;filename&#x27;] = $this-&gt;random_filename( &#x27;all-subs&#x27; );
+		update_user_option( get_current_user_id(), &#x27;nf_download_all_subs_filename&#x27;, $this-&gt;args[&#x27;filename&#x27;] );
+		$this-&gt;redirect = esc_url_raw( add_query_arg( array( &#x27;download_all&#x27; =&gt; $this-&gt;args[&#x27;filename&#x27;] ), $this-&gt;args[&#x27;redirect&#x27;] ) );
+
+		$this-&gt;loaded = true;
+		return $args;
+	}
+
+	public function step() {
+		if( ! is_numeric( $this-&gt;args[ &#x27;form_id&#x27; ] ) ){
+			wp_die( __( &#x27;Invalid form id&#x27;, &#x27;ninja-forms&#x27; ) );
+		}
+
+		$this-&gt;args[ &#x27;filename&#x27; ] = wp_kses_post( $this-&gt;args[ &#x27;filename&#x27; ] );
+
+		$exported_subs = get_user_option( get_current_user_id(), &#x27;nf_download_all_subs_ids&#x27; );
+		if ( ! is_array( $exported_subs ) ) {
+			$exported_subs = array();
+		}
+
+		$previous_name = get_user_option( get_current_user_id(), &#x27;nf_download_all_subs_filename&#x27; );
+		if ( $previous_name ) {
+			$this-&gt;args[&#x27;filename&#x27;] = $previous_name;
+		}
+
+		$args = array(
+			&#x27;posts_per_page&#x27; =&gt; 250,
+			&#x27;paged&#x27; =&gt; $this-&gt;step,
+			&#x27;post_type&#x27; =&gt; &#x27;nf_sub&#x27;,
+			&#x27;meta_query&#x27; =&gt; array(
+				array(
+					&#x27;key&#x27; =&gt; &#x27;_form_id&#x27;,
+					&#x27;value&#x27; =&gt; $this-&gt;args[&#x27;form_id&#x27;],
+				),
+			),
+		);
+
+		$subs_results = get_posts( $args );
+
+		if ( is_array( $subs_results ) &amp;&amp; ! empty( $subs_results ) ) {
+			$upload_dir = wp_upload_dir();
+			$file_path = trailingslashit( $upload_dir[&#x27;path&#x27;] ) . $this-&gt;args[&#x27;filename&#x27;] . &#x27;.csv&#x27;;
+			$myfile = fopen( $file_path, &#x27;a&#x27; ) or die( &#x27;Unable to open file!&#x27; );
+			$x = 0;
+			$export = &#x27;&#x27;;
+			foreach ( $subs_results as $sub ) {
+				$sub_export = Ninja_Forms()-&gt;sub( $sub-&gt;ID )-&gt;export( true );
+				if ( $x &gt; 0 || $this-&gt;step &gt; 1 ) {
+					$sub_export = substr( $sub_export, strpos( $sub_export, &quot;\n&quot; ) + 1 );
+				}
+				if ( ! in_array( $sub-&gt;ID, $exported_subs ) ) {
+					$export .= $sub_export;
+					$exported_subs[] = $sub-&gt;ID;
+				}
+				$x++;
+			}
+			fwrite( $myfile, $export );
+			fclose( $myfile );
+		}
+
+		update_user_option( get_current_user_id(), &#x27;nf_download_all_subs_ids&#x27;, $exported_subs );
+	}
+
+	public function complete() {
+		delete_user_option( get_current_user_id(), &#x27;nf_download_all_subs_ids&#x27; );
+		delete_user_option( get_current_user_id(), &#x27;nf_download_all_subs_filename&#x27; );
+	}
+
+	/**
+	 * Add an integar to the end of our filename to make sure it is unique
+	 *
+	 * @access public
+	 * @since 2.7.6
+	 * @return $filename
+	 */
+	public function random_filename( $filename ) {
+		$upload_dir = wp_upload_dir();
+		$file_path = trailingslashit( $upload_dir[&#x27;path&#x27;] ) . $filename . &#x27;.csv&#x27;;
+		if ( file_exists ( $file_path ) ) {
+			for ($x = 0; $x &lt; 999 ; $x++) {
+				$tmp_name = $filename . &#x27;-&#x27; . $x;
+				$tmp_path = trailingslashit( $upload_dir[&#x27;path&#x27;] );
+				if ( file_exists( $tmp_path . $tmp_name . &#x27;.csv&#x27; ) ) {
+					$this-&gt;random_filename( $tmp_name );
+					break;
+				} else {
+					$this-&gt;filename = $tmp_name;
+					break;
+				}
+			}
+		}
+
+		return $filename;
+	}
+
+}</pre></details></body></html>

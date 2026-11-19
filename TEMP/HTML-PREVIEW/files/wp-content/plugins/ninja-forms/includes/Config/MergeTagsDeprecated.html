@@ -1,0 +1,207 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/MergeTagsDeprecated.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/MergeTagsDeprecated.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_merge_tags_deprecated&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post ID
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;id&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;id&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{post:id}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Post ID&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;post_id&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Title
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;title&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;title&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{post:title}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Post Title&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;post_title&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post URL
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;url&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;url&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{post:url}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Post URL&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;post_url&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Author
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;author&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;author&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{post:author}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Post Author&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;post_author&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Author Email
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;author_email&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;author_email&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{post:author_email}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Post Author Email&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;post_author_email&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User ID
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;user_id&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;user_id&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{user:id}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;User ID&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;user_id&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User First Name
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;first_name&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;first_name&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{user:first_name}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;User First Name&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;user_first_name&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Last Name
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;last_name&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;last_name&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{user:last_name}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;User Last Name&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;user_last_name&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Dispaly Name
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;display_name&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;display_name&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{user:display_name}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;User Display Name&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;user_display_name&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Email Address
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;user_email&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;user_email&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{user:email}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;User Email&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;user_email&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Site Title
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;site_title&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;site_title&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{site:title}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Site Title&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;site_title&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Site URL
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;site_url&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;site_url&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{site:url}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Site URL&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;site_url&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Email Address
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;admin_email&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;admin_email&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{system:admin_email}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Admin Email&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;admin_email&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | System Date
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;date&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;date&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{system:date}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Date&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;system_date&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | System IP Address
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;ip&#x27; =&gt; array(
+        &#x27;id&#x27; =&gt; &#x27;ip&#x27;,
+        &#x27;tag&#x27; =&gt; &#x27;{system:ip}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;IP Address&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; &#x27;system_ip&#x27;
+    ),
+
+    &#x27;query_string&#x27; =&gt; array(
+        &#x27;tag&#x27; =&gt; &#x27;{query_string_key}&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Query String&#x27;, &#x27;ninja_forms&#x27; ),
+        &#x27;callback&#x27; =&gt; null,
+    ),
+
+
+));</pre></details></body></html>

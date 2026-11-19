@@ -1,0 +1,201 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/simple-newsletter-br/class_newsletter.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/simple-newsletter-br/class_newsletter.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php 
+class controllerNewsletter {
+
+	private $queries = array(
+		&#x27;ALL&#x27; =&gt; &#x27;SELECT * FROM simplenewsletter_subscriptions WHERE 1 = 1 ORDER BY created DESC LIMIT %d, %d&#x27;,
+		&#x27;ALL_CONFIRMED&#x27; =&gt; &#x27;SELECT * FROM simplenewsletter_subscriptions WHERE confirmed = 1 ORDER BY created DESC LIMIT %d, %d&#x27;,
+		&#x27;EXPORT_ALL&#x27; =&gt; &#x27;SELECT name, email FROM simplenewsletter_subscriptions WHERE 1 = 1&#x27;,
+		&#x27;EXPORT_CONFIRMED&#x27; =&gt; &#x27;SELECT name, email FROM simplenewsletter_subscriptions WHERE confirmed = 1&#x27;,
+		&#x27;CHECK_EMAIL&#x27; =&gt; &#x27;SELECT email FROM simplenewsletter_subscriptions WHERE email = \&#x27;%s\&#x27;&#x27;,
+		&#x27;CONFIRM&#x27; =&gt; &#x27;UPDATE simplenewsletter_subscriptions SET confirmed = 1 where hash = \&#x27;%s\&#x27;&#x27;,
+		&#x27;COUNT&#x27; =&gt; &#x27;SELECT (SELECT COUNT(*) from simplenewsletter_subscriptions WHERE confirmed = 1 ) as qty_confirmed, (SELECT COUNT(*) from simplenewsletter_subscriptions WHERE confirmed = 0) as qty_unconfirmed, (SELECT COUNT(*) from simplenewsletter_subscriptions WHERE DATE(created) = DATE_SUB(CURDATE(),INTERVAL 1 DAY) ) as yesterday, (SELECT COUNT(*) from simplenewsletter_subscriptions WHERE DATE_SUB(CURDATE(),INTERVAL 0 DAY) &lt;= DATE(created) ) as today, (SELECT COUNT(*) from simplenewsletter_subscriptions WHERE DATE_SUB(CURDATE(),INTERVAL 7 DAY) &lt;= DATE(created) ) as last_week&#x27;
+		);
+	private $data = array();
+	public $success_message = &#x27;&#x27;;
+	private $need_confirmation = &#x27;&#x27;;
+	private $wpdb;
+
+	public $errors = array();
+	public $limit  = 25;
+
+	public function controllerNewsletter()
+	{
+		//Load the translation 0.5.1 modification
+		load_plugin_textdomain(&#x27;simple-newsletter-br&#x27;, FALSE, dirname(plugin_basename(__FILE__)).&#x27;/languages/&#x27;);
+
+		global $wpdb;
+		$this-&gt;wpdb = $wpdb;
+		$this-&gt;success_message = get_option(&quot;simplenewsletter_successmessage&quot;);
+		$this-&gt;need_confirmation = get_option(&quot;simplenewsletter_dbloptin&quot;);
+	}
+
+	public function get_subscribers($type = &#x27;all&#x27;, $page = 0)
+	{
+		switch ($type) {
+			case &#x27;all&#x27;:
+			return $this-&gt;wpdb-&gt;get_results($this-&gt;wpdb-&gt;prepare( $this-&gt;queries[&#x27;ALL&#x27;], ( $page*$this-&gt;limit ), $this-&gt;limit ), ARRAY_A );
+			break;
+			
+			case &#x27;confirmed&#x27;:
+			return $this-&gt;wpdb-&gt;get_results($wpdb-&gt;prepare( $this-&gt;queries[&#x27;ALL_CONFIRMED&#x27;], ( $page*$this-&gt;limit ), $this-&gt;limit ), ARRAY_A );
+			break;
+		}
+	}
+
+	public function count()
+	{
+		return $this-&gt;wpdb-&gt;get_results($this-&gt;queries[&#x27;COUNT&#x27;], ARRAY_A);
+	}
+
+	public function insert($data = array())
+	{
+		$this-&gt;set_sanitized_data($data);
+
+		if($this-&gt;validate() === false)
+		{
+			return false;
+		}
+
+		if($this-&gt;save())
+		{
+			$this-&gt;send_confirmation();
+			return true;
+		}
+
+		return false;
+	}
+
+	public function confirm($token = null)
+	{
+		if( $this-&gt;wpdb-&gt;query( $this-&gt;wpdb-&gt;prepare( $this-&gt;queries[&#x27;CONFIRM&#x27;], $token ) ) )
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	public function export($method = &#x27;EXPORT_ALL&#x27;)
+	{
+		header(&#x27;Content-Type: text/csv; charset=utf-8&#x27;);
+		header(&#x27;Content-Disposition: attachment; filename=subscribers.csv&#x27;);
+
+		$output = fopen(&#x27;php://output&#x27;, &#x27;w&#x27;);
+
+		fputcsv($output, array(&#x27;Nome&#x27;, &#x27;Email&#x27;));
+		$rows = $this-&gt;wpdb-&gt;get_results($this-&gt;queries[$method], ARRAY_N);
+
+		foreach($rows as $key =&gt; $row)
+		{
+			fputcsv($output, $row);
+		}
+
+	}
+
+	private function set_sanitized_data($data)
+	{
+		foreach($data as $key =&gt; $value)
+		{
+			switch($key)
+			{
+				default:
+				$this-&gt;data[$key] = sanitize_text_field($value);
+				break;
+
+				case &quot;email&quot;:
+				$this-&gt;data[$key] = sanitize_email($value);
+				break;
+
+			}
+		}
+		return true;
+	}
+
+	private function send_confirmation()
+	{
+		$vars = array(
+			&#x27;&lt;a href=&quot;&#x27;. get_home_url() .&#x27;?sn_token=&#x27;. $this-&gt;data[&#x27;hash&#x27;] .&#x27;&quot;&gt;&#x27;.__(&#x27;Click here to confirm your email&#x27;, &#x27;simple-newsletter-br&#x27;).&#x27;&lt;/a&gt;&#x27;,
+			get_option(&quot;simplenewsletter_confirmationemail&quot;),
+			get_home_url(),
+			get_bloginfo(&#x27;name&#x27;),
+			);
+
+		$logo = get_option(&quot;simplenewsletter_logo&quot;);
+		if(empty($logo))
+		{
+			plugins_url(&#x27;images/newsletter.png&#x27;, __FILE__);
+		}
+
+		$name = &#x27;&#x27;;
+		if(isset($this-&gt;data[&#x27;name&#x27;]))
+		{
+			$name = $this-&gt;data[&#x27;name&#x27;];
+		}
+		
+		array_unshift($vars, $logo, $name);
+		
+		$template_file = get_template_directory().&#x27;/email_template.html&#x27;;
+		
+		if(!file_exists($template_file))
+		{
+			$template_file = plugin_dir_path(__FILE__).&#x27;views/email_template.html&#x27;;
+		}
+		
+		$file = fopen( $template_file, &quot;r&quot;);
+		$content = fread($file, filesize($template_file));
+
+		$content = str_replace( array( &#x27;{logo}&#x27;, &#x27;{name}&#x27;, &#x27;{button}&#x27;,&#x27;{text_confirmation}&#x27;,&#x27;{sitelink}&#x27;,&#x27;{sitename}&#x27;), $vars, $content );
+		$headers = array(
+			&#x27;From: &#x27; . get_bloginfo(&#x27;name&#x27;) . &#x27; &lt;&#x27; . get_option(&#x27;admin_email&#x27;) . &#x27;&gt;&#x27;,
+			&#x27;Content-Type: text/html; charset=UTF-8&#x27;
+			);
+
+		wp_mail( $this-&gt;data[&#x27;email&#x27;], get_bloginfo(&#x27;name&#x27;) . &#x27; - &#x27; . __(&#x27;Email Confirmation&#x27;, &#x27;simple-newsletter-br&#x27;), $content, $headers );
+	}
+
+	private function validate()
+	{
+		if($this-&gt;exist())
+		{
+			return false;
+		}
+
+		if(isset($this-&gt;data[&#x27;name&#x27;]) &amp;&amp; empty($this-&gt;data[&#x27;name&#x27;]))
+		{
+			$this-&gt;errors[&#x27;name&#x27;] = __(&#x27;Blank name is not allowed&#x27;, &#x27;simple-newsletter-br&#x27;);
+		}
+
+		if(!is_email($this-&gt;data[&quot;email&quot;]) || empty($this-&gt;data[&quot;email&quot;]))
+		{
+			$this-&gt;errors[&#x27;email&#x27;] = __(&#x27;Please inform a valid email&#x27;, &#x27;simple-newsletter-br&#x27;);
+		}
+
+		if(!empty($this-&gt;errors))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	private function exist()
+	{
+		if( count( $this-&gt;wpdb-&gt;get_results( $this-&gt;wpdb-&gt;prepare( $this-&gt;queries[&#x27;CHECK_EMAIL&#x27;], $this-&gt;data[&quot;email&quot;] ), ARRAY_A ) ) &gt; 0 )
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private function save()
+	{
+		$this-&gt;data[&#x27;hash&#x27;] = md5($this-&gt;data[&#x27;email&#x27;].date(&#x27;d/m/Y H:i:s&#x27;));
+		$this-&gt;data[&quot;created&quot;] = date(&#x27;Y-m-d H:m:i&#x27;);
+		$this-&gt;data[&quot;confirmed&quot;] = 0;
+		if( $this-&gt;wpdb-&gt;insert(&#x27;simplenewsletter_subscriptions&#x27;, $this-&gt;data, array(&#x27;%s&#x27;,&#x27;%s&#x27;,&#x27;%s&#x27;,&#x27;%s&#x27;, &#x27;%d&#x27;)) ){
+			return true;
+		}
+		return false;
+	}
+}
+?&gt;</pre></details></body></html>

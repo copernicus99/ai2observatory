@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/recaptcha.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/recaptcha.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;input id=&quot;ninja_forms_field_&quot; name=&quot;ninja_forms_field_&quot; type=&quot;hidden&quot; class=&quot;&quot; value=&quot;&quot; rel=&quot;&quot; /&gt;
+		&lt;div class=&quot;g-recaptcha&quot; data-callback=&quot;nf_recaptcha_set_field_value&quot; data-sitekey=&quot;&quot;&gt;&lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://www.google.com/recaptcha/api.js?hl=&quot;&gt; &lt;/script&gt;
+		&lt;script type=&quot;text/javascript&quot;&gt;
+            function nf_recaptcha_set_field_value(inpval){
+            	jQuery(&quot;#ninja_forms_field_&quot;).val(inpval)
+            }
+            &lt;/script&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_recaptcha() {
+
+	$settings = get_option( &quot;ninja_forms_settings&quot; );
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;reCAPTCHA&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_recaptcha_display&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;default_label&#x27; =&gt; __( &#x27;Confirm that you are not a bot&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;req&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; false,
+		&#x27;edit_custom_class&#x27; =&gt; false,
+		&#x27;edit_help&#x27; =&gt; false,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;action&#x27; =&gt; array(
+				&#x27;show&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Show This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;show&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;hide&#x27;,
+				),
+				&#x27;hide&#x27; =&gt; array(
+					&#x27;name&#x27;        =&gt; __( &#x27;Hide This&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;js_function&#x27; =&gt; &#x27;hide&#x27;,
+					&#x27;output&#x27;      =&gt; &#x27;hide&#x27;,
+				),
+			),
+		),
+		&#x27;display_label&#x27; =&gt; true,
+		&#x27;process_field&#x27; =&gt; false,
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_recaptcha_pre_process&#x27;,
+
+	);
+	// show recaptcha field in admin only if site and secret key exists.
+	if ( !empty( $settings[&#x27;recaptcha_site_key&#x27;] ) &amp;&amp; !empty( $settings[&#x27;recaptcha_secret_key&#x27;] ) ) {
+		ninja_forms_register_field( &#x27;_recaptcha&#x27;, $args );
+	}
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_field_recaptcha&#x27; );
+
+function ninja_forms_field_recaptcha_display( $field_id, $data, $form_id = &#x27;&#x27; ) {
+	$settings = get_option( &quot;ninja_forms_settings&quot; );
+	$lang = $settings[&#x27;recaptcha_lang&#x27;];
+	$siteKey = $settings[&#x27;recaptcha_site_key&#x27;];
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+	if ( !empty( $siteKey ) ) { ?&gt;
+		&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;hidden&quot; class=&quot;&lt;?php echo $field_class;?&gt;&quot; value=&quot;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; /&gt;
+		&lt;div class=&quot;g-recaptcha&quot; data-callback=&quot;nf_recaptcha_set_field_value&quot; data-sitekey=&quot;&lt;?php echo $siteKey; ?&gt;&quot;&gt;&lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;https://www.google.com/recaptcha/api.js?hl=&lt;?php echo $lang; ?&gt;&quot;&gt; &lt;/script&gt;
+		&lt;script type=&quot;text/javascript&quot;&gt;
+            function nf_recaptcha_set_field_value(inpval){
+            	jQuery(&quot;#ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot;).val(inpval)
+            }
+            &lt;/script&gt;
+		&lt;?php
+	}
+}
+
+function ninja_forms_field_recaptcha_pre_process( $field_id, $user_value  ) {
+	global $ninja_forms_processing;
+
+	// Set our captcha field id for later processing.
+	$ninja_forms_processing-&gt;update_form_setting( &#x27;recaptcha_field&#x27;, $field_id );
+
+	// Add our captcha processing.
+	add_action( &#x27;ninja_forms_process&#x27;, &#x27;nf_field_recaptcha_pre_process&#x27;, -1 );
+}
+
+/**
+ * Function that actually processes our recaptcha. Runs on a later priority than the field pre_process function
+ * @since  2.9.27
+ * @param  int  $form_id
+ * @return void
+ */
+function nf_field_recaptcha_pre_process( $form_id ) {
+	global $ninja_forms_processing;
+
+	if ( empty( $_POST[&#x27;g-recaptcha-response&#x27;] ) ) {
+		$ninja_forms_processing-&gt;add_error( &#x27;error_recaptcha&#x27;, __( &#x27;Please complete the captcha field&#x27; , &#x27;ninja-forms&#x27; ) );
+	}else {
+		$settings = get_option( &#x27;ninja_forms_settings&#x27; );
+		$url = &#x27;https://www.google.com/recaptcha/api/siteverify?secret=&#x27;.$settings[&#x27;recaptcha_secret_key&#x27;].&#x27;&amp;response=&#x27;.sanitize_text_field( $_POST[&#x27;g-recaptcha-response&#x27;] );
+		$resp = wp_remote_get( esc_url_raw( $url ) );
+
+		if ( !is_wp_error( $resp ) ) {
+			$body = wp_remote_retrieve_body( $resp );
+			$response = json_decode( $body );
+			if ( $response-&gt;success===false ) {
+				if ( !empty( $response-&gt;{&#x27;error-codes&#x27;} ) &amp;&amp; $response-&gt;{&#x27;error-codes&#x27;} != &#x27;missing-input-response&#x27; ) {
+					$error= __( &#x27;Please make sure you have entered your Site &amp; Secret keys correctly&#x27;, &#x27;ninja-forms&#x27; );
+				}else {
+					$error= __( &#x27;Captcha mismatch. Please enter the correct value in captcha field&#x27;, &#x27;ninja-forms&#x27; );
+				}
+				$ninja_forms_processing-&gt;add_error( &#x27;error_recaptcha&#x27;, $error );
+			}
+		}
+	}
+}
+</pre></details></body></html>

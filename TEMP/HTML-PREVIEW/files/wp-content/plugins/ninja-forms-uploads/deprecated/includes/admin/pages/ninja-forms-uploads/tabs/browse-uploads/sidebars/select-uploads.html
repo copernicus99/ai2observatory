@@ -1,0 +1,189 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/sidebars/select-uploads.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/admin/pages/ninja-forms-uploads/tabs/browse-uploads/sidebars/select-uploads.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;label&gt;&lt;strong&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;select name=&quot;form_id&quot; id=&quot;&quot; class=&quot;&quot;&gt;
+				&lt;option value=&quot;all&quot;&gt;- &lt;/option&gt;
+			
+					&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+					
+			&lt;/select&gt;
+		&lt;/p&gt;
+		&lt;label&gt;&lt;strong&gt; - &lt;span&gt;()&lt;/span&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_user&quot; class=&quot;code&quot; value=&quot;&quot;&gt;
+			&lt;br /&gt;
+			
+		&lt;/p&gt;
+		&lt;label&gt;&lt;strong&gt; - &lt;span&gt;()&lt;/span&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_name&quot; class=&quot;code&quot; value=&quot;&quot;&gt;
+		&lt;/p&gt;		
+		&lt;label&gt;&lt;strong&gt; - &lt;span&gt;()&lt;/span&gt;&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_types&quot; class=&quot;code&quot; value=&quot;&quot;&gt;
+			&lt;br /&gt;
+			.jpg,.pdf.docx
+		&lt;/p&gt;
+		&lt;h4&gt; - &lt;span&gt;()&lt;/span&gt;&lt;/h4&gt;
+		&lt;p&gt;
+			: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;begin_date&quot; class=&quot;ninja-forms-admin-date&quot; value=&quot;&quot;&gt;
+			&lt;br /&gt;
+			
+		&lt;/p&gt;
+		&lt;p&gt;
+			: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;end_date&quot; class=&quot;ninja-forms-admin-date&quot; value=&quot;&quot;&gt;
+			&lt;br /&gt;
+			
+		&lt;/p&gt;
+		&lt;p class=&quot;description&quot;&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+/* *
+ * Browse Uploads Sidebar Functions
+
+ */
+add_action(&#x27;admin_init&#x27;, &#x27;ninja_forms_register_sidebar_select_uploads&#x27;);
+
+function ninja_forms_register_sidebar_select_uploads(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Find File Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+		&#x27;page&#x27; =&gt; &#x27;ninja-forms-uploads&#x27;,
+		&#x27;tab&#x27; =&gt; &#x27;browse_uploads&#x27;,
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_sidebar_select_uploads&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_sidebar_select_uploads&#x27;,
+	);
+	if( function_exists( &#x27;ninja_forms_register_sidebar&#x27; ) ){
+		ninja_forms_register_sidebar(&#x27;select_uploads&#x27;, $args);
+	}
+
+	if( is_admin() AND isset( $_REQUEST[&#x27;page&#x27;] ) AND $_REQUEST[&#x27;page&#x27;] == &#x27;ninja-forms-uploads&#x27; ){
+		if( !isset( $_REQUEST[&#x27;paged&#x27;] ) AND !isset( $_REQUEST[&#x27;form_id&#x27;] ) ){
+			if( !session_id() ) {
+	       		session_start();
+			}
+			unset( $_SESSION[&#x27;ninja_forms_form_id&#x27;] );
+			unset( $_SESSION[&#x27;ninja_forms_begin_date&#x27;] );
+			unset( $_SESSION[&#x27;ninja_forms_end_date&#x27;] );
+			unset( $_SESSION[&#x27;ninja_forms_upload_types&#x27;] );
+			unset( $_SESSION[&#x27;ninja_forms_upload_name&#x27;] );
+			unset( $_SESSION[&#x27;ninja_forms_upload_user&#x27;] );
+		}
+	}
+}
+
+function ninja_forms_sidebar_select_uploads(){
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+	if ( isset ( $plugin_settings[&#x27;date_format&#x27;] ) ) {
+		$date_format = $plugin_settings[&#x27;date_format&#x27;];
+	} else {
+		$date_format = &#x27;mm/dd/yyyy&#x27;;
+	}
+	$form_results = ninja_forms_get_all_forms();
+
+	if(isset($_REQUEST[&#x27;form_id&#x27;]) AND !empty($_REQUEST[&#x27;form_id&#x27;])){
+		$form_id = $_REQUEST[&#x27;form_id&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_form_id&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_form_id&#x27;])){
+		$form_id = $_SESSION[&#x27;ninja_forms_form_id&#x27;];
+	}else{
+		$form_id = &#x27;&#x27;;
+	}
+
+	if(isset($_REQUEST[&#x27;upload_types&#x27;]) AND !empty($_REQUEST[&#x27;upload_types&#x27;])){
+		$upload_types = $_REQUEST[&#x27;upload_types&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_types&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_types&#x27;])){
+		$upload_types = $_SESSION[&#x27;ninja_forms_upload_types&#x27;];
+	}else{
+		$upload_types = &#x27;&#x27;;
+	}
+
+	if(isset($_REQUEST[&#x27;upload_name&#x27;]) AND !empty($_REQUEST[&#x27;upload_name&#x27;])){
+		$upload_name = $_REQUEST[&#x27;upload_name&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_name&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_name&#x27;])){
+		$upload_name = $_SESSION[&#x27;ninja_forms_upload_name&#x27;];
+	}else{
+		$upload_name = &#x27;&#x27;;
+	}	
+
+	if(isset($_REQUEST[&#x27;upload_user&#x27;]) AND !empty($_REQUEST[&#x27;upload_user&#x27;])){
+		$upload_user = $_REQUEST[&#x27;upload_user&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_upload_user&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_upload_user&#x27;])){
+		$upload_user = $_SESSION[&#x27;ninja_forms_upload_user&#x27;];
+	}else{
+		$upload_user = &#x27;&#x27;;
+	}
+
+	if(isset($_REQUEST[&#x27;begin_date&#x27;]) AND !empty($_REQUEST[&#x27;begin_date&#x27;])){
+		$begin_date = $_REQUEST[&#x27;begin_date&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_begin_date&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_begin_date&#x27;])){
+		$begin_date = $_SESSION[&#x27;ninja_forms_begin_date&#x27;];
+	}else{
+		$begin_date = &#x27;&#x27;;
+	}
+
+	if(isset($_REQUEST[&#x27;end_date&#x27;]) AND !empty($_REQUEST[&#x27;end_date&#x27;])){
+		$end_date = $_REQUEST[&#x27;end_date&#x27;];
+	}else if(isset($_SESSION[&#x27;ninja_forms_end_date&#x27;]) AND !empty($_SESSION[&#x27;ninja_forms_end_date&#x27;])){
+		$end_date = $_SESSION[&#x27;ninja_forms_end_date&#x27;];
+	}else{
+		$end_date = &#x27;&#x27;;
+	}
+
+	?&gt;
+		&lt;label&gt;&lt;strong&gt;&lt;?php _e(&#x27;Select A Form&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;select name=&quot;form_id&quot; id=&quot;&quot; class=&quot;&quot;&gt;
+				&lt;option value=&quot;all&quot;&gt;- &lt;?php _e ( &#x27;All Forms&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/option&gt;
+			&lt;?php
+			if(is_array($form_results)){
+				foreach($form_results as $form){
+					$data = $form[&#x27;data&#x27;];
+					$form_title = $data[&#x27;form_title&#x27;];
+					?&gt;
+					&lt;option value=&quot;&lt;?php echo $form[&#x27;id&#x27;];?&gt;&quot; &lt;?php if($form_id == $form[&#x27;id&#x27;]){ echo &#x27;selected&#x27;;}?&gt;&gt;&lt;?php echo $form_title;?&gt;&lt;/option&gt;
+					&lt;?php
+				}
+			}
+			?&gt;
+			&lt;/select&gt;
+		&lt;/p&gt;
+		&lt;label&gt;&lt;strong&gt;&lt;?php _e( &#x27;User&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt; - &lt;span&gt;(&lt;?php _e( &#x27;Optional&#x27;, &#x27;ninja-forms-uploads&#x27; );?&gt;)&lt;/span&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_user&quot; class=&quot;code&quot; value=&quot;&lt;?php echo $upload_user; ?&gt;&quot;&gt;
+			&lt;br /&gt;
+			&lt;?php _e( &#x27;login, email, user ID&#x27;, &#x27;ninja-forms-uploads&#x27; );?&gt;
+		&lt;/p&gt;
+		&lt;label&gt;&lt;strong&gt;&lt;?php _e( &#x27;File Name&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt; - &lt;span&gt;(&lt;?php _e( &#x27;Optional&#x27;, &#x27;ninja-forms-uploads&#x27; );?&gt;)&lt;/span&gt;:&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_name&quot; class=&quot;code&quot; value=&quot;&lt;?php echo $upload_name; ?&gt;&quot;&gt;
+		&lt;/p&gt;		
+		&lt;label&gt;&lt;strong&gt;&lt;?php _e( &#x27;File Type&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt; - &lt;span&gt;(&lt;?php _e( &#x27;Optional&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;)&lt;/span&gt;&lt;/strong&gt;&lt;/label&gt;
+		&lt;p&gt;
+			&lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;upload_types&quot; class=&quot;code&quot; value=&quot;&lt;?php echo $upload_types; ?&gt;&quot;&gt;
+			&lt;br /&gt;
+			.jpg,.pdf.docx
+		&lt;/p&gt;
+		&lt;h4&gt;&lt;?php _e(&#x27;Date Range&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt; - &lt;span&gt;(&lt;?php _e( &#x27;Optional&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;)&lt;/span&gt;&lt;/h4&gt;
+		&lt;p&gt;
+			&lt;?php _e(&#x27;Begin Date&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;begin_date&quot; class=&quot;ninja-forms-admin-date&quot; value=&quot;&lt;?php echo $begin_date;?&gt;&quot;&gt;
+			&lt;br /&gt;
+			&lt;?php echo $date_format;?&gt;
+		&lt;/p&gt;
+		&lt;p&gt;
+			&lt;?php _e(&#x27;End Date&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;: &lt;input type=&quot;text&quot; id=&quot;&quot; name=&quot;end_date&quot; class=&quot;ninja-forms-admin-date&quot; value=&quot;&lt;?php echo $end_date;?&gt;&quot;&gt;
+			&lt;br /&gt;
+			&lt;?php echo $date_format;?&gt;
+		&lt;/p&gt;
+		&lt;p class=&quot;description&quot;&gt;
+			&lt;?php //_e(&#x27;If both Begin Date and End Date are left blank, all file uploads will be displayed.&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;
+		&lt;/p&gt;
+		&lt;p class=&quot;description description-wide&quot;&gt;
+			&lt;input type=&quot;submit&quot; name=&quot;submit&quot; id=&quot;&quot; class=&quot;button-primary&quot; value=&quot;&lt;?php _e(&#x27;Filter File Uploads&#x27;, &#x27;ninja-forms-uploads&#x27;);?&gt;&quot;&gt;
+		&lt;/p&gt;
+	&lt;/form&gt;
+&lt;?php
+
+}
+
+function ninja_forms_save_sidebar_select_uploads(){
+
+}</pre></details></body></html>

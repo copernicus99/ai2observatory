@@ -1,0 +1,104 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/display/display-conditionals.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/display/display-conditionals.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Creates an array out of the conditional settings of all the fields of a given form.
+ * This is called by ninja_forms_display_form() in display-fields.php.
+ * It is used mainly to output the conditional settings into JS format.
+**/
+/*
+//add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_display_conditionals&#x27;);
+function ninja_forms_register_display_conditionals(){
+	add_action(&#x27;ninja_forms_display_conditionals&#x27;, &#x27;ninja_forms_display_conditionals&#x27;);
+}
+*/
+
+function ninja_forms_display_conditionals( $form_id ){
+	global $ninja_forms_fields, $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( is_admin() )
+		return false;
+
+	$field_results = ninja_forms_get_fields_by_form_id($form_id);
+	$field_results = apply_filters(&#x27;ninja_forms_display_fields_array&#x27;, $field_results, $form_id);
+
+	if ( is_array ( $field_results ) AND !empty ( $field_results ) ) {
+		/*
+		$watch_fields = array();
+		foreach($field_results as $field){
+			$data = $field[&#x27;data&#x27;];
+			if(isset($data[&#x27;conditional&#x27;]) AND is_array($data[&#x27;conditional&#x27;])){
+				foreach($data[&#x27;conditional&#x27;] as $conditional){
+					if(isset($conditional[&#x27;cr&#x27;]) AND is_array($conditional[&#x27;cr&#x27;])){
+						foreach($conditional[&#x27;cr&#x27;] as $cr){
+							$watch_fields[$cr[&#x27;field&#x27;]] = 1;
+						}
+					}
+				}
+			}
+		}
+		*/
+		//foreach( $field_results as $field_id =&gt; $user_value ) {
+		foreach( $field_results as $field ) {
+			
+			// if ( isset ( $ninja_forms_loading ) ) {
+			// 	$field = $ninja_forms_loading-&gt;get_field_settings( $field_id );
+			// } else {
+			// 	$field = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			// }
+
+			if( isset( $ninja_forms_fields[$field[&#x27;type&#x27;]] ) ){
+				$type = $ninja_forms_fields[$field[&#x27;type&#x27;]];
+				$field_id = $field[&#x27;id&#x27;];
+				$display_wrap = $type[&#x27;display_wrap&#x27;];
+				$display_label = $type[&#x27;display_label&#x27;];
+				$display_function = $type[&#x27;display_function&#x27;];
+				$data = $field[&#x27;data&#x27;];
+
+				$x = 0;
+				if(isset($data[&#x27;conditional&#x27;]) AND is_array($data[&#x27;conditional&#x27;])){
+					if(!isset($local_vars)){
+						$local_vars = array();
+					}
+					foreach($data[&#x27;conditional&#x27;] as $conditional){
+						$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;action&#x27;] = $conditional[&#x27;action&#x27;];
+						$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;connector&#x27;] = $conditional[&#x27;connector&#x27;];
+						$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;value&#x27;] = $conditional[&#x27;value&#x27;];
+						if(isset($conditional[&#x27;cr&#x27;]) AND is_array($conditional[&#x27;cr&#x27;])){
+							$y = 0;
+							foreach($conditional[&#x27;cr&#x27;] as $cr){
+								if( isset( $cr[&#x27;field&#x27;] ) ){
+									$field = $cr[&#x27;field&#x27;];
+								}else{
+									$field = &#x27;&#x27;;
+								}
+
+								if( isset( $cr[&#x27;operator&#x27;] ) ){
+									$operator = $cr[&#x27;operator&#x27;];
+								}else{
+									$operator = &#x27;&#x27;;
+								}
+
+								if( isset( $cr[&#x27;value&#x27;] ) ){
+									$value = $cr[&#x27;value&#x27;];
+								}else{
+									$value = &#x27;&#x27;;
+								}
+								$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;cr&#x27;][$y][&#x27;field&#x27;] = $field;
+								$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;cr&#x27;][$y][&#x27;operator&#x27;] = $operator;
+								$local_vars[&#x27;field_&#x27;.$field_id][&#x27;conditional&#x27;][$x][&#x27;cr&#x27;][$y][&#x27;value&#x27;] = $value;
+								$y++;
+							}
+						}
+						$x++;
+					}
+				}
+			}
+		}
+
+		if(isset($local_vars)){
+			return $local_vars;
+		}else{
+			return &#x27;&#x27;;
+		}
+	}
+}
+</pre></details></body></html>

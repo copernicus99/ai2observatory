@@ -1,0 +1,160 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-addons.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Templates/admin-menu-addons.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;div class=&quot;wrap apps-container&quot;&gt;
+&lt;!--
+    
+
+        &lt;div class=&quot;nf-addon-notice&quot;&gt;
+            &lt;p&gt;
+                &lt;strong&gt;&lt;/strong&gt; &lt;strong&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/strong&gt;.
+            &lt;/p&gt;
+        &lt;/div&gt;
+
+    
+--&gt;
+    
+
+    
+
+    
+
+    &lt;div class=&quot;nf-extend nf-box&quot;&gt;
+
+        &lt;div class=&quot;nf-box-inside&quot;&gt;
+
+            &lt;img src=&quot;&quot; /&gt;
+
+            &lt;h2&gt;&lt;/h2&gt;
+
+            &lt;div class=&quot;nf-extend-content&quot;&gt;
+
+                &lt;p&gt;&lt;/p&gt;
+
+                &lt;div class=&quot;nf-extend-buttons&quot;&gt;
+
+                    
+
+                    &lt;a target=&quot;_blank&quot; href=&quot;&quot; class=&quot;nf-button secondary nf-doc-button&quot;&gt;&lt;/a&gt;
+                    
+
+                    &lt;p&gt;&lt;a&gt;&lt;/a&gt;&lt;/p&gt;
+
+                    
+
+                    
+
+                        
+
+                        &lt;span class=&quot;secondary nf-button&quot;&gt;&lt;/span&gt;
+
+                        
+
+                        &lt;span class=&quot;secondary nf-button&quot;&gt;&lt;/span&gt;
+
+                        
+
+                        &lt;a target=&quot;_blank&quot; href=&quot;&quot; title=&quot;&quot; class=&quot;primary nf-button&quot;&gt;&lt;/a&gt;
+
+                        
+
+                    
+
+                    &lt;a target=&quot;_blank&quot; href=&quot;&quot; title=&quot;&quot; class=&quot;primary nf-button&quot;&gt;&lt;/a&gt;
+
+                    
+
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+
+        &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    
+
+&lt;/div&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;div class=&quot;wrap apps-container&quot;&gt;
+&lt;!--
+    &lt;?php foreach ($notices as $notice): ?&gt;
+
+        &lt;div class=&quot;nf-addon-notice&quot;&gt;
+            &lt;p&gt;
+                &lt;strong&gt;&lt;?php echo $notice[ &#x27;title&#x27; ]; ?&gt;&lt;/strong&gt; &lt;?php _e( &#x27; requires an update. You have version &#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;strong&gt;&lt;?php echo $notice[ &#x27;old_version&#x27; ]; ?&gt;&lt;/strong&gt;&lt;?php _e( &#x27; installed. The current version is &#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;strong&gt;&lt;?php echo $notice[ &#x27;new_version&#x27; ]; ?&gt;&lt;/strong&gt;.
+            &lt;/p&gt;
+        &lt;/div&gt;
+
+    &lt;?php endforeach; ?&gt;
+--&gt;
+    &lt;?php
+    $u_id = get_option( &#x27;nf_aff&#x27;, false );
+    if ( !$u_id ) $u_id = apply_filters( &#x27;ninja_forms_affiliate_id&#x27;, false );
+    ?&gt;
+
+    &lt;?php foreach ($items as $item): ?&gt;
+
+    &lt;?php
+        $link = $item[ &#x27;link&#x27; ];
+        if ( $u_id ) {
+            $last_slash = strripos( $link, &#x27;/&#x27; );
+            $link = substr( $link, 0, $last_slash );
+            $link =  urlencode( $link );
+            $link = &#x27;http://www.shareasale.com/r.cfm?u=&#x27; . $u_id . &#x27;&amp;b=812237&amp;m=63061&amp;afftrack=&amp;urllink=&#x27; . $link;
+        }
+    ?&gt;
+
+    &lt;div class=&quot;nf-extend nf-box&quot;&gt;
+
+        &lt;div class=&quot;nf-box-inside&quot;&gt;
+
+            &lt;img src=&quot;&lt;?php echo NF_PLUGIN_URL . $item[&#x27;image&#x27;]; ?&gt;&quot; /&gt;
+
+            &lt;h2&gt;&lt;?php echo $item[&#x27;title&#x27;]; ?&gt;&lt;/h2&gt;
+
+            &lt;div class=&quot;nf-extend-content&quot;&gt;
+
+                &lt;p&gt;&lt;?php echo $item[&#x27;content&#x27;]; ?&gt;&lt;/p&gt;
+
+                &lt;div class=&quot;nf-extend-buttons&quot;&gt;
+
+                    &lt;?php if( ! empty( $item[&#x27;docs&#x27;] ) ): ?&gt;
+
+                    &lt;a target=&quot;_blank&quot; href=&quot;&lt;?php echo $item[&#x27;docs&#x27;]; ?&gt;&quot; class=&quot;nf-button secondary nf-doc-button&quot;&gt;&lt;?php _e( &#x27;Docs&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+                    &lt;?php else: ?&gt;
+
+                    &lt;p&gt;&lt;a&gt;&lt;?php _e( &#x27;Documentation coming soon.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;&lt;/p&gt;
+
+                    &lt;?php endif; ?&gt;
+
+                    &lt;?php if( ! empty( $item[&#x27;plugin&#x27;] ) &amp;&amp; file_exists( WP_PLUGIN_DIR.&#x27;/&#x27;.$item[&#x27;plugin&#x27;] ) ): ?&gt;
+
+                        &lt;?php if( is_plugin_active( $item[&#x27;plugin&#x27;] ) ): ?&gt;
+
+                        &lt;span class=&quot;secondary nf-button&quot;&gt;&lt;?php _e( &#x27;Active&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+
+                        &lt;?php elseif( is_plugin_inactive( $item[&#x27;plugin&#x27;] ) ): ?&gt;
+
+                        &lt;span class=&quot;secondary nf-button&quot;&gt;&lt;?php _e( &#x27;Installed&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+
+                        &lt;?php else: ?&gt;
+
+                        &lt;a target=&quot;_blank&quot; href=&quot;&lt;?php echo $link; ?&gt;&quot; title=&quot;&lt;?php echo $item[&#x27;title&#x27;]; ?&gt;&quot; class=&quot;primary nf-button&quot;&gt;&lt;?php _e( &#x27;Learn More&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+
+                        &lt;?php endif; ?&gt;
+
+                    &lt;?php else: ?&gt;
+
+                    &lt;a target=&quot;_blank&quot; href=&quot;&lt;?php echo $link; ?&gt;&quot; title=&quot;&lt;?php echo $item[&#x27;title&#x27;]; ?&gt;&quot; class=&quot;primary nf-button&quot;&gt;&lt;?php _e( &#x27;Learn More&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+
+                    &lt;?php endif; ?&gt;
+
+                &lt;/div&gt;
+
+            &lt;/div&gt;
+
+        &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;?php endforeach; ?&gt;
+
+&lt;/div&gt;
+</pre></details></body></html>

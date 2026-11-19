@@ -1,0 +1,129 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/timed-submit.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/timed-submit.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+	&lt;input id=&quot;ninja_forms_field__js&quot; name=&quot;ninja_forms_field_[no-js]&quot; type=&quot;hidden&quot; value=&quot;1&quot; rel=&quot;_js&quot; class=&quot;no-js&quot; /&gt;
+
+	&lt;button type=&quot;submit&quot; name=&quot;ninja_forms_field_[timer]&quot; class=&quot; countdown-timer&quot; id=&quot;ninja_forms_field_&quot; value=&quot;&quot; rel=&quot;&quot; data-countdown=&quot;&quot; data-text=&quot;&quot;&gt;&lt;/button&gt;
+
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_timed_submit(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Timed Submit&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;label&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;Submit button text after timer expires&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default&#x27; =&gt; __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;class&#x27; =&gt; &#x27;widefat ninja-forms-field-label&#x27;
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;timer-text&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Label&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default&#x27; =&gt; __( &#x27;Please wait %n seconds&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;%n will be used to signify the number of seconds&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;width&#x27; =&gt; &#x27;wide&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat ninja-forms-field-label&#x27;
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;number&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;countdown&#x27;,
+				&#x27;label&#x27; =&gt; __( &#x27;Number of seconds for countdown&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;desc&#x27; =&gt; __( &#x27;This is how long a user must wait to submit the form&#x27;, &#x27;ninja-forms&#x27; ),
+				&#x27;default&#x27; =&gt; 10,
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_timed_submit_display&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; false,
+		&#x27;edit_label_pos&#x27; =&gt; false,
+		&#x27;edit_req&#x27; =&gt; false,
+		&#x27;default_label&#x27; =&gt; __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;edit_desc&#x27; =&gt; false,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; false,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;display_label&#x27; =&gt; false,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;process_field&#x27; =&gt; false,
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_timed_submit_pre_process&#x27;,
+		&#x27;limit&#x27; =&gt; 1,
+		&#x27;visible&#x27; =&gt; false
+	);
+
+	ninja_forms_register_field(&#x27;_timed_submit&#x27;, $args);
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_field_timed_submit&#x27;);
+
+
+
+function ninja_forms_field_timed_submit_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+
+	if(isset($data[&#x27;timer-text&#x27;]) AND $data[&#x27;timer-text&#x27;] != &#x27;&#x27;){
+		$label = $data[&#x27;timer-text&#x27;];
+	}else{
+		$label = __( &#x27;Please wait %n seconds&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	if(isset($data[&#x27;countdown&#x27;]) AND $data[&#x27;countdown&#x27;] != &#x27;&#x27;){
+		$countdown = $data[&#x27;countdown&#x27;];
+	}else{
+		$countdown = &#x27;10&#x27;;
+	}
+
+	if(isset($data[&#x27;label&#x27;]) AND $data[&#x27;label&#x27;] != &#x27;&#x27;){
+		$submit_text = $data[&#x27;label&#x27;];
+	}else{
+		$submit_text = __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	$label = preg_replace( &quot;/%n/&quot;, &quot;&lt;span&gt;&quot; . $countdown . &quot;&lt;/span&gt;&quot;, $label);
+	?&gt;
+
+	&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_js&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[no-js]&quot; type=&quot;hidden&quot; value=&quot;1&quot; rel=&quot;&lt;?php echo $field_id;?&gt;_js&quot; class=&quot;no-js&quot; /&gt;
+
+	&lt;button type=&quot;submit&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[timer]&quot; class=&quot;&lt;?php echo $field_class;?&gt; countdown-timer&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; value=&quot;&lt;?php echo $countdown;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; data-countdown=&quot;&lt;?php echo $countdown;?&gt;&quot; data-text=&quot;&lt;?php esc_attr_e( $submit_text );?&gt;&quot;&gt;&lt;?php echo $label ;?&gt;&lt;/button&gt;
+
+	&lt;?php
+
+}
+
+function ninja_forms_field_timed_submit_pre_process( $field_id, $user_value ){
+	global $ninja_forms_processing;
+
+	$plugin_settings = nf_get_settings();
+	if ( isset ( $plugin_settings[&#x27;timed_submit_error&#x27;] ) ) {
+		$timed_submit_error = __( $plugin_settings[&#x27;timed_submit_error&#x27;], &#x27;ninja-forms&#x27; );
+	} else {
+		$timed_submit_error = __(&#x27;If you are a human, please slow down.&#x27;, &#x27;ninja-forms&#x27;);
+	}
+
+	if ( isset ( $plugin_settings[&#x27;javascript_error&#x27;] ) ) {
+		$javascript_error = __( $plugin_settings[&#x27;javascript_error&#x27;], &#x27;ninja-forms&#x27; );
+	} else {
+		$javascript_error = __( &#x27;You need JavaScript to submit this form. Please enable it and try again.&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	if ( isset ( $user_value[&#x27;no-js&#x27;] ) ){
+		$ninja_forms_processing-&gt;add_error(&#x27;javascript-general&#x27;, $javascript_error, &#x27;general&#x27; );
+	} else {
+		$timer = isset( $user_value[&#x27;timer&#x27;] ) ? $user_value[&#x27;timer&#x27;] : 10;
+		if( intval( $timer ) &gt; 0 ){
+	   	$ninja_forms_processing-&gt;add_error(&#x27;timer-&#x27;.$field_id, $timed_submit_error, $field_id);
+		}
+	}
+
+
+
+}
+</pre></details></body></html>

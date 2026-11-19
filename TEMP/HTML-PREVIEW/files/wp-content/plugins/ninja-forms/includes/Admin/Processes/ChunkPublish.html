@@ -1,0 +1,288 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Processes/ChunkPublish.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Processes/ChunkPublish.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Abstracts_Batch_Process
+ */
+class NF_Admin_Processes_ChunkPublish extends NF_Abstracts_BatchProcess
+{
+//	header( &#x27;Content-Type: application/json&#x27; );
+    private $data;
+    private $form_id;
+    private $response = array(
+    	&#x27;last_request&#x27; =&gt; &#x27;failure&#x27;,
+        &#x27;batch_complete&#x27; =&gt; false,
+    );
+    protected $_data = array();
+    protected $_errors = array();
+    protected $_debug = array();
+
+
+
+    /**
+     * Constructor
+     */
+    public function __construct( $data = array() )
+    {
+        //Bail if we aren&#x27;t in the admin.
+        if ( ! is_admin() )
+            return false;
+        // Record our data if we have any.
+        $this-&gt;data = $data[ &#x27;data&#x27; ];
+        $this-&gt;form_id = $this-&gt;data[ &#x27;form_id&#x27; ];
+        // Run process.
+        $this-&gt;process();
+    }
+
+
+    /**
+     * Function to loop over the batch.
+     * 
+     * @return JSON
+     *  Str last_response = success/failure
+     *  Bool batch_complete = true/false
+     *  Int requesting = x
+     */
+    public function process()
+    {
+        // If we were told this is a new publish...
+        if ( $this-&gt;data[ &#x27;new_publish&#x27; ] === &#x27;true&#x27; ) {
+            // Delete our option to reset the process.
+            $this-&gt;remove_option();
+        }
+        // Fetch our option to see what step we&#x27;re on.
+        $batch = get_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+        // If we don&#x27;t have an option to see what step we&#x27;re on...
+        if ( ! $batch ) {
+            // Run startup.
+            $this-&gt;startup();
+            // Fetch our option now that it&#x27;s created.
+            $batch = get_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+        }
+        $batch = explode( &#x27;,&#x27;, $batch );
+        // If we already have a chunk for this step...
+        if ( get_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_publishing_&#x27; . $batch[ 0 ] ) ) {
+            // Update it.
+            update_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_publishing_&#x27; . $batch[ 0 ], stripslashes( $this-&gt;data[ &#x27;chunk&#x27; ] ) );
+        } // Otherwise... (No chunk was found.)
+        else {
+            // Add it.
+            add_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_publishing_&#x27; . $batch[ 0 ], stripslashes( $this-&gt;data[ &#x27;chunk&#x27; ] ), &#x27;&#x27;, &#x27;no&#x27; );
+        }
+        // Increment our step.
+        $batch[ 0 ]++;
+        // If this was our last step...
+        if ( $batch[ 0 ] == $batch[ 1 ] ) {
+            // Run cleanup.
+            $this-&gt;cleanup();
+        } // Otherwise... (We have more steps.)
+        else {
+            // Update our step option.
+            update_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id, implode( &#x27;,&#x27;, $batch ) );
+            // Request our next chunk.
+            $this-&gt;response[ &#x27;requesting&#x27; ] = $batch[ 0 ];
+        }
+        $this-&gt;response[ &#x27;last_request&#x27; ] = &#x27;success&#x27;;
+        echo wp_json_encode( $this-&gt;response );
+        wp_die();
+    }
+
+
+    /**
+     * Function to run any setup steps necessary to begin processing.
+     */
+    public function startup()
+    {
+        $value = &#x27;0,&#x27; . $this-&gt;data[ &#x27;chunk_total&#x27; ];
+        // Write our option to manage the process.
+        add_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id, $value, &#x27;&#x27;, &#x27;no&#x27; );
+        // Process the first item.
+        $this-&gt;process();
+    }
+
+
+    /**
+     * Function to cleanup any lingering temporary elements of a batch process after completion.
+     */
+    public function cleanup()
+    {
+        
+        // Get all of the chunks.
+        
+        
+        $build = &#x27;&#x27;;
+        $batch = get_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+        $batch = explode( &#x27;,&#x27;, $batch );
+        // Add all of our chunks into a string.
+        for ( $i = 0; $i &lt; $batch[ 1 ]; $i++ ) {
+            $build .= get_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_publishing_&#x27; . $i );
+        }
+
+        $form_data = json_decode( $build, ARRAY_A );
+        // Start copied code.
+        if( is_string( $form_data[ &#x27;id&#x27; ] ) ) {
+            $tmp_id = $form_data[ &#x27;id&#x27; ];
+            $form = Ninja_Forms()-&gt;form()-&gt;get();
+            $form-&gt;save();
+            $form_data[ &#x27;id&#x27; ] = $form-&gt;get_id();
+            $this-&gt;_data[ &#x27;new_ids&#x27; ][ &#x27;forms&#x27; ][ $tmp_id ] = $form_data[ &#x27;id&#x27; ];
+        } else {
+            $form = Ninja_Forms()-&gt;form($form_data[&#x27;id&#x27;])-&gt;get();
+        }
+
+        unset( $form_data[ &#x27;settings&#x27; ][ &#x27;_seq_num&#x27; ] );
+
+        $form-&gt;update_settings( $form_data[ &#x27;settings&#x27; ] )-&gt;save();
+
+        if( isset( $form_data[ &#x27;fields&#x27; ] ) ) {
+            $db_fields_controller = new NF_Database_FieldsController( $form_data[ &#x27;id&#x27; ], $form_data[ &#x27;fields&#x27; ] );
+            $db_fields_controller-&gt;run();
+            $form_data[ &#x27;fields&#x27; ] = $db_fields_controller-&gt;get_updated_fields_data();
+            $this-&gt;_data[&#x27;new_ids&#x27;][&#x27;fields&#x27;] = $db_fields_controller-&gt;get_new_field_ids();
+        }
+
+        if( isset( $form_data[ &#x27;deleted_fields&#x27; ] ) ){
+
+            foreach( $form_data[ &#x27;deleted_fields&#x27; ] as  $deleted_field_id ){
+
+                $field = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ])-&gt;get_field( $deleted_field_id );
+                $field-&gt;delete();
+            }
+        }
+
+        if( isset( $form_data[ &#x27;actions&#x27; ] ) ) {
+
+            /*
+             * Loop Actions and fire Save() hooks.
+             */
+            foreach ($form_data[&#x27;actions&#x27;] as &amp;$action_data) {
+
+                $id = $action_data[&#x27;id&#x27;];
+
+                $action = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ] )-&gt;get_action( $id );
+
+                $action-&gt;update_settings($action_data[&#x27;settings&#x27;])-&gt;save();
+
+                $action_type = $action-&gt;get_setting( &#x27;type&#x27; );
+
+                if( isset( Ninja_Forms()-&gt;actions[ $action_type ] ) ) {
+                    $action_class = Ninja_Forms()-&gt;actions[ $action_type ];
+
+                    $action_settings = $action_class-&gt;save( $action_data[&#x27;settings&#x27;] );
+                    if( $action_settings ){
+                        $action_data[&#x27;settings&#x27;] = $action_settings;
+                        $action-&gt;update_settings( $action_settings )-&gt;save();
+                    }
+                }
+
+                if ($action-&gt;get_tmp_id()) {
+
+                    $tmp_id = $action-&gt;get_tmp_id();
+                    $this-&gt;_data[&#x27;new_ids&#x27;][&#x27;actions&#x27;][$tmp_id] = $action-&gt;get_id();
+                    $action_data[ &#x27;id&#x27; ] = $action-&gt;get_id();
+                }
+
+                $this-&gt;_data[ &#x27;actions&#x27; ][ $action-&gt;get_id() ] = $action-&gt;get_settings();
+            }
+        }
+
+        /*
+         * Loop Actions and fire Publish() hooks.
+         */
+        foreach ($form_data[&#x27;actions&#x27;] as &amp;$action_data) {
+
+            $action = Ninja_Forms()-&gt;form( $form_data[ &#x27;id&#x27; ] )-&gt;get_action( $action_data[&#x27;id&#x27;] );
+
+            $action_type = $action-&gt;get_setting( &#x27;type&#x27; );
+
+            if( isset( Ninja_Forms()-&gt;actions[ $action_type ] ) ) {
+                $action_class = Ninja_Forms()-&gt;actions[ $action_type ];
+
+                if( $action-&gt;get_setting( &#x27;active&#x27; ) &amp;&amp; method_exists( $action_class, &#x27;publish&#x27; ) ) {
+                    $data = $action_class-&gt;publish( $this-&gt;_data );
+                    if ($data) {
+                        $this-&gt;_data = $data;
+                    }
+                }
+            }
+        }
+
+        if( isset( $form_data[ &#x27;deleted_actions&#x27; ] ) ){
+
+            foreach( $form_data[ &#x27;deleted_actions&#x27; ] as  $deleted_action_id ){
+
+                $action = Ninja_Forms()-&gt;form()-&gt;get_action( $deleted_action_id );
+                $action-&gt;delete();
+            }
+        }
+
+        delete_user_option( get_current_user_id(), &#x27;nf_form_preview_&#x27; . $form_data[&#x27;id&#x27;] );
+        update_option( &#x27;nf_form_&#x27; . $form_data[ &#x27;id&#x27; ], $form_data );
+
+        do_action( &#x27;ninja_forms_save_form&#x27;, $form-&gt;get_id() );
+
+        if( isset( $this-&gt;_data[&#x27;debug&#x27;] ) ) {
+            $this-&gt;_debug = array_merge( $this-&gt;_debug, $this-&gt;_data[ &#x27;debug&#x27; ] );
+        }
+
+        if( isset( $this-&gt;_data[&#x27;errors&#x27;] ) &amp;&amp; $this-&gt;_data[ &#x27;errors&#x27; ] ) {
+            $this-&gt;_errors = array_merge( $this-&gt;_errors, $this-&gt;_data[ &#x27;errors&#x27; ] );
+        }
+        
+        // Remove our option.
+        $this-&gt;remove_option();
+
+        $response = array( &#x27;data&#x27; =&gt; $this-&gt;_data, &#x27;errors&#x27; =&gt; $this-&gt;_errors, &#x27;debug&#x27; =&gt; $this-&gt;_debug, &#x27;batch_complete&#x27; =&gt; true );
+
+        echo wp_json_encode( $response );
+
+        wp_die(); // this is required to terminate immediately and return a proper response
+        
+        /**************************************************************
+         * Start old data.
+         **************************************************************
+         */
+//        // Update the chunked cache option.
+//        $build = array();
+//        $batch = get_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+//        $batch = explode( &#x27;,&#x27;, $batch );
+//        // Add all of our chunks onto an array.
+//        for ( $i = 0; $i &lt; $batch[ 1 ]; $i++ ) {
+//            $build[] = &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_&#x27; . $i;
+//        }
+//        // Convert them to a string.
+//        $build = implode( &#x27;,&#x27;, $build );
+//        // If we already have a chunked option...
+//        if ( get_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_chunks&#x27; ) ) {
+//            // Update it.
+//            update_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_chunks&#x27;, $build );
+//        } // Otherwise... (If we don&#x27;t already have one.)
+//        else {
+//            // Create it.
+//            add_option( &#x27;nf_form_&#x27; . $this-&gt;form_id . &#x27;_chunks&#x27;, $build, &#x27;&#x27;, &#x27;no&#x27; );
+//        }
+//        // Remove our option to manage the process.
+//        delete_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+//        $this-&gt;response[ &#x27;batch_complete&#x27; ] = true;
+        /**************************************************************
+         * End old data.
+         **************************************************************
+         */
+    }
+    
+    /*
+     * Function to remove our management option and remove any temporary chunk data.
+     */
+    public function remove_option() {
+        // Remove our option to manage the process.
+        delete_option( &#x27;nf_chunk_publish_&#x27; . $this-&gt;form_id );
+        // If our form_id was a temp id...
+        if ( ! is_numeric( $this-&gt;form_id ) ) {
+            // Remove all of our chunk options.
+            global $wpdb;
+            $sql = &quot;DELETE FROM `&quot; . $wpdb-&gt;prefix . &quot;options` WHERE option_name LIKE &#x27;nf_form_&quot; . $this-&gt;form_id . &quot;_publishing_%&#x27;&quot;;
+            $wpdb-&gt;query( $sql );
+        }
+        $this-&gt;data[ &#x27;new_publish&#x27; ] = &#x27;false&#x27;;
+    }
+
+}</pre></details></body></html>

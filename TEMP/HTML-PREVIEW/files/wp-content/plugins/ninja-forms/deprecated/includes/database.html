@@ -1,0 +1,417 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/database.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/database.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+// Begin Form Interaction Functions
+
+function ninja_forms_insert_field( $form_id, $args = array() ){
+	global $wpdb;
+	$insert_array = array();
+
+	$insert_array[&#x27;type&#x27;] = $args[&#x27;type&#x27;];
+	$insert_array[&#x27;form_id&#x27;] = $form_id;
+
+	if( isset( $args[&#x27;data&#x27;] ) ){
+		$insert_array[&#x27;data&#x27;] = $args[&#x27;data&#x27;];
+	}else{
+		$insert_array[&#x27;data&#x27;] = &#x27;&#x27;;
+	}
+
+	if( isset( $args[&#x27;order&#x27;] ) ){
+		$insert_array[&#x27;order&#x27;] = $args[&#x27;order&#x27;];
+	}else{
+		$insert_array[&#x27;order&#x27;] = 999;
+	}
+
+	if( isset( $args[&#x27;fav_id&#x27;] ) ){
+		$insert_array[&#x27;fav_id&#x27;] = $args[&#x27;fav_id&#x27;];
+	}
+
+	if( isset( $args[&#x27;def_id&#x27;] ) ){
+		$insert_array[&#x27;def_id&#x27;] = $args[&#x27;def_id&#x27;];
+	}
+
+	$new_field = $wpdb-&gt;insert( NINJA_FORMS_FIELDS_TABLE_NAME, $insert_array );
+	$new_id = $wpdb-&gt;insert_id;
+	return $new_id;
+}
+
+function ninja_forms_get_form_ids_by_post_id( $post_id ){
+	global $wpdb;
+	$form_ids = array();
+	if( is_page( $post_id ) ){
+		$form_results = ninja_forms_get_all_forms();
+		if(is_array($form_results) AND !empty($form_results)){
+			foreach($form_results as $form){
+				$form_data = $form[&#x27;data&#x27;];
+				if(isset($form_data[&#x27;append_page&#x27;]) AND !empty($form_data[&#x27;append_page&#x27;])){
+					if($form_data[&#x27;append_page&#x27;] == $post_id){
+						$form_ids[] = $form[&#x27;id&#x27;];
+					}
+				}
+			}
+		}
+		$form_id = get_post_meta( $post_id, &#x27;ninja_forms_form&#x27;, true );
+		if( !empty( $form_id ) ){
+			$form_ids[] = $form_id;
+		}
+	}else if( is_single( $post_id ) ){
+		$form_id = get_post_meta( $post_id, &#x27;ninja_forms_form&#x27;, true );
+		if( !empty( $form_id ) ){
+			$form_ids[] = $form_id;
+		}
+	}
+
+	return $form_ids;
+}
+
+function ninja_forms_get_form_by_sub_id( $sub_id ){
+	global $wpdb;
+	$form_id = Ninja_Forms()-&gt;sub( $sub_id )-&gt;form_id;
+	$form_row = ninja_forms_get_form_by_id( $form_id );
+	return $form_row;
+}
+
+// The ninja_forms_delete_form( $form_id ) function is in includes/deprecated.php
+
+// Begin Field Interaction Functions
+
+function ninja_forms_get_field_by_id($field_id){
+	global $wpdb;
+	$field_row = $wpdb-&gt;get_row($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; WHERE id = %d&quot;, $field_id), ARRAY_A);
+	if( $field_row != null ){
+		$field_row[&#x27;data&#x27;] = unserialize($field_row[&#x27;data&#x27;]);
+		return $field_row;
+	}else{
+		return false;
+	}
+}
+
+function ninja_forms_get_fields_by_form_id($form_id, $orderby = &#x27;ORDER BY `order` ASC&#x27;){
+	global $wpdb;
+
+	$field_results = $wpdb-&gt;get_results($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; WHERE form_id = %d &quot;.$orderby, $form_id), ARRAY_A);
+	if(is_array($field_results) AND !empty($field_results)){
+		$x = 0;
+		$count = count($field_results) - 1;
+		while($x &lt;= $count){
+			$field_results[$x][&#x27;data&#x27;] = unserialize($field_results[$x][&#x27;data&#x27;]);
+			$x++;
+		}
+	}
+
+	return $field_results;
+}
+
+function ninja_forms_get_all_fields(){
+	global $wpdb;
+	$field_results = $wpdb-&gt;get_results(&quot;SELECT * FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME, ARRAY_A);
+	if(is_array($field_results) AND !empty($field_results)){
+		$x = 0;
+		$count = count($field_results) - 1;
+		while($x &lt;= $count){
+			$field_results[$x][&#x27;data&#x27;] = unserialize($field_results[$x][&#x27;data&#x27;]);
+			$x++;
+		}
+	}
+	return $field_results;
+}
+
+function ninja_forms_update_field($args){
+	global $wpdb;
+	$update_array = $args[&#x27;update_array&#x27;];
+	$where = $args[&#x27;where&#x27;];
+	$wpdb-&gt;update(NINJA_FORMS_FIELDS_TABLE_NAME, $update_array, $where);
+}
+
+function ninja_forms_delete_field( $field_id ){
+	global $wpdb;
+	$wpdb-&gt;query($wpdb-&gt;prepare(&quot;DELETE FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; WHERE id = %d&quot;, $field_id), ARRAY_A);
+}
+
+// Begin Favorite Fields Interaction Functions
+
+function ninja_forms_get_fav_by_id($fav_id){
+	global $wpdb;
+	$fav_row = $wpdb-&gt;get_row($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE id = %d&quot;, $fav_id), ARRAY_A);
+	$fav_row[&#x27;data&#x27;] = unserialize($fav_row[&#x27;data&#x27;]);
+
+	return $fav_row;
+}
+
+function ninja_forms_delete_fav_by_id($fav_id){
+	global $wpdb;
+	$wpdb-&gt;query($wpdb-&gt;prepare(&quot;DELETE FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE id = %d&quot;, $fav_id), ARRAY_A);
+}
+
+function ninja_forms_get_all_favs(){
+	global $wpdb;
+	$fav_results = $wpdb-&gt;get_results($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE row_type = %d ORDER BY name ASC&quot;, 1), ARRAY_A);
+	if(is_array($fav_results) AND !empty($fav_results)){
+		$x = 0;
+		$count = count($fav_results) - 1;
+		while($x &lt;= $count){
+			$fav_results[$x][&#x27;data&#x27;] = unserialize($fav_results[$x][&#x27;data&#x27;]);
+			$x++;
+		}
+	}
+	return $fav_results;
+}
+
+// Begin Defined Fields Functions
+
+function ninja_forms_get_def_by_id($def_id){
+	global $wpdb;
+	$def_row = $wpdb-&gt;get_row($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE id = %d&quot;, $def_id), ARRAY_A);
+	$def_row[&#x27;data&#x27;] = unserialize($def_row[&#x27;data&#x27;]);
+	return $def_row;
+}
+
+function ninja_forms_get_all_defs(){
+	global $wpdb;
+	$def_results = $wpdb-&gt;get_results($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE row_type = %d&quot;, 0), ARRAY_A);
+	if(is_array($def_results) AND !empty($def_results)){
+		$x = 0;
+		$count = count($def_results) - 1;
+		while($x &lt;= $count){
+			$def_results[$x][&#x27;data&#x27;] = unserialize($def_results[$x][&#x27;data&#x27;]);
+			$x++;
+		}
+	}
+	return $def_results;
+}
+
+function ninja_forms_addslashes_deep( $value ){
+    $value = is_array($value) ?
+        array_map(&#x27;ninja_forms_addslashes_deep&#x27;, $value) :
+        addslashes($value);
+    return $value;
+}
+
+function utf8_encode_recursive( $input ){
+    if ( is_array( $input ) )    {
+        return array_map( __FUNCTION__, $input );
+    }else{
+        return utf8_encode( $input );
+    }
+}
+
+function ninja_forms_str_replace_deep($search, $replace, $subject){
+    if( is_array( $subject ) ){
+        foreach( $subject as &amp;$oneSubject )
+            $oneSubject = ninja_forms_str_replace_deep($search, $replace, $oneSubject);
+        unset($oneSubject);
+        return $subject;
+    } else {
+        return str_replace($search, $replace, $subject);
+    }
+}
+
+function ninja_forms_html_entity_decode_deep( $value, $flag = ENT_COMPAT ){
+    $value = is_array($value) ?
+        array_map(&#x27;ninja_forms_html_entity_decode_deep&#x27;, $value) :
+        html_entity_decode( $value, $flag );
+    return $value;
+}
+
+function ninja_forms_htmlspecialchars_deep( $value ){
+    $value = is_array($value) ?
+        array_map(&#x27;ninja_forms_htmlspecialchars_deep&#x27;, $value) :
+        htmlspecialchars( $value );
+    return $value;
+}
+
+function ninja_forms_stripslashes_deep( $value ){
+    $value = is_array($value) ?
+        array_map(&#x27;ninja_forms_stripslashes_deep&#x27;, $value) :
+        stripslashes($value);
+    return $value;
+}
+
+function ninja_forms_esc_html_deep( $value ){
+    $value = is_array($value) ?
+        array_map(&#x27;ninja_forms_esc_html_deep&#x27;, $value) :
+        esc_html($value);
+    return $value;
+}
+
+function nf_wp_kses_post_deep( $value ){
+    $value = is_array( $value ) ?
+        array_map( &#x27;nf_wp_kses_post_deep&#x27;, $value ) :
+        wp_kses_post($value);
+
+    return $value;
+}
+
+function ninja_forms_strip_tags_deep($value ){
+ 	$value = is_array($value) ?
+        array_map(&#x27;ninja_forms_strip_tags_deep&#x27;, $value) :
+        strip_tags($value);
+    return $value;
+}
+
+function ninja_forms_json_response(){
+	global $ninja_forms_processing;
+
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+
+	$errors = $ninja_forms_processing-&gt;get_all_errors();
+	$success = $ninja_forms_processing-&gt;get_all_success_msgs();
+	$fields = $ninja_forms_processing-&gt;get_all_fields();
+	$form_settings = $ninja_forms_processing-&gt;get_all_form_settings();
+	$extras = $ninja_forms_processing-&gt;get_all_extras();
+
+	// Success will default to false if there is not success message.
+	if ( ! $success &amp;&amp; ! $errors ) $success = true;
+
+	if( version_compare( phpversion(), &#x27;5.3&#x27;, &#x27;&gt;=&#x27; ) ){
+		$json = json_encode( array( &#x27;form_id&#x27; =&gt; $form_id, &#x27;errors&#x27; =&gt; $errors, &#x27;success&#x27; =&gt; $success, &#x27;fields&#x27; =&gt; $fields, &#x27;form_settings&#x27; =&gt; $form_settings, &#x27;extras&#x27; =&gt; $extras ), JSON_HEX_QUOT | JSON_HEX_TAG  );
+	}else{
+
+
+		$errors = ninja_forms_html_entity_decode_deep( $errors );
+		$success = ninja_forms_html_entity_decode_deep( $success );
+		$fields = ninja_forms_html_entity_decode_deep( $fields );
+		$form_settings = ninja_forms_html_entity_decode_deep( $form_settings );
+		$extras = ninja_forms_html_entity_decode_deep( $extras );
+
+		$errors = utf8_encode_recursive( $errors );
+		$success = utf8_encode_recursive( $success );
+		$fields = utf8_encode_recursive( $fields );
+		$form_settings = utf8_encode_recursive( $form_settings );
+		$extras = utf8_encode_recursive( $extras );
+
+		$errors = ninja_forms_str_replace_deep( &#x27;&quot;&#x27;, &quot;\u0022&quot;, $errors );
+		$errors = ninja_forms_str_replace_deep( &quot;&#x27;&quot;, &quot;\u0027&quot;, $errors );
+		$errors = ninja_forms_str_replace_deep( &#x27;&lt;&#x27;, &quot;\u003C&quot;, $errors );
+		$errors = ninja_forms_str_replace_deep( &#x27;&gt;&#x27;, &quot;\u003E&quot;, $errors );
+
+		$success = ninja_forms_str_replace_deep( &#x27;&quot;&#x27;, &quot;\u0022&quot;, $success );
+		$success = ninja_forms_str_replace_deep( &quot;&#x27;&quot;, &quot;\u0027&quot;, $success );
+		$success = ninja_forms_str_replace_deep( &#x27;&lt;&#x27;, &quot;\u003C&quot;, $success );
+		$success = ninja_forms_str_replace_deep( &#x27;&gt;&#x27;, &quot;\u003E&quot;, $success );
+
+		$fields = ninja_forms_str_replace_deep( &#x27;&quot;&#x27;, &quot;\u0022&quot;, $fields );
+		$fields = ninja_forms_str_replace_deep( &quot;&#x27;&quot;, &quot;\u0027&quot;, $fields );
+		$fields = ninja_forms_str_replace_deep( &#x27;&lt;&#x27;, &quot;\u003C&quot;, $fields );
+		$fields = ninja_forms_str_replace_deep( &#x27;&gt;&#x27;, &quot;\u003E&quot;, $fields );
+
+		$form_settings = ninja_forms_str_replace_deep( &#x27;&quot;&#x27;, &quot;\u0022&quot;, $form_settings );
+		$form_settings = ninja_forms_str_replace_deep( &quot;&#x27;&quot;, &quot;\u0027&quot;, $form_settings );
+		$form_settings = ninja_forms_str_replace_deep( &#x27;&lt;&#x27;, &quot;\u003C&quot;, $form_settings );
+		$form_settings = ninja_forms_str_replace_deep( &#x27;&gt;&#x27;, &quot;\u003E&quot;, $form_settings );
+
+		$extras = ninja_forms_str_replace_deep( &#x27;&quot;&#x27;, &quot;\u0022&quot;, $extras );
+		$extras = ninja_forms_str_replace_deep( &quot;&#x27;&quot;, &quot;\u0027&quot;, $extras );
+		$extras = ninja_forms_str_replace_deep( &#x27;&lt;&#x27;, &quot;\u003C&quot;, $extras );
+		$extras = ninja_forms_str_replace_deep( &#x27;&gt;&#x27;, &quot;\u003E&quot;, $extras );
+
+		$json = json_encode( array( &#x27;form_id&#x27; =&gt; $form_id, &#x27;errors&#x27; =&gt; $errors, &#x27;success&#x27; =&gt; $success, &#x27;fields&#x27; =&gt; $fields, &#x27;form_settings&#x27; =&gt; $form_settings, &#x27;extras&#x27; =&gt; $extras ) );
+		$json = str_replace( &quot;\\\u0022&quot;, &quot;\\u0022&quot;, $json );
+		$json = str_replace( &quot;\\\u0027&quot;, &quot;\\u0027&quot;, $json );
+		$json = str_replace( &quot;\\\u003C&quot;, &quot;\\u003C&quot;, $json );
+		$json = str_replace( &quot;\\\u003E&quot;, &quot;\\u003E&quot;, $json );
+	}
+
+	return $json;
+}
+
+/*
+ *
+ * Function that sets up our transient variable.
+ *
+ * @since 2.2.45
+ * @return void
+ */
+
+function ninja_forms_set_transient(){
+	global $ninja_forms_processing;
+
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+
+	// Setup our transient variable.
+	$cache = array();
+	$cache[&#x27;form_id&#x27;] = $form_id;
+	$cache[&#x27;field_values&#x27;] = $ninja_forms_processing-&gt;get_all_fields();
+	$cache[&#x27;form_settings&#x27;] = $ninja_forms_processing-&gt;get_all_form_settings();
+	$cache[&#x27;extra_values&#x27;] = $ninja_forms_processing-&gt;get_all_extras();
+	$all_fields_settings = array();
+	if ( $ninja_forms_processing-&gt;get_all_fields() ) {
+		foreach ( $ninja_forms_processing-&gt;get_all_fields() as $field_id =&gt; $user_value ) {
+			$field_settings = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+			$all_fields_settings[$field_id] = $field_settings;
+		}
+	}
+
+	$cache[&#x27;field_settings&#x27;] = $all_fields_settings;
+
+	// Set errors and success messages as Ninja_Forms()-&gt;session variables.
+	$success = $ninja_forms_processing-&gt;get_all_success_msgs();
+	$errors = $ninja_forms_processing-&gt;get_all_errors();
+
+	$cache[&#x27;success_msgs&#x27;] = $success;
+	$cache[&#x27;error_msgs&#x27;] = $errors;
+
+	Ninja_Forms()-&gt;session-&gt;set( &#x27;nf_cache&#x27;, $cache );
+}
+
+/*
+ *
+ * Function that deletes our cache variable
+ *
+ * @since 2.2.45
+ * @return void
+ */
+
+function ninja_forms_delete_transient(){
+	Ninja_Forms()-&gt;session-&gt;delete();
+}
+
+/**
+ * Get a count of submissions for a form
+ *
+ * @since 2.7
+ * @param int $post_id
+ * @return int $count
+ */
+function nf_get_sub_count( $form_id, $post_status = &#x27;publish&#x27; ) {
+	global $wpdb;
+
+	$meta_key = &#x27;_form_id&#x27;;
+	$meta_value = $form_id;
+
+	$sql = &quot;SELECT count(DISTINCT pm.post_id)
+	FROM $wpdb-&gt;postmeta pm
+	JOIN $wpdb-&gt;posts p ON (p.ID = pm.post_id)
+	WHERE pm.meta_key = %s
+	AND pm.meta_value = %s
+	AND p.post_type = &#x27;nf_sub&#x27;
+	AND p.post_status = %s&quot;;
+
+	$count = $wpdb-&gt;get_var( $wpdb-&gt;prepare( $sql, $meta_key, $meta_value, $post_status ) );
+
+	return $count;
+}
+
+/**
+ * Get an array of our fields by form ID.
+ * The returned array has the field_ID as the key.
+ *
+ * @since 2.7
+ * @param int $form_id
+ * @return array $tmp_array
+ */
+function nf_get_fields_by_form_id( $form_id, $orderby = &#x27;ORDER BY `order` ASC&#x27; ){
+	global $wpdb;
+
+	$tmp_array = array();
+	$field_results = $wpdb-&gt;get_results($wpdb-&gt;prepare(&quot;SELECT * FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; WHERE form_id = %d &quot;.$orderby, $form_id), ARRAY_A);
+	if ( is_array( $field_results ) &amp;&amp; ! empty( $field_results ) ) {
+		foreach ( $field_results as $field ) {
+			$field_id = $field[&#x27;id&#x27;];
+			$field[&#x27;data&#x27;] = unserialize( $field[&#x27;data&#x27;] );
+			$tmp_array[ $field_id ] = $field;
+		}
+	}
+
+	return $tmp_array;
+}
+</pre></details></body></html>

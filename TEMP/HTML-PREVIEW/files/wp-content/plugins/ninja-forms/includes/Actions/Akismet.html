@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Actions/Akismet.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Actions/Akismet.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) || ! class_exists( &#x27;NF_Abstracts_Action&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Class NF_Actions_Akismet
+ */
+final class NF_Actions_Akismet extends NF_Abstracts_Action {
+
+	/**
+	 * @var string
+	 */
+	protected $_name = &#x27;akismet&#x27;;
+
+	/**
+	 * @var array
+	 */
+	protected $_tags = array( &#x27;spam&#x27;, &#x27;filtering&#x27;, &#x27;akismet&#x27; );
+
+	/**
+	 * @var string
+	 */
+	protected $_timing = &#x27;normal&#x27;;
+
+	/**
+	 * @var int
+	 */
+	protected $_priority = &#x27;10&#x27;;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		$this-&gt;_nicename = __( &#x27;Akismet Anti-Spam&#x27;, &#x27;ninja-forms&#x27; );
+		$settings        = Ninja_Forms::config( &#x27;ActionAkismetSettings&#x27; );
+		$this-&gt;_settings = array_merge( $this-&gt;_settings, $settings );
+
+		add_filter( &#x27;ninja_forms_action_type_settings&#x27;, array( $this, &#x27;maybe_remove_action&#x27; ) );
+	}
+
+	/**
+	 * Remove the action registration if Akismet functions not available.
+	 *
+	 * @param array $action_type_settings
+	 *
+	 * @return array
+	 */
+	public function maybe_remove_action( $action_type_settings ) {
+		if ( ! $this-&gt;akismet_available() ) {
+			unset( $action_type_settings[ $this-&gt;_name ] );
+		}
+
+		return $action_type_settings;
+	}
+
+	/**
+	 * Is Akismet installed and connected with a valid key?
+	 *
+	 * @return bool
+	 */
+	protected function akismet_available() {
+		if ( ! is_callable( array( &#x27;Akismet&#x27;, &#x27;get_api_key&#x27; ) ) ) {
+			// Not installed and activated
+			return false;
+		}
+
+		$akismet_key = Akismet::get_api_key();
+		if ( empty( $akismet_key ) ) {
+			// No key entered
+			return false;
+		}
+
+		return &#x27;valid&#x27; === Akismet::verify_key( $akismet_key );
+	}
+
+	/**
+	 * Process the action
+	 *
+	 * @param array $action_settings
+	 * @param int   $form_id
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public function process( $action_settings, $form_id, $data ) {
+		if ( ! $this-&gt;akismet_available() ) {
+			return $data;
+		}
+
+		if ( $this-&gt;is_submission_spam( $action_settings[&#x27;name&#x27;], $action_settings[&#x27;email&#x27;], $action_settings[&#x27;url&#x27;], $action_settings[&#x27;message&#x27;] ) ) {
+			$data[&#x27;errors&#x27;][&#x27;form&#x27;][&#x27;spam&#x27;] = __( &#x27;There was an error trying to send your message. Please try again later&#x27;, &#x27;ninja-forms&#x27; );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Verify submission
+	 *
+	 * @param $name
+	 * @param $email
+	 * @param $url
+	 * @param $message
+	 *
+	 * @return bool
+	 */
+	protected function is_submission_spam( $name, $email, $url, $message ) {
+		$body_request = array(
+			&#x27;blog&#x27;                 =&gt; get_option( &#x27;home&#x27; ),
+			&#x27;blog_lang&#x27;            =&gt; get_locale(),
+			&#x27;permalink&#x27;            =&gt; get_permalink(),
+			&#x27;comment_type&#x27;         =&gt; &#x27;contact-form&#x27;,
+			&#x27;comment_author&#x27;       =&gt; $name,
+			&#x27;comment_author_email&#x27; =&gt; $email,
+			&#x27;comment_author_url&#x27;   =&gt; $url,
+			&#x27;comment_content&#x27;      =&gt; $message,
+			&#x27;user_agent&#x27;           =&gt; ( isset( $_SERVER[&#x27;HTTP_USER_AGENT&#x27;] ) ? $_SERVER[&#x27;HTTP_USER_AGENT&#x27;] : null ),
+		);
+
+		if ( method_exists( &#x27;Akismet&#x27;, &#x27;http_post&#x27; ) ) {
+			$body_request[&#x27;user_ip&#x27;] = Akismet::get_ip_address();
+			$response                = Akismet::http_post( build_query( $body_request ), &#x27;comment-check&#x27; );
+		} else {
+			global $akismet_api_host, $akismet_api_port;
+			$body_request[&#x27;user_ip&#x27;] = ( isset( $_SERVER[&#x27;REMOTE_ADDR&#x27;] ) ? $_SERVER[&#x27;REMOTE_ADDR&#x27;] : null );
+			$response                = akismet_http_post( build_query( $body_request ), $akismet_api_host, &#x27;/1.1/comment-check&#x27;, $akismet_api_port );
+		}
+
+		if ( ! empty( $response ) &amp;&amp; isset( $response[1] ) &amp;&amp; &#x27;true&#x27; == trim( $response[1] ) ) {
+			// Spam!
+			return true;
+		}
+
+		return false;
+	}
+}</pre></details></body></html>

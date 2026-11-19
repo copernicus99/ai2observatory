@@ -1,0 +1,298 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/Field.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/Field.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Abstracts_Field
+ */
+abstract class NF_Abstracts_Field
+{
+    /**
+    * @var string
+    */
+    protected $_name  = &#x27;&#x27;;
+
+    /**
+     * @var string
+     */
+    protected $_nicename = &#x27;&#x27;;
+
+    /**
+    * @var string
+    */
+    protected $_section = &#x27;&#x27;;
+
+    /**
+    * @var string
+    */
+    protected $_icon = &#x27;square-o&#x27;;
+
+    /**
+     * @var array
+     */
+    protected $_aliases = array();
+
+    /**
+     * @var array
+     */
+    protected $_settings = array();
+
+    /**
+     * @var array
+     */
+    protected $_settings_all_fields = array();
+
+    /**
+     * @var array
+     */
+    protected $_settings_exclude = array();
+
+    /**
+     * @var array
+     */
+    protected $_settings_only = array();
+
+    /**
+     * @var array
+     */
+    protected $_use_merge_tags = array( &#x27;user&#x27;, &#x27;post&#x27;, &#x27;system&#x27;, &#x27;fields&#x27; );
+
+    /**
+     * @var array
+     */
+    protected $_use_merge_tags_include = array();
+
+    /**
+     * @var array
+     */
+    protected $_use_merge_tags_exclude = array();
+
+    /**
+     * @var string
+     */
+    protected $_test_value = &#x27;test&#x27;;
+
+    /**
+     * @var string
+     */
+    protected $_attr = &#x27;&#x27;;
+
+    /**
+     * @var string
+     */
+    protected $_type = &#x27;&#x27;;
+
+    /**
+     * @var string
+     */
+    protected $_parent_type = &#x27;&#x27;;
+
+    /**
+     * @var string
+     */
+    public static $_base_template = &#x27;input&#x27;;
+
+    /**
+     * @var array
+     */
+    protected $_templates = array();
+
+    /**
+     * @var string
+     */
+    protected $_wrap_template = &#x27;wrap&#x27;;
+
+    /**
+     * @var array
+     */
+    protected $_old_classname = &#x27;&#x27;;
+
+    //-----------------------------------------------------
+    // Public Methods
+    //-----------------------------------------------------
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        if( ! empty( $this-&gt;_settings_only ) ){
+
+            $this-&gt;_settings = array_merge( $this-&gt;_settings, $this-&gt;_settings_only );
+        } else {
+
+            $this-&gt;_settings = array_merge( $this-&gt;_settings_all_fields, $this-&gt;_settings );
+            $this-&gt;_settings = array_diff( $this-&gt;_settings, $this-&gt;_settings_exclude );
+        }
+
+        $this-&gt;_settings = $this-&gt;load_settings( $this-&gt;_settings );
+
+        $this-&gt;_test_value = apply_filters( &#x27;ninja_forms_field_&#x27; . $this-&gt;_name . &#x27;_test_value&#x27;, $this-&gt;_test_value );
+
+        add_filter( &#x27;ninja_forms_localize_field_settings_&#x27; . $this-&gt;_type, array( $this, &#x27;localize_settings&#x27; ), 10, 2 );
+    }
+
+    /**
+     * Validate
+     *
+     * @param $field
+     * @param $data
+     * @return array $errors
+     */
+    public function validate( $field, $data )
+    {
+        $errors = array();
+        // Required check.
+
+        if( is_array( $field[ &#x27;value&#x27; ] ) ){
+            $field[ &#x27;value&#x27; ] = implode( &#x27;&#x27;, $field[ &#x27;value&#x27; ] );
+        }
+
+        if( isset( $field[&#x27;required&#x27;] ) &amp;&amp; 1 == $field[&#x27;required&#x27;] &amp;&amp; is_null( trim( $field[&#x27;value&#x27;] ) ) ){
+            $errors[] = &#x27;Field is required.&#x27;;
+        }
+        return $errors;
+    }
+
+    public function process( $field, $data )
+    {
+        return $data;
+    }
+
+    /**
+     * Admin Form Element
+     *
+     * Returns the output for editing fields in a submission.
+     *
+     * @param $id
+     * @param $value
+     * @return string
+     */
+    public function admin_form_element( $id, $value )
+    {
+        return &#x27;&lt;input class=&quot;widefat&quot; name=&quot;fields[&#x27; . intval( $id ) . &#x27;]&quot; value=&quot;&#x27; . esc_attr( $value ) . &#x27;&quot; /&gt;&#x27;;
+    }
+
+    public function get_name()
+    {
+        return $this-&gt;_name;
+    }
+
+    public function get_nicename()
+    {
+        return $this-&gt;_nicename;
+    }
+
+    public function get_section()
+    {
+        return $this-&gt;_section;
+    }
+
+    public function get_icon()
+    {
+        return $this-&gt;_icon;
+    }
+
+    public function get_aliases()
+    {
+        return $this-&gt;_aliases;
+    }
+
+    public function get_type()
+    {
+        return $this-&gt;_type;
+    }
+
+    public function get_parent_type()
+    {
+        if( $this-&gt;_parent_type ){
+            return $this-&gt;_parent_type;
+        }
+        // If a type is not set, return &#x27;textbox&#x27;
+        return ( get_parent_class() ) ? parent::$_type : &#x27;textbox&#x27;;
+    }
+
+    public function get_settings()
+    {
+        return $this-&gt;_settings;
+    }
+
+    public function use_merge_tags()
+    {
+        $use_merge_tags = array_merge( $this-&gt;_use_merge_tags, $this-&gt;_use_merge_tags_include );
+        $use_merge_tags = array_diff( $use_merge_tags, $this-&gt;_use_merge_tags_exclude );
+
+        return $use_merge_tags;
+    }
+
+    public function get_test_value()
+    {
+        return $this-&gt;_test_value;
+    }
+
+    public function get_templates()
+    {
+        $templates = (array) $this-&gt;_templates;
+
+        // Create a reflection for examining the parent
+        $reflection = new ReflectionClass( $this );
+        $parent_class = $reflection-&gt;getParentClass();
+
+        if ( $parent_class-&gt;isAbstract() ) {
+
+            $parent_class_name = $parent_class-&gt;getName();
+            $parent_templates = call_user_func( array( $parent_class_name, &#x27;get_base_template&#x27; ) ); // Parent Class&#x27; Static Property
+            return array_merge( $templates, (array) $parent_templates );
+        }
+
+        $parent_class_name = strtolower( str_replace(&#x27;NF_Fields_&#x27;, &#x27;&#x27;, $parent_class-&gt;getName() ) );
+
+        if( ! isset( Ninja_Forms()-&gt;fields[ $parent_class_name ] ) ) return $templates;
+
+        $parent = Ninja_Forms()-&gt;fields[ $parent_class_name ];
+        return array_merge($templates, $parent-&gt;get_templates());
+
+    }
+
+    public function get_wrap_template()
+    {
+        return $this-&gt;_wrap_template;
+    }
+
+    public function get_old_classname()
+    {
+        return $this-&gt;_old_classname;
+    }
+
+    protected function load_settings( $only_settings = array() )
+    {
+        $settings = array();
+
+        // Loads a settings array from the FieldSettings configuration file.
+        $all_settings = Ninja_Forms::config( &#x27;FieldSettings&#x27; );
+
+        foreach( $only_settings as $setting ){
+
+            if( isset( $all_settings[ $setting ]) ){
+
+                $settings[ $setting ] = $all_settings[ $setting ];
+            }
+        }
+
+        return $settings = apply_filters( &#x27;ninja_forms_field_load_settings&#x27;, $settings, $this-&gt;_name, $this-&gt;get_parent_type() );
+    }
+
+    public static function get_base_template()
+    {
+        return self::$_base_template;
+    }
+
+    public static function sort_by_order( $a, $b )
+    {
+        return $a-&gt;get_setting( &#x27;order&#x27; ) - $b-&gt;get_setting( &#x27;order&#x27; );
+    }
+
+    public function localize_settings( $settings, $form_id ) {
+        return $settings;
+    }
+
+}
+</pre></details></body></html>

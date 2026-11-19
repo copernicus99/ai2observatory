@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/DeleteAllData.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/Controllers/DeleteAllData.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_Controllers_DeleteAllData extends NF_Abstracts_Controller
+{
+	public function __construct()
+	{
+		add_action( &#x27;wp_ajax_nf_delete_all_data&#x27;, array( $this, &#x27;delete_all_data&#x27; ) );
+	}
+
+	public function delete_all_data()
+	{
+		check_ajax_referer( &#x27;ninja_forms_settings_nonce&#x27;, &#x27;security&#x27; );
+
+		global $wpdb;
+		$total_subs_deleted = 0;
+		$post_result = 0;
+		$max_cnt = 250;
+		$form_id = $_POST[ &#x27;form&#x27; ];
+		// SQL for getting 250 subs at a time
+		$sub_sql = &quot;SELECT id FROM `&quot; . $wpdb-&gt;prefix . &quot;posts` AS p
+			LEFT JOIN `&quot; . $wpdb-&gt;prefix . &quot;postmeta` AS m ON p.id = m.post_id
+			WHERE p.post_type = &#x27;nf_sub&#x27; AND m.meta_key = &#x27;_form_id&#x27;
+			AND m.meta_value = %s LIMIT &quot; . $max_cnt;
+
+		while ($post_result &lt;= $max_cnt ) {
+			$subs = $wpdb-&gt;get_col( $wpdb-&gt;prepare( $sub_sql, $form_id ),0 );
+			// if we are out of subs, then stop
+			if( 0 === count( $subs ) ) break;
+			// otherwise, let&#x27;s delete the postmeta as well
+			$delete_meta_query = &quot;DELETE FROM `&quot; . $wpdb-&gt;prefix . &quot;postmeta` WHERE post_id IN ( [IN] )&quot;;
+			$delete_meta_query = $this-&gt;prepare_in( $delete_meta_query, $subs );
+			$meta_result       = $wpdb-&gt;query( $delete_meta_query );
+			if ( $meta_result &gt; 0 ) {
+				// now we actually delete the posts(nf_sub)
+				$delete_post_query = &quot;DELETE FROM `&quot; . $wpdb-&gt;prefix . &quot;posts` WHERE id IN ( [IN] )&quot;;
+				$delete_post_query = $this-&gt;prepare_in( $delete_post_query, $subs );
+				$post_result       = $wpdb-&gt;query( $delete_post_query );
+				$total_subs_deleted = $total_subs_deleted + $post_result;
+
+			}
+		}
+
+		$this-&gt;_data[ &#x27;form_id&#x27; ] = $_POST[ &#x27;form&#x27; ];
+		$this-&gt;_data[ &#x27;delete_count&#x27; ] = $total_subs_deleted;
+		$this-&gt;_data[ &#x27;success&#x27; ] = true;
+
+		if ( 1 == $_POST[ &#x27;last_form&#x27; ] ) {
+			//if we are on the last form, then deactivate and nuke db tables
+			$migrations = new NF_Database_Migrations();
+			$migrations-&gt;nuke(TRUE, TRUE);
+			$migrations-&gt;nuke_settings(TRUE, TRUE);
+			$migrations-&gt;nuke_deprecated(TRUE, TRUE);
+			deactivate_plugins( &#x27;ninja-forms/ninja-forms.php&#x27; );
+			$this-&gt;_data[ &#x27;plugin_url&#x27; ] = admin_url( &#x27;plugins.php&#x27; );
+		}
+
+		$this-&gt;_respond();
+	}
+
+	 private function prepare_in( $sql, $vals ) {
+		global $wpdb;
+		$not_in_count = substr_count( $sql, &#x27;[IN]&#x27; );
+		if ( $not_in_count &gt; 0 ) {
+			$args = array( str_replace( &#x27;[IN]&#x27;, implode( &#x27;, &#x27;, array_fill( 0, count( $vals ), &#x27;%d&#x27; ) ), str_replace( &#x27;%&#x27;, &#x27;%%&#x27;, $sql ) ) );
+			// This will populate ALL the [IN]&#x27;s with the $vals, assuming you have more than one [IN] in the sql
+			for ( $i=0; $i &lt; substr_count( $sql, &#x27;[IN]&#x27; ); $i++ ) {
+				$args = array_merge( $args, $vals );
+			}
+			$sql = call_user_func_array( array( $wpdb, &#x27;prepare&#x27; ), array_merge( $args ) );
+		}
+		return $sql;
+	}
+
+
+}
+</pre></details></body></html>

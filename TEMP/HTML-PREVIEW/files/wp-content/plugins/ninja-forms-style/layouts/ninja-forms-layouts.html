@@ -1,0 +1,259 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/layouts/ninja-forms-layouts.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/layouts/ninja-forms-layouts.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+        &lt;script id=&quot;nf-tmpl-empty-cell&quot; type=&quot;text/template&quot;&gt;
+            &lt;div class=&quot;no-fields&quot;&gt;
+                Add fields, &lt;a href=&quot;#&quot; class=&quot;delete&quot;&gt;delete column&lt;/a&gt;, or leave it empty.
+            &lt;/div&gt;
+        &lt;/script&gt;
+
+        
+        &lt;script id=&quot;nf-tmpl-cell&quot; type=&quot;text/template&quot;&gt;
+            &lt;nf-fields&gt;&lt;/nf-fields&gt;
+        &lt;/script&gt;
+
+        &lt;script id=&quot;nf-tmpl-row&quot; type=&quot;text/template&quot;&gt;
+            &lt;nf-cells&gt;&lt;/nf-cells&gt;
+        &lt;/script&gt;
+
+        "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( class_exists( &#x27;NF_Layouts&#x27;, false ) ) return;
+
+/**
+ * Class NF_Layouts
+ */
+final class NF_Layouts
+{
+    const VERSION = &#x27;3.0.25&#x27;;
+    const SLUG    = &#x27;layouts&#x27;;
+    const NAME    = &#x27;Layouts&#x27;;
+    const AUTHOR  = &#x27;WP Ninjas&#x27;;
+    const PREFIX  = &#x27;NF_Layouts&#x27;;
+
+    /**
+     * @var NF_Layouts
+     * @since 3.0
+     */
+    private static $instance;
+
+    /**
+     * Plugin Directory
+     *
+     * @since 3.0
+     * @var string $dir
+     */
+    public static $dir = &#x27;&#x27;;
+
+    /**
+     * Plugin URL
+     *
+     * @since 3.0
+     * @var string $url
+     */
+    public static $url = &#x27;&#x27;;
+
+    /**
+     * NF_Layouts constructor.
+     */
+    public function __construct()
+    {
+        add_action( &#x27;nf_admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+        add_action( &#x27;nf_display_enqueue_scripts&#x27;, array( $this, &#x27;display_scripts&#x27; ) );
+
+        /*
+         * We need to sort fields in a different order than core.
+         */
+        add_filter( &#x27;ninja_forms_get_fields_sorted&#x27;, array( $this, &#x27;filter_field_order&#x27; ), 10, 4 );
+    }
+
+    public function admin_scripts()
+    {
+        $ver = self::VERSION;
+        wp_enqueue_style(  &#x27;nf-layout-builder&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/css/builder.css&#x27;, array(), $ver );
+        wp_enqueue_script( &#x27;nf-layout-builder&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/js/min/builder.js&#x27;, array( &#x27;nf-builder&#x27; ), $ver );
+        wp_enqueue_script( &#x27;jquery-split&#x27;,      plugin_dir_url( __FILE__ ) . &#x27;assets/js/lib/split.js&#x27;,   array( &#x27;jquery&#x27; ),     $ver );
+        ?&gt;
+        &lt;script id=&quot;nf-tmpl-empty-cell&quot; type=&quot;text/template&quot;&gt;
+            &lt;div class=&quot;no-fields&quot;&gt;
+                Add fields, &lt;a href=&quot;#&quot; class=&quot;delete&quot;&gt;delete column&lt;/a&gt;, or leave it empty.
+            &lt;/div&gt;
+        &lt;/script&gt;
+
+        &lt;?php
+        $form_id = absint( $_GET[&#x27;form_id&#x27;] );
+        if ( !$form_id ) {
+            return false;
+        }
+        $rows = array();
+        $form = Ninja_Forms()-&gt;form( $form_id );
+        foreach( $form-&gt;get_fields() as $field ) {
+            if ( ! is_null( $field ) &amp;&amp; is_object( $field ) ) {
+                $rows[] = array(
+                    &#x27;order&#x27; =&gt; absint( $field-&gt;get_setting( &#x27;order&#x27; ) ),
+                    &#x27;cells&#x27; =&gt; array(
+                        array(
+                            &#x27;order&#x27; =&gt; 0,
+                            &#x27;fields&#x27;    =&gt; array(
+                                $field-&gt;get_setting( &#x27;key&#x27; )
+                            ),
+                            &#x27;width&#x27;     =&gt; &#x27;100&#x27;
+                        )
+                    )
+                );
+            }
+        }
+        wp_localize_script( &#x27;nf-layout-builder&#x27;, &#x27;nfLayouts&#x27;, array( &#x27;rows&#x27; =&gt; $rows ) );
+    }
+
+    public function display_scripts()
+    {
+        $ver = self::VERSION;
+        wp_enqueue_style(  &#x27;nf-layout-front-end&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/css/display-structure.css&#x27;, array(), $ver );
+        wp_enqueue_script( &#x27;nf-layout-front-end&#x27;, plugin_dir_url( __FILE__ ) . &#x27;assets/js/min/front-end.js&#x27;, array( &#x27;nf-front-end&#x27; ), $ver );
+        ?&gt;
+        &lt;script id=&quot;nf-tmpl-cell&quot; type=&quot;text/template&quot;&gt;
+            &lt;nf-fields&gt;&lt;/nf-fields&gt;
+        &lt;/script&gt;
+
+        &lt;script id=&quot;nf-tmpl-row&quot; type=&quot;text/template&quot;&gt;
+            &lt;nf-cells&gt;&lt;/nf-cells&gt;
+        &lt;/script&gt;
+
+        &lt;?php
+    }
+
+    /**
+     * Main Plugin Instance
+     *
+     * Insures that only one instance of a plugin class exists in memory at any one
+     * time. Also prevents needing to define globals all over the place.
+     *
+     * @since 3.0
+     * @static
+     * @static var array $instance
+     * @return NF_Layouts Highlander Instance
+     */
+    public static function instance()
+    {
+        if ( ! isset( self::$instance ) &amp;&amp; ! ( self::$instance instanceof NF_Layouts ) ) {
+            self::$instance = new NF_Layouts();
+            self::$dir = plugin_dir_path(__FILE__);
+            self::$url = plugin_dir_url(__FILE__);
+            spl_autoload_register( array( self::$instance, &#x27;autoloader&#x27; ) );
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Autoloader
+     *
+     * @param $class_name
+     */
+    public function autoloader( $class_name )
+    {
+        if (class_exists($class_name)) return;
+
+        if ( false === strpos( $class_name, self::PREFIX ) ) return;
+
+        $class_name = str_replace( self::PREFIX, &#x27;&#x27;, $class_name );
+        $classes_dir = realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . &#x27;includes&#x27; . DIRECTORY_SEPARATOR;
+        $class_file = str_replace(&#x27;_&#x27;, DIRECTORY_SEPARATOR, $class_name) . &#x27;.php&#x27;;
+
+        if (file_exists($classes_dir . $class_file)) {
+            require_once $classes_dir . $class_file;
+        }
+    }
+
+    /**
+     * Template
+     *
+     * @param string $file_name
+     * @param array $data
+     */
+    public static function template( $file_name = &#x27;&#x27;, array $data = array() )
+    {
+        if( ! $file_name ) return;
+
+        extract( $data );
+
+        include self::$dir . &#x27;includes/Templates/&#x27; . $file_name;
+    }
+
+    /**
+     * Config
+     *
+     * @param $file_name
+     * @return mixed
+     */
+    public static function config( $file_name )
+    {
+        return include self::$dir . &#x27;includes/Config/&#x27; . $file_name . &#x27;.php&#x27;;
+    }
+
+    /**
+     * License Setup
+     */
+    public function setup_license()
+    {
+        if ( ! class_exists( &#x27;NF_Extension_Updater&#x27; ) ) return;
+
+        new NF_Extension_Updater( self::NAME, self::VERSION, self::AUTHOR, __FILE__, self::SLUG );
+    }
+
+    public function filter_field_order( $order, $fields, $fields_by_key, $form_id ) {
+        $form = Ninja_Forms()-&gt;form( $form_id )-&gt;get();
+        $formContentData = $form-&gt;get_setting( &#x27;formContentData&#x27; );
+
+        $new_order = array();
+
+        // If Not a Multi-Part Form, return original order.
+        if( ! $formContentData ) return $order;
+
+        if ( isset ( $formContentData[0][ &#x27;cells&#x27; ] ) ) {
+            /*
+             * If we don&#x27;t have Multi-Part data, general decode.
+             */
+            foreach( $formContentData as $row ) {
+                foreach ( $row[&#x27;cells&#x27;] as $cell ) {
+                     foreach ( $cell[ &#x27;fields&#x27; ] as $field_key ) {
+                        $field = $fields_by_key[ $field_key ];
+                        $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+                        $new_order[ $field_id ] = $field;
+                    }
+                }
+            }
+        } else {
+            /*
+             * If we have Multi-Part data, decode that.
+             */
+            foreach( $formContentData as $part ) {
+
+                if( ! isset( $part[ &#x27;formContentData&#x27; ] ) ) continue;
+                $part_content = $part[ &#x27;formContentData&#x27; ];
+
+                /*
+                 * If we have part_content[&#x27;cells&#x27;], then we know we&#x27;re dealing with Layout &amp; Styles data.
+                 */
+                if ( isset ( $part_content[ 0 ][ &#x27;cells&#x27; ] ) ) {
+                    foreach ( $part_content as $row ) {
+                        foreach ( $row[&#x27;cells&#x27;] as $cell ) {
+                             foreach ( $cell[ &#x27;fields&#x27; ] as $field_key ) {
+                                $field = $fields_by_key[ $field_key ];
+                                $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+                                $new_order[ $field_id ] = $field;
+                            }
+                        }
+                    }
+                } else {
+                    foreach ( $part_content as $field_key ) {
+                        $field = $fields_by_key[ $field_key ];
+                        $field_id = ( is_object( $field ) ) ? $field-&gt;get_id() : $field[ &#x27;id&#x27; ];
+                        $new_order[ $field_id ] = $field;
+                    }
+                }
+            }
+        }
+
+        return $new_order;
+    }
+}
+</pre></details></body></html>

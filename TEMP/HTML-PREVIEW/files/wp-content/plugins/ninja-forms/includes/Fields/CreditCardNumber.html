@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/CreditCardNumber.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/CreditCardNumber.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_CreditCardNumber
+ */
+class NF_Fields_CreditCardNumber extends NF_Abstracts_Input
+{
+    protected $_name = &#x27;creditcardnumber&#x27;;
+    protected $_type = &#x27;creditcardnumber&#x27;;
+
+    protected $_section = &#x27;&#x27;;
+
+    protected $_icon = &#x27;credit-card&#x27;;
+
+    protected $_templates = &#x27;textbox&#x27;;
+
+    protected $_test_value = &#x27;4242424242424242&#x27;;
+
+    protected $_settings_exclude = array( &#x27;default&#x27;, &#x27;input_limit_set&#x27;, &#x27;disable_input&#x27; );
+    
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Credit Card Number&#x27;, &#x27;ninja-forms&#x27; );
+
+        add_filter( &#x27;nf_sub_hidden_field_types&#x27;, array( $this, &#x27;hide_field_type&#x27; ) );
+    }
+
+    function hide_field_type( $field_types )
+    {
+        $field_types[] = $this-&gt;_name;
+
+        return $field_types;
+    }
+}
+</pre></details></body></html>

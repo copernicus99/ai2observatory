@@ -1,0 +1,422 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentysixteen/functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentysixteen/functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Twenty Sixteen functions and definitions
+ *
+ * Set up the theme and provides some helper functions, which are used in the
+ * theme as custom template tags. Others are attached to action and filter
+ * hooks in WordPress to change core functionality.
+ *
+ * When using a child theme you can override certain functions (those wrapped
+ * in a function_exists() call) by defining them first in your child theme&#x27;s
+ * functions.php file. The child theme&#x27;s functions.php file is included before
+ * the parent theme&#x27;s file, so the child theme functions would be used.
+ *
+ * @link https://codex.wordpress.org/Theme_Development
+ * @link https://codex.wordpress.org/Child_Themes
+ *
+ * Functions that are not pluggable (not wrapped in function_exists()) are
+ * instead attached to a filter or action hook.
+ *
+ * For more information on hooks, actions, and filters,
+ * {@link https://codex.wordpress.org/Plugin_API}
+ *
+ * @package WordPress
+ * @subpackage Twenty_Sixteen
+ * @since Twenty Sixteen 1.0
+ */
+
+/**
+ * Twenty Sixteen only works in WordPress 4.4 or later.
+ */
+if ( version_compare( $GLOBALS[&#x27;wp_version&#x27;], &#x27;4.4-alpha&#x27;, &#x27;&lt;&#x27; ) ) {
+	require get_template_directory() . &#x27;/inc/back-compat.php&#x27;;
+}
+
+if ( ! function_exists( &#x27;twentysixteen_setup&#x27; ) ) :
+/**
+ * Sets up theme defaults and registers support for various WordPress features.
+ *
+ * Note that this function is hooked into the after_setup_theme hook, which
+ * runs before the init hook. The init hook is too late for some features, such
+ * as indicating support for post thumbnails.
+ *
+ * Create your own twentysixteen_setup() function to override in a child theme.
+ *
+ * @since Twenty Sixteen 1.0
+ */
+function twentysixteen_setup() {
+	/*
+	 * Make theme available for translation.
+	 * Translations can be filed at WordPress.org. See: https://translate.wordpress.org/projects/wp-themes/twentysixteen
+	 * If you&#x27;re building a theme based on Twenty Sixteen, use a find and replace
+	 * to change &#x27;twentysixteen&#x27; to the name of your theme in all the template files
+	 */
+	load_theme_textdomain( &#x27;twentysixteen&#x27; );
+
+	// Add default posts and comments RSS feed links to head.
+	add_theme_support( &#x27;automatic-feed-links&#x27; );
+
+	/*
+	 * Let WordPress manage the document title.
+	 * By adding theme support, we declare that this theme does not use a
+	 * hard-coded &lt;title&gt; tag in the document head, and expect WordPress to
+	 * provide it for us.
+	 */
+	add_theme_support( &#x27;title-tag&#x27; );
+
+	/*
+	 * Enable support for custom logo.
+	 *
+	 *  @since Twenty Sixteen 1.2
+	 */
+	add_theme_support( &#x27;custom-logo&#x27;, array(
+		&#x27;height&#x27;      =&gt; 240,
+		&#x27;width&#x27;       =&gt; 240,
+		&#x27;flex-height&#x27; =&gt; true,
+	) );
+
+	/*
+	 * Enable support for Post Thumbnails on posts and pages.
+	 *
+	 * @link http://codex.wordpress.org/Function_Reference/add_theme_support#Post_Thumbnails
+	 */
+	add_theme_support( &#x27;post-thumbnails&#x27; );
+	set_post_thumbnail_size( 1200, 9999 );
+
+	// This theme uses wp_nav_menu() in two locations.
+	register_nav_menus( array(
+		&#x27;primary&#x27; =&gt; __( &#x27;Primary Menu&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;social&#x27;  =&gt; __( &#x27;Social Links Menu&#x27;, &#x27;twentysixteen&#x27; ),
+	) );
+
+	/*
+	 * Switch default core markup for search form, comment form, and comments
+	 * to output valid HTML5.
+	 */
+	add_theme_support( &#x27;html5&#x27;, array(
+		&#x27;search-form&#x27;,
+		&#x27;comment-form&#x27;,
+		&#x27;comment-list&#x27;,
+		&#x27;gallery&#x27;,
+		&#x27;caption&#x27;,
+	) );
+
+	/*
+	 * Enable support for Post Formats.
+	 *
+	 * See: https://codex.wordpress.org/Post_Formats
+	 */
+	add_theme_support( &#x27;post-formats&#x27;, array(
+		&#x27;aside&#x27;,
+		&#x27;image&#x27;,
+		&#x27;video&#x27;,
+		&#x27;quote&#x27;,
+		&#x27;link&#x27;,
+		&#x27;gallery&#x27;,
+		&#x27;status&#x27;,
+		&#x27;audio&#x27;,
+		&#x27;chat&#x27;,
+	) );
+
+	/*
+	 * This theme styles the visual editor to resemble the theme style,
+	 * specifically font, colors, icons, and column width.
+	 */
+	add_editor_style( array( &#x27;css/editor-style.css&#x27;, twentysixteen_fonts_url() ) );
+
+	// Indicate widget sidebars can use selective refresh in the Customizer.
+	add_theme_support( &#x27;customize-selective-refresh-widgets&#x27; );
+}
+endif; // twentysixteen_setup
+add_action( &#x27;after_setup_theme&#x27;, &#x27;twentysixteen_setup&#x27; );
+
+/**
+ * Sets the content width in pixels, based on the theme&#x27;s design and stylesheet.
+ *
+ * Priority 0 to make it available to lower priority callbacks.
+ *
+ * @global int $content_width
+ *
+ * @since Twenty Sixteen 1.0
+ */
+function twentysixteen_content_width() {
+	$GLOBALS[&#x27;content_width&#x27;] = apply_filters( &#x27;twentysixteen_content_width&#x27;, 840 );
+}
+add_action( &#x27;after_setup_theme&#x27;, &#x27;twentysixteen_content_width&#x27;, 0 );
+
+/**
+ * Registers a widget area.
+ *
+ * @link https://developer.wordpress.org/reference/functions/register_sidebar/
+ *
+ * @since Twenty Sixteen 1.0
+ */
+function twentysixteen_widgets_init() {
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Sidebar&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;sidebar-1&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your sidebar.&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Content Bottom 1&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;sidebar-2&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Appears at the bottom of the content on posts and pages.&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Content Bottom 2&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;sidebar-3&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Appears at the bottom of the content on posts and pages.&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+}
+add_action( &#x27;widgets_init&#x27;, &#x27;twentysixteen_widgets_init&#x27; );
+
+if ( ! function_exists( &#x27;twentysixteen_fonts_url&#x27; ) ) :
+/**
+ * Register Google fonts for Twenty Sixteen.
+ *
+ * Create your own twentysixteen_fonts_url() function to override in a child theme.
+ *
+ * @since Twenty Sixteen 1.0
+ *
+ * @return string Google fonts URL for the theme.
+ */
+function twentysixteen_fonts_url() {
+	$fonts_url = &#x27;&#x27;;
+	$fonts     = array();
+	$subsets   = &#x27;latin,latin-ext&#x27;;
+
+	/* translators: If there are characters in your language that are not supported by Merriweather, translate this to &#x27;off&#x27;. Do not translate into your own language. */
+	if ( &#x27;off&#x27; !== _x( &#x27;on&#x27;, &#x27;Merriweather font: on or off&#x27;, &#x27;twentysixteen&#x27; ) ) {
+		$fonts[] = &#x27;Merriweather:400,700,900,400italic,700italic,900italic&#x27;;
+	}
+
+	/* translators: If there are characters in your language that are not supported by Montserrat, translate this to &#x27;off&#x27;. Do not translate into your own language. */
+	if ( &#x27;off&#x27; !== _x( &#x27;on&#x27;, &#x27;Montserrat font: on or off&#x27;, &#x27;twentysixteen&#x27; ) ) {
+		$fonts[] = &#x27;Montserrat:400,700&#x27;;
+	}
+
+	/* translators: If there are characters in your language that are not supported by Inconsolata, translate this to &#x27;off&#x27;. Do not translate into your own language. */
+	if ( &#x27;off&#x27; !== _x( &#x27;on&#x27;, &#x27;Inconsolata font: on or off&#x27;, &#x27;twentysixteen&#x27; ) ) {
+		$fonts[] = &#x27;Inconsolata:400&#x27;;
+	}
+
+	if ( $fonts ) {
+		$fonts_url = add_query_arg( array(
+			&#x27;family&#x27; =&gt; urlencode( implode( &#x27;|&#x27;, $fonts ) ),
+			&#x27;subset&#x27; =&gt; urlencode( $subsets ),
+		), &#x27;https://fonts.googleapis.com/css&#x27; );
+	}
+
+	return $fonts_url;
+}
+endif;
+
+/**
+ * Handles JavaScript detection.
+ *
+ * Adds a `js` class to the root `&lt;html&gt;` element when JavaScript is detected.
+ *
+ * @since Twenty Sixteen 1.0
+ */
+function twentysixteen_javascript_detection() {
+	echo &quot;&lt;script&gt;(function(html){html.className = html.className.replace(/\bno-js\b/,&#x27;js&#x27;)})(document.documentElement);&lt;/script&gt;\n&quot;;
+}
+add_action( &#x27;wp_head&#x27;, &#x27;twentysixteen_javascript_detection&#x27;, 0 );
+
+/**
+ * Enqueues scripts and styles.
+ *
+ * @since Twenty Sixteen 1.0
+ */
+function twentysixteen_scripts() {
+	// Add custom fonts, used in the main stylesheet.
+	wp_enqueue_style( &#x27;twentysixteen-fonts&#x27;, twentysixteen_fonts_url(), array(), null );
+
+	// Add Genericons, used in the main stylesheet.
+	wp_enqueue_style( &#x27;genericons&#x27;, get_template_directory_uri() . &#x27;/genericons/genericons.css&#x27;, array(), &#x27;3.4.1&#x27; );
+
+	// Theme stylesheet.
+	wp_enqueue_style( &#x27;twentysixteen-style&#x27;, get_stylesheet_uri() );
+
+	// Load the Internet Explorer specific stylesheet.
+	wp_enqueue_style( &#x27;twentysixteen-ie&#x27;, get_template_directory_uri() . &#x27;/css/ie.css&#x27;, array( &#x27;twentysixteen-style&#x27; ), &#x27;20160816&#x27; );
+	wp_style_add_data( &#x27;twentysixteen-ie&#x27;, &#x27;conditional&#x27;, &#x27;lt IE 10&#x27; );
+
+	// Load the Internet Explorer 8 specific stylesheet.
+	wp_enqueue_style( &#x27;twentysixteen-ie8&#x27;, get_template_directory_uri() . &#x27;/css/ie8.css&#x27;, array( &#x27;twentysixteen-style&#x27; ), &#x27;20160816&#x27; );
+	wp_style_add_data( &#x27;twentysixteen-ie8&#x27;, &#x27;conditional&#x27;, &#x27;lt IE 9&#x27; );
+
+	// Load the Internet Explorer 7 specific stylesheet.
+	wp_enqueue_style( &#x27;twentysixteen-ie7&#x27;, get_template_directory_uri() . &#x27;/css/ie7.css&#x27;, array( &#x27;twentysixteen-style&#x27; ), &#x27;20160816&#x27; );
+	wp_style_add_data( &#x27;twentysixteen-ie7&#x27;, &#x27;conditional&#x27;, &#x27;lt IE 8&#x27; );
+
+	// Load the html5 shiv.
+	wp_enqueue_script( &#x27;twentysixteen-html5&#x27;, get_template_directory_uri() . &#x27;/js/html5.js&#x27;, array(), &#x27;3.7.3&#x27; );
+	wp_script_add_data( &#x27;twentysixteen-html5&#x27;, &#x27;conditional&#x27;, &#x27;lt IE 9&#x27; );
+
+	wp_enqueue_script( &#x27;twentysixteen-skip-link-focus-fix&#x27;, get_template_directory_uri() . &#x27;/js/skip-link-focus-fix.js&#x27;, array(), &#x27;20160816&#x27;, true );
+
+	if ( is_singular() &amp;&amp; comments_open() &amp;&amp; get_option( &#x27;thread_comments&#x27; ) ) {
+		wp_enqueue_script( &#x27;comment-reply&#x27; );
+	}
+
+	if ( is_singular() &amp;&amp; wp_attachment_is_image() ) {
+		wp_enqueue_script( &#x27;twentysixteen-keyboard-image-navigation&#x27;, get_template_directory_uri() . &#x27;/js/keyboard-image-navigation.js&#x27;, array( &#x27;jquery&#x27; ), &#x27;20160816&#x27; );
+	}
+
+	wp_enqueue_script( &#x27;twentysixteen-script&#x27;, get_template_directory_uri() . &#x27;/js/functions.js&#x27;, array( &#x27;jquery&#x27; ), &#x27;20160816&#x27;, true );
+
+	wp_localize_script( &#x27;twentysixteen-script&#x27;, &#x27;screenReaderText&#x27;, array(
+		&#x27;expand&#x27;   =&gt; __( &#x27;expand child menu&#x27;, &#x27;twentysixteen&#x27; ),
+		&#x27;collapse&#x27; =&gt; __( &#x27;collapse child menu&#x27;, &#x27;twentysixteen&#x27; ),
+	) );
+}
+add_action( &#x27;wp_enqueue_scripts&#x27;, &#x27;twentysixteen_scripts&#x27; );
+
+/**
+ * Adds custom classes to the array of body classes.
+ *
+ * @since Twenty Sixteen 1.0
+ *
+ * @param array $classes Classes for the body element.
+ * @return array (Maybe) filtered body classes.
+ */
+function twentysixteen_body_classes( $classes ) {
+	// Adds a class of custom-background-image to sites with a custom background image.
+	if ( get_background_image() ) {
+		$classes[] = &#x27;custom-background-image&#x27;;
+	}
+
+	// Adds a class of group-blog to sites with more than 1 published author.
+	if ( is_multi_author() ) {
+		$classes[] = &#x27;group-blog&#x27;;
+	}
+
+	// Adds a class of no-sidebar to sites without active sidebar.
+	if ( ! is_active_sidebar( &#x27;sidebar-1&#x27; ) ) {
+		$classes[] = &#x27;no-sidebar&#x27;;
+	}
+
+	// Adds a class of hfeed to non-singular pages.
+	if ( ! is_singular() ) {
+		$classes[] = &#x27;hfeed&#x27;;
+	}
+
+	return $classes;
+}
+add_filter( &#x27;body_class&#x27;, &#x27;twentysixteen_body_classes&#x27; );
+
+/**
+ * Converts a HEX value to RGB.
+ *
+ * @since Twenty Sixteen 1.0
+ *
+ * @param string $color The original color, in 3- or 6-digit hexadecimal form.
+ * @return array Array containing RGB (red, green, and blue) values for the given
+ *               HEX code, empty array otherwise.
+ */
+function twentysixteen_hex2rgb( $color ) {
+	$color = trim( $color, &#x27;#&#x27; );
+
+	if ( strlen( $color ) === 3 ) {
+		$r = hexdec( substr( $color, 0, 1 ).substr( $color, 0, 1 ) );
+		$g = hexdec( substr( $color, 1, 1 ).substr( $color, 1, 1 ) );
+		$b = hexdec( substr( $color, 2, 1 ).substr( $color, 2, 1 ) );
+	} else if ( strlen( $color ) === 6 ) {
+		$r = hexdec( substr( $color, 0, 2 ) );
+		$g = hexdec( substr( $color, 2, 2 ) );
+		$b = hexdec( substr( $color, 4, 2 ) );
+	} else {
+		return array();
+	}
+
+	return array( &#x27;red&#x27; =&gt; $r, &#x27;green&#x27; =&gt; $g, &#x27;blue&#x27; =&gt; $b );
+}
+
+/**
+ * Custom template tags for this theme.
+ */
+require get_template_directory() . &#x27;/inc/template-tags.php&#x27;;
+
+/**
+ * Customizer additions.
+ */
+require get_template_directory() . &#x27;/inc/customizer.php&#x27;;
+
+/**
+ * Add custom image sizes attribute to enhance responsive image functionality
+ * for content images
+ *
+ * @since Twenty Sixteen 1.0
+ *
+ * @param string $sizes A source size value for use in a &#x27;sizes&#x27; attribute.
+ * @param array  $size  Image size. Accepts an array of width and height
+ *                      values in pixels (in that order).
+ * @return string A source size value for use in a content image &#x27;sizes&#x27; attribute.
+ */
+function twentysixteen_content_image_sizes_attr( $sizes, $size ) {
+	$width = $size[0];
+
+	840 &lt;= $width &amp;&amp; $sizes = &#x27;(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 1362px) 62vw, 840px&#x27;;
+
+	if ( &#x27;page&#x27; === get_post_type() ) {
+		840 &gt; $width &amp;&amp; $sizes = &#x27;(max-width: &#x27; . $width . &#x27;px) 85vw, &#x27; . $width . &#x27;px&#x27;;
+	} else {
+		840 &gt; $width &amp;&amp; 600 &lt;= $width &amp;&amp; $sizes = &#x27;(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 61vw, (max-width: 1362px) 45vw, 600px&#x27;;
+		600 &gt; $width &amp;&amp; $sizes = &#x27;(max-width: &#x27; . $width . &#x27;px) 85vw, &#x27; . $width . &#x27;px&#x27;;
+	}
+
+	return $sizes;
+}
+add_filter( &#x27;wp_calculate_image_sizes&#x27;, &#x27;twentysixteen_content_image_sizes_attr&#x27;, 10 , 2 );
+
+/**
+ * Add custom image sizes attribute to enhance responsive image functionality
+ * for post thumbnails
+ *
+ * @since Twenty Sixteen 1.0
+ *
+ * @param array $attr Attributes for the image markup.
+ * @param int   $attachment Image attachment ID.
+ * @param array $size Registered image size or flat array of height and width dimensions.
+ * @return string A source size value for use in a post thumbnail &#x27;sizes&#x27; attribute.
+ */
+function twentysixteen_post_thumbnail_sizes_attr( $attr, $attachment, $size ) {
+	if ( &#x27;post-thumbnail&#x27; === $size ) {
+		is_active_sidebar( &#x27;sidebar-1&#x27; ) &amp;&amp; $attr[&#x27;sizes&#x27;] = &#x27;(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 984px) 60vw, (max-width: 1362px) 62vw, 840px&#x27;;
+		! is_active_sidebar( &#x27;sidebar-1&#x27; ) &amp;&amp; $attr[&#x27;sizes&#x27;] = &#x27;(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 1362px) 88vw, 1200px&#x27;;
+	}
+	return $attr;
+}
+add_filter( &#x27;wp_get_attachment_image_attributes&#x27;, &#x27;twentysixteen_post_thumbnail_sizes_attr&#x27;, 10 , 3 );
+
+/**
+ * Modifies tag cloud widget arguments to have all tags in the widget same font size.
+ *
+ * @since Twenty Sixteen 1.1
+ *
+ * @param array $args Arguments for tag cloud widget.
+ * @return array A new modified arguments.
+ */
+function twentysixteen_widget_tag_cloud_args( $args ) {
+	$args[&#x27;largest&#x27;] = 1;
+	$args[&#x27;smallest&#x27;] = 1;
+	$args[&#x27;unit&#x27;] = &#x27;em&#x27;;
+	return $args;
+}
+add_filter( &#x27;widget_tag_cloud_args&#x27;, &#x27;twentysixteen_widget_tag_cloud_args&#x27; );
+</pre></details></body></html>

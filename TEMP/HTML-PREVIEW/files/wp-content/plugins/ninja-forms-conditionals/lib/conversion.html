@@ -1,0 +1,437 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/lib/conversion.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/lib/conversion.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+final class NF_ConditionalLogic_Conversion
+{
+	public $known_keys = array();
+	
+	public $fields = array();
+	public $actions = array();
+	public $field_conditions = array();
+
+	public $current_id = 0;
+	public $current_field;
+
+    public function __construct()
+    {
+        add_filter( &#x27;ninja_forms_after_upgrade_settings&#x27;, array( $this, &#x27;upgrade_field_settings&#x27; ) );
+    }
+
+    function upgrade_field_settings( $form_data )
+    {
+        if( isset( $form_data[ &#x27;settings&#x27; ][ &#x27;conditions&#x27; ] ) &amp;&amp; ! empty( $form_data[ &#x27;settings&#x27; ][ &#x27;conditions&#x27; ] ) ) {
+            return $form_data;
+        }
+
+	    $this-&gt;actions = $form_data[ &#x27;actions&#x27; ];
+	    $this-&gt;fields = $form_data[ &#x27;fields&#x27; ];
+	    
+	    $all_actions = $this-&gt;extract_action_conditions( $this-&gt;actions, array() );
+	    $all_fields = $this-&gt;extract_field_conditions( $this-&gt;fields, array() );
+	    
+	    $form_data[ &#x27;actions&#x27; ] = $all_actions;
+	    $form_data[ &#x27;fields&#x27; ] = $all_fields;
+	    $form_data[ &#x27;settings&#x27; ][ &#x27;conditions&#x27; ] = $this-&gt;field_conditions;
+
+	    // echo &quot;&lt;pre&gt;&quot;;
+	    // print_r( $form_data[ &#x27;actions&#x27; ] );
+	    // echo &quot;&lt;/pre&gt;&quot;;
+	    // die();
+
+	    return $form_data;
+    }
+
+    function extract_action_conditions( $actions, $all_actions ) {
+    	/*
+	     * Pop the first action off of our array and check to see if it has any conditions.
+	     */
+	    $this-&gt;current_action = array_shift( $actions );
+
+	    if ( isset ( $this-&gt;current_action[ &#x27;conditions&#x27; ] ) &amp;&amp; ! empty( $this-&gt;current_action[ &#x27;conditions&#x27; ] ) &amp;&amp; isset( $this-&gt;current_action[ &#x27;conditions&#x27; ][ 0 ] ) ) {
+
+	        /*
+	         * If we have a condition, convert it for 3.0.
+	         */
+	        $old_condition = $this-&gt;current_action[ &#x27;conditions&#x27; ][ 0 ];
+
+	        $new_condition = array();
+	        $new_condition[ &#x27;process&#x27; ] = ( &#x27;process&#x27; == $old_condition[ &#x27;action&#x27; ] ) ? 1 : 0;
+	        $new_condition[ &#x27;connector&#x27; ] = ( &#x27;and&#x27; == $old_condition[ &#x27;connector&#x27; ] ) ? &#x27;all&#x27; : &#x27;any&#x27;;
+	        $connector = ( &#x27;all&#x27; == $new_condition[ &#x27;connector&#x27; ] ) ? &#x27;AND&#x27; : &#x27;OR&#x27;;
+	        $new_condition[ &#x27;when&#x27; ] = $this-&gt;extract_when( $old_condition[ &#x27;criteria&#x27; ], array(), $connector );
+
+	        $this-&gt;current_action[ &#x27;conditions&#x27; ] = $new_condition;
+	    }
+
+	    /*
+	     * Add our action to our all actions var.
+	     */
+	    $all_actions[] = $this-&gt;current_action;
+	    $this-&gt;current_action = array();
+
+	    /*
+	     * If there aren&#x27;t any more actions, we are at the end of our array.
+	     * return our conditions and all actions vars.
+	     */
+	    if ( 0 == count( $actions ) ) {
+	        return $all_actions;
+	    }
+
+	    /*
+	     * Recurse.
+	     */
+	    return $this-&gt;extract_action_conditions( $actions, $all_actions );
+    }
+
+    /**
+	 * Rather than loop through our array, we&#x27;ll use a recursive function to update everything.
+	 * @since  3.0
+	 * @param  array  $fields     fields array that gets modified as we recurse.
+	 * @param  array  $conditions array of conditions.
+	 * @param  array  $all_fields array of fields.
+	 * @return array
+	 */
+	function extract_field_conditions( $fields, $all_fields )
+	{
+	    /*
+	     * Pop the first field off of our array and check to see if it has any conditions.
+	     */
+	    $this-&gt;current_field = array_shift( $fields );
+
+	    if ( isset ( $this-&gt;current_field[ &#x27;conditional&#x27; ] ) &amp;&amp; ! empty( $this-&gt;current_field[ &#x27;conditional&#x27; ] ) ) {
+	        /*
+	         * If we have conditions, add them to the new condition array we are building.
+	         */
+	        array_walk( $this-&gt;current_field[ &#x27;conditional&#x27; ], array( $this, &#x27;update_field_conditions&#x27; ) );
+	    }
+
+	    /*
+	     * Remove the conditional settings from this field.
+	     */
+	    unset( $this-&gt;current_field[ &#x27;conditional&#x27; ] );
+
+	    /*
+	     * Add our field to our all fields var.
+	     */
+	    $all_fields[] = $this-&gt;current_field;
+	    $this-&gt;current_field = array();
+
+	    /*
+	     * If there aren&#x27;t any more fields, we are at the end of our array.
+	     * return our conditions and all fields vars.
+	     */
+	    if ( 0 == count( $fields ) ) {
+	        return $all_fields;
+	    }
+
+	    /*
+	     * Recurse.
+	     */
+	    return $this-&gt;extract_field_conditions( $fields, $all_fields );
+	}
+
+	/**
+	 * Step through each field condition and update our $this-&gt;field_conditions with each.
+	 * 
+	 * @since  3.0
+	 * @param  array  	$field_condition  	2.9.x Field Condition
+	 * @param  int  	$index              array index
+	 * @return void
+	 */
+	function update_field_conditions( $field_condition )
+	{
+		/*
+		 * Convert criteria to the &#x27;when&#x27; statement of our condition.
+		 */
+		$when = $this-&gt;extract_when( $field_condition[ &#x27;cr&#x27; ], array(), $field_condition[ &#x27;connector&#x27; ] );
+		/*
+		 * Get our then and possibly else statements.
+		 */
+		$tmp = $this-&gt;extract_then_else( $field_condition );
+		$then = $tmp[ &#x27;then&#x27; ];
+		$else = $tmp[ &#x27;else&#x27; ];
+
+		/*
+		 * Check to see if this when statement exists already.
+		 */
+		$condition_index = $this-&gt;find_when( $when, $this-&gt;field_conditions );
+
+		/*
+		 * If it does, add this field&#x27;s then/else.
+		 *
+		 * If it doesn&#x27;t, add a new condition using this field&#x27;s when/then/else.
+		 */
+		if ( false !== $condition_index ) {
+			$this-&gt;field_conditions[ $condition_index ][ &#x27;then&#x27; ][] = $then;
+			if ( ! empty ( $else ) ) {
+				$this-&gt;field_conditions[ $condition_index ][ &#x27;else&#x27; ][] = $else;
+			}
+		} else {
+			$this-&gt;field_conditions[] = array(
+				&#x27;when&#x27; 			=&gt; $when,
+				&#x27;then&#x27; 			=&gt; array( $then	),
+				&#x27;else&#x27;			=&gt; array( $else ),
+			);
+		}
+		
+	}
+
+	/**
+	 * Returns a 3.0 formatted array from 2.9.x criteria.
+	 * 
+	 * @since  3.0
+	 * @param  array  	$cr_array  	2.9.x Criteria Array
+	 * @param  array  	$when      	Used to create a mult-dimensional when array
+	 * @param  string  	$connector 	2.9.x connector var
+	 * @return array
+	 */
+	function extract_when( $cr_array, $when, $connector = &#x27;&#x27; )
+	{
+		if ( ! is_array( $cr_array ) ) return false;
+		$cr = array_shift( $cr_array );
+		/*
+		 * Replace our field target with the appropriate key
+		 *
+		 * This criterion could contain either a &#x27;field&#x27; key or a &#x27;param&#x27; key.
+		 */
+
+		$field_id = ( isset ( $cr[ &#x27;field&#x27; ] ) ) ? $cr[ &#x27;field&#x27; ] : $cr[ &#x27;param&#x27; ];
+		$field_key = $this-&gt;get_key( $field_id );
+		$comparator = ( isset ( $cr[ &#x27;operator&#x27; ] ) ) ? $cr[ &#x27;operator&#x27; ] : $cr[ &#x27;compare&#x27; ];
+		
+		$when[] = array(
+			&#x27;connector&#x27;		=&gt; strtoupper( $connector ),
+			&#x27;key&#x27;			=&gt; $field_key,
+			&#x27;comparator&#x27;	=&gt; $this-&gt;convert_comparator( $comparator, $field_id ),
+			&#x27;value&#x27;			=&gt; $this-&gt;convert_value( $cr[ &#x27;value&#x27; ] ),
+            &#x27;type&#x27;          =&gt; $this-&gt;get_when_type( $field_id )
+		);
+	
+		if ( 0 == count( $cr_array ) ) {
+			/*
+			 * Return our when array
+			 */
+			return $when;
+		}
+
+		/*
+		 * Recurse
+		 */
+		return $this-&gt;extract_when( $cr_array, $when, $connector );
+	}
+
+	/**
+	 * Return 3.0 formatted then/else arrays.
+	 * 
+	 * @since  3.0
+	 * @param  array  	$condition 		2.9.x formatted condition array
+	 * @return array             		3.0 formatted then/else
+	 */
+	function extract_then_else( $condition )
+	{
+		/*
+		 * We have new names for some of our actions.
+		 */
+		switch( $condition[ &#x27;action&#x27; ] ) {
+			case &#x27;show&#x27;:
+				$trigger = &#x27;show_field&#x27;;
+				$else_trigger = &#x27;hide_field&#x27;;
+				break;
+			case &#x27;hide&#x27;:
+				$trigger = &#x27;hide_field&#x27;;
+				$else_trigger = &#x27;show_field&#x27;;
+				break;
+			case &#x27;add_value&#x27;:
+				$trigger = $this-&gt;convert_trigger( $condition );
+				$else_trigger = &#x27;hide_option&#x27;;
+				break;
+			case &#x27;remove_value&#x27;:
+				$trigger = $this-&gt;convert_trigger( $Condition );
+				$else_trigger = &#x27;show_option&#x27;;
+			default:
+				$trigger = $condition[ &#x27;action&#x27; ];
+				$else_trigger = false;
+				break;
+		}
+
+		$value = $this-&gt;convert_value( $condition[ &#x27;value&#x27; ] );
+
+		$then = array( &#x27;key&#x27; =&gt; $this-&gt;current_field[ &#x27;key&#x27; ], &#x27;trigger&#x27; =&gt; $trigger, &#x27;value&#x27; =&gt; $value, &#x27;type&#x27; =&gt; &#x27;field&#x27; );
+
+		if ( $else_trigger ) {
+			$else = array( &#x27;key&#x27; =&gt; $this-&gt;current_field[ &#x27;key&#x27; ], &#x27;trigger&#x27; =&gt; $else_trigger, &#x27;value&#x27; =&gt; $value, &#x27;type&#x27; =&gt; &#x27;field&#x27; );
+		} else {
+			$else = array();
+		}
+
+		return array( &#x27;then&#x27; =&gt; $then, &#x27;else&#x27; =&gt; $else );
+	
+	}
+
+	/**
+	 * Search $conditions array for $when
+	 * 
+	 * @since  3.0
+	 * @param  array  		$when       	Needle
+	 * @param  array  		$conditions 	Haystack
+	 * @return int/bool              		Index or Boolean
+	 */
+	function find_when( $when, $conditions )
+	{
+		foreach( $conditions as $index =&gt; $condition ) {
+			if ( $condition[ &#x27;when&#x27; ] == $when ) {
+				return $index;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Get our 3.0 field key from our 2.9.x field ID
+	 * 
+	 * @since  3.0
+	 * @param  int  	$id 	2.9.x field ID
+	 * @return string
+	 */
+	function get_key( $id )
+	{
+		return ( isset( $this-&gt;known_keys[ $id ] ) ) ? $this-&gt;known_keys[ $id ] : $this-&gt;find_key( $id );
+	}
+
+	/**
+	 * Search for a field key by ID
+	 * 
+	 * @since  3.0
+	 * @param  int  	$id 	2.9.x field ID
+	 * @return string
+	 */
+	function find_key( $id )
+	{
+		$this-&gt;current_id = $id;
+        $field = array_filter( $this-&gt;fields, array( $this, &#x27;filter_by_id&#x27; ) );
+		$field = array_shift( $field );
+		$this-&gt;current_id = 0;
+		$this-&gt;known_keys[ $id ] = $field[ &#x27;key&#x27; ];
+		return isset( $field[ &#x27;key&#x27; ] ) ? $field[ &#x27;key&#x27; ] : false;
+	}
+
+	/**
+	 * Filter function used by the array_filter call inside find_key
+	 * 
+	 * @since  3.0
+	 * @param  array  	$val 	field array
+	 * @return bool
+	 */
+	function filter_by_id( $val )
+	{
+		return $val[ &#x27;id&#x27; ] == $this-&gt;current_id;
+	}
+
+	/**
+	 * Convert 2.9.x comparators to 3.0 format.
+	 * 
+	 * @since  3.0
+	 * @param  string  	$comparator 		2.9.x format comparator
+	 * @return string
+	 */
+	function convert_comparator( $comparator, $field_id )
+	{
+		$current_id = $this-&gt;current_id;
+		$this-&gt;current_id = $field_id;
+        $field = array_filter( $this-&gt;fields, array( $this, &#x27;filter_by_id&#x27; ) );
+		$field = array_shift( $field );
+		$this-&gt;current_id = $current_id;
+
+		switch ( $comparator ) {
+			case &#x27;==&#x27;:
+				/*
+				 * If we have a list field, we want to use &quot;contains&quot; and &quot;notcontains&quot; instead of &quot;equal&quot; and &quot;notequal&quot;
+				 */
+				if ( &#x27;listselect&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listradio&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listcheckbox&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listmultiselect&#x27; == $field[ &#x27;type&#x27; ] ) {
+					return &#x27;contains&#x27;;
+				} else {
+					return &#x27;equal&#x27;;
+				}
+			case &#x27;!=&#x27;:
+				/*
+				 * If we have a list field, we want to use &quot;contains&quot; and &quot;notcontains&quot; instead of &quot;equal&quot; and &quot;notequal&quot;
+				 */
+				if ( &#x27;listselect&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listradio&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listcheckbox&#x27; == $field[ &#x27;type&#x27; ] || &#x27;listmultiselect&#x27; == $field[ &#x27;type&#x27; ] ) {
+					return &#x27;notcontains&#x27;;
+				} else {
+					return &#x27;notequal&#x27;;
+				}
+			case &#x27;&lt;&#x27;:
+				return &#x27;less&#x27;;
+			case &#x27;&gt;&#x27;:
+				return &#x27;greater&#x27;;
+			default:
+				return $comparator;
+		}
+	}
+
+	/**
+	 * Some of our values, like checkboxes, should be 1 or 0 instead of checked or unchecked.
+	 * 
+	 * @since  3.0
+	 * @param  mixed  	$value
+	 * @return mixed
+	 */
+	function convert_value( $value )
+	{
+		switch( $value ) {
+			case &#x27;checked&#x27;:
+				$value = 1;
+				break;
+			case &#x27;unchecked&#x27;:
+				$value = 0;
+				break;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Some actions, like &quot;change_value&quot; for list fields need to be converted to new triggers.
+	 * @since  3.0
+	 * @param  string  $action 2.9.x action
+	 * @return string          3.0 trigger
+	 */
+	function convert_trigger( &amp;$condition ) {
+		if (
+			&#x27;listselect&#x27; 	!= $this-&gt;current_field[ &#x27;type&#x27; ] &amp;&amp;
+			&#x27;listradio&#x27;  	!= $this-&gt;current_field[ &#x27;type&#x27; ] &amp;&amp;
+			&#x27;listcheckbox&#x27;	!= $this-&gt;current_field[ &#x27;type&#x27; ]
+		) {
+			return $condition[ &#x27;action&#x27; ];
+		}
+
+		switch( $condition[ &#x27;action&#x27; ] ) {
+			case &#x27;change_value&#x27;:
+				return &#x27;select_option&#x27;;
+			case &#x27;add_value&#x27;:
+				$this-&gt;current_field[ &#x27;options&#x27; ][] = array(
+					&#x27;label&#x27; 	=&gt; $condition[ &#x27;value&#x27; ][ &#x27;label&#x27; ],
+					&#x27;value&#x27;		=&gt; $condition[ &#x27;value&#x27; ][ &#x27;label&#x27; ],
+					&#x27;calc&#x27;		=&gt; $condition[ &#x27;value&#x27; ][ &#x27;calc&#x27; ],
+					&#x27;selected&#x27;	=&gt; $condition[ &#x27;value&#x27; ][ &#x27;selected&#x27; ]
+				);
+				$condition[ &#x27;value&#x27; ] = $condition[ &#x27;value&#x27; ][ &#x27;label&#x27; ];
+				return &#x27;show_option&#x27;;
+			case &#x27;remove_value&#x27;:
+				return &#x27;hide_option&#x27;;
+		}
+	}
+
+	function get_when_type( $field_id )
+    {
+        foreach( $this-&gt;fields as $field ){
+            if( $field_id != $field[ &#x27;id&#x27; ] ) continue;
+            return ( &#x27;calc&#x27; != $field[ &#x27;type&#x27; ] ) ? &#x27;field&#x27; : &#x27;calc&#x27;;
+        }
+
+        return &#x27;field&#x27;;
+    }
+}
+
+new NF_ConditionalLogic_Conversion();</pre></details></body></html>

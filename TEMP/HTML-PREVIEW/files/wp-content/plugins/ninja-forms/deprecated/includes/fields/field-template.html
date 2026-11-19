@@ -1,0 +1,93 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/field-template.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/field-template.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * This is a template file that you can use when creating new field types for Ninja Forms.
+ * The simplest way to use this file is to copy its contents and paste them into a new file.
+ * Then you would just replace the placeholder content with your own and remove the sections you don&#x27;t need.
+ *
+ * Below you will find a breakdown of all the variables available to you when registering a field and what they do.
+ **/
+
+	$args = array(
+		//name - Required - This is the name that will appear on the add field button.
+		&#x27;name&#x27; =&gt; &#x27;My Custom Field&#x27;,
+		&#x27;edit_options&#x27; =&gt; array( //Optional - An array of options to show within the field edit &lt;li&gt;. Should be an array of arrays.
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;, //Required - What type of input should this be?
+				&#x27;name&#x27; =&gt; &#x27;my_text&#x27;, //What should it be named. This should always be a programmatic name, not a label.
+				&#x27;label&#x27; =&gt; &#x27;My Text Label&#x27;, //Label to be shown before the option.
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;, //Additional classes to be added to the input element.
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;select&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;my_select&#x27;,
+				&#x27;label&#x27; =&gt; &#x27;My Select Label&#x27;,
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_upload_display&#x27;, //Required - This function will be called to create output when a user accesses a form containing this element.
+		&#x27;sub_edit_function&#x27; =&gt; &#x27;ninja_forms_field_upload_sub_edit&#x27;,	//Optional - This will be called when an admin or user edits the a user submission.
+		&#x27;group&#x27; =&gt; &#x27;&#x27;, //Optional
+		&#x27;edit_label&#x27; =&gt; true, //True or False
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_upload_pre_process&#x27;,
+		&#x27;process&#x27; =&gt; &#x27;ninja_forms_field_upload_process&#x27;,
+		&#x27;req_validation&#x27; =&gt; &#x27;ninja_forms_field_upload_req_validation&#x27;,
+	);
+
+
+
+
+//Register the Upload field
+add_action(&#x27;init&#x27;, &#x27;my_custom_field_register&#x27;);
+
+
+
+function my_custom_field_register(){
+	$args = array(
+		&#x27;name&#x27; =&gt; &#x27;File Upload&#x27;,
+		&#x27;edit_options&#x27; =&gt; array(
+			array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;my_text&#x27;,
+				&#x27;label&#x27; =&gt; &#x27;My Text Label&#x27;,
+				&#x27;class&#x27; =&gt; &#x27;widefat&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;select&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;my_select&#x27;,
+				&#x27;label&#x27; =&gt; &#x27;My Select Label&#x27;,
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_upload_display&#x27;,
+		&#x27;sub_edit_function&#x27; =&gt; &#x27;ninja_forms_field_upload_sub_edit&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_upload_pre_process&#x27;,
+		&#x27;process&#x27; =&gt; &#x27;ninja_forms_field_upload_process&#x27;,
+		&#x27;req_validation&#x27; =&gt; &#x27;ninja_forms_field_upload_req_validation&#x27;,
+	);
+
+	ninja_forms_register_field(&#x27;_upload&#x27;, $args);
+}</pre></details></body></html>

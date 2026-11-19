@@ -1,0 +1,357 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/contact-us-simple-form/contact-us-simple-form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/contact-us-simple-form/contact-us-simple-form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+
+
+&lt;div class=&quot;wrap&quot;&gt;
+    &lt;h2&gt;Contact Us Simple Form Configuration&lt;/h2&gt;
+    &lt;form method=&quot;post&quot; action=&quot;options.php&quot; enctype=&quot;multipart/form-data&quot;&gt;
+        
+        
+        &lt;p class=&quot;submit&quot;&gt;
+         &lt;input name=&quot;submit&quot; type=&quot;submit&quot; class=&quot;button-primary&quot; value=&quot;Save Changes&quot;/&gt;
+        &lt;/p&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+
+
+
+
+
+
+&lt;style&gt;
+  div#cbox1 {
+  height: px !important;
+  }
+&lt;/style&gt;
+
+
+
+
+
+
+    &lt;div id=&quot;cbox1&quot; &gt;
+        &lt;div id=&quot;cbox2&quot;&gt;
+            &lt;a class=&quot;open&quot; id=&quot;ylink&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+            
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;!-- IN MY FOOTER-----------------------------END------------------------------------------- --&gt;
+
+
+
+
+&lt;div id=&quot;real_contact_display&quot;&gt;
+    &lt;div id=&quot;cbox1&quot; style=&quot;right: -px; top: px; z-index: 10000; height:px;&quot;&gt;
+        &lt;div id=&quot;cbox2&quot; style=&quot;text-align: left;width:px;height:;&quot;&gt;
+            &lt;a class=&quot;open&quot; id=&quot;ylink&quot; href=&quot;#&quot;&gt;&lt;/a&gt;&lt;img style=&quot;top: 0px;left:-50px;&quot; src=&quot;&quot; alt=&quot;&quot;&gt;
+            
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+jQuery(document).ready(function()
+{
+jQuery(function (){
+jQuery(&quot;#cbox1&quot;).hover(function(){ 
+jQuery(&#x27;#cbox1&#x27;).css(&#x27;z-index&#x27;,101009);
+jQuery(this).stop(true,false).animate({right:  0}, 500); },
+function(){ 
+    jQuery(&#x27;#cbox1&#x27;).css(&#x27;z-index&#x27;,10000);
+    jQuery(&quot;#cbox1&quot;).stop(true,false).animate({right: -}, 500); });
+});});
+
+&lt;/script&gt;
+
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/*
+Plugin Name: Contact Us Simple Form
+Plugin URI: https://wordpress.org/support/profile/bruterdregz
+Description: Contact Us Simple Form - Quick, small and easy contact form for wordpress.
+Version: 1.0
+Author: Bruter Dregz
+Author URI: https://wordpress.org/support/profile/bruterdregz
+License: GPL2
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+*/  
+class BruterContactSlider{
+    
+    public $options;
+    
+    public function __construct() {
+        //you can run delete_option method to reset all data
+        //delete_option(&#x27;bruter_cf_contact_plugin_options&#x27;);
+        $this-&gt;options = get_option(&#x27;bruter_cf_contact_plugin_options&#x27;);
+        $this-&gt;bruter_cf_contact_register_settings_and_fields();
+    }
+    
+    public static function add_bruter_cf_tools_options_page(){
+        add_options_page(&#x27;Contact Us Simple Form&#x27;, &#x27;Contact Us Simple Form &#x27;, &#x27;administrator&#x27;, __FILE__, array(&#x27;BruterContactSlider&#x27;,&#x27;bruter_cf_contact_tools_options&#x27;));
+    }
+    
+    public static function bruter_cf_contact_tools_options(){
+?&gt;
+
+
+&lt;div class=&quot;wrap&quot;&gt;
+    &lt;h2&gt;Contact Us Simple Form Configuration&lt;/h2&gt;
+    &lt;form method=&quot;post&quot; action=&quot;options.php&quot; enctype=&quot;multipart/form-data&quot;&gt;
+        &lt;?php settings_fields(&#x27;bruter_cf_contact_plugin_options&#x27;); ?&gt;
+        &lt;?php do_settings_sections(__FILE__); ?&gt;
+        &lt;p class=&quot;submit&quot;&gt;
+         &lt;input name=&quot;submit&quot; type=&quot;submit&quot; class=&quot;button-primary&quot; value=&quot;Save Changes&quot;/&gt;
+        &lt;/p&gt;
+    &lt;/form&gt;
+&lt;/div&gt;
+
+
+&lt;?php
+    }
+    public function bruter_cf_contact_register_settings_and_fields(){
+        register_setting(&#x27;bruter_cf_contact_plugin_options&#x27;, &#x27;bruter_cf_contact_plugin_options&#x27;,array($this,&#x27;bruter_cf_contact_validate_settings&#x27;));
+        add_settings_section(&#x27;bruter_cf_contact_main_section&#x27;, &#x27;Settings&#x27;, array($this,&#x27;bruter_cf_contact_main_section_cb&#x27;), __FILE__);
+        //Start Creating Fields and Options
+             
+        //recipient
+        add_settings_field(&#x27;recipient&#x27;, &#x27;Recipient Mail&#x27;, array($this,&#x27;recipient_settings&#x27;), __FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+         //name
+        add_settings_field(&#x27;name&#x27;, &#x27;Form Name&#x27;, array($this,&#x27;name_settings&#x27;), __FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+        //marginTop
+        add_settings_field(&#x27;marginTop&#x27;, &#x27;Margin Top&#x27;, array($this,&#x27;marginTop_settings&#x27;), __FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+        //alignment option
+         add_settings_field(&#x27;alignment&#x27;, &#x27;Alignment Position&#x27;, array($this,&#x27;position_settings&#x27;),__FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+        //width
+        add_settings_field(&#x27;width&#x27;, &#x27;Width&#x27;, array($this,&#x27;width_settings&#x27;), __FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+        //height
+        add_settings_field(&#x27;height&#x27;, &#x27;Height&#x27;, array($this,&#x27;height_settings&#x27;), __FILE__,&#x27;bruter_cf_contact_main_section&#x27;);
+
+    }
+    public function bruter_cf_contact_validate_settings($plugin_options){
+        return($plugin_options);
+    }
+    public function bruter_cf_contact_main_section_cb(){
+        //optional
+    }
+
+
+    
+    //recipient_settings
+    public function recipient_settings() {
+        if(empty($this-&gt;options[&#x27;recipient&#x27;])) $this-&gt;options[&#x27;recipient&#x27;] = &quot;j.irwin@ai2observatory.com&quot;;
+        echo &quot;&lt;input name=&#x27;bruter_cf_contact_plugin_options[recipient]&#x27; type=&#x27;text&#x27; value=&#x27;{$this-&gt;options[&#x27;recipient&#x27;]}&#x27; /&gt;&quot;;
+    }
+
+     //name_settings
+    public function name_settings() {
+        if(empty($this-&gt;options[&#x27;name&#x27;])) $this-&gt;options[&#x27;name&#x27;] = &quot;Contact Us Slider&quot;;
+        echo &quot;&lt;input name=&#x27;bruter_cf_contact_plugin_options[name]&#x27; type=&#x27;text&#x27; value=&#x27;{$this-&gt;options[&#x27;name&#x27;]}&#x27; /&gt;&quot;;
+    }
+    
+    //marginTop_settings
+    public function marginTop_settings() {
+        if(empty($this-&gt;options[&#x27;marginTop&#x27;])) $this-&gt;options[&#x27;marginTop&#x27;] = &quot;250&quot;;
+        echo &quot;&lt;input name=&#x27;bruter_cf_contact_plugin_options[marginTop]&#x27; type=&#x27;text&#x27; value=&#x27;{$this-&gt;options[&#x27;marginTop&#x27;]}&#x27; /&gt;&quot;;
+    }
+    //alignment_settings
+    public function position_settings(){
+        if(empty($this-&gt;options[&#x27;alignment&#x27;])) $this-&gt;options[&#x27;alignment&#x27;] = &quot;left&quot;;
+        $items = array(&#x27;left&#x27;,&#x27;right&#x27;);
+        echo &quot;&lt;select name=&#x27;bruter_cf_contact_plugin_options[alignment]&#x27;&gt;&quot;;
+        foreach($items as $item){
+            $selected = ($this-&gt;options[&#x27;alignment&#x27;] === $item) ? &#x27;selected = &quot;selected&quot;&#x27; : &#x27;&#x27;;
+            echo &quot;&lt;option value=&#x27;$item&#x27; $selected&gt;$item&lt;/option&gt;&quot;;
+        }
+        echo &quot;&lt;/select&gt;&quot;;
+    }
+    //width_settings
+    public function width_settings() {
+        if(empty($this-&gt;options[&#x27;width&#x27;])) $this-&gt;options[&#x27;width&#x27;] = &quot;350&quot;;
+        echo &quot;&lt;input name=&#x27;bruter_cf_contact_plugin_options[width]&#x27; type=&#x27;text&#x27; value=&#x27;{$this-&gt;options[&#x27;width&#x27;]}&#x27; /&gt;&quot;;
+    }
+    //height_settings
+    public function height_settings() {
+        if(empty($this-&gt;options[&#x27;height&#x27;])) $this-&gt;options[&#x27;height&#x27;] = &quot;400&quot;;
+        echo &quot;&lt;input name=&#x27;bruter_cf_contact_plugin_options[height]&#x27; type=&#x27;text&#x27; value=&#x27;{$this-&gt;options[&#x27;height&#x27;]}&#x27; /&gt;&quot;;
+    }
+
+}
+add_action(&#x27;admin_menu&#x27;, &#x27;bruter_cf_contact_trigger_options_function&#x27;);
+
+function bruter_cf_contact_trigger_options_function(){
+    BruterContactSlider::add_bruter_cf_tools_options_page();
+}
+
+add_action(&#x27;admin_init&#x27;,&#x27;bruter_cf_contact_trigger_create_object&#x27;);
+function bruter_cf_contact_trigger_create_object(){
+    new BruterContactSlider();
+}
+add_action(&#x27;wp_footer&#x27;,&#x27;bruter_cf_contact_add_content_in_footer&#x27;);
+function bruter_cf_contact_add_content_in_footer(){
+    
+    $option_value = get_option(&#x27;bruter_cf_contact_plugin_options&#x27;);
+    extract($option_value);
+    $total_height=$height-95;
+    $max_height=$total_height+1;
+	/*contact form code start*/
+$url = $_SERVER[&#x27;PHP_SELF&#x27;];
+$url = esc_url($url);
+$myError = &#x27;&#x27;;
+$CORRECT_SUBJECT = &#x27;Ai2 Observatory Form Submittal&#x27;;
+$CORRECT_NAME = &#x27;&#x27;;
+$CORRECT_EMAIL = &#x27;&#x27;;
+$CORRECT_MESSAGE = &#x27;&#x27;;
+$headers = array(&#x27;From: &#x27;.$_POST[&#x27;cf_email&#x27;].&#x27; &lt;&#x27;.$_POST[&#x27;cf_email&#x27;].&#x27;&gt;&#x27;); //change From: to cf_name to have the persons name as sender
+
+if (isset($_POST[&quot;cf_email&quot;])) {
+  $CORRECT_NAME = esc_html(sanitize_text_field($_POST[&quot;cf_name&quot;]));
+  $CORRECT_MESSAGE = esc_html(sanitize_text_field($_POST[&quot;cf_message&quot;]));
+  
+  
+  // check and make sure an email is provided-----------------------------START---------------------------------------------
+  if ($_POST[&quot;cf_email&quot;] === &quot;&quot;) {
+    $myError = &#x27;&lt;span style=&quot;color:#f00; padding: 0 0 0 10px;&quot;&gt;No Email&lt;/span&gt;&#x27;; //no email
+  }
+  if (!preg_match(&quot;/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/&quot;, strtolower($_POST[&quot;cf_email&quot;]))) { //bad format
+    $myError = &#x27;&lt;span style=&quot;color: #cccccc;&quot;&gt;Invalid Email&lt;/span&gt;&#x27;;
+  }
+  else {
+    $CORRECT_EMAIL = esc_html(sanitize_email($_POST[&quot;cf_email&quot;]));
+  }
+  // check and make sure an email is provided------------------------------END---------------------------------------------	
+  
+
+  
+  //If no error, finalize the vars------------
+   if ($myError == &#x27;&#x27;) {
+	 $CORRECT_EMAIL = esc_html(sanitize_email($_POST[&quot;cf_email&quot;]));
+	 $CORRECT_NAME = esc_html(sanitize_text_field($_POST[&quot;cf_name&quot;]));
+	 $CORRECT_MESSAGE = esc_html(sanitize_text_field($_POST[&quot;cf_message&quot;])); 
+ 
+	 //Build the email msg--------------
+         $myMessage = &#x27;You received a message from: &#x27;. $CORRECT_NAME  .&quot;\n&quot;. &#x27;The senders email address is: &#x27;. $CORRECT_EMAIL  .&quot;\n&quot;. &#x27;The message is: &#x27; .$CORRECT_MESSAGE;
+	
+	
+
+$mailSender = wp_mail( $recipient, $CORRECT_SUBJECT, $myMessage, $headers );
+
+
+    if ($mailSender) {
+		$myError = &#x27;&lt;span style=&quot;color:#00ff00; padding: 0 0 0 10px;&quot;&gt;&#x27; . &quot;Thanks for submitting form&quot; . &#x27;&lt;/span&gt;&#x27;;
+    } else {
+		$myError = &#x27;&lt;span style=&quot;color:#f00; padding: 0 0 0 10px;&quot;&gt;&#x27; . &quot;Showing Error&quot; . &#x27;&lt;/span&gt;&#x27;;
+    }
+
+  }
+  
+ }
+ 
+
+$contact_simple = &#x27;&#x27;;
+$contact_simple .= &#x27;
+&lt;!-- IN MY FOOTER-----------------------------START------------------------------------------- --&gt;
+    &lt;form id=&quot;contact-form&quot; action=&quot;&#x27;.$url .&#x27;&quot; method=&quot;post&quot;&gt;
+    
+                &lt;div class=&quot;row form-group&quot;&gt;
+                  &lt;div class=&quot;col-xs-6&quot;&gt;
+                    &lt;input type=&quot;text&quot; name=&quot;cf_name&quot; class=&quot;form-control form-control-line animated&quot; 
+                      data-animation=&quot;fadeInUp&quot; 
+                      data-delay=&quot;200&quot; 
+                      placeholder=&quot;your namez&quot; id=&quot;contact-name&quot;&gt;
+                  &lt;/div&gt;
+                  
+                  &lt;div class=&quot;col-xs-6&quot;&gt;
+                    &lt;input type=&quot;text&quot; name=&quot;cf_email&quot; class=&quot;form-control form-control-line animated&quot; 
+                      data-animation=&quot;fadeInUp&quot; 
+                      data-delay=&quot;300&quot; 
+                      placeholder=&quot;your email&quot; id=&quot;contact-email&quot;&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                
+                &lt;div class=&quot;row form-group&quot;&gt;
+                  &lt;div class=&quot;col-md-12&quot;&gt;
+                    &lt;textarea name=&quot;cf_message&quot; class=&quot;form-control form-control-line animated&quot; 
+                      data-animation=&quot;fadeInUp&quot; 
+                      data-delay=&quot;400&quot; 
+                      rows=&quot;1&quot; placeholder=&quot;your message&quot; id=&quot;contact-message&quot;&gt;&lt;/textarea&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                
+                &lt;button type=&quot;submit&quot; class=&quot;btn btn-contact animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;500&quot;&gt;Submit&lt;/button&gt;
+                &lt;div class=&quot;contact-notice animated&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;600&quot;&gt;&lt;/div&gt;
+              &lt;/form&gt;
+	&#x27;;
+
+
+$imgURL = plugins_url(&#x27;assets/contact-icon.png&#x27;, __FILE__);
+
+?&gt;
+
+
+
+&lt;style&gt;
+  div#cbox1 {
+  height: &lt;?php echo $max_height;?&gt;px !important;
+  }
+&lt;/style&gt;
+
+
+
+
+&lt;?php if($alignment==&#x27;left&#x27;){?&gt;
+
+    &lt;div id=&quot;cbox1&quot; &gt;
+        &lt;div id=&quot;cbox2&quot;&gt;
+            &lt;a class=&quot;open&quot; id=&quot;ylink&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+            &lt;?php echo $contact_simple; ?&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;!-- IN MY FOOTER-----------------------------END------------------------------------------- --&gt;
+
+&lt;?php } else { ?&gt;
+
+
+&lt;div id=&quot;real_contact_display&quot;&gt;
+    &lt;div id=&quot;cbox1&quot; style=&quot;right: -&lt;?php echo trim($width+10);?&gt;px; top: &lt;?php echo $marginTop;?&gt;px; z-index: 10000; height:&lt;?php echo trim($height+10);?&gt;px;&quot;&gt;
+        &lt;div id=&quot;cbox2&quot; style=&quot;text-align: left;width:&lt;?php echo trim($width);?&gt;px;height:&lt;?php echo trim($height);?&gt;;&quot;&gt;
+            &lt;a class=&quot;open&quot; id=&quot;ylink&quot; href=&quot;#&quot;&gt;&lt;/a&gt;&lt;img style=&quot;top: 0px;left:-50px;&quot; src=&quot;&lt;?php echo $imgURL;?&gt;&quot; alt=&quot;&quot;&gt;
+            &lt;?php echo $contact_simple; ?&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+jQuery(document).ready(function()
+{
+jQuery(function (){
+jQuery(&quot;#cbox1&quot;).hover(function(){ 
+jQuery(&#x27;#cbox1&#x27;).css(&#x27;z-index&#x27;,101009);
+jQuery(this).stop(true,false).animate({right:  0}, 500); },
+function(){ 
+    jQuery(&#x27;#cbox1&#x27;).css(&#x27;z-index&#x27;,10000);
+    jQuery(&quot;#cbox1&quot;).stop(true,false).animate({right: -&lt;?php echo trim($width+10); ?&gt;}, 500); });
+});});
+
+&lt;/script&gt;
+&lt;?php } ?&gt;
+&lt;?php
+}
+add_action( &#x27;wp_enqueue_scripts&#x27;, &#x27;register_bruter_cf_contact_slider_styles&#x27; );
+ function register_bruter_cf_contact_slider_styles() {
+    wp_register_style( &#x27;register_bruter_cf_contact_slider_styles&#x27;, plugins_url( &#x27;assets/cts_style.css&#x27; , __FILE__ ) );
+    wp_enqueue_style( &#x27;register_bruter_cf_contact_slider_styles&#x27; );
+    wp_enqueue_script(&#x27;jquery&#x27;);
+ }
+ $bruter_cf_contact_default_values = array(
+     &#x27;marginTop&#x27; =&gt; 250,
+     &#x27;recipient&#x27; =&gt; &#x27;j.irwin@ai2observatory.com&#x27;,
+     &#x27;width&#x27; =&gt; &#x27;350&#x27;,
+     &#x27;height&#x27; =&gt; &#x27;430&#x27;,
+     &#x27;alignment&#x27; =&gt; &#x27;left&#x27;
+     
+ );
+add_option(&#x27;bruter_cf_contact_plugin_options&#x27;, $bruter_cf_contact_default_values);</pre></details></body></html>

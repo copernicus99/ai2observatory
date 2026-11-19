@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Separator.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Separator.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_Separator extends AC_Settings_Column
+	implements AC_Settings_FormatCollectionInterface {
+
+	/**
+	 * @var string
+	 */
+	private $separator;
+
+	protected function define_options() {
+		return array( &#x27;separator&#x27; =&gt; &#x27;comma&#x27; );
+	}
+
+	public function create_view() {
+		$element = $this
+			-&gt;create_element( &#x27;select&#x27; )
+			-&gt;set_options( array(
+				&#x27;&#x27;            =&gt; __( &#x27;Default&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;comma&#x27;       =&gt; __( &#x27;Comma Separated&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;newline&#x27;     =&gt; __( &#x27;New line&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;none&#x27;        =&gt; __( &#x27;None&#x27;, &#x27;codepress-admin-columns&#x27; ),
+				&#x27;white_space&#x27; =&gt; __( &#x27;Whitespace&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Separator&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27; =&gt; __( &#x27;Select a repeater sub field.&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $element,
+		) );
+
+		return $view;
+	}
+
+	public function get_separator() {
+		return $this-&gt;separator;
+	}
+
+	public function set_separator( $separator ) {
+		$this-&gt;separator = $separator;
+
+		return $this;
+	}
+
+	public function format( AC_Collection $collection, $original_value ) {
+		switch ( $this-&gt;separator ) {
+			case &#x27;comma&#x27; :
+				$separator = &#x27;, &#x27;;
+
+				break;
+			case &#x27;newline&#x27; :
+				$separator = &quot;&lt;br/&gt;&quot;;
+
+				break;
+			case &#x27;none&#x27; :
+				$separator = &#x27;&#x27;;
+
+				break;
+			case &#x27;white_space&#x27; :
+				$separator = &#x27;&amp;nbsp;&#x27;;
+
+				break;
+			default :
+				$separator = $this-&gt;column-&gt;get_separator();
+		}
+
+		return $collection-&gt;filter()-&gt;implode( $separator );
+	}
+
+}
+</pre></details></body></html>

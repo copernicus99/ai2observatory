@@ -1,0 +1,98 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/PluginInformation.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/PluginInformation.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_PluginInformation {
+
+	/**
+	 * @var string
+	 */
+	private $plugin_dirname;
+
+	/**
+	 * AC_Helper_Plugin constructor.
+	 *
+	 * @param string $plugin_dirname
+	 */
+	public function __construct( $plugin_dirname ) {
+		$this-&gt;plugin_dirname = sanitize_key( $plugin_dirname );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_dirname() {
+		return $this-&gt;plugin_dirname;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_installed() {
+		return $this-&gt;get_plugin_info() ? true : false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_active() {
+		return is_plugin_active( $this-&gt;get_plugin_var( &#x27;Basename&#x27; ) );
+	}
+
+	/**
+	 * @return string|false Returns the plugin version if the plugin is installed, false otherwise
+	 */
+	public function get_version() {
+		return $this-&gt;get_plugin_var( &#x27;Version&#x27; );
+	}
+
+	/**
+	 * @return string Basename
+	 */
+	public function get_basename() {
+		return $this-&gt;get_plugin_var( &#x27;Basename&#x27; );
+	}
+
+	/**
+	 * @return string Name
+	 */
+	public function get_name() {
+		return $this-&gt;get_plugin_var( &#x27;Name&#x27; );
+	}
+
+	/**
+	 * @return array|false
+	 */
+	public function get_plugin_info() {
+		$plugins = (array) get_plugins();
+
+		foreach ( $plugins as $basename =&gt; $info ) {
+			if ( $this-&gt;plugin_dirname === dirname( $basename ) ) {
+				$info[&#x27;Basename&#x27;] = $basename;
+
+				return $info;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param string $var
+	 *
+	 * @return string|false
+	 */
+	public function get_plugin_var( $var ) {
+		$info = $this-&gt;get_plugin_info();
+
+		if ( ! isset( $info[ $var ] ) ) {
+			return false;
+		}
+
+		return $info[ $var ];
+	}
+
+}
+</pre></details></body></html>

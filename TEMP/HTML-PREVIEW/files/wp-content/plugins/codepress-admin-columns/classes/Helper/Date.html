@@ -1,0 +1,170 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Helper/Date.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Helper/Date.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Helper_Date {
+
+	/**
+	 * @param string $date
+	 *
+	 * @return int|false
+	 */
+	public function strtotime( $date ) {
+		if ( empty( $date ) || in_array( $date, array( &#x27;0000-00-00 00:00:00&#x27;, &#x27;0000-00-00&#x27;, &#x27;00:00:00&#x27; ) ) || ! is_scalar( $date ) ) {
+			return false;
+		}
+
+		// some plugins store dates in a jquery timestamp format, format is in ms since The Epoch.
+		// See http://api.jqueryui.com/datepicker/#utility-formatDate
+		if ( is_numeric( $date ) ) {
+			$length = strlen( trim( $date ) );
+
+			// Dates before / around September 8th, 2001 are saved as 9 numbers * 1000 resulting in 12 numbers to store the time.
+			// Dates after September 8th are saved as 10 numbers * 1000, resulting in 13 numbers.
+			// For example the ACF Date and Time Picker uses this format.
+			// credits: Ben C
+			if ( 12 === $length || 13 === $length ) {
+				$date = round( $date / 1000 ); // remove the ms
+			}
+
+			// Date format: yyyymmdd ( often used by ACF ) must start with 19xx or 20xx and is 8 long
+			// @todo: in theory a numeric string of 8 can also be a unix timestamp; no conversion would be needed
+			if ( 8 === $length &amp;&amp; ( strpos( $date, &#x27;20&#x27; ) === 0 || strpos( $date, &#x27;19&#x27; ) === 0 ) ) {
+				$date = strtotime( $date );
+			}
+		} else {
+			$date = strtotime( $date );
+		}
+
+		return $date;
+	}
+
+	/**
+	 * @param string $date
+	 * @param string $format
+	 *
+	 * @return int|false
+	 */
+	public function get_timestamp_from_format( $date, $format ) {
+		if ( ! $date ) {
+			return false;
+		}
+
+		// Already a timestamp
+		if ( &#x27;U&#x27; === $format ) {
+			return $date;
+		}
+
+		$timestamp = false;
+
+		// since PHP 5.3.0
+		// Create timestamp from a specific date format
+		if ( function_exists( &#x27;date_create_from_format&#x27; ) &amp;&amp; $format ) {
+			if ( $date = date_create_from_format( $format, $date ) ) {
+				$timestamp = date_format( $date, &#x27;U&#x27; );
+			}
+		} // before PHP 5.3.0
+		else {
+			$timestamp = $this-&gt;strtotime( $date );
+		}
+
+		return $timestamp;
+	}
+
+	/**
+	 * @since 1.3.1
+	 *
+	 * @param string $date           PHP Date format
+	 * @param string $display_format Date display format
+	 *
+	 * @return string Formatted date
+	 */
+	public function date( $date, $display_format = &#x27;&#x27; ) {
+		$timestamp = ac_helper()-&gt;date-&gt;strtotime( $date );
+
+		return $this-&gt;date_by_timestamp( $timestamp, $display_format );
+	}
+
+	/**
+	 * @since 3.0
+	 *
+	 * @param string $date           PHP Date format
+	 * @param string $display_format Date display format
+	 *
+	 * @return string Formatted date
+	 */
+	public function date_by_timestamp( $timestamp, $display_format = &#x27;&#x27; ) {
+		if ( ! $timestamp ) {
+			return false;
+		}
+
+		// Get date format from the General Settings
+		if ( ! $display_format ) {
+			$display_format = get_option( &#x27;date_format&#x27; );
+		}
+
+		// Fallback in case the date format from General Settings is empty
+		if ( ! $display_format ) {
+			$display_format = &#x27;F j, Y&#x27;;
+		}
+
+		return date_i18n( $display_format, $timestamp );
+	}
+
+	/**
+	 * @since 1.3.1
+	 *
+	 * @param string $date
+	 *
+	 * @return string Formatted time
+	 */
+	public function time( $date, $format = &#x27;&#x27; ) {
+		$timestamp = ac_helper()-&gt;date-&gt;strtotime( $date );
+
+		if ( ! $format ) {
+			$format = get_option( &#x27;time_format&#x27; );
+		}
+
+		if ( ! $timestamp ) {
+			return false;
+		}
+
+		return date_i18n( $format, $timestamp );
+	}
+
+	/**
+	 * Translate a jQuery date format to the PHP date format
+	 *
+	 * @since 1.1
+	 *
+	 * @param string $format jQuery date format
+	 *
+	 * @return string PHP date format
+	 */
+	public function parse_jquery_dateformat( $format ) {
+		$replace = array(
+			&#x27;^dd^d&#x27; =&gt; &#x27;j&#x27;,
+			&#x27;dd&#x27;    =&gt; &#x27;d&#x27;,
+			&#x27;DD&#x27;    =&gt; &#x27;l&#x27;,
+			&#x27;o&#x27;     =&gt; &#x27;z&#x27;,
+			&#x27;MM&#x27;    =&gt; &#x27;F&#x27;,
+			&#x27;^mm^m&#x27; =&gt; &#x27;n&#x27;,
+			&#x27;mm&#x27;    =&gt; &#x27;m&#x27;,
+			&#x27;yy&#x27;    =&gt; &#x27;Y&#x27;,
+		);
+
+		$replace_from = array();
+		$replace_to = array();
+
+		foreach ( $replace as $from =&gt; $to ) {
+			$replace_from[] = &#x27;/&#x27; . $from . &#x27;/&#x27;;
+			$replace_to[] = $to;
+		}
+
+		return preg_replace( $replace_from, $replace_to, $format );
+	}
+
+}
+</pre></details></body></html>

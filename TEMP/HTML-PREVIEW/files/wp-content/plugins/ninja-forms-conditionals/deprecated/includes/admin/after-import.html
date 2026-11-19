@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/after-import.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-conditionals/deprecated/includes/admin/after-import.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_conditionals_register_import_filter&#x27; );
+function ninja_forms_conditionals_register_import_filter(){
+	add_action( &#x27;ninja_forms_after_import_form&#x27;, &#x27;ninja_forms_conditionals_after_import_form&#x27; );
+}
+
+function ninja_forms_conditionals_after_import_form( $form ){
+	global $wpdb;
+
+	if( is_array( $form[&#x27;field&#x27;] ) AND !empty( $form[&#x27;field&#x27;] ) ){
+		$field_rows = ninja_forms_get_fields_by_form_id( $form[&#x27;id&#x27;] );
+		if( is_array( $field_rows ) AND !empty( $field_rows ) ){
+			for ($y=0; $y &lt; count( $field_rows ); $y++) {
+				if( isset( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;] ) AND is_array( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;] ) ){
+					for ($i=0; $i &lt; count( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;] ); $i++) { 
+						if( isset( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;][$i][&#x27;cr&#x27;] ) AND is_array( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;][$i][&#x27;cr&#x27;] ) ){
+							for ($n=0; $n &lt; count( $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;][$i][&#x27;cr&#x27;] ); $n++) { 
+								foreach( $form[&#x27;field&#x27;] as $inserted_field ){
+									if( $inserted_field[&#x27;old_id&#x27;] == $field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;][$i][&#x27;cr&#x27;][$n][&#x27;field&#x27;] ){
+										$field_rows[$y][&#x27;data&#x27;][&#x27;conditional&#x27;][$i][&#x27;cr&#x27;][$n][&#x27;field&#x27;] = $inserted_field[&#x27;id&#x27;];
+									}
+								}
+							}
+						}
+					}
+				}
+				$field_rows[$y][&#x27;data&#x27;] = serialize( $field_rows[$y][&#x27;data&#x27;] );
+				$args = array(
+					&#x27;update_array&#x27; =&gt; array(
+						&#x27;data&#x27; =&gt; $field_rows[$y][&#x27;data&#x27;],
+						),
+					&#x27;where&#x27; =&gt; array(
+						&#x27;id&#x27; =&gt; $field_rows[$y][&#x27;id&#x27;],
+						),
+				);
+				ninja_forms_update_field($args);
+			}
+		}
+	}
+}</pre></details></body></html>

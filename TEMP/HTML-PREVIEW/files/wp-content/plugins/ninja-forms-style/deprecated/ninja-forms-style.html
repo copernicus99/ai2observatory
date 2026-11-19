@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/deprecated/ninja-forms-style.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/deprecated/ninja-forms-style.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if( ! function_exists( &#x27;ninja_forms_style_setup_license&#x27; ) ) {
+    function ninja_forms_style_setup_license()
+    {
+        if (class_exists(&#x27;NF_Extension_Updater&#x27;)) {
+            $NF_Extension_Updater = new NF_Extension_Updater(&#x27;Layout and Styles&#x27;, NINJA_FORMS_STYLE_VERSION, &#x27;WP Ninjas&#x27;, __FILE__, &#x27;style&#x27;);
+        }
+    }
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;ninja_forms_style_setup_license&#x27; );
+
+
+/**
+ * Load translations for add-on.
+ * First, look in WP_LANG_DIR subfolder, then fallback to add-on plugin folder.
+ */
+if( ! function_exists( &#x27;ninja_forms_style_load_translations&#x27; ) ) {
+    function ninja_forms_style_load_translations()
+    {
+
+        /** Set our unique textdomain string */
+        $textdomain = &#x27;ninja-forms-style&#x27;;
+
+        /** The &#x27;plugin_locale&#x27; filter is also used by default in load_plugin_textdomain() */
+        $locale = apply_filters(&#x27;plugin_locale&#x27;, get_locale(), $textdomain);
+
+        /** Set filter for WordPress languages directory */
+        $wp_lang_dir = apply_filters(
+            &#x27;ninja_forms_style_wp_lang_dir&#x27;,
+            trailingslashit(WP_LANG_DIR) . &#x27;ninja-forms-style/&#x27; . $textdomain . &#x27;-&#x27; . $locale . &#x27;.mo&#x27;
+        );
+
+        /** Translations: First, look in WordPress&#x27; &quot;languages&quot; folder = custom &amp; update-secure! */
+        load_textdomain($textdomain, $wp_lang_dir);
+
+        /** Translations: Secondly, look in plugin&#x27;s &quot;lang&quot; folder = default */
+        $plugin_dir = trailingslashit(basename(dirname(__FILE__)));
+        $lang_dir = apply_filters(&#x27;ninja_forms_style_lang_dir&#x27;, $plugin_dir . &#x27;lang/&#x27;);
+        load_plugin_textdomain($textdomain, FALSE, $lang_dir);
+
+    }
+}
+add_action( &#x27;plugins_loaded&#x27;, &#x27;ninja_forms_style_load_translations&#x27; );
+
+
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/admin.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/functions.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/form-settings/form-settings.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/field-settings/field-settings.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/field-type-settings/field-type-settings.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/field-type-settings/sidebars/select-field.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/error-settings/error-settings.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/datepicker-settings/datepicker-settings.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-style/tabs/multipart-settings/multipart-settings.php&quot;);
+
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/form-layout.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/form-layout-div.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/form-layout-mp-div.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/form-layout-output-ul.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/default-field-metaboxes.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/list-field-metaboxes.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms/tabs/form-layout/rating-field-metaboxes.php&quot;);
+
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/pages/ninja-forms-impexp/tabs/style/impexp-style.php&quot;);
+
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/ajax.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/register.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/scripts.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/admin/style-metabox-output.php&quot;);
+
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/display/div-output.php&quot;);
+require_once(NINJA_FORMS_STYLE_DIR.&quot;/includes/display/scripts.php&quot;);</pre></details></body></html>

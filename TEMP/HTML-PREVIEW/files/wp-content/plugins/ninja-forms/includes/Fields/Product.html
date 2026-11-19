@@ -1,0 +1,218 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/Product.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/Product.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_Product
+ */
+class NF_Fields_Product extends NF_Abstracts_Input
+{
+    protected $_name = &#x27;product&#x27;;
+
+    protected $_section = &#x27;pricing&#x27;;
+
+    protected $_icon = &#x27;tag&#x27;;
+
+    protected $_aliases = array();
+
+    protected $_type = &#x27;product&#x27;;
+
+    protected $_templates = array( &#x27;product&#x27;, &#x27;textbox&#x27;, &#x27;hidden&#x27;, &#x27;listselect&#x27; );
+
+    protected $_test_value = &#x27;0&#x27;;
+
+    protected $processing_fields = array( &#x27;quantity&#x27;, &#x27;modifier&#x27;, &#x27;shipping&#x27;, &#x27;tax&#x27;, &#x27;total&#x27; );
+
+    protected $_settings = array( &#x27;product_use_quantity&#x27;, &#x27;product_price&#x27;, &#x27;product_type&#x27;, &#x27;product_type&#x27; );
+
+    protected $_settings_exclude = array( &#x27;input_limit_set&#x27;, &#x27;disable_input&#x27;, &#x27;required&#x27; );
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Product&#x27;, &#x27;ninja-forms&#x27; );
+
+        $this-&gt;_settings[ &#x27;product_price&#x27; ][ &#x27;width&#x27; ] = &#x27;full&#x27;;
+
+        add_filter( &#x27;ninja_forms_merge_tag_value_product&#x27;, array( $this, &#x27;merge_tag_value&#x27; ), 10, 2 );
+
+        add_filter( &#x27;ninja_forms_custom_columns&#x27;, array( $this, &#x27;custom_columns&#x27; ), 10, 3 );
+        add_filter( &#x27;ninja_forms_merge_tag_calc_value_product&#x27;, array( $this, &#x27;merge_tag_value&#x27; ), 10, 2 );
+
+        add_filter( &#x27;ninja_forms_localize_field_&#x27; . $this-&gt;_name, array( $this, &#x27;filter_required_setting&#x27; ) );
+        add_filter( &#x27;ninja_forms_localize_field_&#x27; . $this-&gt;_name . &#x27;_preview&#x27;, array( $this, &#x27;filter_required_setting&#x27; ) );
+    }
+
+    public function process( $product, $data )
+    {
+        $related = array();
+
+        foreach( $data[ &#x27;fields&#x27; ] as $key =&gt; $field ){
+
+
+            if( ! isset ( $field[ &#x27;type&#x27; ] ) || ! in_array( $field[ &#x27;type&#x27; ], $this-&gt;processing_fields ) ) continue;
+
+            $type = $field[ &#x27;type&#x27; ];
+
+            if( ! isset( $field[ &#x27;product_assignment&#x27; ] ) ) continue;
+
+            if( $product[ &#x27;id&#x27; ] != $field[ &#x27;product_assignment&#x27; ] ) continue;
+
+            $related[ $type ] = &amp;$data[ &#x27;fields&#x27; ][ $key ]; // Assign by reference
+        }
+
+        //TODO: Does not work in non-English locales
+        $total = str_replace( array( &#x27;,&#x27;, &#x27;$&#x27; ), &#x27;&#x27;, $product[ &#x27;product_price&#x27; ] );
+        $total = floatval( $total );
+
+        if( isset( $related[ &#x27;quantity&#x27; ][ &#x27;value&#x27; ] ) &amp;&amp; $related[ &#x27;quantity&#x27; ][ &#x27;value&#x27; ] ){
+            $total = $total * $related[ &#x27;quantity&#x27; ][ &#x27;value&#x27; ];
+        } elseif( $product[ &#x27;product_use_quantity&#x27;] &amp;&amp; $product[ &#x27;value&#x27; ] ){
+            $total = $total * $product[ &#x27;value&#x27; ];
+        }
+
+        if( isset( $related[ &#x27;modifier&#x27; ] ) ){
+            //TODO: Handle multiple modifiers.
+        }
+
+        $data[ &#x27;product_totals&#x27; ][] = number_format( $total, 2 );
+        $data[ &#x27;extra&#x27; ][ &#x27;product_fields&#x27; ][ $product[ &#x27;id&#x27; ] ][ &#x27;product_price&#x27; ] = $product[ &#x27;settings&#x27; ][ &#x27;product_price&#x27; ];
+
+        return $data;
+    }
+
+    /**
+     * Validate
+     *
+     * @param $field
+     * @param $data
+     * @return array $errors
+     */
+    public function validate( $field, $data )
+    {
+        $errors = array();
+
+        if( isset( $field[ &#x27;product_use_quantity&#x27; ] ) &amp;&amp; 1 == $field[ &#x27;product_use_quantity&#x27; ] ){
+
+            // Required check.
+            if( isset( $field[&#x27;required&#x27;] ) &amp;&amp; 1 == $field[&#x27;required&#x27;] &amp;&amp; ! trim( $field[&#x27;value&#x27;] ) ){
+                $errors[] = &#x27;Field is required.&#x27;;
+            }
+        }
+
+        return $errors;
+    }
+
+    public function filter_required_setting( $field )
+    {
+        if( ! isset( $field[ &#x27;settings&#x27; ][ &#x27;product_use_quantity&#x27; ] ) || 1 != $field[ &#x27;settings&#x27; ][ &#x27;product_use_quantity&#x27; ] ) {
+            $field[ &#x27;settings&#x27; ][ &#x27;required&#x27; ] = 0;
+        }
+        return $field;
+    }
+
+    public function merge_tag_value( $value, $field )
+    {
+        // TODO: Replaced this to fix English locales.
+        // Other locales are still broken and will need to be addressed in refactor.
+//        $product_price = preg_replace (&#x27;/[^\d,\.]/&#x27;, &#x27;&#x27;, $field[ &#x27;product_price&#x27; ] );
+        $product_price =  str_replace( array( &#x27;,&#x27;, &#x27;$&#x27; ), &#x27;&#x27;, $field[ &#x27;product_price&#x27; ] );
+
+        $product_quantity = ( isset( $field[ &#x27;product_use_quantity&#x27; ] ) &amp;&amp; 1 == $field[ &#x27;product_use_quantity&#x27; ] ) ? $value : 1;
+
+        return number_format( $product_price * $product_quantity, 2 );
+    }
+
+    public function custom_columns( $value, $field, $sub_id )
+    {
+        if ( ! $field-&gt;get_setting( &#x27;product_use_quantity&#x27; ) ) return $value;
+        if ( 0 == absint( $_REQUEST[ &#x27;form_id&#x27; ] ) ) return $value;
+
+        $form_id = absint( $_REQUEST[ &#x27;form_id&#x27; ] );
+
+        /*
+         * Check to see if we have a stored &quot;price&quot; setting for this field.
+         * This lets us track what the value was when the user submitted so that total isn&#x27;t incorrect if the user changes the price after a submission.
+         */
+        $sub = Ninja_Forms()-&gt;form()-&gt;get_sub( $sub_id );
+        $product_fields = $sub-&gt;get_extra_value( &#x27;product_fields&#x27; );
+
+        if( is_array( $product_fields ) &amp;&amp; isset ( $product_fields[ $field-&gt;get_id() ] ) ) {
+            $price = $product_fields[ $field-&gt;get_id() ][ &#x27;product_price&#x27; ];
+        } else {
+            $price = $field-&gt;get_setting( &#x27;product_price&#x27; ); 
+        }
+
+        /*
+         * Get our currency marker setting. First, we check the form, then plugin settings.
+         */
+        $currency = Ninja_Forms()-&gt;form( $form_id )-&gt;get()-&gt;get_setting( &#x27;currency&#x27; );
+        
+        if ( empty( $currency ) ) {
+            /*
+             * Check our plugin currency.
+             */
+            $currency = Ninja_Forms()-&gt;get_setting( &#x27;currency&#x27; );
+        }
+
+        $currency_symbols = Ninja_Forms::config( &#x27;CurrencySymbol&#x27; );
+        $currency_symbol = html_entity_decode( $currency_symbols[ $currency ] );
+
+        // @todo Update to use the locale of the form.
+        global $wp_locale;
+        $price = str_replace( array( $wp_locale-&gt;number_format[ &#x27;thousands_sep&#x27; ], $currency_symbol ), &#x27;&#x27;, $price );
+        $price = floatval( $price );
+        $value = intval( $value );
+
+        $total = number_format_i18n( $price * $value, 2 );
+
+        $output = $currency_symbol . $total . &#x27; ( &#x27; . $value . &#x27; ) &#x27;;
+        return $output;
+    }
+
+    public function admin_form_element( $id, $value )
+    {
+        $form_id = get_post_meta( absint( $_GET[ &#x27;post&#x27; ] ), &#x27;_form_id&#x27;, true );
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;get_field( $id );
+
+        /*
+         * Check to see if we have a stored &quot;price&quot; setting for this field.
+         * This lets us track what the value was when the user submitted so that total isn&#x27;t incorrect if the user changes the price after a submission.
+         */
+        $sub = Ninja_Forms()-&gt;form()-&gt;get_sub( absint( $_REQUEST[ &#x27;post&#x27; ] ) );
+        $product_fields = $sub-&gt;get_extra_value( &#x27;product_fields&#x27; );
+
+        if( is_array( $product_fields ) &amp;&amp; isset ( $product_fields[ $id ] ) ) {
+            $price = $product_fields[ $id ][ &#x27;product_price&#x27; ];
+        } else {
+            $price = $field-&gt;get_setting( &#x27;product_price&#x27; ); 
+        }
+
+        /*
+         * Get our currency marker setting. First, we check the form, then plugin settings.
+         */
+        $currency = Ninja_Forms()-&gt;form( $form_id )-&gt;get()-&gt;get_setting( &#x27;currency&#x27; );
+        
+        if ( empty( $currency ) ) {
+            /*
+             * Check our plugin currency.
+             */
+            $currency = Ninja_Forms()-&gt;get_setting( &#x27;currency&#x27; );
+        }
+
+        $currency_symbols = Ninja_Forms::config( &#x27;CurrencySymbol&#x27; );
+        $currency_symbol = html_entity_decode( $currency_symbols[ $currency ] );
+
+        // @todo Update to use the locale of the form.
+        global $wp_locale;
+        $price = str_replace( array( $wp_locale-&gt;number_format[ &#x27;thousands_sep&#x27; ], $currency_symbol ), &#x27;&#x27;, $price );
+        $price = floatval( $price );
+        $value = intval( $value );
+
+        $total = number_format_i18n( $price * $value, 2 );
+        $price = number_format_i18n( $price, 2 );
+
+        return &quot;Price: &lt;strong&gt;&quot; . $currency_symbol . $price . &quot;&lt;/strong&gt; X Quantity: &lt;input name=&#x27;fields[$id]&#x27; type=&#x27;number&#x27; value=&#x27;&quot; . $value . &quot;&#x27;&gt; = &quot; . $currency_symbol . $total;
+    }
+}
+</pre></details></body></html>

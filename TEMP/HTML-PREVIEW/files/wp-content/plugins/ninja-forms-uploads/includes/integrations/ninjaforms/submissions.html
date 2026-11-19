@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/submissions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/submissions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Integrations_NinjaForms_Submissions {
+
+	/**
+	 * NF_FU_Integrations_NinjaForms constructor.
+	 */
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_custom_columns&#x27;, array( $this, &#x27;submission_table_row_value&#x27; ), 10, 2 );
+		// Export value
+		add_filter( &#x27;ninja_forms_subs_export_field_value_&#x27; . NF_FU_File_Uploads::TYPE, array( $this, &#x27;submission_export_value&#x27; ) );
+		// TODO Edit sub value
+		// TODO Front end editor edit sub
+		// TODO PDF?
+	}
+
+	/**
+	 * Display the upload file URL as an HTML link for each uploaded file to the submission.
+	 * Submission table row td.
+	 *
+	 * @param mixed $value
+	 * @param array $field
+	 *
+	 * @return string
+	 */
+	public function submission_table_row_value( $value, $field ) {
+		if ( NF_FU_File_Uploads::TYPE !== $field-&gt;get_setting( &#x27;type&#x27; ) ) {
+			return $value;
+		}
+
+		return $this-&gt;get_field_value_string( $value, true );
+	}
+
+	/**
+	 * Format the export CSV value to a comma separated list of file URLs.
+	 *
+	 * @param mixed $field_value
+	 *
+	 * @return string
+	 */
+	public function submission_export_value( $field_value ) {
+		return $this-&gt;get_field_value_string( $field_value );
+	}
+
+	/**
+	 * Helper to get string of submitted file URLs.
+	 *
+	 * @param mixed $value
+	 * @param bool  $link Wrap URL in HTML anchor.
+	 *
+	 * @return array|string
+	 */
+	protected function get_field_value_string( $value, $link = false ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+
+		$value = NF_File_Uploads()-&gt;normalize_submission_value( $value );
+
+		$new_value = array();
+		foreach ( $value as $upload_id =&gt; $file_url ) {
+			$upload = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get( $upload_id );
+
+			if ( false === $upload ) {
+				continue;
+			}
+
+			$file_url = NF_File_Uploads()-&gt;controllers-&gt;uploads-&gt;get_file_url( $file_url, $upload-&gt;data );
+			if ( $link ) {
+				$new_value[] = sprintf( &#x27;&lt;a href=&quot;%s&quot; target=&quot;_blank&quot;&gt;%s&lt;/a&gt;&#x27;, $file_url, $upload-&gt;user_file_name );
+				continue;
+			}
+
+			$new_value[] = $file_url;
+		}
+
+		$glue = $link ? &#x27;&lt;br&gt;&#x27; : &#x27;,&#x27;;
+
+		return implode( $glue, $new_value );
+	}
+}</pre></details></body></html>

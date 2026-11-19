@@ -1,0 +1,280 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/header.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/header.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;!DOCTYPE html&gt;
+&lt;!--[if lt IE 7 ]&gt;&lt;html class=&quot;ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 7 ]&gt;&lt;html class=&quot;ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 8 ]&gt;&lt;html class=&quot;ie ie8 ie-lt10 ie-lt9 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 9 ]&gt;&lt;html class=&quot;ie ie9 ie-lt10 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if gt IE 9]&gt;&lt;!--&gt;&lt;html class=&quot;no-js&quot; lang=&quot;en&quot;&gt;&lt;!--&lt;![endif]--&gt;
+
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;A12 Observatory&quot;&gt;
+  &lt;meta name=&quot;keywords&quot; content=&quot;A12 Observatory, James Irwin, 5709065329&quot;&gt;
+  &lt;meta name=&quot;author&quot; content=&quot;James Irwin&quot;&gt;
+  &lt;title&gt;AI&amp;sup2; Observatory&lt;/title&gt; &lt;!-- website title --&gt;
+  &lt;link type=&#x27;text/css&#x27; href=&quot;&quot; rel=&#x27;stylesheet&#x27;&gt;
+  &lt;link type=&#x27;text/css&#x27; href=&quot;&quot; rel=&#x27;stylesheet&#x27;&gt;
+  &lt;!--[if lt IE 9]&gt;
+  
+  &lt;script type=&quot;text/javascript&quot; src=&quot;js/ie/html5shiv.min.js&quot;&gt;&lt;/script&gt;
+  
+  &lt;![endif]--&gt;
+  
+  &lt;link rel=&quot;icon&quot; href=&quot;&quot;&gt; &lt;!-- website icon --&gt;
+
+  &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js&quot;&gt;  &lt;/script&gt;
+
+  &lt;script&gt;
+  var url = &quot;https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&amp;hd=true&quot;;
+  $.ajax({
+  url: url,
+  success: function(result){
+  if(&quot;copyright&quot; in result) {
+    $(&quot;#copyright&quot;).text(&quot;Image Credits: &quot; + result.copyright);
+  }
+  else {
+    $(&quot;#copyright&quot;).text(&quot;Image Credits: &quot; + &quot;Public Domain&quot;);
+  }
+  
+  if(result.media_type == &quot;video&quot;) {
+    $(&quot;#apod_img_id&quot;).css(&quot;display&quot;, &quot;none&quot;); 
+    $(&quot;#apod_vid_id&quot;).attr(&quot;src&quot;, result.url);
+  }
+  else {
+    $(&quot;#apod_vid_id&quot;).css(&quot;display&quot;, &quot;none&quot;); 
+    $(&quot;#apod_img_id&quot;).attr(&quot;src&quot;, result.url);
+  }
+  $(&quot;#reqObject&quot;).text(url);
+  $(&quot;#returnObject&quot;).text(JSON.stringify(result, null, 4));  
+  $(&quot;#apod_explaination&quot;).text(result.explanation);
+  $(&quot;#apod_title&quot;).text(result.title);
+}
+});
+  &lt;/script&gt;
+
+&lt;/head&gt;
+
+
+&lt;body &gt;
+
+
+&lt;!--  I added this div to source my own video &amp; poster --&gt;
+&lt;div id=&quot;wrapper&quot;&gt; 
+ 
+
+
+ 
+
+
+
+&lt;/div&gt; 
+
+
+  &lt;div class=&quot;overlay1&quot;&gt;&lt;/div&gt; &lt;!-- overlay  I added &quot;1&quot; to supress --&gt;
+  &lt;div class=&quot;pattern1&quot;&gt;&lt;/div&gt; &lt;!-- pattern  I added &quot;1&quot; to supress --&gt;
+
+
+
+  &lt;!-- preloader - spinning cog when site opens--&gt;
+  &lt;div id=&quot;preloader&quot;&gt;
+    &lt;div id=&quot;preloader-img&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- /preloader --&gt;
+
+
+
+
+&lt;button class=&quot;menu-toggle&quot;&gt;&lt;/button&gt;
+
+
+
+
+&lt;nav class=&quot;mob-nav&quot; id=&quot;&quot;&gt;
+
+&lt;!-- --------------JSI test order number and assign menu ----------------- --&gt;
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+&lt;!--  navicon menu--&gt;
+    
+
+&lt;/nav&gt;
+
+
+
+
+  &lt;!-- header99 --&gt;
+  &lt;header id=&quot;header&quot;&gt;
+    &lt;a href=&quot;http://ai2observatory.com&quot;&gt;
+    
+    &lt;/a&gt;
+  &lt;/header&gt;
+  &lt;!-- /header --&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;!DOCTYPE html&gt;
+&lt;!--[if lt IE 7 ]&gt;&lt;html class=&quot;ie ie6 ie-lt10 ie-lt9 ie-lt8 ie-lt7 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 7 ]&gt;&lt;html class=&quot;ie ie7 ie-lt10 ie-lt9 ie-lt8 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 8 ]&gt;&lt;html class=&quot;ie ie8 ie-lt10 ie-lt9 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 9 ]&gt;&lt;html class=&quot;ie ie9 ie-lt10 no-js&quot; lang=&quot;en&quot;&gt;&lt;![endif]--&gt;
+&lt;!--[if gt IE 9]&gt;&lt;!--&gt;&lt;html class=&quot;no-js&quot; lang=&quot;en&quot;&gt;&lt;!--&lt;![endif]--&gt;
+
+
+&lt;head&gt;
+  &lt;meta charset=&quot;utf-8&quot;&gt;
+  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;A12 Observatory&quot;&gt;
+  &lt;meta name=&quot;keywords&quot; content=&quot;A12 Observatory, James Irwin, 5709065329&quot;&gt;
+  &lt;meta name=&quot;author&quot; content=&quot;James Irwin&quot;&gt;
+  &lt;title&gt;AI&amp;sup2; Observatory&lt;/title&gt; &lt;!-- website title --&gt;
+  &lt;link type=&#x27;text/css&#x27; href=&quot;&lt;?php echo get_theme_file_uri(&#x27;assets/css/bootstrap.min.css&#x27;);?&gt;&quot; rel=&#x27;stylesheet&#x27;&gt;
+  &lt;link type=&#x27;text/css&#x27; href=&quot;&lt;?php echo get_theme_file_uri(&#x27;assets/css/style.css&#x27;);?&gt;&quot; rel=&#x27;stylesheet&#x27;&gt;
+  &lt;!--[if lt IE 9]&gt;
+  
+  &lt;script type=&quot;text/javascript&quot; src=&quot;js/ie/html5shiv.min.js&quot;&gt;&lt;/script&gt;
+  
+  &lt;![endif]--&gt;
+  
+  &lt;link rel=&quot;icon&quot; href=&quot;&lt;?php echo get_theme_file_uri(&#x27;assets/img/favicon.ico&#x27;);?&gt;&quot;&gt; &lt;!-- website icon --&gt;
+
+  &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js&quot;&gt;  &lt;/script&gt;
+
+  &lt;script&gt;
+  var url = &quot;https://api.nasa.gov/planetary/apod?api_key=xWace2jV99ZOtJPWwmLNR3zuuS4bCNkxe9rncFG5&amp;hd=true&quot;;
+  $.ajax({
+  url: url,
+  success: function(result){
+  if(&quot;copyright&quot; in result) {
+    $(&quot;#copyright&quot;).text(&quot;Image Credits: &quot; + result.copyright);
+  }
+  else {
+    $(&quot;#copyright&quot;).text(&quot;Image Credits: &quot; + &quot;Public Domain&quot;);
+  }
+  
+  if(result.media_type == &quot;video&quot;) {
+    $(&quot;#apod_img_id&quot;).css(&quot;display&quot;, &quot;none&quot;); 
+    $(&quot;#apod_vid_id&quot;).attr(&quot;src&quot;, result.url);
+  }
+  else {
+    $(&quot;#apod_vid_id&quot;).css(&quot;display&quot;, &quot;none&quot;); 
+    $(&quot;#apod_img_id&quot;).attr(&quot;src&quot;, result.url);
+  }
+  $(&quot;#reqObject&quot;).text(url);
+  $(&quot;#returnObject&quot;).text(JSON.stringify(result, null, 4));  
+  $(&quot;#apod_explaination&quot;).text(result.explanation);
+  $(&quot;#apod_title&quot;).text(result.title);
+}
+});
+  &lt;/script&gt;
+
+&lt;/head&gt;
+
+
+&lt;body &lt;?php echo (is_home())? &#x27;onload=&quot;FadeAudio(); hideControls();&quot;&#x27;: &#x27;&#x27;;?&gt;&gt;
+
+
+&lt;!--  I added this div to source my own video &amp; poster --&gt;
+&lt;div id=&quot;wrapper&quot;&gt; 
+ 
+
+
+&lt;?php dynamic_sidebar( &#x27;home-header-sidebar&#x27; ); ?&gt; 
+&lt;?php if(is_home()):?&gt;
+&lt;?php the_ai2_observatory_poster();?&gt;
+&lt;?php endif; ?&gt;
+&lt;/div&gt; 
+
+
+  &lt;div class=&quot;overlay1&quot;&gt;&lt;/div&gt; &lt;!-- overlay  I added &quot;1&quot; to supress --&gt;
+  &lt;div class=&quot;pattern1&quot;&gt;&lt;/div&gt; &lt;!-- pattern  I added &quot;1&quot; to supress --&gt;
+
+
+&lt;?php if(is_home()):?&gt;
+  &lt;!-- preloader - spinning cog when site opens--&gt;
+  &lt;div id=&quot;preloader&quot;&gt;
+    &lt;div id=&quot;preloader-img&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- /preloader --&gt;
+&lt;?php endif;?&gt;
+
+
+
+&lt;button class=&quot;menu-toggle&quot;&gt;&lt;/button&gt;
+
+
+
+
+&lt;nav class=&quot;mob-nav&quot; id=&quot;&quot;&gt;
+
+&lt;!-- --------------JSI test order number and assign menu ----------------- --&gt;
+&lt;?php  $onum = get_post_field(&#x27;menu_order&#x27;, $post-&gt;ID);?&gt;
+
+&lt;?php if($onum &gt;=1 &amp;&amp; $onum &lt;=5):?&gt;  
+&lt;?php  $menukey = &quot;Menu 1&quot;;?&gt;
+&lt;?php endif;?&gt;
+
+&lt;?php if($onum &gt;=6 &amp;&amp; $onum &lt;=11):?&gt;  
+&lt;?php   $menukey = &quot;Menu 2&quot;;?&gt;
+&lt;?php endif;?&gt;
+
+&lt;?php if($onum &gt;=12 &amp;&amp; $onum &lt;=14):?&gt;  
+&lt;?php   $menukey = &quot;Menu 3&quot;;?&gt;
+&lt;?php endif;?&gt;
+
+&lt;?php if($onum &lt;1 || $onum &gt;14):?&gt;  
+&lt;?php   $menukey = &quot;Menu 4&quot;;?&gt;
+&lt;?php endif;?&gt;
+
+
+
+&lt;!--  navicon menu--&gt;
+    &lt;?php
+if(!is_home()):
+        $main_menu = array(
+        &#x27;menu&#x27;            =&gt; $menukey,
+        &#x27;container&#x27;       =&gt; &#x27;&#x27;,
+        &#x27;container_class&#x27; =&gt; &#x27;&#x27;,
+        &#x27;menu_class&#x27;      =&gt; &#x27;menu&#x27;,
+        &#x27;echo&#x27;            =&gt; true,
+        &#x27;fallback_cb&#x27;     =&gt; &#x27;wp_page_menu&#x27;,
+        //&#x27;items_wrap&#x27;      =&gt; &#x27;&lt;ul id=\&quot;%1$s\&quot; class=\&quot;%2$s\&quot;&gt;%3$s&lt;/ul&gt;&#x27;,
+        &#x27;depth&#x27;           =&gt; 1,
+
+    );
+        wp_nav_menu($main_menu);
+else:
+echo &#x27;&#x27;;
+endif;
+?&gt;
+
+&lt;/nav&gt;
+
+
+
+
+  &lt;!-- header99 --&gt;
+  &lt;header id=&quot;header&quot;&gt;
+    &lt;a href=&quot;http://ai2observatory.com&quot;&gt;
+    &lt;?php the_ai2_observatory_logo();?&gt;
+    &lt;/a&gt;
+  &lt;/header&gt;
+  &lt;!-- /header --&gt;
+</pre></details></body></html>

@@ -1,0 +1,230 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/deprecated/includes/display/scripts.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/deprecated/includes/display/scripts.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;style type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+	
+	&lt;/style&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_style_display_css&#x27; );
+function ninja_forms_register_style_display_css(){
+	add_action( &#x27;ninja_forms_before_form_display&#x27;, &#x27;ninja_forms_style_display_css&#x27; );
+}
+
+function ninja_forms_style_display_css( $form_id ){
+	global $ninja_forms_tabs_metaboxes, $ninja_forms_tabs, $ninja_forms_css_options, $ninja_forms_style_metaboxes;
+
+	$all_fields = ninja_forms_get_fields_by_form_id( $form_id );
+
+	wp_enqueue_style( &#x27;ninja-forms-style-display&#x27;,
+		NINJA_FORMS_STYLE_URL.&#x27;/css/ninja-forms-style-display.css&#x27; );
+
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+
+	if( isset( $plugin_settings[&#x27;style&#x27;][&#x27;field_type&#x27;] ) ){
+		$field_type_css = $plugin_settings[&#x27;style&#x27;][&#x27;field_type&#x27;];
+	}else{
+		$field_type_css = &#x27;&#x27;;
+	}
+
+	$form_row = ninja_forms_get_form_by_id( $form_id );
+	$form_data = $form_row[&#x27;data&#x27;];
+
+
+	?&gt;
+	&lt;style type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+	&lt;?php
+
+	//Output default settings CSS
+	foreach( $ninja_forms_tabs[&#x27;ninja-forms-style&#x27;] as $slug =&gt; $tab ){
+		if( $slug != &#x27;field_type_settings&#x27; ){
+			if( isset( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-style&#x27;][$slug] ) ){
+				foreach( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-style&#x27;][$slug] as $metabox ){
+
+					$save_page = $metabox[&#x27;save_page&#x27;];
+					$group = $metabox[&#x27;slug&#x27;];
+
+					$output = false;
+					if( isset( $plugin_settings[&#x27;style&#x27;][$save_page][$group] ) ){
+						foreach( $plugin_settings[&#x27;style&#x27;][$save_page][$group] as $prop =&gt; $val ){
+							if( $val != &#x27;&#x27; ){
+								$output = true;
+								break;
+							}
+						}
+					}
+
+					if( $output ){
+						echo $metabox[&#x27;css_selector&#x27;].&#x27;{&#x27;;
+							if( isset( $plugin_settings[&#x27;style&#x27;][$save_page][$group] ) ){
+								foreach( $plugin_settings[&#x27;style&#x27;][$save_page][$group] as $group =&gt; $val ){
+									if( $val != &#x27;&#x27; ){
+										if( isset( $ninja_forms_css_options[$group][&#x27;css_property&#x27;] ) ){
+											$css_property = $ninja_forms_css_options[$group][&#x27;css_property&#x27;];
+
+											if( $css_property != &#x27;&#x27; ){
+												echo $css_property.&#x27;: &#x27;.$val.&#x27;;&#x27;;
+											}else{
+												echo $val;
+											}
+										}
+									}
+								}
+							}
+						echo &#x27;}&#x27;;
+					}
+
+				}
+			}
+		}
+	}
+
+	//Output field-type CSS
+	if( is_array( $field_type_css ) ){
+		foreach( $field_type_css as $field_type =&gt; $groups ){
+			$output = array();
+			//Check to make sure that all of the css values aren&#x27;t empty.
+			foreach( $groups as $group =&gt; $props ){
+				$output[$group] = false;
+				if( is_array( $props ) AND !empty( $props ) ){
+					foreach( $props as $k =&gt; $val ){
+						if( $val != &#x27;&#x27; ){
+							$output[$group] = true;
+							break;
+						}
+					}
+				}
+			}
+
+			if(strpos($field_type, &quot;_&quot;) === 0){
+				$type_slug = substr($field_type, 1);
+			}
+
+			foreach( $groups as $group =&gt; $props ){
+				if( $output[$group] ){
+					if( isset( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-style&#x27;][&#x27;field_type_settings&#x27;][$group] ) ){
+						$css_selector = $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-style&#x27;][&#x27;field_type_settings&#x27;][$group][&#x27;css_selector&#x27;];
+						$css_selector = str_replace( &#x27;[type_slug]&#x27;, $type_slug, $css_selector );
+						$css_selector = apply_filters( &#x27;ninja_forms_style_field_type_css_selector&#x27;, $css_selector, $type_slug );
+						if( is_array( $props ) AND !empty( $props ) ){
+							echo $css_selector.&#x27;{&#x27;;
+							foreach( $props as $prop =&gt; $value ){
+								if( $value != &#x27;&#x27; ){
+									if( isset( $ninja_forms_css_options[$prop][&#x27;css_property&#x27;] ) ){
+										$css_property = $ninja_forms_css_options[$prop][&#x27;css_property&#x27;];
+										if( $css_property != &#x27;&#x27; ){
+											echo $css_property.&#x27;: &#x27;.$value.&#x27;;&#x27;;
+										}else{
+											echo $value;
+										}
+									}
+								}
+							}
+							echo &#x27;}&#x27;;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//Output form-specific CSS
+	if( isset( $form_data[&#x27;style&#x27;][&#x27;groups&#x27;] ) AND is_array( $form_data[&#x27;style&#x27;][&#x27;groups&#x27;] ) ){
+		foreach( $form_data[&#x27;style&#x27;][&#x27;groups&#x27;] as $group =&gt; $props ){
+			$output = false;
+			foreach( $props as $prop =&gt; $value ){
+				if( $value != &#x27;&#x27; ){
+					$output = true;
+					break;
+				}
+			}
+			if( $output ){
+				switch( $group ){
+					case &#x27;container&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap {&#x27;;
+						break;
+					case &#x27;title&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap h2.ninja-forms-form-title {&#x27;;
+						break;
+					case &#x27;row&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap div.ninja-row {&#x27;;
+						break;
+					case &#x27;row-odd&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap div.ninja-row:nth-child(odd) {&#x27;;
+						break;
+					case &#x27;success-msg&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap div.ninja-forms-success-msg {&#x27;;
+						break;
+					case &#x27;error_msg&#x27;:
+						echo &#x27;#ninja_forms_form_&#x27;.$form_id.&#x27;_wrap div.ninja-forms-error-msg {&#x27;;
+						break;
+				}
+
+				foreach( $props as $prop =&gt; $value ){
+					if( $value != &#x27;&#x27; ){
+						if( isset( $ninja_forms_css_options[$prop][&#x27;css_property&#x27;] ) ){
+							$css_property = $ninja_forms_css_options[$prop][&#x27;css_property&#x27;];
+							if( $css_property != &#x27;&#x27; ){
+								echo $css_property.&#x27;: &#x27;.$value.&#x27;;&#x27;;
+							}else{
+								echo $value;
+							}
+						}
+					}
+				}
+				echo &#x27;}&#x27;;
+			}
+		}
+	}
+
+	//Output field-specific CSS
+	if( !empty( $all_fields ) ){
+		foreach( $all_fields as $field ){
+			$field_id = $field[&#x27;id&#x27;];
+			do_action( &#x27;ninja_forms_style_field_metaboxes&#x27;, $field_id );
+
+			$field_type = $field[&#x27;type&#x27;];
+			if( isset( $field[&#x27;data&#x27;][&#x27;style&#x27;][&#x27;groups&#x27;] ) AND is_array( $field[&#x27;data&#x27;][&#x27;style&#x27;][&#x27;groups&#x27;] ) ){
+				foreach( $field[&#x27;data&#x27;][&#x27;style&#x27;][&#x27;groups&#x27;] as $group =&gt; $props ){
+
+					$output = false;
+					foreach( $props as $prop =&gt; $value ){
+						if( $value != &#x27;&#x27; ){
+							$output = true;
+							break;
+						}
+					}
+					if( $output ){
+						if( isset( $ninja_forms_style_metaboxes[&#x27;field&#x27;][$field_type][$group] ) ){
+							$css_selector = $ninja_forms_style_metaboxes[&#x27;field&#x27;][$field_type][$group][&#x27;css_selector&#x27;];
+							$css_selector = str_replace( &#x27;[field_id]&#x27;, $field_id, $css_selector );
+						}else if( isset( $ninja_forms_style_metaboxes[&#x27;page&#x27;][&#x27;field&#x27;][$group] ) ){
+							$css_selector = $ninja_forms_style_metaboxes[&#x27;page&#x27;][&#x27;field&#x27;][$group][&#x27;css_selector&#x27;];
+							$css_selector = str_replace( &#x27;[field_id]&#x27;, $field_id, $css_selector );
+						}
+
+						echo $css_selector.&quot;{&quot;;
+						foreach( $props as $prop =&gt; $value ){
+							if( $value != &#x27;&#x27; ){
+								if( isset( $ninja_forms_css_options[$prop][&#x27;css_property&#x27;] ) ){
+									$css_property = $ninja_forms_css_options[$prop][&#x27;css_property&#x27;];
+									if( $css_property != &#x27;&#x27; ){
+										echo $css_property.&#x27;: &#x27;.$value.&#x27;;&#x27;;
+									}else{
+										echo $value;
+									}
+								}
+							}
+						}
+						echo &#x27;}&#x27;;
+					}
+				}
+			}
+		}
+	}
+
+
+	?&gt;
+	&lt;/style&gt;
+	&lt;?php
+
+}
+</pre></details></body></html>

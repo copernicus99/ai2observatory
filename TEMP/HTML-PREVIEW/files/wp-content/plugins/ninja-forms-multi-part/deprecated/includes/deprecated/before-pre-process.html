@@ -1,0 +1,232 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/before-pre-process.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/deprecated/includes/deprecated/before-pre-process.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+function ninja_forms_mp_check_page_conditional_before_pre_process(){
+	global $ninja_forms_processing;
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	$form_row = ninja_forms_get_form_by_id( $form_id );
+	if ( isset ( $form_row[&#x27;data&#x27;][&#x27;multi_part&#x27;] ) AND $form_row[&#x27;data&#x27;][&#x27;multi_part&#x27;] == 1 ) {
+		//if( isset( $form_row[&#x27;data&#x27;][&#x27;ajax&#x27;] ) AND $form_row[&#x27;data&#x27;][&#x27;ajax&#x27;] == 1 ){
+			if( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27;)  ){
+				
+				$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+				if( is_array( $pages ) AND !empty( $pages ) ){
+					foreach( $pages as $page =&gt; $vars ){
+						$show = ninja_forms_mp_check_page_conditional( $form_id, $page );
+						if( !$show ){
+							ninja_forms_mp_conditional_remove_page( $form_id, $page );
+						}
+					}
+				}
+			}		
+		//}		
+	}
+}
+
+add_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_mp_check_page_conditional_before_pre_process&#x27;, 11 );
+
+
+function ninja_forms_mp_remove_save(){
+	global $ninja_forms_processing, $ninja_forms_fields;
+
+	if( is_object( $ninja_forms_processing ) AND $ninja_forms_processing-&gt;get_form_setting( &#x27;multi_part&#x27; ) == 1 ){
+		$nav = ninja_forms_mp_breadcrumb_update_current_page();
+
+		if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_prev&#x27; ) ){
+			$nav = &#x27;prev&#x27;;
+		}
+
+		if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_next&#x27; ) ){
+			$nav = &#x27;next&#x27;;
+		}
+
+		if( $nav != &#x27;&#x27; ){
+			remove_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_req_fields_process&#x27;, 13 );
+			$ninja_forms_processing-&gt;set_action( &#x27;mp_save&#x27; );
+			remove_action( &#x27;ninja_forms_post_process&#x27;, &#x27;ninja_forms_save_sub&#x27; );
+		}
+	}
+	
+}
+
+add_action( &#x27;ninja_forms_pre_process&#x27;, &#x27;ninja_forms_mp_error_change_page&#x27;, 20 );
+
+
+function ninja_forms_mp_error_change_page(){
+	global $ninja_forms_processing;
+
+	if( $ninja_forms_processing-&gt;get_action() == &#x27;submit&#x27;AND $ninja_forms_processing-&gt;get_form_setting( &#x27;multi_part&#x27; ) == 1 ){
+		
+		if( $ninja_forms_processing-&gt;get_all_errors() ){
+			$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+			$error_page = &#x27;&#x27;;
+			foreach( $all_fields as $field_id =&gt; $user_value ){
+				if( $ninja_forms_processing-&gt;get_errors_by_location( $field_id ) ){
+					$error_page = $ninja_forms_processing-&gt;get_field_setting( $field_id, &#x27;page&#x27; );
+					break;
+				}
+			}
+		$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, $error_page );
+		}
+	}
+}
+
+/*
+ * Function used to update the _current_page extra value. It looks at whether or not the prev or next buttons have been pressed.
+ * If they have, it updates the current page based upon which was pressed. 
+ *
+ * @since 1.0.3
+ * @returns void
+ */
+
+function ninja_forms_mp_nav_update_current_page(){
+	global $ninja_forms_processing;
+
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+
+	if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_current_page&#x27; ) ){
+		$current_page = $ninja_forms_processing-&gt;get_extra_value( &#x27;_current_page&#x27; );
+	}else{
+		$current_page = 1;
+	}	
+	if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_page_count&#x27; ) ){
+		$page_count = $ninja_forms_processing-&gt;get_extra_value( &#x27;_page_count&#x27; );
+	}else{
+		$page_count = 1;
+	}
+
+	$nav = &#x27;&#x27;;
+	if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_prev&#x27; ) ){
+		$nav = &#x27;prev&#x27;;
+		if( $current_page != 1 ){
+			$current_page--;
+		}
+	}
+
+	if( $ninja_forms_processing-&gt;get_extra_value( &#x27;_next&#x27; ) ){
+		$nav = &#x27;next&#x27;;
+		if( $current_page != $page_count ){
+			$current_page++;
+		}
+	}
+
+	if( $nav != &#x27;&#x27; ){
+		if ( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27; ) ) {
+			ninja_forms_conditionals_field_filter( $form_id );
+		}
+		$show = ninja_forms_mp_check_page_conditional( $form_id, $current_page );
+
+		$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, $current_page );
+
+		if( ( $current_page &lt;= $page_count ) AND !$show ){
+			ninja_forms_mp_nav_update_current_page();
+		}
+	}		
+}
+
+/*
+ *
+ * Function that updates the _current_page extra value if a breadcrumb has been clicked.
+ *
+ * @since 1.0.3
+ * @returns void
+ */
+
+function ninja_forms_mp_breadcrumb_update_current_page(){
+	global $ninja_forms_processing;
+
+	$form_id = $ninja_forms_processing-&gt;get_form_ID();
+	$nav = &#x27;&#x27;;
+	$all_extras = $ninja_forms_processing-&gt;get_all_extras();
+	if( is_array( $all_extras ) AND !empty( $all_extras ) ){
+		foreach( $all_extras as $key =&gt; $val ){
+			if( strpos( $key, &#x27;_mp_page_&#x27; ) !== false ){
+				$nav = str_replace( &#x27;_mp_page_&#x27;, &#x27;&#x27;, $key );
+				$ninja_forms_processing-&gt;update_extra_value( &#x27;_current_page&#x27;, $nav );
+				$show = ninja_forms_mp_check_page_conditional( $form_id, $nav );
+				if( !$show ){
+					$ninja_forms_processing-&gt;update_extra_value( &#x27;_prev&#x27;, &#x27;Previous&#x27; );
+					ninja_forms_mp_nav_update_current_page();
+				}
+
+			}
+		}
+	}
+	return $nav;
+}
+
+/*
+ *
+ * Function that checks whether or not this page should be shown based upon form conditionals.
+ * 
+ * @since 1.0.3
+ * @returns bool true/false
+ */
+
+function ninja_forms_mp_check_page_conditional( $form_id = &#x27;&#x27;, $current_page = &#x27;&#x27; ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if( $current_page == &#x27;&#x27; &amp;&amp; isset ( $ninja_forms_processing ) ) {
+		$current_page = $ninja_forms_processing-&gt;get_extra_value( &#x27;_current_page&#x27; );		
+	}
+
+	// Check to see if the next page has been rendered &quot;hidden&quot; by conditional logic.
+	$page_divider_id = ninja_forms_mp_get_divider_by_page( $form_id, $current_page );
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$field = $ninja_forms_loading-&gt;get_field_settings( $page_divider_id );
+	} else {
+		$field = $ninja_forms_processing-&gt;get_field_settings( $page_divider_id );		
+	}
+
+	$data = $field[&#x27;data&#x27;];
+	$show = true;
+	if( function_exists( &#x27;ninja_forms_conditionals_field_filter&#x27; ) ){
+		if( isset( $data[&#x27;conditional_action&#x27;] ) ){
+			switch( $data[&#x27;conditional_action&#x27;] ){
+				case &#x27;ninja_forms_show_mp_page&#x27;:
+					if( !isset( $data[&#x27;conditional_pass&#x27;] ) OR !$data[&#x27;conditional_pass&#x27;] ){
+						$show = false;
+					}
+					break;
+				case &#x27;ninja_forms_hide_mp_page&#x27;:
+					if( isset( $data[&#x27;conditional_pass&#x27;] ) AND $data[&#x27;conditional_pass&#x27;] ){
+						$show = false;
+					}
+					break;
+			}
+		}
+	}
+	return $show;
+}
+
+/*
+ *
+ * Function to remove the page and its fields from the $ninja_forms_processing global
+ *
+ * @since 1.0.3
+ * @returns void
+ */
+
+function ninja_forms_mp_conditional_remove_page( $form_id, $page ){
+	global $ninja_forms_loading, $ninja_forms_processing;
+
+	if ( isset ( $ninja_forms_loading ) ) {
+		$pages = $ninja_forms_loading-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+		$page_divider_id = $pages[$page][&#x27;id&#x27;];
+		if ( is_array( $pages[$page] ) ){
+			foreach ( $pages[$page][&#x27;fields&#x27;] as $field_id ) {
+				$ninja_forms_loading-&gt;update_field_value( $field_id, false );
+			}
+		}
+		$ninja_forms_loading-&gt;update_field_value( $page_divider_id, false );
+	} else {
+		$pages = $ninja_forms_processing-&gt;get_form_setting( &#x27;mp_pages&#x27; );
+		$page_divider_id = $pages[$page][&#x27;id&#x27;];
+		if ( is_array( $pages[$page] ) ){
+			foreach ( $pages[$page][&#x27;fields&#x27;] as $field_id ) {
+				$ninja_forms_processing-&gt;update_field_value( $field_id, false );
+			}
+		}
+		$ninja_forms_processing-&gt;update_field_value( $page_divider_id, false );
+	}
+}</pre></details></body></html>

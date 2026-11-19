@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/PluginSettingsReCaptcha.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/PluginSettingsReCaptcha.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_plugin_settings_recaptcha&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Site Key
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;recaptcha_site_key&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;recaptcha_site_key&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Site Key&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; sprintf( __( &#x27;Get a site key for your domain by registering  %shere%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;https://www.google.com/recaptcha/intro/index.html&quot; target=&quot;_blank&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Secret Key
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;recaptcha_secret_key&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;recaptcha_secret_key&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Secret Key&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; &#x27;&#x27;,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Language
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;recaptcha_lang&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;recaptcha_lang&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Language&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; &#x27;e.g. en, da - &#x27; . sprintf( __( &#x27;Language used by reCAPTCHA. To get the code for your language click %shere%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;https://developers.google.com/recaptcha/docs/language&quot; target=&quot;_blank&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Theme
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;recaptcha_theme&#x27; =&gt; array(
+        &#x27;id&#x27;    =&gt; &#x27;recaptcha_theme&#x27;,
+        &#x27;type&#x27;  =&gt; &#x27;select&#x27;,
+        &#x27;options&#x27;   =&gt; array(
+            array( &#x27;label&#x27; =&gt; __( &#x27;Light&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;light&#x27; ),
+            array( &#x27;label&#x27; =&gt; __( &#x27;Dark&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;dark&#x27; ),
+        ),
+        &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Theme&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;desc&#x27;  =&gt; &#x27;&#x27;,
+    ),
+));
+</pre></details></body></html>

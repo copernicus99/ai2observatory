@@ -1,0 +1,1221 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+
+
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+
+
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+
+&lt;!---- service start --&gt;
+&lt;h2&gt;First box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;!---- 2nd ----&gt;
+&lt;h2&gt;2nd box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;!---- 3rd ----&gt;
+&lt;h2&gt;3rd box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&quot;&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&quot; name=&quot;&quot; type=&quot;text&quot; value=&quot;&quot; /&gt;
+&lt;/p&gt;
+
+&lt;ul&gt;
+    
+
+    &lt;li&gt;
+        &lt;a href=&quot;&quot; class=&quot;&quot;&gt;&lt;span&gt;&lt;/span&gt;
+           
+        &lt;/a&gt;
+        &lt;div class=&quot;fp-tooltip left&quot;&gt; &lt;/div&gt;
+    
+
+        
+
+            
+            &lt;ul class=&quot;sub-menu&quot;&gt;
+            
+                    &lt;a class=&quot;btn  animated in fadeInUp&quot; href=&quot;&quot; data-animation=&quot;fadeInUp&quot; data-delay=&quot;600&quot; &gt;&lt;/a&gt;
+               
+            
+            &lt;/ul&gt;
+            
+
+        
+
+    
+    &lt;/li&gt;                           
+    
+
+
+
+&lt;/ul&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+//JSI added---------------------------------------------------------------------------------------------------------------------------------
+update_option( &#x27;siteurl&#x27;, &#x27;http://ai2observatory.com&#x27; );
+update_option( &#x27;home&#x27;, &#x27;http://ai2observatory.com&#x27; );
+
+/**
+ * Twenty Seventeen functions and definitions
+ *
+ * @link https://developer.wordpress.org/themes/basics/theme-functions/
+ *
+ * @package WordPress
+ * @subpackage Twenty_Seventeen
+ * @since 1.0
+ */
+
+/**
+ * Twenty Seventeen only works in WordPress 4.7 or later.
+ */
+if ( version_compare( $GLOBALS[&#x27;wp_version&#x27;], &#x27;4.7-alpha&#x27;, &#x27;&lt;&#x27; ) ) {
+	require get_template_directory() . &#x27;/inc/back-compat.php&#x27;;
+	return;
+}
+
+
+
+
+
+/**
+ * Sets up theme defaults and registers support for various WordPress features.
+ *
+ * Note that this function is hooked into the after_setup_theme hook, which
+ * runs before the init hook. The init hook is too late for some features, such
+ * as indicating support for post thumbnails.
+ */
+function twentyseventeen_setup() {
+	/*
+	 * Make theme available for translation.
+	 * Translations can be filed at WordPress.org. See: https://translate.wordpress.org/projects/wp-themes/twentyseventeen
+	 * If you&#x27;re building a theme based on Twenty Seventeen, use a find and replace
+	 * to change &#x27;twentyseventeen&#x27; to the name of your theme in all the template files.
+	 */
+	load_theme_textdomain( &#x27;twentyseventeen&#x27; );
+
+	// Add default posts and comments RSS feed links to head.
+	add_theme_support( &#x27;automatic-feed-links&#x27; );
+
+	/*
+	 * Let WordPress manage the document title.
+	 * By adding theme support, we declare that this theme does not use a
+	 * hard-coded &lt;title&gt; tag in the document head, and expect WordPress to
+	 * provide it for us.
+	 */
+	add_theme_support( &#x27;title-tag&#x27; );
+
+	/*
+	 * Enable support for Post Thumbnails on posts and pages.
+	 *
+	 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+	 */
+	add_theme_support( &#x27;post-thumbnails&#x27; );
+
+	add_image_size( &#x27;twentyseventeen-featured-image&#x27;, 2000, 1200, true );
+
+	add_image_size( &#x27;twentyseventeen-thumbnail-avatar&#x27;, 100, 100, true );
+
+	// Set the default content width.
+	$GLOBALS[&#x27;content_width&#x27;] = 525;
+
+	// This theme uses wp_nav_menu() in two locations.
+	register_nav_menus( array(
+		&#x27;top&#x27;    =&gt; __( &#x27;Top Menu&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;social&#x27; =&gt; __( &#x27;Social Links Menu&#x27;, &#x27;twentyseventeen&#x27; ),
+	) );
+
+	/*
+	 * Switch default core markup for search form, comment form, and comments
+	 * to output valid HTML5.
+	 */
+	add_theme_support( &#x27;html5&#x27;, array(
+		&#x27;comment-form&#x27;,
+		&#x27;comment-list&#x27;,
+		&#x27;gallery&#x27;,
+		&#x27;caption&#x27;,
+	) );
+
+	/*
+	 * Enable support for Post Formats.
+	 *
+	 * See: https://codex.wordpress.org/Post_Formats
+	 */
+	add_theme_support( &#x27;post-formats&#x27;, array(
+		&#x27;aside&#x27;,
+		&#x27;image&#x27;,
+		&#x27;video&#x27;,
+		&#x27;quote&#x27;,
+		&#x27;link&#x27;,
+		&#x27;gallery&#x27;,
+		&#x27;audio&#x27;,
+	) );
+
+	// Add theme support for Custom Logo.
+	add_theme_support( &#x27;custom-logo&#x27;, array(
+		&#x27;width&#x27;       =&gt; 276,
+		&#x27;height&#x27;      =&gt; 116,
+		&#x27;flex-width&#x27;  =&gt; true,
+		&#x27;flex-height&#x27;    =&gt; true,
+	) );
+
+	// Add theme support for selective refresh for widgets.
+	add_theme_support( &#x27;customize-selective-refresh-widgets&#x27; );
+
+	/*
+	 * This theme styles the visual editor to resemble the theme style,
+	 * specifically font, colors, and column width.
+ 	 */
+	add_editor_style( array( &#x27;assets/css/editor-style.css&#x27;, twentyseventeen_fonts_url() ) );
+
+	// Define and register starter content to showcase the theme on new sites.
+	$starter_content = array(
+		&#x27;widgets&#x27; =&gt; array(
+			// Place three core-defined widgets in the sidebar area.
+			&#x27;sidebar-1&#x27; =&gt; array(
+				&#x27;text_business_info&#x27;,
+				&#x27;search&#x27;,
+				&#x27;text_about&#x27;,
+			),
+
+			// Add the core-defined business info widget to the footer 1 area.
+			&#x27;sidebar-2&#x27; =&gt; array(
+				&#x27;text_business_info&#x27;,
+			),
+
+			// Put two core-defined widgets in the footer 2 area.
+			&#x27;sidebar-3&#x27; =&gt; array(
+				&#x27;text_about&#x27;,
+				&#x27;search&#x27;,
+			),
+		),
+
+		// Specify the core-defined pages to create and add custom thumbnails to some of them.
+		&#x27;posts&#x27; =&gt; array(
+			&#x27;home&#x27;,
+			&#x27;about&#x27; =&gt; array(
+				&#x27;thumbnail&#x27; =&gt; &#x27;{{image-sandwich}}&#x27;,
+			),
+			&#x27;contact&#x27; =&gt; array(
+				&#x27;thumbnail&#x27; =&gt; &#x27;{{image-espresso}}&#x27;,
+			),
+			&#x27;blog&#x27; =&gt; array(
+				&#x27;thumbnail&#x27; =&gt; &#x27;{{image-coffee}}&#x27;,
+			),
+			&#x27;homepage-section&#x27; =&gt; array(
+				&#x27;thumbnail&#x27; =&gt; &#x27;{{image-espresso}}&#x27;,
+			),
+		),
+
+		// Create the custom image attachments used as post thumbnails for pages.
+		&#x27;attachments&#x27; =&gt; array(
+			&#x27;image-espresso&#x27; =&gt; array(
+				&#x27;post_title&#x27; =&gt; _x( &#x27;Espresso&#x27;, &#x27;Theme starter content&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;file&#x27; =&gt; &#x27;assets/images/espresso.jpg&#x27;, // URL relative to the template directory.
+			),
+			&#x27;image-sandwich&#x27; =&gt; array(
+				&#x27;post_title&#x27; =&gt; _x( &#x27;Sandwich&#x27;, &#x27;Theme starter content&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;file&#x27; =&gt; &#x27;assets/images/sandwich.jpg&#x27;,
+			),
+			&#x27;image-coffee&#x27; =&gt; array(
+				&#x27;post_title&#x27; =&gt; _x( &#x27;Coffee&#x27;, &#x27;Theme starter content&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;file&#x27; =&gt; &#x27;assets/images/coffee.jpg&#x27;,
+			),
+		),
+
+		// Default to a static front page and assign the front and posts pages.
+		&#x27;options&#x27; =&gt; array(
+			&#x27;show_on_front&#x27; =&gt; &#x27;page&#x27;,
+			&#x27;page_on_front&#x27; =&gt; &#x27;{{home}}&#x27;,
+			&#x27;page_for_posts&#x27; =&gt; &#x27;{{blog}}&#x27;,
+		),
+
+		// Set the front page section theme mods to the IDs of the core-registered pages.
+		&#x27;theme_mods&#x27; =&gt; array(
+			&#x27;panel_1&#x27; =&gt; &#x27;{{homepage-section}}&#x27;,
+			&#x27;panel_2&#x27; =&gt; &#x27;{{about}}&#x27;,
+			&#x27;panel_3&#x27; =&gt; &#x27;{{blog}}&#x27;,
+			&#x27;panel_4&#x27; =&gt; &#x27;{{contact}}&#x27;,
+		),
+
+		// Set up nav menus for each of the two areas registered in the theme.
+		&#x27;nav_menus&#x27; =&gt; array(
+			// Assign a menu to the &quot;top&quot; location.
+			&#x27;top&#x27; =&gt; array(
+				&#x27;name&#x27; =&gt; __( &#x27;Top Menu&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;items&#x27; =&gt; array(
+					&#x27;link_home&#x27;, // Note that the core &quot;home&quot; page is actually a link in case a static front page is not used.
+					&#x27;page_about&#x27;,
+					&#x27;page_blog&#x27;,
+					&#x27;page_contact&#x27;,
+				),
+			),
+
+			// Assign a menu to the &quot;social&quot; location.
+			&#x27;social&#x27; =&gt; array(
+				&#x27;name&#x27; =&gt; __( &#x27;Social Links Menu&#x27;, &#x27;twentyseventeen&#x27; ),
+				&#x27;items&#x27; =&gt; array(
+					&#x27;link_yelp&#x27;,
+					&#x27;link_facebook&#x27;,
+					&#x27;link_twitter&#x27;,
+					&#x27;link_instagram&#x27;,
+					&#x27;link_email&#x27;,
+				),
+			),
+		),
+	);
+
+	/**
+	 * Filters Twenty Seventeen array of starter content.
+	 *
+	 * @since Twenty Seventeen 1.1
+	 *
+	 * @param array $starter_content Array of starter content.
+	 */
+	$starter_content = apply_filters( &#x27;twentyseventeen_starter_content&#x27;, $starter_content );
+
+	add_theme_support( &#x27;starter-content&#x27;, $starter_content );
+}
+add_action( &#x27;after_setup_theme&#x27;, &#x27;twentyseventeen_setup&#x27; );
+
+/**
+ * Set the content width in pixels, based on the theme&#x27;s design and stylesheet.
+ *
+ * Priority 0 to make it available to lower priority callbacks.
+ *
+ * @global int $content_width
+ */
+function twentyseventeen_content_width() {
+
+	$content_width = $GLOBALS[&#x27;content_width&#x27;];
+
+	// Get layout.
+	$page_layout = get_theme_mod( &#x27;page_layout&#x27; );
+
+	// Check if layout is one column.
+	if ( &#x27;one-column&#x27; === $page_layout ) {
+		if ( twentyseventeen_is_frontpage() ) {
+			$content_width = 644;
+		} elseif ( is_page() ) {
+			$content_width = 740;
+		}
+	}
+
+	// Check if is single post and there is no sidebar.
+	if ( is_single() &amp;&amp; ! is_active_sidebar( &#x27;sidebar-1&#x27; ) ) {
+		$content_width = 740;
+	}
+
+	/**
+	 * Filter Twenty Seventeen content width of the theme.
+	 *
+	 * @since Twenty Seventeen 1.0
+	 *
+	 * @param $content_width integer
+	 */
+	$GLOBALS[&#x27;content_width&#x27;] = apply_filters( &#x27;twentyseventeen_content_width&#x27;, $content_width );
+}
+add_action( &#x27;template_redirect&#x27;, &#x27;twentyseventeen_content_width&#x27;, 0 );
+
+/**
+ * Register custom fonts.
+ */
+function twentyseventeen_fonts_url() {
+	$fonts_url = &#x27;&#x27;;
+
+	/**
+	 * Translators: If there are characters in your language that are not
+	 * supported by Libre Franklin, translate this to &#x27;off&#x27;. Do not translate
+	 * into your own language.
+	 */
+	$libre_franklin = _x( &#x27;on&#x27;, &#x27;Libre Franklin font: on or off&#x27;, &#x27;twentyseventeen&#x27; );
+
+	if ( &#x27;off&#x27; !== $libre_franklin ) {
+		$font_families = array();
+
+		$font_families[] = &#x27;Libre Franklin:300,300i,400,400i,600,600i,800,800i&#x27;;
+
+		$query_args = array(
+			&#x27;family&#x27; =&gt; urlencode( implode( &#x27;|&#x27;, $font_families ) ),
+			&#x27;subset&#x27; =&gt; urlencode( &#x27;latin,latin-ext&#x27; ),
+		);
+
+		$fonts_url = add_query_arg( $query_args, &#x27;https://fonts.googleapis.com/css&#x27; );
+	}
+
+	return esc_url_raw( $fonts_url );
+}
+
+/**
+ * Add preconnect for Google Fonts.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param array  $urls           URLs to print for resource hints.
+ * @param string $relation_type  The relation type the URLs are printed.
+ * @return array $urls           URLs to print for resource hints.
+ */
+function twentyseventeen_resource_hints( $urls, $relation_type ) {
+	if ( wp_style_is( &#x27;twentyseventeen-fonts&#x27;, &#x27;queue&#x27; ) &amp;&amp; &#x27;preconnect&#x27; === $relation_type ) {
+		$urls[] = array(
+			&#x27;href&#x27; =&gt; &#x27;https://fonts.gstatic.com&#x27;,
+			&#x27;crossorigin&#x27;,
+		);
+	}
+
+	return $urls;
+}
+add_filter( &#x27;wp_resource_hints&#x27;, &#x27;twentyseventeen_resource_hints&#x27;, 10, 2 );
+
+/**
+ * Register widget area.
+ *
+ * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
+ */
+function twentyseventeen_widgets_init() {
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Home&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;home-widget-sidebar&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your home menu.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+	
+
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Subscriber&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;home-subscriber-sidebar&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your newsletter menu.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Services&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;home-services-sidebar&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your service menu.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Contact&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;home-contact-sidebar&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your contact menu.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+	register_sidebar( array(
+		&#x27;name&#x27;          =&gt; __( &#x27;Video Banner&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;id&#x27;            =&gt; &#x27;home-header-sidebar&#x27;,
+		&#x27;description&#x27;   =&gt; __( &#x27;Add widgets here to appear in your background video.&#x27;, &#x27;twentyseventeen&#x27; ),
+		&#x27;before_widget&#x27; =&gt; &#x27;&lt;section id=&quot;%1$s&quot; class=&quot;widget %2$s&quot;&gt;&#x27;,
+		&#x27;after_widget&#x27;  =&gt; &#x27;&lt;/section&gt;&#x27;,
+		&#x27;before_title&#x27;  =&gt; &#x27;&lt;h2 class=&quot;widget-title&quot;&gt;&#x27;,
+		&#x27;after_title&#x27;   =&gt; &#x27;&lt;/h2&gt;&#x27;,
+	) );
+}
+add_action( &#x27;widgets_init&#x27;, &#x27;twentyseventeen_widgets_init&#x27; );
+
+/**
+ * Replaces &quot;[...]&quot; (appended to automatically generated excerpts) with ... and
+ * a &#x27;Continue reading&#x27; link.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @return string &#x27;Continue reading&#x27; link prepended with an ellipsis.
+ */
+function twentyseventeen_excerpt_more( $link ) {
+	if ( is_admin() ) {
+		return $link;
+	}
+
+	$link = sprintf( &#x27;&lt;p class=&quot;link-more&quot;&gt;&lt;a href=&quot;%1$s&quot; class=&quot;more-link&quot;&gt;%2$s&lt;/a&gt;&lt;/p&gt;&#x27;,
+		esc_url( get_permalink( get_the_ID() ) ),
+		/* translators: %s: Name of current post */
+		sprintf( __( &#x27;Continue reading&lt;span class=&quot;screen-reader-text&quot;&gt; &quot;%s&quot;&lt;/span&gt;&#x27;, &#x27;twentyseventeen&#x27; ), get_the_title( get_the_ID() ) )
+	);
+	return &#x27; &amp;hellip; &#x27; . $link;
+}
+add_filter( &#x27;excerpt_more&#x27;, &#x27;twentyseventeen_excerpt_more&#x27; );
+
+
+/**
+ * Add a pingback url auto-discovery header for singularly identifiable articles.
+ */
+function twentyseventeen_pingback_header() {
+	if ( is_singular() &amp;&amp; pings_open() ) {
+		printf( &#x27;&lt;link rel=&quot;pingback&quot; href=&quot;%s&quot;&gt;&#x27; . &quot;\n&quot;, get_bloginfo( &#x27;pingback_url&#x27; ) );
+	}
+}
+add_action( &#x27;wp_head&#x27;, &#x27;twentyseventeen_pingback_header&#x27; );
+
+/**
+ * Display custom color CSS.
+ */
+
+
+
+
+/**
+ * Add custom image sizes attribute to enhance responsive image functionality
+ * for content images.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param string $sizes A source size value for use in a &#x27;sizes&#x27; attribute.
+ * @param array  $size  Image size. Accepts an array of width and height
+ *                      values in pixels (in that order).
+ * @return string A source size value for use in a content image &#x27;sizes&#x27; attribute.
+ */
+function twentyseventeen_content_image_sizes_attr( $sizes, $size ) {
+	$width = $size[0];
+
+	if ( 740 &lt;= $width ) {
+		$sizes = &#x27;(max-width: 706px) 89vw, (max-width: 767px) 82vw, 740px&#x27;;
+	}
+
+	if ( is_active_sidebar( &#x27;sidebar-1&#x27; ) || is_archive() || is_search() || is_home() || is_page() ) {
+		if ( ! ( is_page() &amp;&amp; &#x27;one-column&#x27; === get_theme_mod( &#x27;page_options&#x27; ) ) &amp;&amp; 767 &lt;= $width ) {
+			 $sizes = &#x27;(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px&#x27;;
+		}
+	}
+
+	return $sizes;
+}
+add_filter( &#x27;wp_calculate_image_sizes&#x27;, &#x27;twentyseventeen_content_image_sizes_attr&#x27;, 10, 2 );
+
+/**
+ * Filter the `sizes` value in the header image markup.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param string $html   The HTML image tag markup being filtered.
+ * @param object $header The custom header object returned by &#x27;get_custom_header()&#x27;.
+ * @param array  $attr   Array of the attributes for the image tag.
+ * @return string The filtered header image HTML.
+ */
+function twentyseventeen_header_image_tag( $html, $header, $attr ) {
+	if ( isset( $attr[&#x27;sizes&#x27;] ) ) {
+		$html = str_replace( $attr[&#x27;sizes&#x27;], &#x27;100vw&#x27;, $html );
+	}
+	return $html;
+}
+add_filter( &#x27;get_header_image_tag&#x27;, &#x27;twentyseventeen_header_image_tag&#x27;, 10, 3 );
+
+/**
+ * Add custom image sizes attribute to enhance responsive image functionality
+ * for post thumbnails.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param array $attr       Attributes for the image markup.
+ * @param int   $attachment Image attachment ID.
+ * @param array $size       Registered image size or flat array of height and width dimensions.
+ * @return string A source size value for use in a post thumbnail &#x27;sizes&#x27; attribute.
+ */
+function twentyseventeen_post_thumbnail_sizes_attr( $attr, $attachment, $size ) {
+	if ( is_archive() || is_search() || is_home() ) {
+		$attr[&#x27;sizes&#x27;] = &#x27;(max-width: 767px) 89vw, (max-width: 1000px) 54vw, (max-width: 1071px) 543px, 580px&#x27;;
+	} else {
+		$attr[&#x27;sizes&#x27;] = &#x27;100vw&#x27;;
+	}
+
+	return $attr;
+}
+add_filter( &#x27;wp_get_attachment_image_attributes&#x27;, &#x27;twentyseventeen_post_thumbnail_sizes_attr&#x27;, 10, 3 );
+
+/**
+ * Use front-page.php when Front page displays is set to a static page.
+ *
+ * @since Twenty Seventeen 1.0
+ *
+ * @param string $template front-page.php.
+ *
+ * @return string The template to be used: blank if is_home() is true (defaults to index.php), else $template.
+ */
+function twentyseventeen_front_page_template( $template ) {
+	return is_home() ? &#x27;&#x27; : $template;
+}
+add_filter( &#x27;frontpage_template&#x27;,  &#x27;twentyseventeen_front_page_template&#x27; );
+
+/**
+ * Implement the Custom Header feature.
+ */
+//require get_parent_theme_file_path( &#x27;/inc/custom-header.php&#x27; );
+
+/**
+ * Custom template tags for this theme.
+ */
+require get_parent_theme_file_path( &#x27;/inc/template-tags.php&#x27; );
+
+/**
+ * Additional features to allow styling of the templates.
+ */
+require get_parent_theme_file_path( &#x27;/inc/template-functions.php&#x27; );
+
+/**
+ * Customizer additions.
+ */
+require get_parent_theme_file_path( &#x27;/inc/customizer.php&#x27; );
+
+/**
+ * SVG icons functions and filters.
+ */
+require get_parent_theme_file_path( &#x27;/inc/icon-functions.php&#x27; );
+
+/** theme setting **/
+require get_parent_theme_file_path( &#x27;/inc/theme-setting.php&#x27; );
+
+// custom post type
+function dd($str){
+echo &#x27;&lt;pre&gt;&#x27;;
+print_r($str);
+}
+// home widget 
+class home_widget extends WP_Widget {
+function __construct() {
+parent::__construct(
+// Base ID of your widget
+&#x27;wpb_h_widget&#x27;, 
+
+// Widget name will appear in UI
+__(&#x27;Home Widget&#x27;, &#x27;wpb_h_widget_domain&#x27;), 
+
+// Widget description
+array( &#x27;description&#x27; =&gt; __( &#x27;Home Widget&#x27;, &#x27;wpb_h_widget_domain&#x27; ), ) 
+);
+}
+
+
+
+
+
+// Creating widget front-end-------------------------------------------------------------------------------------------------- MAIN CONTENT START
+// This is where the action happens
+public function widget( $args, $instance ) {
+$home_title = apply_filters( &#x27;home_title&#x27;, $instance[&#x27;home_title&#x27;] );
+$home_description = apply_filters( &#x27;home_description&#x27;, $instance[&#x27;home_description&#x27;] );
+// before and after widget arguments are defined by themes
+echo $args[&#x27;before_widget&#x27;];
+
+
+// This is where you run the code and display the output
+echo &#x27;&lt;div class=&quot;col-md-12&quot;&gt;
+              &lt;!-- section title --&gt;
+              &lt;div class=&quot;section-heading&quot;&gt;
+                &lt;h1 class=&quot;section-title animated&quot; 
+                  data-animation=&quot;fadeInDown&quot; 
+                  data-delay=&quot;0&quot;&gt;
+                &#x27;.get_aio_style_title($home_title).&#x27;
+                &lt;/h1&gt;
+                
+                
+                &lt;p class=&quot;animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;100&quot;&gt;
+                 &#x27;.$home_description .&#x27;&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;!-- /section title --&gt;
+              &lt;!-- countdown --&gt;
+              &lt;ul id=&quot;countdown&quot; class=&quot;row&quot;&gt;
+                &lt;li class=&quot;time-wrap col-xs-6 col-sm-3 animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;200&quot;&gt;
+                  &lt;span class=&quot;time days&quot;&gt;&lt;/span&gt;
+                  &lt;p class=&quot;unit days_ref shuffle&quot; 
+                  data-shuffle=&quot;7000&quot;&gt;&lt;/p&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;time-wrap col-xs-6 col-sm-3 animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;300&quot;&gt;
+                  &lt;span class=&quot;time hours&quot;&gt;&lt;/span&gt;
+                  &lt;p class=&quot;unit hours_ref shuffle&quot; 
+                  data-shuffle=&quot;11000&quot;&gt;&lt;/p&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;time-wrap col-xs-6 col-sm-3 animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;400&quot;&gt;
+                  &lt;span class=&quot;time minutes&quot;&gt;&lt;/span&gt;
+                  &lt;p class=&quot;unit minutes_ref shuffle&quot; 
+                  data-shuffle=&quot;13000&quot;&gt;&lt;/p&gt;
+                &lt;/li&gt;
+                &lt;li class=&quot;time-wrap col-xs-6 col-sm-3 animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;500&quot;&gt;
+                  &lt;span class=&quot;time seconds&quot;&gt;&lt;/span&gt;
+                  &lt;p class=&quot;unit seconds_ref shuffle&quot; 
+                  data-shuffle=&quot;8000&quot;&gt;&lt;/p&gt;
+                &lt;/li&gt;
+              &lt;/ul&gt;
+              &lt;!-- /countdown --&gt;
+ 
+               &lt;!--  2 of the buttons used to link down the mainpage via anchor code that I removed --&gt;
+               &lt;!--  see original funcitons.php from developers --&gt;
+               
+              &lt;div class=&quot;home-btn-wrapper&quot;&gt;
+               &lt;!-- btn-white to make white....I liked it transparant --&gt;
+                &lt;a class=&quot;btn btn-transparent animated&quot; href=&quot;&#x27;.site_url(&#x27;Station1&#x27;).&#x27;&quot; title=&quot;Station 1&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;600&quot;&gt;Station 1&lt;/a&gt;
+                  
+                &lt;a class=&quot;btn btn-transparent animated&quot; href=&quot;&#x27;.site_url(&#x27;Initial&#x27;).&#x27;&quot; title=&quot;Reserve&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;600&quot;&gt;Reserve&lt;/a&gt;
+                  
+                &lt;a class=&quot;btn btn-transparent animated&quot; href=&quot;#&quot; title=&quot;Employment&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;600&quot;&gt;Employment&lt;/a&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;&#x27;;
+echo $args[&#x27;after_widget&#x27;];
+}
+//------------------------------------------------------------------------------------------------------------ MAIN CONTENT END
+		
+		
+		
+// Home Widget Backend ---------------------------------------------------------------------------------------HOME CONTENT START
+public function form( $instance ) {
+if ( isset( $instance[ &#x27;home_title&#x27; ] ) ) {
+$home_title = $instance[ &#x27;home_title&#x27; ];
+}
+else {
+$home_title = __( &#x27;APPLIED ASTRONOMY&#x27;, &#x27;wpb_h_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;home_description&#x27; ] ) ) {
+$home_description = $instance[ &#x27;home_description&#x27; ];
+}
+else {
+$home_description = __( &#x27;unlimited horizons&#x27;, &#x27;wpb_h_widget_domain&#x27; );
+}
+
+// Widget admin form-------
+?&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;home_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Heading:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;home_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;home_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $home_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;home_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;home_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;home_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $home_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+
+&lt;?php 
+}
+	
+// Updating widget replacing old instances with new
+public function update( $new_instance, $old_instance ) {
+$instance = array();
+$instance[&#x27;home_title&#x27;] = ( ! empty( $new_instance[&#x27;home_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;home_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;home_description&#x27;] = ( ! empty( $new_instance[&#x27;home_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;home_description&#x27;] ) : &#x27;&#x27;;
+
+return $instance;
+}
+} // home ends here------------------------------------------------------------------------------------------------- HOME CONTENT END 
+
+
+
+// contact widget ------------------------------------------------------------------------------------------------- CONTACT CONTENT START 
+class contact_widget extends WP_Widget {
+function __construct() {
+parent::__construct(
+// Base ID of your widget
+&#x27;wpb_c_widget&#x27;, 
+
+// Widget name will appear in UI
+__(&#x27;Contact Widget&#x27;, &#x27;wpb_c_widget_domain&#x27;), 
+
+// Widget description
+array( &#x27;description&#x27; =&gt; __( &#x27;Contact Widget&#x27;, &#x27;wpb_c_widget_domain&#x27; ), ) 
+);
+}
+
+// Creating widget front-end
+// This is where the action happens
+public function widget( $args, $instance ) {
+$contact_title = apply_filters( &#x27;contact_title&#x27;, $instance[&#x27;contact_title&#x27;] );
+$contact_description = apply_filters( &#x27;contact_description&#x27;, $instance[&#x27;contact_description&#x27;] );
+// before and after widget arguments are defined by themes
+//echo $args[&#x27;before_widget&#x27;];
+
+
+// This is where you run the code and display the output
+echo &#x27;&lt;div class=&quot;col-md-12&quot;&gt;
+              &lt;!-- section title --&gt;
+              &lt;div class=&quot;section-heading&quot;&gt;
+                &lt;h2 class=&quot;section-title animated&quot; 
+                  data-animation=&quot;fadeInDown&quot; 
+                  data-delay=&quot;0&quot;&gt;
+                  &#x27;.get_aio_style_title($contact_title) .&#x27;&lt;/h2&gt;
+                &lt;p class=&quot;animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;100&quot;&gt;
+                  &#x27;.$contact_description.&#x27;&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;!-- /section title --&gt;
+            &lt;/div&gt;
+            &lt;!-- contact form --&gt;
+            &#x27;;
+//echo $args[&#x27;after_widget&#x27;];
+}
+		
+// Widget Backend 
+public function form( $instance ) {
+if ( isset( $instance[ &#x27;contact_title&#x27; ] ) ) {
+$contact_title = $instance[ &#x27;contact_title&#x27; ];
+}
+else {
+$contact_title = __( &#x27;CONTACT US&#x27;, &#x27;wpb_c_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;contact_description&#x27; ] ) ) {
+$contact_description = $instance[ &#x27;contact_description&#x27; ];
+}
+else {
+$contact_description = __( &#x27;any enquiries or say hello&#x27;, &#x27;wpb_c_widget_domain&#x27; );
+}
+// contact widget
+
+
+
+// Widget admin form
+?&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;contact_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Heading:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;contact_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;contact_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $contact_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;contact_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;contact_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;contact_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $contact_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+
+&lt;?php 
+}
+	
+// Updating widget replacing old instances with new
+public function update( $new_instance, $old_instance ) {
+$instance = array();
+$instance[&#x27;contact_title&#x27;] = ( ! empty( $new_instance[&#x27;contact_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;contact_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;contact_description&#x27;] = ( ! empty( $new_instance[&#x27;contact_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;contact_description&#x27;] ) : &#x27;&#x27;;
+
+return $instance;
+}
+} // home ends here
+// ------------------------------------------------------------------------------------------------- CONTACT CONTENT END
+
+
+
+
+// service widget------------------------------------------------------------------------------------------------- SERVICES CONTENT START
+
+class service_widget extends WP_Widget {
+function __construct() {
+parent::__construct(
+// Base ID of your widget
+&#x27;wpb_widget&#x27;, 
+
+// Widget name will appear in UI
+__(&#x27;Service Widget&#x27;, &#x27;wpb_widget_domain&#x27;), 
+
+// Widget description
+array( &#x27;description&#x27; =&gt; __( &#x27;Service Widget&#x27;, &#x27;wpb_widget_domain&#x27; ), ) 
+);
+}
+
+// Creating widget front-end
+// This is where the action happens
+public function widget( $args, $instance ) {
+$service_title = apply_filters( &#x27;service_title&#x27;, $instance[&#x27;service_title&#x27;] );
+$service_description = apply_filters( &#x27;service_description&#x27;, $instance[&#x27;service_description&#x27;] );
+	// service 1
+$service1_title = apply_filters( &#x27;service1_title&#x27;, $instance[&#x27;service1_title&#x27;] );
+$service1_description = apply_filters( &#x27;service1_description&#x27;, $instance[&#x27;service1_description&#x27;] );
+$service1_icon = apply_filters( &#x27;service1_icon&#x27;, $instance[&#x27;service1_icon&#x27;] );
+	// service 2
+$service2_title = apply_filters( &#x27;service2_title&#x27;, $instance[&#x27;service2_title&#x27;] );
+$service2_description = apply_filters( &#x27;service2_description&#x27;, $instance[&#x27;service2_description&#x27;] );
+$service2_icon = apply_filters( &#x27;service2_icon&#x27;, $instance[&#x27;service2_icon&#x27;] );
+	// service 3
+$service3_title = apply_filters( &#x27;service3_title&#x27;, $instance[&#x27;service3_title&#x27;] );
+$service3_description = apply_filters( &#x27;service3_description&#x27;, $instance[&#x27;service3_description&#x27;] );
+$service3_icon = apply_filters( &#x27;service3_icon&#x27;, $instance[&#x27;service3_icon&#x27;] );
+// before and after widget arguments are defined by themes
+echo $args[&#x27;before_widget&#x27;];
+
+
+// This is where you run the code and display the output
+echo &#x27;&lt;div class=&quot;container&quot;&gt;
+          &lt;div class=&quot;row&quot;&gt;
+            &lt;div class=&quot;col-md-12&quot;&gt;
+              &lt;!-- section title --&gt;
+              &lt;div class=&quot;section-heading&quot;&gt;
+                &lt;h2 class=&quot;section-title animated&quot; 
+                  data-animation=&quot;fadeInDown&quot; 
+                  data-delay=&quot;0&quot;&gt;
+                &#x27;.get_aio_style_title($service_title).&#x27;&lt;/h2&gt;
+                &lt;p class=&quot;animated&quot; 
+                  data-animation=&quot;fadeInUp&quot; 
+                  data-delay=&quot;100&quot;&gt;
+                  &#x27;.$service_description.&#x27;&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;!-- /section title --&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;row&quot;&gt;
+
+
+            &lt;!-- service list --&gt;
+            &lt;div class=&quot;service-wrapper clearfix&quot;&gt;
+            
+              &lt;div class=&quot;service col-md-4 animated&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;200&quot;&gt;
+
+                 &lt;a href=&quot;http://www.ai2observatory.com/research&quot; style=&quot;display: block&quot;&gt;
+                &lt;i class=&quot;&#x27;.$service1_icon.&#x27;&quot;&gt;&lt;/i&gt; &lt;!-- service icon --&gt;&lt;/a&gt;
+
+                &lt;h3&gt;&#x27;.$service1_title.&#x27;&lt;/h3&gt; &lt;!-- service title --&gt;
+                &lt;p&gt;&#x27;.$service1_description.&#x27;&lt;/p&gt; &lt;!-- service content --&gt;
+              &lt;/div&gt;
+              
+
+              &lt;div class=&quot;service col-md-4 animated&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;300&quot;&gt;
+
+                 &lt;a href=&quot;http://www.ai2observatory.com/astrophotography&quot; style=&quot;display: block&quot;&gt;
+                &lt;i class=&quot;&#x27;.$service2_icon.&#x27;&quot;&gt;&lt;/i&gt; &lt;!-- service icon --&gt;&lt;/a&gt;
+
+                &lt;h3&gt;&#x27;.$service2_title.&#x27;&lt;/h3&gt; &lt;!-- service title --&gt;
+                &lt;p&gt;&#x27;.$service2_description.&#x27;&lt;/p&gt; &lt;!-- service content --&gt;
+              &lt;/div&gt;
+              
+              &lt;div class=&quot;service col-md-4 animated&quot; 
+                data-animation=&quot;fadeInUp&quot; 
+                data-delay=&quot;400&quot;&gt;
+
+                &lt;a href=&quot;http://www.ai2observatory.com/robotic&quot; style=&quot;display: block&quot;&gt;
+                &lt;i class=&quot;&#x27;.$service3_icon.&#x27;&quot;&gt;&lt;/i&gt; &lt;!-- service icon --&gt;&lt;/a&gt;
+
+                &lt;h3&gt;&#x27;.$service3_title.&#x27;&lt;/h3&gt; &lt;!-- service title --&gt;
+                &lt;p&gt;&#x27;.$service3_description.&#x27;&lt;/p&gt; &lt;!-- service content --&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;!-- /service list --&gt;
+
+
+          &lt;/div&gt;
+        &lt;/div&gt;&#x27;;
+echo $args[&#x27;after_widget&#x27;];
+}
+		
+// Widget Backend 
+public function form( $instance ) {
+if ( isset( $instance[ &#x27;service_title&#x27; ] ) ) {
+$service_title = $instance[ &#x27;service_title&#x27; ];
+}
+else {
+$service_title = __( &#x27;OBSERVATORY SERVICES&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service_description&#x27; ] ) ) {
+$service_description = $instance[ &#x27;service_description&#x27; ];
+}
+else {
+$service_description = __( &#x27;our current pursuits&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service1_title&#x27; ] ) ) {
+$service1_title = $instance[ &#x27;service1_title&#x27; ];
+}
+else {
+$service1_title = __( &#x27;RESEARCH&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service1_description&#x27; ] ) ) {
+$service1_description = $instance[ &#x27;service1_description&#x27; ];
+}
+else {
+$service1_description = __( &#x27;Specializing in Spectroscopy,
+Photometry, Catalog proofs and Data collection&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service1_icon&#x27; ] ) ) {
+$service1_icon = $instance[ &#x27;service1_icon&#x27; ];
+}
+else {
+$service1_icon = &#x27;icon-chemistry icons&#x27;;
+}
+// service 2
+if ( isset( $instance[ &#x27;service2_title&#x27; ] ) ) {
+$service2_title = $instance[ &#x27;service2_title&#x27; ];
+}
+else {
+$service2_title = __( &#x27;ASTROPHOTOGRAPHY&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service2_description&#x27; ] ) ) {
+$service2_description = $instance[ &#x27;service2_description&#x27; ];
+}
+else {
+$service2_description = __( &#x27;Filtered config for Planetary, Deepsky and everything in-between&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service2_icon&#x27; ] ) ) {
+$service2_icon = $instance[ &#x27;service2_icon&#x27; ];
+}
+else {
+$service2_icon = &#x27;icon-camera icons&#x27;;
+}
+// service 3
+if ( isset( $instance[ &#x27;service3_title&#x27; ] ) ) {
+$service3_title = $instance[ &#x27;service3_title&#x27; ];
+}
+else {
+$service3_title = __( &#x27;ROBOTIC SCOPES&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service3_description&#x27; ] ) ) {
+$service3_description = $instance[ &#x27;service3_description&#x27; ];
+}
+else {
+$service3_description = __( &#x27;Fully remote controlled telescopes for amateurs and professionals&#x27;, &#x27;wpb_widget_domain&#x27; );
+}
+
+if ( isset( $instance[ &#x27;service3_icon&#x27; ] ) ) {
+$service3_icon = $instance[ &#x27;service3_icon&#x27; ];
+}
+else {
+$service3_icon = &#x27;icon-feed icons&#x27;;
+}
+// Widget admin form
+?&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Heading:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+
+&lt;!---- service start --&gt;
+&lt;h2&gt;First box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service title:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service1_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service1_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service1_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service1_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_icon&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service icon:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service1_icon&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service1_icon&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service1_icon ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;!---- 2nd ----&gt;
+&lt;h2&gt;2nd box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service title:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service2_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service2_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service2_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service2_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_icon&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service icon:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service2_icon&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service2_icon&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service2_icon ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;!---- 3rd ----&gt;
+&lt;h2&gt;3rd box&lt;/h2&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_title&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service title:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_title&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service3_title&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service3_title ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_description&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service description:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_description&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service3_description&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service3_description ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;label for=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_icon&#x27; ); ?&gt;&quot;&gt;&lt;?php _e( &#x27;Service icon:&#x27; ); ?&gt;&lt;/label&gt; 
+&lt;input class=&quot;widefat&quot; id=&quot;&lt;?php echo $this-&gt;get_field_id( &#x27;service3_icon&#x27; ); ?&gt;&quot; name=&quot;&lt;?php echo $this-&gt;get_field_name( &#x27;service3_icon&#x27; ); ?&gt;&quot; type=&quot;text&quot; value=&quot;&lt;?php echo esc_attr( $service3_icon ); ?&gt;&quot; /&gt;
+&lt;/p&gt;
+&lt;?php 
+}
+	
+// Updating widget replacing old instances with new
+public function update( $new_instance, $old_instance ) {
+$instance = array();
+$instance[&#x27;service_title&#x27;] = ( ! empty( $new_instance[&#x27;service_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service_description&#x27;] = ( ! empty( $new_instance[&#x27;service_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service_description&#x27;] ) : &#x27;&#x27;;
+
+$instance[&#x27;service1_title&#x27;] = ( ! empty( $new_instance[&#x27;service1_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service1_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service1_description&#x27;] = ( ! empty( $new_instance[&#x27;service1_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service1_description&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service1_icon&#x27;] = ( ! empty( $new_instance[&#x27;service1_icon&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service1_icon&#x27;] ) : &#x27;&#x27;;
+
+$instance[&#x27;service2_title&#x27;] = ( ! empty( $new_instance[&#x27;service2_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service2_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service2_description&#x27;] = ( ! empty( $new_instance[&#x27;service2_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service2_description&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service2_icon&#x27;] = ( ! empty( $new_instance[&#x27;service2_icon&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service2_icon&#x27;] ) : &#x27;&#x27;;
+
+$instance[&#x27;service3_title&#x27;] = ( ! empty( $new_instance[&#x27;service3_title&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service3_title&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service3_description&#x27;] = ( ! empty( $new_instance[&#x27;service3_description&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service3_description&#x27;] ) : &#x27;&#x27;;
+$instance[&#x27;service3_icon&#x27;] = ( ! empty( $new_instance[&#x27;service3_icon&#x27;] ) ) ? strip_tags( $new_instance[&#x27;service3_icon&#x27;] ) : &#x27;&#x27;;
+
+return $instance;
+}
+} // Class wpb_widget ends here
+// service widget------------------------------------------------------------------------------------------------- SERVICES CONTENT END
+
+
+
+function wpb_load_widget() {
+	register_widget( &#x27;service_widget&#x27; );
+	register_widget( &#x27;home_widget&#x27; );
+	register_widget( &#x27;contact_widget&#x27; );
+}
+add_action( &#x27;widgets_init&#x27;, &#x27;wpb_load_widget&#x27; );
+
+
+
+
+
+
+
+// ------------------------------------------------------------------------------------------------- MAINPAGE MENU
+function ai2_observatory_menu(){
+
+
+//  -------------------        JSI test order number and assign menu  ------------------
+  $onum = get_post_field(&#x27;menu_order&#x27;, $post-&gt;ID);
+       if ( $onum &gt;=1 &amp;&amp; $onum &lt;=5 ) {
+         $menukey = &quot;Menu 1&quot;;     
+        } else if ( $onum &gt;=6 &amp;&amp; $onum &lt;=11  ) {
+         $menukey = &quot;Menu 2&quot;;
+        } else if ( $onum &gt;=12 &amp;&amp; $onum &lt;=14  ) {
+         $menukey = &quot;Menu 3&quot;;
+        } else {
+         $menukey = &quot;Menu 4&quot;;
+        }
+
+//JSI changed Main Menu to $menukey here...was hard coded
+  $menu_name = $menukey; 
+  $menu = wp_get_nav_menu_object($menu_name);
+  $menuitems = wp_get_nav_menu_items( $menu-&gt;term_id, array( &#x27;order&#x27; =&gt; &#x27;DESC&#x27; ) );
+  //echo &#x27;&lt;pre&gt;&#x27;;
+  //print_r($menuitems);
+
+?&gt;
+&lt;ul&gt;
+    &lt;?php
+    $id = get_the_ID();
+    $count = 0;
+    $submenu = false;
+
+    foreach( $menuitems as $item ):
+        $link = $item-&gt;url;
+        $title = $item-&gt;title;
+        // item does not have a parent so menu_item_parent equals 0 (false)
+        if ( !$item-&gt;menu_item_parent ):
+        // save this id for later comparison with sub-menu items
+        $parent_id = $item-&gt;ID;
+    ?&gt;
+
+    &lt;li&gt;
+        &lt;a href=&quot;&lt;?php echo $link; ?&gt;&quot; class=&quot;&lt;?php echo ($item-&gt;object_id==$id)? &#x27;active&#x27;:&#x27;&#x27;;?&gt;&quot;&gt;&lt;span&gt;&lt;/span&gt;
+           
+        &lt;/a&gt;
+        &lt;div class=&quot;fp-tooltip left&quot;&gt; &lt;?php echo $title; ?&gt;&lt;/div&gt;
+    &lt;?php endif; ?&gt;
+
+        &lt;?php if ( $parent_id == $item-&gt;menu_item_parent ): ?&gt;
+
+            &lt;?php if ( !$submenu ): $submenu = true; ?&gt;
+            &lt;ul class=&quot;sub-menu&quot;&gt;
+            &lt;?php endif; ?&gt;
+                    &lt;a class=&quot;btn &lt;?php echo ($item-&gt;object_id==$id)? &#x27;btn-nontransparent&#x27;:&#x27;btn-transparent&#x27;;?&gt; animated in fadeInUp&quot; href=&quot;&lt;?php echo $link; ?&gt;&quot; data-animation=&quot;fadeInUp&quot; data-delay=&quot;600&quot; &gt;&lt;?php echo $title; ?&gt;&lt;/a&gt;
+               
+            &lt;?php if ( $menuitems[ $count + 1 ]-&gt;menu_item_parent != $parent_id &amp;&amp; $submenu ): ?&gt;
+            &lt;/ul&gt;
+            &lt;?php $submenu = false; endif; ?&gt;
+
+        &lt;?php endif; ?&gt;
+
+    &lt;?php if ( $menuitems[ $count + 1 ]-&gt;menu_item_parent != $parent_id ): ?&gt;
+    &lt;/li&gt;                           
+    &lt;?php $submenu = false; endif; ?&gt;
+
+&lt;?php $count++; endforeach; ?&gt;
+
+&lt;/ul&gt;
+&lt;?php
+}
+
+
+
+
+
+
+
+
+
+</pre></details></body></html>

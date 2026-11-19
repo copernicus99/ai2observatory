@@ -1,0 +1,286 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/styles/includes/Config/PluginSettingGroups.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/styles/includes/Config/PluginSettingGroups.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+return apply_filters( &#x27;ninja_forms_styles_setting_groups&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Form Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;form_settings&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;form_settings&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Form Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(
+            &#x27;container&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;container&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Container Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-cont&#x27;
+            ),
+            &#x27;title&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;title&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Title Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-title h3&#x27;
+            ),
+            &#x27;required-message&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;required-message&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Required Message Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-fields-required&#x27;
+            ),
+            &#x27;row&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;row&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Row Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-row&#x27;
+            ),
+            &#x27;row-odd&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;row-odd&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Odd Row Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-row:nth-child(odd)&#x27;
+            ),
+            &#x27;success-msg&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;success-msg&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Success Response Message Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-response-msg&#x27;
+            ),
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Field Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;field_settings&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;field_settings&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Default Field Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(
+            &#x27;wrap&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;wrap&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Wrap Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-field-container .field-wrap&#x27;
+            ),
+            &#x27;label&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;label&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Label Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-field-label label&#x27;
+            ),
+            &#x27;field&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;field&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Element Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-field-element .ninja-forms-field:not(select)&#x27;
+            ),
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Field Type Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;field_type&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;field_type&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Field Type Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(),
+        &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-field-container.{field-type}-container&#x27;
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Error Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;error_settings&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;error_settings&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Error Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(
+            &#x27;error_msg&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;error_msg&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Main Error Message Wrap Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-errors .nf-error-msg&#x27;
+            ),
+            &#x27;field_error_wrap&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;field_error_wrap&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Error Field Wrap Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-error-wrap&#x27;
+            ),
+            &#x27;field_error_label&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;field_error_label&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Error Label Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-error .nf-field-label label&#x27;
+            ),
+            &#x27;field_error_element&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;field_error_element&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Error Element Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-error .nf-field-element .nf-element&#x27;
+            ),
+            &#x27;field_error_msg&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;field_error_msg&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Error Message Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-error-wrap .nf-error-msg&#x27;
+            ),
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | DatePicker Styles
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;datepicker_settings&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;datepicker_settings&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;DatePicker Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(
+            &#x27;datepicker_container&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_container&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Container&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-single&#x27;
+            ),
+            &#x27;datepicker_header&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_header&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Header&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-title&#x27;
+            ),
+            &#x27;datepicker_week&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_week&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Week Days&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-single th&#x27;
+            ),
+            &#x27;datepicker_days&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_days&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Days&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-button&#x27;
+            ),
+            &#x27;datepicker_days_hover&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_days_hover&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Day Hover&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-single .pika-button:hover&#x27;
+            ),
+            &#x27;datepicker_today&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_today&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Today&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .is-today .pika-button&#x27;
+            ),
+            &#x27;datepicker_selected&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_selected&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Selected&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .is-selected .pika-button&#x27;
+            ),
+            &#x27;datepicker_prev&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_prev&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Previous Link&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-prev&#x27;
+            ),
+            &#x27;datepicker_next&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;datepicker_next&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;DatePicker Next Link&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;selector&#x27; =&gt; &#x27;html body .pika-next&#x27;
+            ),
+        )
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | MultiPart Styles
+    |--------------------------------------------------------------------------
+    */
+    
+    &#x27;multipart_settings&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;multipart_settings&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;MultiPart Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;sections&#x27; =&gt; array(
+            &#x27;breadcrumb_container_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;breadcrumb_container_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Breadcrumb Container Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-form-content .nf-mp-header .nf-breadcrumbs&#x27;,
+            ),
+
+            &#x27;breadcrumb_buttons_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;breadcrumb_buttons_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Breadcrumb Buttons Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-breadcrumbs li a.nf-breadcrumb&#x27;,
+            ),
+
+            &#x27;breadcrumb_button_hover_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;breadcrumb_button_hover_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Breadcrumb Button Hover Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-breadcrumbs li a.nf-breadcrumb:hover&#x27;,
+            ),
+
+            &#x27;breadcrumb_active_button_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;breadcrumb_active_button_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Breadcrumb Active Button Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-breadcrumbs .active &gt; .nf-breadcrumb&#x27;,
+            ),
+
+            &#x27;progress_bar_container_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;progress_bar_container_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Progress Bar Container Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-mp-header .nf-progress-container&#x27;,
+            ),
+
+            &#x27;progress_bar_fill_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;progress_bar_fill_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Progress Bar Fill Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-mp-header .nf-progress&#x27;,
+            ),
+
+            &#x27;part_titles_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;part_titles_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Part Titles Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-mp-header h3&#x27;,
+            ),
+
+            &#x27;navigation_container_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;navigation_container_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Navigation Container Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-mp-footer .nf-next-previous&#x27;,
+            ),
+
+            &#x27;previous_button_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;previous_button_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Previous Button Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-previous-item &gt; .nf-previous&#x27;,
+            ),
+
+            &#x27;next_button_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;next_button_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Next Button Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-next-item .nf-next&#x27;,
+            ),
+
+            &#x27;navigation_hover_styles&#x27; =&gt; array(
+                &#x27;name&#x27; =&gt; &#x27;navigation_hover_styles&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Navigation Hover Styles&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+                &#x27;selector&#x27; =&gt; &#x27;.nf-next-previous input:hover&#x27;,
+            ),
+        )
+    ),
+
+));
+</pre></details></body></html>

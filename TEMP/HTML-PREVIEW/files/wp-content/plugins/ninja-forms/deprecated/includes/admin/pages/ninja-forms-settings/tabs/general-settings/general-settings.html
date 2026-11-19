@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/general-settings/general-settings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/pages/ninja-forms-settings/tabs/general-settings/general-settings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+    &lt;div class=&quot;nf-delete-on-uninstall-prompt&quot;&gt;
+        
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-delete-on-uninstall-prompt-buttons&quot;&gt;
+        &lt;div id=&quot;nf-admin-modal-cancel&quot;&gt;
+            &lt;a class=&quot;submitdelete deletion modal-close nf-delete-on-uninstall-cancel&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;nf-admin-modal-update&quot;&gt;
+            &lt;a class=&quot;button-primary nf-delete-on-uninstall-yes&quot; href=&quot;#&quot;&gt;&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    "></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_tab_general_settings&#x27;, 9 );
+
+function ninja_forms_register_tab_general_settings(){
+    $args = array(
+        &#x27;name&#x27; =&gt; __( &#x27;General&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+        &#x27;display_function&#x27; =&gt; &#x27;&#x27;,
+        &#x27;save_function&#x27; =&gt; &#x27;ninja_forms_save_general_settings&#x27;,
+    );
+    ninja_forms_register_tab( &#x27;general_settings&#x27;, $args );
+}
+
+add_action(&#x27;init&#x27;, &#x27;ninja_forms_register_general_settings_metabox&#x27;);
+
+function ninja_forms_register_general_settings_metabox(){
+
+    $plugin_settings = nf_get_settings();
+    if ( isset ( $plugin_settings[&#x27;version&#x27;] ) ) {
+        $current_version = $plugin_settings[&#x27;version&#x27;];
+    } else {
+        $current_version = NF_PLUGIN_VERSION;
+    }
+
+    $args = array(
+        &#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+        &#x27;tab&#x27; =&gt; &#x27;general_settings&#x27;,
+        &#x27;slug&#x27; =&gt; &#x27;general_settings&#x27;,
+        &#x27;title&#x27; =&gt; __( &#x27;General Settings&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;version&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;desc&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Version&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; $current_version,
+            ),
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;date_format&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;text&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Date Format&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; &#x27;e.g. m/d/Y, d/m/Y - &#x27; . sprintf( __( &#x27;Tries to follow the %sPHP date() function%s specifications, but not every format is supported.&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;http://www.php.net/manual/en/function.date.php&quot; target=&quot;_blank&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; ),
+            ),
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;currency_symbol&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;text&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Currency Symbol&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; &#x27;e.g. $, &amp;pound;, &amp;euro;&#x27;,
+            ),
+        ),
+    );
+    ninja_forms_register_tab_metabox( $args );
+
+    $args = array(
+        &#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+        &#x27;tab&#x27; =&gt; &#x27;general_settings&#x27;,
+        &#x27;slug&#x27; =&gt; &#x27;recaptcha_settings&#x27;,
+        &#x27;title&#x27; =&gt; __( &#x27;reCAPTCHA Settings&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;recaptcha_site_key&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;text&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Site Key&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt;  sprintf( __( &#x27;Get a site key for your domain by registering  %shere%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;https://www.google.com/recaptcha/intro/index.html&quot; target=&quot;_blank&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; )
+            ),
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;recaptcha_secret_key&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;text&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Secret Key&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; &#x27;&#x27;,
+            ),
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;recaptcha_lang&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;text&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;reCAPTCHA Language&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; &#x27;e.g. en, da - &#x27; . sprintf( __( &#x27;Language used by reCAPTCHA. To get the code for your language click %shere%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;a href=&quot;https://developers.google.com/recaptcha/docs/language&quot; target=&quot;_blank&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27; )
+            ),
+        ),
+        &#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+    );
+    $args[&#x27;settings&#x27;] = apply_filters( &#x27;nf_general_settings_recaptcha&#x27;, $args[&#x27;settings&#x27;] );
+
+    ninja_forms_register_tab_metabox( $args );
+
+    $args = array(
+        &#x27;page&#x27; =&gt; &#x27;ninja-forms-settings&#x27;,
+        &#x27;tab&#x27; =&gt; &#x27;general_settings&#x27;,
+        &#x27;slug&#x27; =&gt; &#x27;advanced_settings&#x27;,
+        &#x27;title&#x27; =&gt; __( &#x27;Advanced Settings&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27;    =&gt; &#x27;delete_on_uninstall&#x27;,
+                &#x27;type&#x27;    =&gt; &#x27;checkbox&#x27;,
+                &#x27;label&#x27;    =&gt; __( &#x27;Remove ALL Ninja Forms data upon uninstall?&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;    =&gt; sprintf( __( &#x27;If this box is checked, ALL Ninja Forms data will be removed from the database upon deletion. %sAll form and submission data will be unrecoverable.%s&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;span class=&quot;nf-nuke-warning&quot;&gt;&#x27;, &#x27;&lt;/span&gt;&#x27; ),
+            ),
+            array(
+                &#x27;name&#x27;    =&gt; &#x27;delete_prompt&#x27;,
+                &#x27;type&#x27;    =&gt; &#x27;&#x27;,
+                &#x27;display_function&#x27; =&gt; &#x27;nf_delete_on_uninstall_prompt&#x27;,
+            ),
+            array(
+                &#x27;name&#x27;     =&gt; &#x27;disable_admin_notices&#x27;,
+                &#x27;type&#x27;     =&gt; &#x27;checkbox&#x27;,
+                &#x27;label&#x27;     =&gt; __( &#x27;Disable Admin Notices&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;desc&#x27;     =&gt; __( &#x27;Never see an admin notice on the dashboard from Ninja Forms. Uncheck to see them again.&#x27;, &#x27;ninja-forms&#x27; ),
+            ),
+        ),
+        &#x27;state&#x27; =&gt; &#x27;closed&#x27;,
+    );
+    $args[&#x27;settings&#x27;] = apply_filters( &#x27;nf_general_settings_advanced&#x27;, $args[&#x27;settings&#x27;] );
+
+    ninja_forms_register_tab_metabox( $args );
+
+}
+
+function nf_delete_on_uninstall_prompt() {
+    ?&gt;
+    &lt;div class=&quot;nf-delete-on-uninstall-prompt&quot;&gt;
+        &lt;?php _e( &#x27;This setting will COMPLETELY remove anything Ninja Forms related upon plugin deletion. This includes SUBMISSIONS and FORMS. It cannot be undone.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;nf-delete-on-uninstall-prompt-buttons&quot;&gt;
+        &lt;div id=&quot;nf-admin-modal-cancel&quot;&gt;
+            &lt;a class=&quot;submitdelete deletion modal-close nf-delete-on-uninstall-cancel&quot; href=&quot;#&quot;&gt;&lt;?php _e( &#x27;Cancel&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;nf-admin-modal-update&quot;&gt;
+            &lt;a class=&quot;button-primary nf-delete-on-uninstall-yes&quot; href=&quot;#&quot;&gt;&lt;?php _e( &#x27;Continue&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;?php
+}
+
+function ninja_forms_save_general_settings( $data ){
+    $plugin_settings = nf_get_settings();
+
+    foreach( $data as $key =&gt; $val ){
+        $plugin_settings[$key] = $val;
+    }
+
+    update_option( &#x27;ninja_forms_settings&#x27;, $plugin_settings );
+    $update_msg = __( &#x27;Settings Saved&#x27;, &#x27;ninja-forms&#x27; );
+    return $update_msg;
+}
+</pre></details></body></html>

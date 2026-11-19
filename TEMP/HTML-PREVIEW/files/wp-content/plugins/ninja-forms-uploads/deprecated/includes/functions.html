@@ -1,0 +1,350 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/*
+ * Function that checks to see if a mutlidimensional array is empty.
+ *
+ * @since 1.2
+ * @return bool
+ */
+function ninja_forms_is_array_empty( $array ) {
+    if ( is_array ( $array ) ) {
+        foreach ( $array as $value ) {
+            if ( !ninja_forms_is_array_empty ( $value ) ) {
+                return false;
+            }
+        }
+    } elseif ( !empty ( $array ) ) {
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Normally, Ninja Forms checks for an empty input to determine whether or not a field has been left blank.
+ * This function will be called to provide custom &#x27;required field&#x27; validation.
+ * 
+ * If both the $_FILES[] and $_POST[&#x27;_upload_ID_user_file_name&#x27;] are empty, then the upload field has not been submitted.
+ *
+ * @param int $field_id - ID number of the field that is currently being displayed.
+ * @param array/string $user_value - the value of the field within the user-submitted form.
+ */
+
+function ninja_forms_field_upload_req_validation($field_id, $user_value){
+	global $ninja_forms_processing;
+
+	if( isset( $_FILES[&#x27;ninja_forms_field_&#x27;.$field_id] ) ){
+		$files = array();
+		$fdata = $_FILES[&#x27;ninja_forms_field_&#x27;.$field_id];
+		
+		if( is_array( $fdata[&#x27;name&#x27;] ) ){
+			foreach( $fdata[&#x27;name&#x27;] as $key =&gt; $val ){
+				if( $key == &#x27;new&#x27; ){
+					for ($x=0; $x &lt; count( $fdata[&#x27;name&#x27;][&#x27;new&#x27;] ); $x++) { 
+						if( $fdata[&#x27;error&#x27;][&#x27;new&#x27;][$x] != 4 ){
+							$files[$x] = array(
+								&#x27;name&#x27;    =&gt; $fdata[&#x27;name&#x27;][&#x27;new&#x27;][$x],
+							    &#x27;type&#x27;  =&gt; $fdata[&#x27;type&#x27;][&#x27;new&#x27;][$x],
+							    &#x27;tmp_name&#x27;=&gt; $fdata[&#x27;tmp_name&#x27;][&#x27;new&#x27;][$x],
+							    &#x27;error&#x27; =&gt; $fdata[&#x27;error&#x27;][&#x27;new&#x27;][$x], 
+							    &#x27;size&#x27;  =&gt; $fdata[&#x27;size&#x27;][&#x27;new&#x27;][$x],
+							);
+						}
+					}
+				}else{
+			    	$files[$key]=array(
+					    &#x27;name&#x27;    =&gt; $fdata[&#x27;name&#x27;][$key],
+					    &#x27;type&#x27;  =&gt; $fdata[&#x27;type&#x27;][$key],
+					    &#x27;tmp_name&#x27;=&gt; $fdata[&#x27;tmp_name&#x27;][$key],
+					    &#x27;error&#x27; =&gt; $fdata[&#x27;error&#x27;][$key], 
+					    &#x27;size&#x27;  =&gt; $fdata[&#x27;size&#x27;][$key],
+					    &#x27;key&#x27; =&gt; $key
+				    );					
+				}
+		    }
+		    $multi = true;
+		}else{
+			$files[0] = $fdata;
+			$multi = false;
+		}
+
+		$file_error = false;
+		if ( empty( $files ) ) {
+			$file_error = true;
+		}
+
+		if(!isset($_POST[&#x27;_upload_&#x27;.$field_id])){
+			$name = false;
+		}else{
+			$name = true;
+		}
+
+		if($file_error AND !$name){
+			return false;
+		}else{
+			return true;
+		}
+
+	}else{
+
+		if( $ninja_forms_processing-&gt;get_field_value( $field_id ) ){
+			$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+
+			if ( ninja_forms_is_array_empty( $user_value ) ) {
+				return false;
+			} else {
+				return true;
+			}
+
+		}else{
+			return false;
+		}
+	}
+}
+
+/**
+ * This function will filter the values output into the submissions table for uploads.
+ * Instead of outputting what is actually in the submission database, which is an array of values (file_name, file_path, file_url),
+ * this filter will output a link to where the file is stored.
+ *
+ * @param array/string $user_value - the value of the field within the user-submitted form.
+ * @param int $field_id - ID number of the field that is currently being displayed.
+ */
+
+function ninja_forms_field_upload_sub_td($user_value, $field_id){
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	if($field_type == &#x27;_upload&#x27;){
+		if ( is_array( $user_value ) ) {
+			$user_value = NF_File_Uploads()-&gt;normalize_submission_value( $user_value );
+			$new_value = &#x27;&#x27;;
+			$x = 0;
+			foreach($user_value as $value){
+				if($x &gt; 0){
+					$new_value .= &#x27; , &#x27;;
+				}				
+				$new_value .= &#x27;&lt;a href=&quot;&#x27;.$value[&#x27;file_url&#x27;].&#x27;&quot; target=&quot;_blank&quot;&gt;&#x27;.$value[&#x27;file_name&#x27;].&#x27;&lt;/a&gt;&#x27;;
+				$x++;
+			}
+			$user_value = $new_value;
+		}
+	}
+
+	return $user_value;
+}
+
+/**
+ * This function will filter the values that are saved within the submission database.
+ * It allows those editing the submission to replace files submitted by uploading new ones.
+ *
+ * @param array/string $user_value - the value of the field within the user-submitted form.
+ * @param int $field_id - ID number of the field that is currently being displayed.
+ */
+
+function ninja_forms_field_upload_save_sub($user_value, $field_id){
+	global $ninja_forms_processing;
+
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	$sub_id = $ninja_forms_processing-&gt;get_form_setting(&#x27;sub_id&#x27;);
+	if($field_type == &#x27;_upload&#x27;){
+		if($ninja_forms_processing-&gt;get_form_setting(&#x27;doing_save&#x27;)){
+			ninja_forms_field_upload_pre_process($field_id, $user_value);
+			$user_value = $ninja_forms_processing-&gt;get_field_value($field_id);
+		}else{
+			//Check to see if sub_id has been set. If it hasn&#x27;t, then don&#x27;t do any filtering.
+			if($sub_id != &#x27;&#x27;){
+				
+				//Check to see if this is an upload field. If it is, we&#x27;ll do some processing.
+				//If not, we&#x27;ll just return the $user_value that was passed.
+				if(isset($_FILES[&#x27;ninja_forms_field_&#x27;.$field_id][&#x27;error&#x27;][0]) AND $_FILES[&#x27;ninja_forms_field_&#x27;.$field_id][&#x27;error&#x27;][0] != 4){
+					ninja_forms_field_upload_pre_process($field_id, $user_value);
+					ninja_forms_field_upload_process($field_id, $user_value);
+					$user_value = $ninja_forms_processing-&gt;get_field_value($field_id);
+				}else if(isset($_POST[&#x27;_upload_&#x27;.$field_id])){
+					$user_value = $_POST[&#x27;_upload_&#x27;.$field_id];
+				}
+			}
+		}
+	}
+
+	return $user_value;
+}
+
+function ninja_forms_field_upload_filter_data($data, $field_id){
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+	if($field_type == &#x27;_upload&#x27;){
+		$data[&#x27;label&#x27;] = &#x27;&#x27;;
+	}
+	return $data;
+}
+
+function ninja_forms_get_uploads($args = array()){
+	global $wpdb;
+	$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+	if ( isset ( $plugin_settings[&#x27;date_format&#x27;] ) ) {
+		$date_format = $plugin_settings[&#x27;date_format&#x27;];
+	} else {
+		$date_format = &#x27;mm/dd/yyyy&#x27;;
+	}
+	$where = &#x27;&#x27;;
+	$limit = &#x27;&#x27;;
+	$upload_id = &#x27;&#x27;;
+
+	if(!empty($args)){
+
+		if(isset($args[&#x27;form_id&#x27;])){
+			$where .= &#x27;WHERE `form_id` = &#x27;.$args[&#x27;form_id&#x27;];
+		}
+		if( isset( $args[&#x27;upload_user&#x27;] ) ){
+			$user = $args[&#x27;upload_user&#x27;];
+			if( is_numeric( $user ) ){
+				if($where == &#x27;&#x27;){
+					$where .= &quot;WHERE &quot;;
+				}else{
+					$where .= &quot; AND &quot;;
+				}
+				$where .= &quot;`user_id` = &quot;.$user;
+			}else{
+				$user_data = get_user_by( &#x27;email&#x27;, $user );
+				if( !$user_data ){
+					$user_data = get_user_by( &#x27;slug&#x27;, $user );
+				}
+				if( !$user_data ){
+					$user_data = get_user_by( &#x27;login&#x27;, $user );
+				}
+
+				if($where == &#x27;&#x27;){
+					$where .= &quot;WHERE &quot;;
+				}else{
+					$where .= &quot; AND &quot;;
+				}
+
+				if( $user_data ){
+					$user_id = $user_data-&gt;ID;
+					$where .= &quot;`user_id` = &quot;.$user_id;
+				}else{
+					$where .=&quot;`user_id` = 0&quot;;
+				}
+			}
+		}
+		if(isset($args[&#x27;id&#x27;])){
+			if($where == &#x27;&#x27;){
+				$where .= &quot;WHERE &quot;;
+			}else{
+				$where .= &quot; AND &quot;;
+			}
+			$where .= &quot;`id` = &quot;.$args[&#x27;id&#x27;];
+			$upload_id = $args[&#x27;id&#x27;];
+		}
+		if(isset($args[&#x27;begin_date&#x27;])){
+			$begin_date = $args[&#x27;begin_date&#x27;];
+			if ( strtolower( substr( $date_format, 0, 1 ) ) == &#x27;d&#x27; ) {
+				$begin_date = str_replace( &#x27;/&#x27;, &#x27;-&#x27;, $begin_date );
+			}
+			$begin_date .= &#x27; 23:59:59&#x27;;
+			$begin_date = strtotime($begin_date);
+			$begin_date = date(&quot;Y-m-d g:i:s&quot;, $begin_date);
+
+			if($where == &#x27;&#x27;){
+				$where .= &quot;WHERE &quot;;
+			}else{
+				$where .= &quot; AND &quot;;
+			}
+			$where .= &quot;DATE(date_updated) &gt; &#x27;&quot;.$begin_date.&quot;&#x27;&quot;;
+		}
+		if(isset($args[&#x27;end_date&#x27;])){
+			$end_date = $args[&#x27;end_date&#x27;];
+			if ( strtolower( substr( $date_format, 0, 1 ) ) == &#x27;d&#x27; ) {
+				$end_date = str_replace( &#x27;/&#x27;, &#x27;-&#x27;, $end_date );
+			}
+			$end_date .= &#x27; 23:59:59&#x27;;
+			$end_date = strtotime($end_date);
+			$end_date = date(&quot;Y-m-d g:i:s&quot;, $end_date);
+			if($where == &#x27;&#x27;){
+				$where .= &quot;WHERE &quot;;
+			}else{
+				$where .= &quot; AND &quot;;
+			}
+			$where .= &quot;DATE(date_updated) &lt; &#x27;&quot;.$end_date.&quot;&#x27;&quot;;
+		}
+	}
+
+	$results = $wpdb-&gt;get_results( &quot;SELECT * FROM &quot;.NINJA_FORMS_UPLOADS_TABLE_NAME.&quot; &quot;.$where.&quot; ORDER BY `date_updated` DESC&quot;, ARRAY_A );
+	
+
+	if( isset( $args[&#x27;upload_types&#x27;] ) OR isset( $args[&#x27;upload_name&#x27;] ) ){
+		if(is_array($results) AND !empty($results)){
+			$tmp_results = array();
+
+			for ($x = 0; $x &lt; count($results); $x++){
+				$results[$x][&#x27;data&#x27;] = unserialize($results[$x][&#x27;data&#x27;]);
+				$data = $results[$x][&#x27;data&#x27;];
+				$form_id = $results[$x][&#x27;form_id&#x27;];
+				$form_row = ninja_forms_get_form_by_id($form_id);
+				$form_data = $form_row[&#x27;data&#x27;];
+				if ( isset ( $form_data[&#x27;form_title&#x27;] ) ) {
+					$form_title = $form_data[&#x27;form_title&#x27;];
+				} else {
+					$form_title = &#x27;&#x27;;
+				}
+				
+				$results[$x][&#x27;data&#x27;][&#x27;form_title&#x27;] = $form_title;
+				
+				$user_file_name = $data[&#x27;user_file_name&#x27;];
+				$user_file_array = explode(&quot;.&quot;, $user_file_name);
+				$user_ext = array_pop($user_file_array);
+
+				$file_name = $data[&#x27;file_name&#x27;];
+				$file_array = explode(&quot;.&quot;, $file_name);
+				$ext = array_pop($file_array);
+
+				if(isset($args[&#x27;upload_name&#x27;])){
+					if(stripos($file_name, $args[&#x27;upload_name&#x27;]) !== false OR stripos($user_file_name, $args[&#x27;upload_name&#x27;]) !== false){
+						$file_name_found = true;
+					}else{
+						$file_name_found = false;
+					}
+				}
+				if(isset($args[&#x27;upload_types&#x27;])){
+					if( stripos( $args[&#x27;upload_types&#x27;], $user_ext ) !== false OR stripos( $args[&#x27;upload_types&#x27;], $ext ) !== false ){
+						$ext_found = true;
+					}else{
+						$ext_found = false;
+					}
+				}
+				if(isset($args[&#x27;upload_name&#x27;]) AND isset($args[&#x27;upload_types&#x27;])){
+					if($file_name_found AND $ext_found){
+						array_push($tmp_results, $results[$x]);
+					}
+				}else if(isset($args[&#x27;upload_name&#x27;]) AND !isset($args[&#x27;upload_types&#x27;])){
+					if($file_name_found){
+						array_push($tmp_results, $results[$x]);
+					}
+				}else if(isset($args[&#x27;upload_types&#x27;]) AND !isset($args[&#x27;upload_name&#x27;])){
+					if($ext_found){
+						array_push($tmp_results, $results[$x]);
+					}
+				}
+			}
+			$results = $tmp_results;
+		}
+	}else{
+		if(is_array($results) AND !empty($results)){
+			for ($x = 0; $x &lt; count($results); $x++){
+				$results[$x][&#x27;data&#x27;] = unserialize($results[$x][&#x27;data&#x27;]);
+			}
+		}
+	}
+	
+	ksort($results);
+	array_values($results);
+
+	if($upload_id != &#x27;&#x27;){
+		$results = $results[0];
+	}
+	
+	return $results;
+}
+
+// ninja_forms_delete_upload is located in includes/ajax.php.</pre></details></body></html>

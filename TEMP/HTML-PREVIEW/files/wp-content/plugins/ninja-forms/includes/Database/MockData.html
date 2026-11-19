@@ -1,0 +1,1176 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/MockData.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/MockData.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Database_MockData
+{
+
+    public function __construct()
+    {
+        $this-&gt;_migrate();
+    }
+
+    public function saved_fields()
+    {
+        $field = Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Foo&#x27;, &#x27;ninja-forms&#x27; ) );
+        $field-&gt;update_setting( &#x27;key&#x27;, &#x27;foo&#x27; );
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textbox&#x27; );
+        $field-&gt;update_setting( &#x27;saved&#x27;, 1 );
+        $field-&gt;save();
+
+        $field = Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Bar&#x27;, &#x27;ninja-forms&#x27; ) );
+        $field-&gt;update_setting( &#x27;key&#x27;, &#x27;bar&#x27; );
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;checkbox&#x27; );
+        $field-&gt;update_setting( &#x27;saved&#x27;, 1 );
+        $field-&gt;save();
+
+        $field = Ninja_Forms()-&gt;form()-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Baz&#x27;, &#x27;ninja-forms&#x27; ) );
+        $field-&gt;update_setting( &#x27;key&#x27;, &#x27;baz&#x27; );
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;listselect&#x27; );
+        $field-&gt;update_setting( &#x27;saved&#x27;, 1 );
+        $field-&gt;save();
+    }
+
+    public function form_blank_form()
+    {
+        /*
+         * FORM
+         */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Blank Forms&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+    }
+
+    public function form_contact_form_1()
+    {
+        /*
+         * FORM
+         */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Contact Me&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textbox&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Name&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;required&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 1 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;name&#x27; )
+            -&gt;update_setting( &#x27;placeholder&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;default&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;element_class&#x27;, &#x27;&#x27; )
+            -&gt;save();
+
+        $name_field_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;email&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;required&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 2 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;email&#x27; )
+            -&gt;update_setting( &#x27;placeholder&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;default&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;element_class&#x27;, &#x27;&#x27; )
+            -&gt;save();
+
+        $email_field_id = $field-&gt;get_id();
+
+        // $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        // $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textbox&#x27; )
+        //     -&gt;update_setting( &#x27;label&#x27;, &#x27;Confirm Email&#x27;)
+        //     -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+        //     -&gt;update_setting( &#x27;confirm_field&#x27;, $email_field_id )
+        //     -&gt;update_setting( &#x27;required&#x27;, 1 )
+        //     -&gt;update_setting( &#x27;order&#x27;, 3 )
+        //     -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textarea&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Message&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;required&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 3 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;message&#x27; )
+            -&gt;update_setting( &#x27;placeholder&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;default&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;element_class&#x27;, &#x27;&#x27; )
+            -&gt;save();
+
+        // $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        // $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textbox&#x27; )
+        //     -&gt;update_setting( &#x27;label&#x27;, &#x27;Mirror Name&#x27;)
+        //     -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+        //     -&gt;update_setting( &#x27;required&#x27;, 1 )
+        //     -&gt;update_setting( &#x27;mirror_field&#x27;, $name_field_id )
+        //     -&gt;update_setting( &#x27;order&#x27;, 5 )
+        //     -&gt;save();
+
+        $options = array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;One&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;1&#x27;,
+                &#x27;calc&#x27; =&gt; 1,
+                &#x27;order&#x27; =&gt; 1,
+                &#x27;selected&#x27; =&gt; 0,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Two&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;2&#x27;,
+                &#x27;calc&#x27; =&gt; 2,
+                &#x27;order&#x27; =&gt; 2,
+                &#x27;selected&#x27; =&gt; 1,
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Three&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;3&#x27;,
+                &#x27;calc&#x27; =&gt; 3,
+                &#x27;order&#x27; =&gt; 3,
+                &#x27;selected&#x27; =&gt; 0,
+            ),
+        );
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;listradio&#x27; )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27;)
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;List&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;required&#x27;, 0)
+            -&gt;update_setting( &#x27;options&#x27;, $options)
+            -&gt;update_setting( &#x27;order&#x27;, 4 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;list&#x27; )
+            -&gt;update_setting( &#x27;placeholder&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;default&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;&#x27; )
+            -&gt;update_setting( &#x27;element_class&#x27;, &#x27;&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;processing_label&#x27;, &#x27;Processing&#x27; )
+            -&gt;update_setting( &#x27;order&#x27;, 5 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        /*
+         * ACTIONS
+         */
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Mock Success Message Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;successmessage&#x27; )
+            -&gt;update_setting( &#x27;message&#x27;, __( &#x27;Thank you {field:name} for filling out my form!&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;active&#x27;, TRUE )
+            -&gt;save();
+
+//        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+//        $action-&gt;update_setting( &#x27;label&#x27;,  &#x27;Mock Redirect Action&#x27; )
+//            -&gt;update_setting( &#x27;type&#x27;, &#x27;redirect&#x27; )
+//            -&gt;update_setting( &#x27;url&#x27;, &#x27;http://kstover.codes&#x27; )
+//            -&gt;update_setting( &#x27;active&#x27;, 0 )
+//            -&gt;save();
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Mock Email Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;email&#x27; )
+            -&gt;update_setting( &#x27;to&#x27;, &#x27;myformbuildingbringsallthedeveloperstotheyard@wpninjas.com&#x27; )
+            -&gt;update_setting( &#x27;subject&#x27;, __( &#x27;This is an email action.&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;message&#x27;, __( &#x27;Hello, Ninja Forms!&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;active&#x27;, FALSE )
+            -&gt;save();
+
+//        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+//        $action-&gt;update_setting( &#x27;label&#x27;,  &#x27;Run WordPress Action&#x27; )
+//            -&gt;update_setting( &#x27;type&#x27;, &#x27;custom&#x27; )
+//            -&gt;update_setting( &#x27;hook&#x27;, &#x27;action&#x27; )
+//            -&gt;update_setting( &#x27;tag&#x27;, &#x27;blarg_action&#x27; )
+//            -&gt;save();
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Mock Save Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;save&#x27; )
+            -&gt;update_setting( &#x27;active&#x27;, TRUE )
+            -&gt;save();
+
+        /*
+         * SUBMISSIONS
+         */
+
+        $sub = Ninja_Forms()-&gt;form( $form_id )-&gt;sub()-&gt;get();
+        $sub-&gt;update_field_value( 1, __( &#x27;Foo Bar&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 2, __( &#x27;foo@wpninjas.com&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 3, __( &#x27;This is a test&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 4, &#x27;2&#x27; )
+            -&gt;update_field_value( 5, __( &#x27;Foo Bar&#x27;, &#x27;ninja-forms&#x27; ) );
+        $sub-&gt;save();
+
+        // Delay Execution for different submission dates
+        sleep(1);
+
+        $sub = Ninja_Forms()-&gt;form( $form_id )-&gt;sub()-&gt;get();
+        $sub-&gt;update_field_value( 1, __( &#x27;John Doe&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 2, __( &#x27;user@gmail.com&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 3, __( &#x27;This is another test.&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_field_value( 4, &#x27;3&#x27; )
+            -&gt;update_field_value( 5, __( &#x27;John Doe&#x27;, &#x27;ninja-forms&#x27; ) );
+        $sub-&gt;save();
+    }
+
+    public function form_contact_form_2()
+    {
+        /*
+         * FORM
+         */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Get Help&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        $fields = array(
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27; 	=&gt; &#x27;above&#x27;,
+                &#x27;order&#x27;         =&gt; 1,
+                &#x27;key&#x27;           =&gt; &#x27;name&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;			=&gt; &#x27;email&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27;		=&gt; &#x27;above&#x27;,
+                &#x27;order&#x27;         =&gt; 2,
+                &#x27;key&#x27;           =&gt; &#x27;email&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;textarea&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;What Can We Help You With?&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27;		=&gt; &#x27;above&#x27;,
+                &#x27;order&#x27;         =&gt; 3,
+                &#x27;key&#x27;           =&gt; &#x27;message&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;checkbox&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Agree?&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27;		=&gt; &#x27;right&#x27;,
+                &#x27;order&#x27;         =&gt; 4,
+                &#x27;key&#x27;           =&gt; &#x27;agree&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;listradio&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Best Contact Method?&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27;		=&gt; &#x27;above&#x27;,
+                &#x27;options&#x27;		=&gt; array(
+                    array(
+                        &#x27;label&#x27;	=&gt; __( &#x27;Phone&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27;	=&gt; &#x27;phone&#x27;,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27;	=&gt; __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27;	=&gt; &#x27;email&#x27;,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27;	=&gt; __( &#x27;Snail Mail&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27;	=&gt; &#x27;snail-mail&#x27;,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                ),
+                &#x27;show_other&#x27;	=&gt; 1,
+                &#x27;required&#x27;      =&gt; 1,
+                &#x27;order&#x27;         =&gt; 5,
+                &#x27;key&#x27;           =&gt; &#x27;contact_method&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;			=&gt; &#x27;submit&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Send&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;order&#x27;         =&gt; 6,
+                &#x27;key&#x27;           =&gt; &#x27;submit&#x27;,
+            )
+        );
+
+        foreach( $fields as $settings ){
+
+            $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+            $field-&gt;update_settings( $settings )-&gt;save();
+        }
+
+        /*
+         * ACTIONS
+         */
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Mock Save Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;save&#x27; )
+            -&gt;save();
+    }
+
+    public function form_kitchen_sink()
+    {
+        /*
+         * FORM
+         */
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Kitchen Sink&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        $fields = array(
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;html&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Textbox&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;textbox&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Textbox&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;textbox&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;firstname&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;First Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;first_name&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;lastname&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Last Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;last_name&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;hidden&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Hidden&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27; 	=&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;hidden&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;textarea&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Textarea&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;textarea&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;listselect&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Select List&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;options&#x27;      =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option One&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 1,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Two&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 2,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Three&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 3,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    )
+                ),
+                &#x27;key&#x27;           =&gt; &#x27;select_list&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;listradio&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Radio List&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;options&#x27;       =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option One&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 1,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Two&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 2,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Three&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 3,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    )
+                ),
+                &#x27;key&#x27;           =&gt; &#x27;radio_list&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;checkbox&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Checkbox&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;checkbox&#x27;,
+            ),
+            // array(
+            //     &#x27;type&#x27; 			=&gt; &#x27;button&#x27;,
+            //     &#x27;label&#x27;			=&gt; &#x27;Button&#x27;,
+            //     &#x27;label_pos&#x27; 	=&gt; &#x27;hidden&#x27;,
+            // ),
+        );
+
+        $order = 1;
+        $i = 1;
+        foreach( array( &#x27;above&#x27;, &#x27;right&#x27;, &#x27;below&#x27;, &#x27;left&#x27;, &#x27;hidden&#x27; ) as $label_pos ) {
+
+
+            foreach ($fields as $settings) {
+
+                unset($settings[&#x27;id&#x27;]);
+
+                $settings[ &#x27;key&#x27; ] = $settings[ &#x27;key&#x27; ] . &#x27;-&#x27; . $i;
+
+                if ( ! isset( $settings[&#x27;label_pos&#x27;] ) ) $settings[&#x27;label_pos&#x27;] = $label_pos;
+
+                if ( &#x27;submit&#x27; != $settings[&#x27;type&#x27;] ) $settings[&#x27;label&#x27;] = $settings[&#x27;label&#x27;] . &#x27; - label &#x27; . $label_pos;
+
+                if ( &#x27;hidden&#x27; == $settings[&#x27;label_pos&#x27;] &amp;&amp; &#x27;submit&#x27; != $settings[&#x27;type&#x27;] ) $settings[&#x27;placeholder&#x27;] = $settings[&#x27;label&#x27;];
+
+                $field = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+
+                $settings[ &#x27;order&#x27; ] = $order;
+
+                $field-&gt;update_settings($settings)-&gt;save();
+
+                $order++;
+            }
+            $order++;
+            $i++;
+        }
+
+        $submit = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+        $submit-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ) )
+                -&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+                -&gt;update_setting( &#x27;order&#x27;, $order)
+                -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+                -&gt;save();
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Mock Save Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;save&#x27; )
+            -&gt;save();
+    }
+
+    public function form_bathroom_sink()
+    {
+        /*
+         * FORM
+         */
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Bathroom Sink&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        $fields = array(
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;html&#x27;,
+                &#x27;label&#x27;         =&gt; &#x27;&#x27;,
+                &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;html_1&#x27;,
+                &#x27;default&#x27;       =&gt; &#x27;&lt;div style=&quot;background:#DBF0FD; padding: 15px;&quot;&gt;&lt;h3&gt;Common Fields&lt;/h3&gt;&lt;div&gt;These are all the most common generic fields one might use.&lt;/div&gt;&lt;/div&gt;&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Textbox&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;textbox&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;textarea&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Textarea&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;textarea&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;checkbox&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Checkbox&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;checkbox&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;listselect&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Select List&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;options&#x27;      =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option One&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 1,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Two&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 2,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Three&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 3,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    )
+                ),
+                &#x27;key&#x27;           =&gt; &#x27;select_list&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;listradio&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Radio List&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;options&#x27;       =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option One&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 1,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Two&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 2,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Three&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 3,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    )
+                ),
+                &#x27;key&#x27;           =&gt; &#x27;radio_list&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;listcheckbox&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Checkbox List&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;options&#x27;       =&gt; array(
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option One&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 1,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 1,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Two&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 2,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 2,
+                        &#x27;selected&#x27; =&gt; 0,
+                    ),
+                    array(
+                        &#x27;label&#x27; =&gt; __( &#x27;Option Three&#x27;, &#x27;ninja-forms&#x27; ),
+                        &#x27;value&#x27; =&gt; 3,
+                        &#x27;calc&#x27;  =&gt; &#x27;&#x27;,
+                        &#x27;order&#x27; =&gt; 3,
+                        &#x27;selected&#x27; =&gt; 0,
+                    )
+                ),
+                &#x27;key&#x27;           =&gt; &#x27;checkbox_list&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;date&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Date&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;date&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;number&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Number&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;number&#x27;,
+                &#x27;num_min&#x27;       =&gt; &#x27;0&#x27;,
+                &#x27;num_max&#x27;       =&gt; &#x27;100&#x27;,
+                &#x27;num_step&#x27;      =&gt; &#x27;1&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;hidden&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Hidden&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;hidden&#x27;,
+            ),
+            // array(
+            //     &#x27;type&#x27;          =&gt; &#x27;hr&#x27;,
+            //     &#x27;label&#x27;         =&gt; &#x27;Divider&#x27;,
+            //     &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+            //     &#x27;key&#x27;           =&gt; &#x27;hr_1&#x27;,
+            // ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;html&#x27;,
+                &#x27;label&#x27;         =&gt; &#x27;&#x27;,
+                &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;html_2&#x27;,
+                &#x27;default&#x27;       =&gt; &#x27;&lt;div style=&quot;background:#DBF0FD; padding: 15px;&quot;&gt;&lt;h3&gt;&#x27; . __( &#x27;User Information Fields&#x27;, &#x27;ninja-forms&#x27; ) .
+                                    &#x27;&lt;/h3&gt;&lt;div&gt;&#x27; . __( &#x27;These are all the fields in the User Information section.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;firstname&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;First Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;first_name&#x27;,
+            ),
+            array(
+                &#x27;type&#x27; 			=&gt; &#x27;lastname&#x27;,
+                &#x27;label&#x27;			=&gt; __( &#x27;Last Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;last_name&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;email&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Email&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;email&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;phone&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Phone&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;phone&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;address&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Address&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;address&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;city&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;City&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;city&#x27;,
+            ),
+            // array(
+            //     &#x27;type&#x27;          =&gt; &#x27;liststate&#x27;,
+            //     &#x27;label&#x27;         =&gt; &#x27;State&#x27;,
+            //     &#x27;key&#x27;           =&gt; &#x27;state&#x27;,
+            // ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;zip&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Zip Code&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;zip&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;html&#x27;,
+                &#x27;label&#x27;         =&gt; &#x27;&#x27;,
+                &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;html_3&#x27;,
+                &#x27;default&#x27;       =&gt; &#x27;&lt;div style=&quot;background:#DBF0FD; padding: 15px;&quot;&gt;&lt;h3&gt;&#x27; . __( &quot;Pricing Fields&quot;, &quot;ninja-forms&quot; ) .
+                                    &#x27;&lt;/h3&gt;&lt;div&gt;&#x27; . __( &quot;These are all the fields in the Pricing section.&quot;, &quot;ninja-forms&quot; ) . &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;                  =&gt; &#x27;product&#x27;,
+                &#x27;label&#x27;                 =&gt; __( &#x27;Product (quanitity included)&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;                   =&gt; &#x27;product_qty&#x27;,
+                &#x27;product_use_quantity&#x27;  =&gt; 1,
+                &#x27;product_price&#x27;         =&gt; &#x27;5.00&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;                  =&gt; &#x27;product&#x27;,
+                &#x27;label&#x27;                 =&gt; __( &#x27;Product (seperate quantity)&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;                   =&gt; &#x27;product&#x27;,
+                &#x27;product_use_quantity&#x27;  =&gt; 0,
+                &#x27;product_price&#x27;         =&gt; &#x27;5.00&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;                  =&gt; &#x27;quantity&#x27;,
+                &#x27;label&#x27;                 =&gt; __( &#x27;Quantity&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;                   =&gt; &#x27;quantity&#x27;,
+                &#x27;product_assignment&#x27;    =&gt; &#x27;999&#x27;,
+                &#x27;num_min&#x27;               =&gt; &#x27;0&#x27;,
+                &#x27;num_max&#x27;               =&gt; &#x27;&#x27;,
+                &#x27;num_step&#x27;              =&gt; &#x27;1&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;                  =&gt; &#x27;shipping&#x27;,
+                &#x27;label&#x27;                 =&gt; __( &#x27;Shipping&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;                   =&gt; &#x27;shipping&#x27;,
+                &#x27;shipping_cost&#x27;         =&gt; &#x27;10.00&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;total&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Total&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;total&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;creditcardfullname&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Credit Card Full Name&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;creditcardfullname&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;creditcardnumber&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Credit Card Number&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;creditcardnumber&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;creditcardcvc&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Credit Card CVV&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;creditcardcvc&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;creditcardexpiration&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Credit Card Expiration&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;creditcardexpiration&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;creditcardzip&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Credit Card Zip Code&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;creditcardzip&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;html&#x27;,
+                &#x27;label&#x27;         =&gt; &#x27;&#x27;,
+                &#x27;label_pos&#x27;     =&gt; &#x27;hidden&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;html_3&#x27;,
+                &#x27;default&#x27;       =&gt; &#x27;&lt;div style=&quot;background:#DBF0FD; padding: 15px;&quot;&gt;&lt;h3&gt;&#x27; . __( &quot;Miscellaneous Fields&quot;, &quot;ninja-forms&quot; ) .
+                                    &#x27;&lt;/h3&gt;&lt;div&gt;&#x27; . __( &quot;These are various special fields.&quot;, &quot;ninja-forms&quot; ) . &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;starrating&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Star Rating&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;starrating&#x27;,
+                &#x27;default&#x27;       =&gt; &#x27;5&#x27;,
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;spam&#x27;,
+                &#x27;label&#x27;         =&gt; __( &#x27;Anti-Spam Question (Answer = answer)&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;key&#x27;           =&gt; &#x27;spam&#x27;,
+                &#x27;spam_answer&#x27;   =&gt; __( &#x27;answer&#x27;, &#x27;ninja-forms&#x27; ),
+            ),
+            array(
+                &#x27;type&#x27;          =&gt; &#x27;hr&#x27;,
+                &#x27;label&#x27;         =&gt; &#x27;&#x27;,
+                &#x27;key&#x27;           =&gt; &#x27;hr&#x27;,
+            ),
+        );
+
+        $order = 1;
+        foreach ($fields as $settings) {
+
+            unset($settings[&#x27;id&#x27;]);
+
+            $field = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+
+            $settings[ &#x27;order&#x27; ] = $order;
+
+            $settings[ &#x27;label_pos&#x27; ] = &#x27;default&#x27;;
+
+            $field-&gt;update_settings($settings)-&gt;save();
+
+            $order++;
+        }
+
+        $submit = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+        $submit-&gt;update_setting( &#x27;label&#x27;, __( &#x27;Submit&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;order&#x27;, $order)
+            -&gt;update_setting( &#x27;process_label&#x27;, __( &#x27;processing&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Mock Save Action&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;save&#x27; )
+            -&gt;save();
+    }
+
+    public function form_long_form( $num_fields = 500 )
+    {
+        /*
+        * FORM
+        */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Long Form - &#x27;, &#x27;ninja-forms&#x27; ) . $num_fields . __( &#x27; Fields&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        for( $i = 1; $i &lt;= $num_fields; $i++ ) {
+            $field = Ninja_Forms()-&gt;form($form_id)-&gt;field()-&gt;get();
+            $field-&gt;update_setting( &#x27;type&#x27;, &#x27;textbox&#x27; )
+                -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Field #&#x27;, &#x27;ninja-forms&#x27; ) . $i )
+                -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+                -&gt;update_setting( &#x27;required&#x27;, 0 )
+                -&gt;update_setting( &#x27;order&#x27;, $i )
+                -&gt;update_setting( &#x27;key&#x27;, &#x27;field_&#x27; . $i )
+                -&gt;save();
+        }
+    }
+
+    public function form_email_submission()
+    {
+        /*
+         * FORM
+         */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Email Subscription Form&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /*
+         * FIELDS
+         */
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;email&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Email Address&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;hidden&#x27; )
+            -&gt;update_setting( &#x27;required&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 1 )
+            -&gt;update_setting( &#x27;placeholder&#x27;, __( &#x27;Enter your email address&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;three-fourths first&#x27; )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;email&#x27; )
+            -&gt;save();
+
+        $email_field_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Subscribe&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;order&#x27;, 5 )
+            -&gt;update_setting( &#x27;wrapper_class&#x27;, &#x27;one-fourth&#x27; )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+    }
+
+    public function form_product_1()
+    {
+        /* FORM */
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Product Form (with Quantity Field)&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;update_setting( &#x27;hide_successfully_completed_form&#x27;, 1 );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /* Fields */
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;product&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Product&#x27;, &#x27;ninja-forms&#x27; ))
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_price&#x27;, 10.10 )
+            -&gt;update_setting( &#x27;product_use_quantity&#x27;, 0 )
+            -&gt;update_setting( &#x27;order&#x27;, 1 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;product&#x27; )
+            -&gt;save();
+
+        $product_field_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;quantity&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Quantity&#x27;, &#x27;ninja-forms&#x27; ))
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_assignment&#x27;, $product_field_id )
+            -&gt;update_setting( &#x27;default&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_min&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_max&#x27;, NULL )
+            -&gt;update_setting( &#x27;num_step&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 2 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;quantity&#x27; )
+            -&gt;save();
+
+        $quantity_field_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;shipping&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Shipping&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;shipping_cost&#x27;, 2.00 )
+            -&gt;update_setting( &#x27;order&#x27;, 4 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;shipping&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Total&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;order&#x27;, 5 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Purchase&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;order&#x27;, 1000 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        /*
+         * ACTIONS
+         */
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;successmessage&#x27; )
+            -&gt;update_setting( &#x27;message&#x27;, &#x27;&lt;div style=&quot;border: 2px solid green; padding: 10px; color: green;&quot;&gt;&#x27; . __( &#x27;You purchased &#x27;, &#x27;ninja-forms&#x27; ) .
+                            &#x27;{field:&#x27; . $quantity_field_id . &#x27;}&#x27; .  __( &#x27;product(s) for &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;${field:total}.&lt;/div&gt;&#x27; )
+            -&gt;save();
+    }
+
+    public function form_product_2()
+    {
+        /* FORM */
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Product Form (Inline Quantity)&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;update_setting( &#x27;hide_successfully_completed_form&#x27;, 1 );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /* Fields */
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;product&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Product&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_price&#x27;, 10.10 )
+            -&gt;update_setting( &#x27;product_use_quantity&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 1 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;product&#x27; )
+            -&gt;save();
+
+        $product_field_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;shipping&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Shipping&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;shipping_cost&#x27;, 2.00 )
+            -&gt;update_setting( &#x27;order&#x27;, 4 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;shipping&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Total&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;order&#x27;, 5 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Purchase&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;order&#x27;, 1000 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        /*
+         * ACTIONS
+         */
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;successmessage&#x27; )
+            -&gt;update_setting( &#x27;message&#x27;, &#x27;&lt;div style=&quot;border: 2px solid green; padding: 10px; color: green;&quot;&gt;&#x27; . __( &#x27;You purchased &#x27;, &#x27;ninja-forms&#x27; ) .
+                                        &#x27;{field:&#x27; . $product_field_id . &#x27;}&#x27; . __( &#x27; product(s) for &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;${field:total}&#x27; . &#x27;.&#x27; . &#x27;&lt;/div&gt;&#x27; )
+            -&gt;save();
+    }
+
+    public function form_product_3()
+    {
+        /* FORM */
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Product Form (Multiple Products)&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;update_setting( &#x27;hide_successfully_completed_form&#x27;, 1 );
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        /* Fields */
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;product&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Product A&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_price&#x27;, 10.10 )
+            -&gt;update_setting( &#x27;product_use_quantity&#x27;, 0 )
+            -&gt;update_setting( &#x27;order&#x27;, 1 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;product_a&#x27; )
+            -&gt;save();
+
+        $product_field_A_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;quantity&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Quantity for Product A&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_assignment&#x27;, $product_field_A_id )
+            -&gt;update_setting( &#x27;default&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_min&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_max&#x27;, NULL )
+            -&gt;update_setting( &#x27;num_step&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 2 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;qauntity_for_product_a&#x27; )
+            -&gt;save();
+
+        $quantity_field_A_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;product&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Product B&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_price&#x27;, 9.23 )
+            -&gt;update_setting( &#x27;product_use_quantity&#x27;, 0 )
+            -&gt;update_setting( &#x27;order&#x27;, 3 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;product_b&#x27; )
+            -&gt;save();
+
+        $product_field_B_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;quantity&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Quantity for Product B&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;product_assignment&#x27;, $product_field_B_id )
+            -&gt;update_setting( &#x27;default&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_min&#x27;, 1 )
+            -&gt;update_setting( &#x27;num_max&#x27;, NULL )
+            -&gt;update_setting( &#x27;num_step&#x27;, 1 )
+            -&gt;update_setting( &#x27;order&#x27;, 4 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;quantity_for_product_b&#x27; )
+            -&gt;save();
+
+        $quantity_field_B_id = $field-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;shipping&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Shipping&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;shipping_cost&#x27;, 2.00 )
+            -&gt;update_setting( &#x27;order&#x27;, 998 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;shipping&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Total&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;label_pos&#x27;, &#x27;above&#x27; )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;update_setting( &#x27;order&#x27;, 999 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;total&#x27; )
+            -&gt;save();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Purchase&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;order&#x27;, 1000 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        /*
+         * ACTIONS
+         */
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;successmessage&#x27; )
+            -&gt;update_setting( &#x27;message&#x27;, &#x27;&lt;div style=&quot;border: 2px solid green; padding: 10px; color: green;&quot;&gt;&#x27; . __( &#x27;You purchased &#x27;, &#x27;ninja-forms&#x27; ) .
+                            &#x27;{field:&#x27; . $quantity_field_A_id . &#x27;}&#x27; . __( &#x27;of Product A and &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;{field:&#x27; . $quantity_field_B_id . &#x27;}&#x27; .
+                            __( &#x27;of Product B for $&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;{field:total}.&lt;/div&gt;&#x27; )
+            -&gt;save();
+    }
+
+    public function form_calc_form()
+    {
+        /*
+         * FORM
+         */
+
+        $form = Ninja_Forms()-&gt;form()-&gt;get();
+        $form-&gt;update_setting( &#x27;title&#x27;, __( &#x27;Form with Calculations&#x27;, &#x27;ninja-forms&#x27; ) );
+        $form-&gt;update_setting( &#x27;default_label_pos&#x27;, &#x27;above&#x27; );
+        $form-&gt;update_setting( &#x27;calculations&#x27;, array(
+            array(
+                &#x27;name&#x27; =&gt; __( &#x27;My First Calculation&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;eq&#x27; =&gt; &#x27;2 * 3&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; __( &#x27;My Second Calculation&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;eq&#x27; =&gt; &#x27;4 + 1&#x27;
+            )
+        ));
+        $form-&gt;save();
+
+        $form_id = $form-&gt;get_id();
+
+        $field = Ninja_Forms()-&gt;form( $form_id )-&gt;field()-&gt;get();
+        $field-&gt;update_setting( &#x27;type&#x27;, &#x27;submit&#x27; )
+            -&gt;update_setting( &#x27;label&#x27;, __( &#x27;Purchase&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;order&#x27;, 1000 )
+            -&gt;update_setting( &#x27;key&#x27;, &#x27;submit&#x27; )
+            -&gt;save();
+
+        $action = Ninja_Forms()-&gt;form( $form_id )-&gt;action()-&gt;get();
+        $action-&gt;update_setting( &#x27;label&#x27;,  __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;update_setting( &#x27;type&#x27;, &#x27;successmessage&#x27; )
+            -&gt;update_setting( &#x27;message&#x27;, __( &#x27;Calculations are returned with the AJAX response ( response -&gt; data -&gt; calcs&#x27;, &#x27;ninja-forms&#x27; ) )
+            -&gt;save();
+    }
+
+    private function _migrate()
+    {
+        $migrations = new NF_Database_Migrations();
+        $migrations-&gt;nuke(TRUE, TRUE);
+
+        $posts = get_posts(&#x27;post_type=nf_sub&amp;numberposts=-1&#x27;);
+        foreach ($posts as $post) {
+            wp_delete_post($post-&gt;ID, TRUE);
+        }
+
+        $migrations-&gt;migrate();
+    }
+
+} // END CLASS NF_Database_MockData
+</pre></details></body></html>

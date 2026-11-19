@@ -1,0 +1,273 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/activation.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/activation.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/*
+ *
+ * Function that checks to see if the new defined files from version 2.2.30 are present. If they aren&#x27;t, add them.
+ *
+ * @since 2.2.30
+ * @returns void
+ */
+
+function ninja_forms_defined_fields_check(){
+	$screen = get_current_screen();
+	if ( $screen-&gt;base == &#x27;toplevel_page_ninja-forms&#x27; ) {
+		global $wpdb;
+		// Run our update.
+		// Make sure that our defined fields don&#x27;t already exist.
+		$tax = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Tax&#x27; ), ARRAY_A );
+		if( !isset($tax[&#x27;id&#x27;]) ){
+			$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+				(NULL, 0, \&#x27;_tax\&#x27;, 0, \&#x27;a:11:{s:5:&quot;label&quot;;s:3:&quot;Tax&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:19:&quot;payment_field_group&quot;;s:1:&quot;1&quot;;s:11:&quot;payment_tax&quot;;s:1:&quot;1&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Tax\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:19:{s:5:&quot;label&quot;;s:10:&quot;First Name&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;1&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;First Name\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:19:{s:5:&quot;label&quot;;s:9:&quot;Last Name&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;1&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Last Name\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:23:{s:5:&quot;label&quot;;s:9:&quot;Address 1&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;1&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Address 1\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:23:{s:5:&quot;label&quot;;s:9:&quot;Address 2&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;1&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Address 2\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:23:{s:5:&quot;label&quot;;s:4:&quot;City&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;1&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;City\&#x27;),
+				(NULL, 0, \&#x27;_list\&#x27;, 0, \&#x27;a:16:{s:5:&quot;label&quot;;s:5:&quot;State&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:10:&quot;multi_size&quot;;s:1:&quot;5&quot;;s:15:&quot;list_show_value&quot;;s:1:&quot;1&quot;;s:4:&quot;list&quot;;a:1:{s:7:&quot;options&quot;;a:51:{i:0;a:4:{s:5:&quot;label&quot;;s:7:&quot;Alabama&quot;;s:5:&quot;value&quot;;s:2:&quot;AL&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:1;a:4:{s:5:&quot;label&quot;;s:6:&quot;Alaska&quot;;s:5:&quot;value&quot;;s:2:&quot;AK&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:2;a:4:{s:5:&quot;label&quot;;s:7:&quot;Arizona&quot;;s:5:&quot;value&quot;;s:2:&quot;AZ&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:3;a:4:{s:5:&quot;label&quot;;s:8:&quot;Arkansas&quot;;s:5:&quot;value&quot;;s:2:&quot;AR&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:4;a:4:{s:5:&quot;label&quot;;s:10:&quot;California&quot;;s:5:&quot;value&quot;;s:2:&quot;CA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:5;a:4:{s:5:&quot;label&quot;;s:8:&quot;Colorado&quot;;s:5:&quot;value&quot;;s:2:&quot;CO&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:6;a:4:{s:5:&quot;label&quot;;s:11:&quot;Connecticut&quot;;s:5:&quot;value&quot;;s:2:&quot;CT&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:7;a:4:{s:5:&quot;label&quot;;s:8:&quot;Delaware&quot;;s:5:&quot;value&quot;;s:2:&quot;DE&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:8;a:4:{s:5:&quot;label&quot;;s:20:&quot;District of Columbia&quot;;s:5:&quot;value&quot;;s:2:&quot;DC&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:9;a:4:{s:5:&quot;label&quot;;s:7:&quot;Florida&quot;;s:5:&quot;value&quot;;s:2:&quot;FL&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:10;a:4:{s:5:&quot;label&quot;;s:7:&quot;Georgia&quot;;s:5:&quot;value&quot;;s:2:&quot;GA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:11;a:4:{s:5:&quot;label&quot;;s:6:&quot;Hawaii&quot;;s:5:&quot;value&quot;;s:2:&quot;HI&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:12;a:4:{s:5:&quot;label&quot;;s:5:&quot;Idaho&quot;;s:5:&quot;value&quot;;s:2:&quot;ID&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:13;a:4:{s:5:&quot;label&quot;;s:8:&quot;Illinois&quot;;s:5:&quot;value&quot;;s:2:&quot;IL&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:14;a:4:{s:5:&quot;label&quot;;s:7:&quot;Indiana&quot;;s:5:&quot;value&quot;;s:2:&quot;IN&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:15;a:4:{s:5:&quot;label&quot;;s:4:&quot;Iowa&quot;;s:5:&quot;value&quot;;s:2:&quot;IA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:16;a:4:{s:5:&quot;label&quot;;s:6:&quot;Kansas&quot;;s:5:&quot;value&quot;;s:2:&quot;KS&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:17;a:4:{s:5:&quot;label&quot;;s:8:&quot;Kentucky&quot;;s:5:&quot;value&quot;;s:2:&quot;KY&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:18;a:4:{s:5:&quot;label&quot;;s:9:&quot;Louisiana&quot;;s:5:&quot;value&quot;;s:2:&quot;LA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:19;a:4:{s:5:&quot;label&quot;;s:5:&quot;Maine&quot;;s:5:&quot;value&quot;;s:2:&quot;ME&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:20;a:4:{s:5:&quot;label&quot;;s:8:&quot;Maryland&quot;;s:5:&quot;value&quot;;s:2:&quot;MD&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:21;a:4:{s:5:&quot;label&quot;;s:13:&quot;Massachusetts&quot;;s:5:&quot;value&quot;;s:2:&quot;MA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:22;a:4:{s:5:&quot;label&quot;;s:8:&quot;Michigan&quot;;s:5:&quot;value&quot;;s:2:&quot;MI&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:23;a:4:{s:5:&quot;label&quot;;s:9:&quot;Minnesota&quot;;s:5:&quot;value&quot;;s:2:&quot;MN&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:24;a:4:{s:5:&quot;label&quot;;s:11:&quot;Mississippi&quot;;s:5:&quot;value&quot;;s:2:&quot;MS&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:25;a:4:{s:5:&quot;label&quot;;s:8:&quot;Missouri&quot;;s:5:&quot;value&quot;;s:2:&quot;MO&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:26;a:4:{s:5:&quot;label&quot;;s:7:&quot;Montana&quot;;s:5:&quot;value&quot;;s:2:&quot;MT&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:27;a:4:{s:5:&quot;label&quot;;s:8:&quot;Nebraska&quot;;s:5:&quot;value&quot;;s:2:&quot;NE&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:28;a:4:{s:5:&quot;label&quot;;s:6:&quot;Nevada&quot;;s:5:&quot;value&quot;;s:2:&quot;NV&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:29;a:4:{s:5:&quot;label&quot;;s:13:&quot;New Hampshire&quot;;s:5:&quot;value&quot;;s:2:&quot;NH&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:30;a:4:{s:5:&quot;label&quot;;s:10:&quot;New Jersey&quot;;s:5:&quot;value&quot;;s:2:&quot;NJ&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:31;a:4:{s:5:&quot;label&quot;;s:10:&quot;New Mexico&quot;;s:5:&quot;value&quot;;s:2:&quot;NM&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:32;a:4:{s:5:&quot;label&quot;;s:8:&quot;New York&quot;;s:5:&quot;value&quot;;s:2:&quot;NY&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:33;a:4:{s:5:&quot;label&quot;;s:14:&quot;North Carolina&quot;;s:5:&quot;value&quot;;s:2:&quot;NC&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:34;a:4:{s:5:&quot;label&quot;;s:12:&quot;North Dakota&quot;;s:5:&quot;value&quot;;s:2:&quot;ND&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:35;a:4:{s:5:&quot;label&quot;;s:4:&quot;Ohio&quot;;s:5:&quot;value&quot;;s:2:&quot;OH&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:36;a:4:{s:5:&quot;label&quot;;s:8:&quot;Oklahoma&quot;;s:5:&quot;value&quot;;s:2:&quot;OK&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:37;a:4:{s:5:&quot;label&quot;;s:6:&quot;Oregon&quot;;s:5:&quot;value&quot;;s:2:&quot;OR&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:38;a:4:{s:5:&quot;label&quot;;s:12:&quot;Pennsylvania&quot;;s:5:&quot;value&quot;;s:2:&quot;PA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:39;a:4:{s:5:&quot;label&quot;;s:12:&quot;Rhode Island&quot;;s:5:&quot;value&quot;;s:2:&quot;RI&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:40;a:4:{s:5:&quot;label&quot;;s:14:&quot;South Carolina&quot;;s:5:&quot;value&quot;;s:2:&quot;SC&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:41;a:4:{s:5:&quot;label&quot;;s:12:&quot;South Dakota&quot;;s:5:&quot;value&quot;;s:2:&quot;SD&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:42;a:4:{s:5:&quot;label&quot;;s:9:&quot;Tennessee&quot;;s:5:&quot;value&quot;;s:2:&quot;TN&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:43;a:4:{s:5:&quot;label&quot;;s:5:&quot;Texas&quot;;s:5:&quot;value&quot;;s:2:&quot;TX&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:44;a:4:{s:5:&quot;label&quot;;s:4:&quot;Utah&quot;;s:5:&quot;value&quot;;s:2:&quot;UT&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:45;a:4:{s:5:&quot;label&quot;;s:7:&quot;Vermont&quot;;s:5:&quot;value&quot;;s:2:&quot;VT&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:46;a:4:{s:5:&quot;label&quot;;s:8:&quot;Virginia&quot;;s:5:&quot;value&quot;;s:2:&quot;VA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:47;a:4:{s:5:&quot;label&quot;;s:10:&quot;Washington&quot;;s:5:&quot;value&quot;;s:2:&quot;WA&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:48;a:4:{s:5:&quot;label&quot;;s:13:&quot;West Virginia&quot;;s:5:&quot;value&quot;;s:2:&quot;WV&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:49;a:4:{s:5:&quot;label&quot;;s:9:&quot;Wisconsin&quot;;s:5:&quot;value&quot;;s:2:&quot;WI&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}i:50;a:4:{s:5:&quot;label&quot;;s:7:&quot;Wyoming&quot;;s:5:&quot;value&quot;;s:2:&quot;WY&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:8:&quot;selected&quot;;s:1:&quot;0&quot;;}}}s:9:&quot;list_type&quot;;s:8:&quot;dropdown&quot;;s:10:&quot;user_state&quot;;s:1:&quot;1&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:13:&quot;populate_term&quot;;s:0:&quot;&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;State\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:23:{s:5:&quot;label&quot;;s:15:&quot;Zip / Post Code&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;1&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Zip / Post Code\&#x27;),
+				(NULL, 0, \&#x27;_country\&#x27;, 0, \&#x27;a:10:{s:5:&quot;label&quot;;s:7:&quot;Country&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:2:&quot;US&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Country\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:25:{s:5:&quot;label&quot;;s:5:&quot;Email&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;1&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:10:&quot;user_phone&quot;;s:1:&quot;0&quot;;s:10:&quot;user_email&quot;;s:1:&quot;1&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Email\&#x27;),
+				(NULL, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:25:{s:5:&quot;label&quot;;s:5:&quot;Phone&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:14:&quot;(999) 999-9999&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;0&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:10:&quot;user_phone&quot;;s:1:&quot;1&quot;;s:10:&quot;user_email&quot;;s:1:&quot;0&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Phone\&#x27;),
+				(NULL, 0, \&#x27;_calc\&#x27;, 0, \&#x27;a:20:{s:9:&quot;calc_name&quot;;s:9:&quot;sub_total&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:17:&quot;calc_display_type&quot;;s:4:&quot;text&quot;;s:5:&quot;label&quot;;s:9:&quot;Sub Total&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:26:&quot;calc_display_text_disabled&quot;;s:1:&quot;1&quot;;s:17:&quot;calc_display_html&quot;;s:26:&quot;&lt;p&gt;[ninja_forms_calc]&lt;/p&gt;\n&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:11:&quot;calc_method&quot;;s:4:&quot;auto&quot;;s:4:&quot;calc&quot;;s:0:&quot;&quot;;s:7:&quot;calc_eq&quot;;s:0:&quot;&quot;;s:19:&quot;payment_field_group&quot;;s:1:&quot;1&quot;;s:13:&quot;payment_total&quot;;s:1:&quot;0&quot;;s:17:&quot;payment_sub_total&quot;;s:1:&quot;1&quot;;s:11:&quot;calc_places&quot;;s:1:&quot;2&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Sub Total\&#x27;),
+				(NULL, 0, \&#x27;_calc\&#x27;, 0, \&#x27;a:20:{s:9:&quot;calc_name&quot;;s:5:&quot;total&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:17:&quot;calc_display_type&quot;;s:4:&quot;text&quot;;s:5:&quot;label&quot;;s:5:&quot;Total&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:26:&quot;calc_display_text_disabled&quot;;s:1:&quot;1&quot;;s:17:&quot;calc_display_html&quot;;s:26:&quot;&lt;p&gt;[ninja_forms_calc]&lt;/p&gt;\n&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:11:&quot;calc_method&quot;;s:4:&quot;auto&quot;;s:4:&quot;calc&quot;;a:5:{i:0;a:2:{s:2:&quot;op&quot;;s:3:&quot;add&quot;;s:5:&quot;field&quot;;s:2:&quot;70&quot;;}i:1;a:2:{s:2:&quot;op&quot;;s:3:&quot;add&quot;;s:5:&quot;field&quot;;s:2:&quot;69&quot;;}i:2;a:2:{s:2:&quot;op&quot;;s:3:&quot;add&quot;;s:5:&quot;field&quot;;s:2:&quot;15&quot;;}i:3;a:2:{s:2:&quot;op&quot;;s:3:&quot;add&quot;;s:5:&quot;field&quot;;s:2:&quot;61&quot;;}i:4;a:2:{s:2:&quot;op&quot;;s:3:&quot;add&quot;;s:5:&quot;field&quot;;s:2:&quot;70&quot;;}}s:7:&quot;calc_eq&quot;;s:5:&quot;5 + 5&quot;;s:19:&quot;payment_field_group&quot;;s:1:&quot;1&quot;;s:13:&quot;payment_total&quot;;s:1:&quot;1&quot;;s:17:&quot;payment_sub_total&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_places&quot;;s:1:&quot;2&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Total\&#x27;);&#x27;;
+				$wpdb-&gt;query($sql);
+		}
+		$credit_card = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Credit Card&#x27; ), ARRAY_A );
+		if( !isset( $credit_card[&#x27;id&#x27;] ) ){
+			$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES (92, 0, \&#x27;_credit_card\&#x27;, 0, \&#x27;a:6:{s:5:&quot;label&quot;;s:11:&quot;Credit Card&quot;;s:19:&quot;payment_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Credit Card\&#x27;);&#x27;;
+			$wpdb-&gt;query($sql);
+		}
+	}
+}
+
+add_action( &#x27;current_screen&#x27;, &#x27;ninja_forms_defined_fields_check&#x27; );
+
+
+function ninja_forms_activation( $network_wide ){
+	global $wpdb;
+
+	if ( ! $network_wide ) { // This is a single-site activation.
+
+        wp_schedule_event( time(), &#x27;daily&#x27;, &#x27;ninja_forms_daily_action&#x27; );
+
+		require_once(ABSPATH . &#x27;wp-admin/includes/upgrade.php&#x27;);
+
+		$plugin_settings = nf_get_settings();
+
+		$current_version = isset ( $plugin_settings[&#x27;version&#x27;] ) ? $plugin_settings[&#x27;version&#x27;] : &#x27;&#x27;;
+
+		if ( $current_version != &#x27;&#x27; ) {
+			update_option( &#x27;nf_version_upgraded_from&#x27;, $current_version );
+		}
+
+		$forms = &#x27;&#x27;;
+
+		$opt = $plugin_settings;
+
+		$sql = &quot;CREATE TABLE IF NOT EXISTS &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; (
+		`id` int(11) NOT NULL AUTO_INCREMENT,
+		`row_type` int(11) NOT NULL,
+		`type` varchar(255) CHARACTER SET utf8 NOT NULL,
+		`order` int(11) NOT NULL,
+		`data` longtext CHARACTER SET utf8 NOT NULL,
+		`name` varchar(255) CHARACTER SET utf8 NOT NULL,
+		PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+		dbDelta($sql);
+		
+		if (!function_exists(&#x27;nf_change_email_fav&#x27;)){
+  			require_once dirname(__FILE__).&#x27;/admin/upgrades/upgrade-functions.php&#x27;;
+		}
+		// Remove old email settings.
+		nf_change_email_fav();
+
+		$state_dropdown = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;State Dropdown&#x27; ), ARRAY_A );
+		if( !isset($state_dropdown[&#x27;id&#x27;]) ){
+			$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(2, 0, \&#x27;_list\&#x27;, 0, \&#x27;a:10:{s:5:\&quot;label\&quot;;s:14:\&quot;State Dropdown\&quot;;s:9:\&quot;label_pos\&quot;;s:4:\&quot;left\&quot;;s:9:\&quot;list_type\&quot;;s:8:\&quot;dropdown\&quot;;s:10:\&quot;multi_size\&quot;;s:1:\&quot;5\&quot;;s:15:\&quot;list_show_value\&quot;;s:1:\&quot;1\&quot;;s:4:\&quot;list\&quot;;a:1:{s:7:\&quot;options\&quot;;a:51:{i:0;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Alabama\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:1;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Alaska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:2;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Arizona\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AZ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:3;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Arkansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:4;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;California\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:5;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Colorado\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:6;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Connecticut\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:7;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Delaware\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:8;a:3:{s:5:\&quot;label\&quot;;s:20:\&quot;District of Columbia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:9;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Florida\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;FL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:10;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Georgia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;GA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:11;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Hawaii\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;HI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:12;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Idaho\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ID\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:13;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Illinois\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:14;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Indiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:15;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Iowa\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:16;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Kansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:17;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Kentucky\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:18;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Louisiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;LA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:19;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Maine\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ME\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:20;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Maryland\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:21;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;Massachusetts\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:22;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Michigan\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:23;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Minnesota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:24;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Mississippi\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:25;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Missouri\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:26;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Montana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:27;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Nebraska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:28;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Nevada\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:29;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;New Hampshire\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:30;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Jersey\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NJ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:31;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Mexico\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NM\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:32;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;New York\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:33;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;North Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:34;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;North Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ND\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:35;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Ohio\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:36;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Oklahoma\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:37;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Oregon\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:38;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Pennsylvania\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;PA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:39;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Rhode Island\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;RI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:40;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;South Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:41;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;South Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:42;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Tennessee\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:43;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Texas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TX\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:44;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Utah\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;UT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:45;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Vermont\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:46;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:47;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;Washington\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:48;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;West Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:49;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Wisconsin\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:50;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Wyoming\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}}}s:3:\&quot;req\&quot;;s:1:\&quot;0\&quot;;s:5:\&quot;class\&quot;;s:0:\&quot;\&quot;;s:9:\&quot;show_help\&quot;;s:1:\&quot;0\&quot;;s:9:\&quot;help_text\&quot;;s:0:\&quot;\&quot;;}\&#x27;, \&#x27;State Dropdown\&#x27;)&#x27;;
+			$wpdb-&gt;query($sql);
+		}
+
+		$anti_spam = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Anti-Spam&#x27; ), ARRAY_A );
+		if( !isset($anti_spam[&#x27;id&#x27;]) ){
+			$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(3, 0, \&#x27;_spam\&#x27;, 0, \&#x27;a:6:{s:9:&quot;label_pos&quot;;s:4:&quot;left&quot;;s:5:&quot;label&quot;;s:18:&quot;Anti-Spam Question&quot;;s:6:&quot;answer&quot;;s:16:&quot;Anti-Spam Answer&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Anti-Spam\&#x27;)&#x27;;
+			$wpdb-&gt;query($sql);
+		}
+
+		$submit = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Submit&#x27; ), ARRAY_A );
+		if( !isset($submit[&#x27;id&#x27;]) ){
+			$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+			(4, 0, \&#x27;_submit\&#x27;, 0, \&#x27;a:4:{s:5:\&quot;label\&quot;;s:6:\&quot;Submit\&quot;;s:5:\&quot;class\&quot;;s:0:\&quot;\&quot;;s:9:\&quot;show_help\&quot;;s:1:\&quot;0\&quot;;s:9:\&quot;help_text\&quot;;s:0:\&quot;\&quot;;}\&#x27;, \&#x27;Submit\&#x27;);&#x27;;
+			$wpdb-&gt;query($sql);
+		}
+
+		$sql = &quot;CREATE TABLE IF NOT EXISTS &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; (
+		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `form_id` int(11) NOT NULL,
+		  `type` varchar(255) CHARACTER SET utf8 NOT NULL,
+		  `order` int(11) NOT NULL,
+		  `data` longtext CHARACTER SET utf8 NOT NULL,
+		  `fav_id` int(11) DEFAULT NULL,
+		  `def_id` int(11) DEFAULT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8 ;&quot;;
+
+		dbDelta($sql);
+
+	 	/**
+	 	 * Add our table structure for version 2.8.
+	 	 */
+
+	 	// Create our object meta table
+	 	$sql = &quot;CREATE TABLE IF NOT EXISTS &quot;. NF_OBJECT_META_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `object_id` bigint(20) NOT NULL,
+		  `meta_key` varchar(255) NOT NULL,
+		  `meta_value` longtext NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+		dbDelta( $sql );
+
+		// Create our object table
+		$sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECTS_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `type` varchar(255) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+		dbDelta( $sql );
+
+		// Create our object relationships table
+
+		$sql = &quot;CREATE TABLE IF NOT EXISTS &quot; . NF_OBJECT_RELATIONSHIPS_TABLE_NAME . &quot; (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `child_id` bigint(20) NOT NULL,
+		  `parent_id` bigint(20) NOT NULL,
+		  `child_type` varchar(255) NOT NULL,
+		  `parent_type` varchar(255) NOT NULL,
+		  PRIMARY KEY (`id`)
+		) DEFAULT CHARSET=utf8;&quot;;
+
+		dbDelta( $sql );
+
+		$title = ninja_forms_get_preview_page_title();
+	    $preview_page = get_page_by_title( $title );
+		if( !$preview_page ) {
+			// Create preview page object
+			$preview_post = array(
+				&#x27;post_title&#x27; =&gt; $title,
+				&#x27;post_content&#x27; =&gt; &#x27;This is a preview of how this form will appear on your website&#x27;,
+				&#x27;post_status&#x27; =&gt; &#x27;draft&#x27;,
+				&#x27;post_type&#x27; =&gt; &#x27;page&#x27;
+			);
+
+			// Insert the page into the database
+			$page_id = wp_insert_post( $preview_post );
+	 	}else{
+	 		$page_id = $preview_page-&gt;ID;
+	 	}
+
+		$opt[&#x27;preview_id&#x27;] = $page_id;
+
+	 	$opt[&#x27;version&#x27;] = NF_PLUGIN_VERSION;
+
+	 	$current_settings = get_option( &#x27;ninja_forms_settings&#x27;, false );
+
+	 	if ( ! $current_settings ) {
+			update_option( &#x27;nf_convert_notifications_complete&#x27;, true );
+			update_option( &#x27;nf_convert_subs_step&#x27;, &#x27;complete&#x27; );
+			update_option( &#x27;nf_upgrade_notice&#x27;, &#x27;closed&#x27; );
+			update_option( &#x27;nf_update_email_settings_complete&#x27;, true );
+			update_option( &#x27;nf_email_fav_updated&#x27;, true );
+			update_option( &#x27;nf_convert_forms_complete&#x27;, true );
+			update_option( &#x27;nf_database_migrations&#x27;, true );
+	 	}
+
+	 	update_option( &quot;ninja_forms_settings&quot;, $opt );
+		update_option( &#x27;ninja_forms_version&#x27;, NF_PLUGIN_VERSION );
+
+	 	// check for an existing form
+	 	$starter_form_exists = ninja_forms_starter_form_exists();
+
+	 	if ( ! $starter_form_exists ) {
+	 		// if a starter form doesn&#x27;t exist them create it
+	 		ninja_forms_add_starter_form();
+	 	}
+
+		// Add the transient to redirect
+		// set_transient( &#x27;_nf_activation_redirect&#x27;, true, 30 );
+
+	} else { // We&#x27;re network activating.
+		header( &#x27;Location: &#x27; . network_admin_url( &#x27;plugins.php?deactivate=true&amp;nf_action=network_activation_error&#x27; ) );
+	    exit;
+	}
+}
+
+/**
+ * Outputs a notice if the user attempts a network activation of the plugin.
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_network_activation_error() {
+	echo &#x27;&lt;div class=&quot;error&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Ninja Forms cannot be network activated. Please visit each site\&#x27;s dashboard to activate the plugin.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;;
+	deactivate_plugins( plugin_basename( __FILE__ ), TRUE, TRUE );
+}
+
+/**
+ * Add our network activation error to the admin_notice hook.
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_add_network_activation_error() {
+	add_action( &#x27;network_admin_notices&#x27;, &#x27;nf_network_activation_error&#x27; );
+}
+
+add_action( &#x27;nf_network_activation_error&#x27;, &#x27;nf_add_network_activation_error&#x27; );
+
+
+/*
+ * Check to see if a form exists.
+ *
+ * @since 2.3.3
+ * @return bool
+ */
+function ninja_forms_starter_form_exists() {
+	$forms = ninja_forms_get_all_forms();
+	if( empty( $forms ) ) {
+		return false;
+	}
+	return true;
+}
+
+
+/*
+ * Add a starter form. Return the ID.
+ *
+ * @since 2.3.3
+ * @returns int
+ */
+function ninja_forms_add_starter_form() {
+    // load starter form
+    $file = file_get_contents( NINJA_FORMS_DIR . &quot;/includes/forms/starter-form.nff&quot; );
+    $file = apply_filters( &#x27;ninja_forms_starter_form_contents&#x27;, $file );
+
+    // create new form
+    ninja_forms_import_form( $file );
+}
+
+
+/*
+ * Get the preview page title
+ *
+ * @since 2.5.2
+ * @returns string
+ */
+function ninja_forms_get_preview_page_title() {
+    return apply_filters( &#x27;ninja_forms_preview_page_title&#x27;, &#x27;ninja_forms_preview_page&#x27; );
+}
+</pre></details></body></html>

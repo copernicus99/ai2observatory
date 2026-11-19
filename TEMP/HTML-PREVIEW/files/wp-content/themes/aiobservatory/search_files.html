@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/aiobservatory/search_files.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/aiobservatory/search_files.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * Grep (UNIX command) all files for search text recursively in current directory
+ *
+ * Usage:
+ *     $instance = new Grep();
+ *     $params = array();
+ *     echo $instance($params);
+ *
+ * @author  Zion Ng &lt;zion@intzone.com&gt;
+ * @link    [Source] https://github.com/zionsg/standalone-php-scripts/tree/master/Grep
+ * @since   2012-11-23T21:30+08:00
+ */
+class Grep
+{
+    /**
+     * __invoke
+     *
+     * @params array $params Key-value pairs with the following keys:
+     *         &#x27;exclude&#x27;   array   Files to exclude. Can include wildcard, eg. *.jpg
+     *         &#x27;include&#x27;   array   Files to include. Can include wildcard, eg. *.ph*
+     *         &#x27;pattern&#x27;   string  Regular expression pattern to use for search
+     *         &#x27;recursive&#x27; boolean DEFAULT=true. Whether to search thru subdirectories
+     *                             recursively
+     * @return string Output from &#x27;grep&#x27; shell command sorted in ascending order
+     * @throws RuntimeException         If &#x27;grep&#x27; command is not available as a shell command
+     * @throws InvalidArgumentException If $pattern is empty, or $exclude/$include are not arrays
+     */
+    public function __invoke(array $params = array())
+    {
+        // Check if &#x27;grep&#x27; is available as a shell command
+        $output = array();
+        $returnValue = null;
+        exec(&#x27;grep&#x27;, $output, $returnValue);
+        if ($returnValue &lt; 0) {
+            throw new RuntimeException(&quot;&#x27;grep&#x27; is not a valid shell command&quot;);
+        }
+        // Ensure all keys are set before extracting to prevent notices
+        $params = array_merge(
+            array(
+                &#x27;exclude&#x27; =&gt; array(),
+                &#x27;include&#x27; =&gt; array(),
+                &#x27;pattern&#x27; =&gt; &#x27;&#x27;,
+                &#x27;recursive&#x27; =&gt; true,
+            ),
+            $params
+        );
+        extract($params);
+        // Check parameters
+        if (empty($pattern)) {
+            throw new InvalidArgumentException(&quot;Parameter &#x27;pattern&#x27; must be a non-empty string&quot;);
+        }
+        if (!is_array($exclude)) {
+            throw new InvalidArgumentException(&quot;Parameter &#x27;exclude&#x27; must be an array&quot;);
+        }
+        if (!is_array($include)) {
+            throw new InvalidArgumentException(&quot;Parameter &#x27;include&#x27; must be an array&quot;);
+        }
+        // Collate arguments
+        $recursiveArg = ($recursive ? &#x27;-r&#x27; : &#x27;&#x27;);
+        $excludeArgs = &#x27;&#x27;;
+        foreach ($exclude as $file) {
+            $excludeArgs .= &#x27;--exclude=&#x27; . $file . &#x27; &#x27;;
+        }
+        $includeArgs = &#x27;&#x27;;
+        foreach ($include as $file) {
+            $includeArgs .= &#x27;--include=&#x27; . $file . &#x27; &#x27;;
+        }
+        // Run shell command
+        $command = &quot;grep -n {$recursiveArg} {$excludeArgs} {$includeArgs} --regexp=&#x27;{$pattern}&#x27; . | sort&quot;;
+        $result = shell_exec($command);
+        // Process results
+        if (empty($result)) {
+            $output = &#x27;No matches found&#x27;;
+        } else {
+            $output = &#x27;&lt;pre&gt;&#x27; . htmlspecialchars($result) . &#x27;&lt;/pre&gt;&#x27;;
+        }
+        return sprintf(
+            &quot;Searching for regex &#x27;%s&#x27; in &lt;b&gt;%s&lt;/b&gt;&lt;br /&gt;&quot;
+            . &#x27;Files excluded: %s&lt;br /&gt;&#x27;
+            . &#x27;Files included: %s&lt;br /&gt;&lt;br /&gt;%s&#x27;,
+            $pattern,
+            getcwd(),
+            (empty($exclude) ? &#x27;0&#x27; : implode(&#x27;, &#x27;, $exclude)),
+            (empty($include) ? &#x27;0&#x27; : implode(&#x27;, &#x27;, $include)),
+            $output
+        );
+    } // end function __invoke
+}</pre></details></body></html>

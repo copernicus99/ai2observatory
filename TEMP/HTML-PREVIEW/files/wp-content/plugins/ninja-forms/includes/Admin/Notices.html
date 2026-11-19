@@ -1,0 +1,271 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Admin/Notices.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Admin/Notices.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * NF_Notices Class
+ *
+ * Can be simply used be adding another line into the nf_admin_notices() function under notices.php
+ *
+ * Can be extended to create more advanced notices to include triggered events
+ *
+ * @since 2.9
+ */
+
+class NF_Admin_Notices
+{
+    // Highlander the instance
+    static $instance;
+
+    public static function instance()
+    {
+        if ( ! isset( self::$instance ) ) {
+            self::$instance = new NF_Notices();
+        }
+
+        return self::$instance;
+    }
+
+    public $notice_spam = 0;
+    public $notice_spam_max = 1;
+
+    // Basic actions to run
+    public function __construct(){
+
+        // Runs the admin notice ignore function incase a dismiss button has been clicked
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;admin_notice_ignore&#x27; ) );
+
+        // Runs the admin notice temp ignore function incase a temp dismiss link has been clicked
+        add_action( &#x27;admin_init&#x27;, array( $this, &#x27;admin_notice_temp_ignore&#x27; ) );
+
+    }
+
+    // Checks to ensure notices aren&#x27;t disabled and the user has the correct permissions.
+    public function nf_admin_notice() {
+
+        $nf_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+        if ( ! isset( $nf_settings[ &#x27;disable_admin_notices&#x27; ] ) || ( isset( $nf_settings[ &#x27;disable_admin_notices&#x27; ] ) &amp;&amp; $nf_settings[ &#x27;disable_admin_notices&#x27; ] == 0 ) ){
+            if ( current_user_can( apply_filters( &#x27;ninja_forms_admin_parent_menu_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    // Primary notice function that can be called from an outside function sending necessary variables
+    public function admin_notice( $admin_notices ) {
+
+        // Check options
+        if ( ! $this-&gt;nf_admin_notice() ) {
+            return false;
+        }
+
+        foreach ( $admin_notices as $slug =&gt; $admin_notice ) {
+
+            if ( isset ( $admin_notice[ &#x27;ignore_spam&#x27; ] ) &amp;&amp; true == $admin_notice[ &#x27;ignore_spam&#x27; ] ) {
+                $ignore_spam = true;
+            } else {
+                $ignore_spam = false;
+            }
+
+            // Call for spam protection
+            if ( ! $ignore_spam &amp;&amp; $this-&gt;anti_notice_spam() ) {
+                continue;
+            }
+
+            // Check for proper page to display on
+            if ( isset( $admin_notices[ $slug ][ &#x27;pages&#x27; ] ) &amp;&amp; is_array( $admin_notices[ $slug ][ &#x27;pages&#x27; ] )
+                || isset( $admin_notices[ $slug ][ &#x27;blacklist&#x27; ] ) &amp;&amp; is_array( $admin_notices[ $slug ][ &#x27;blacklist&#x27; ] )
+            ) {
+
+                if( ( isset( $admin_notices[ $slug ][ &#x27;blacklist&#x27; ] ) &amp;&amp; $this-&gt;admin_notice_pages_blacklist( $admin_notices[ $slug ][ &#x27;blacklist&#x27; ] ) )
+                    || ( isset( $admin_notices[ $slug ][ &#x27;pages&#x27; ] ) &amp;&amp; ! $this-&gt;admin_notice_pages( $admin_notices[ $slug ][ &#x27;pages&#x27; ] ) )
+                ) {
+                    continue;
+                }
+            }
+
+            
+
+            // Check for required fields
+            if ( ! $this-&gt;required_fields( $admin_notices[ $slug ] ) ) {
+
+                // Get the current date then set start date to either passed value or current date value and add interval
+                $current_date = current_time( &quot;n/j/Y&quot; );
+                $start = ( isset( $admin_notices[ $slug ][ &#x27;start&#x27; ] ) ? $admin_notices[ $slug ][ &#x27;start&#x27; ] : $current_date );
+                $start = date( &quot;n/j/Y&quot;, strtotime( $start ) );
+                $date_array = explode( &#x27;/&#x27;, $start );
+                $interval = ( isset( $admin_notices[ $slug ][ &#x27;int&#x27; ] ) ? $admin_notices[ $slug ][ &#x27;int&#x27; ] : 0 );
+                $date_array[1] += $interval;
+                $start = date( &quot;n/j/Y&quot;, mktime( 0, 0, 0, $date_array[0], $date_array[1], $date_array[2] ) );
+
+                // This is the main notices storage option
+                $admin_notices_option = get_option( &#x27;nf_admin_notice&#x27;, array() );
+                // Check if the message is already stored and if so just grab the key otherwise store the message and its associated date information
+                if ( ! array_key_exists( $slug, $admin_notices_option ) ) {
+                    $admin_notices_option[ $slug ][ &#x27;start&#x27; ] = $start;
+                    $admin_notices_option[ $slug ][ &#x27;int&#x27; ] = $interval;
+                    update_option( &#x27;nf_admin_notice&#x27;, $admin_notices_option );
+                }
+
+                // Sanity check to ensure we have accurate information
+                // New date information will not overwrite old date information
+                $admin_display_check = ( isset( $admin_notices_option[ $slug ][ &#x27;dismissed&#x27; ] ) ? $admin_notices_option[ $slug ][ &#x27;dismissed&#x27;] : 0 );
+                $admin_display_start = ( isset( $admin_notices_option[ $slug ][ &#x27;start&#x27; ] ) ? $admin_notices_option[ $slug ][ &#x27;start&#x27;] : $start );
+                $admin_display_interval = ( isset( $admin_notices_option[ $slug ][ &#x27;int&#x27; ] ) ? $admin_notices_option[ $slug ][ &#x27;int&#x27;] : $interval );
+                $admin_display_msg = ( isset( $admin_notices[ $slug ][ &#x27;msg&#x27; ] ) ? $admin_notices[ $slug ][ &#x27;msg&#x27;] : &#x27;&#x27; );
+                $admin_display_title = ( isset( $admin_notices[ $slug ][ &#x27;title&#x27; ] ) ? $admin_notices[ $slug ][ &#x27;title&#x27;] : &#x27;&#x27; );
+                $admin_display_link = ( isset( $admin_notices[ $slug ][ &#x27;link&#x27; ] ) ? $admin_notices[ $slug ][ &#x27;link&#x27; ] : &#x27;&#x27; );
+                $output_css = false;
+
+                // Ensure the notice hasn&#x27;t been hidden and that the current date is after the start date
+                if ( $admin_display_check == 0 &amp;&amp; strtotime( $admin_display_start ) &lt;= strtotime( $current_date ) ) {
+
+                    // Get remaining query string
+                    $query_str = esc_url( add_query_arg( &#x27;nf_admin_notice_ignore&#x27;, $slug ) );
+
+                    // Admin notice display output
+                    echo &#x27;&lt;div class=&quot;update-nag nf-admin-notice&quot;&gt;&#x27;;
+                    echo &#x27;&lt;div class=&quot;nf-notice-logo&quot;&gt;&lt;/div&gt;&#x27;;
+                    echo &#x27; &lt;p class=&quot;nf-notice-title&quot;&gt;&#x27;;
+                    echo esc_html( $admin_display_title );
+                    echo &#x27; &lt;/p&gt;&#x27;;
+                    echo &#x27; &lt;p class=&quot;nf-notice-body&quot;&gt;&#x27;;
+                    echo $admin_display_msg;
+                    echo &#x27; &lt;/p&gt;&#x27;;
+                    echo &#x27;&lt;ul class=&quot;nf-notice-body nf-red&quot;&gt;
+                          &#x27; . $admin_display_link . &#x27;
+                        &lt;/ul&gt;&#x27;;
+                    echo &#x27;&lt;a href=&quot;&#x27; . wp_nonce_url( esc_attr( $query_str ) ) . &#x27;&quot; class=&quot;dashicons dashicons-dismiss&quot;&gt;&lt;/a&gt;&#x27;;
+                    echo &#x27;&lt;/div&gt;&#x27;;
+
+                    $this-&gt;notice_spam += 1;
+                    $output_css = true;
+                }
+                if ( $output_css ) {
+                    wp_enqueue_style( &#x27;nf-admin-notices&#x27;, Ninja_Forms::$url .&#x27;assets/css/admin-notices.css?nf_ver=&#x27; . Ninja_Forms::VERSION );
+                }
+            }
+        }
+
+        // die( &#x27;done looping&#x27; );
+    }
+
+    // Spam protection check
+    public function anti_notice_spam() {
+
+        if ( $this-&gt;notice_spam &gt;= $this-&gt;notice_spam_max ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Ignore function that gets ran at admin init to ensure any messages that were dismissed get marked
+    public function admin_notice_ignore() {
+
+        // If user clicks to ignore the notice, update the option to not show it again
+        if ( isset($_GET[&#x27;nf_admin_notice_ignore&#x27;]) &amp;&amp; current_user_can( apply_filters( &#x27;ninja_forms_admin_parent_menu_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) {
+
+            if ( ! check_admin_referer() ) {
+                $query_str = remove_query_arg( array( &#x27;nf_admin_notice_ignore&#x27;, &#x27;_wpnonce&#x27; ) );
+                wp_safe_redirect( $query_str );
+                exit;
+            }
+            $admin_notices_option = get_option( &#x27;nf_admin_notice&#x27;, array() );
+            $admin_notices_option[ $_GET[ &#x27;nf_admin_notice_ignore&#x27; ] ][ &#x27;dismissed&#x27; ] = 1;
+            update_option( &#x27;nf_admin_notice&#x27;, $admin_notices_option );
+            $query_str = remove_query_arg( array( &#x27;nf_admin_notice_ignore&#x27;, &#x27;_wpnonce&#x27; ) );
+            wp_safe_redirect( $query_str );
+            exit;
+        }
+    }
+
+    // Temp Ignore function that gets ran at admin init to ensure any messages that were temp dismissed get their start date changed
+    public function admin_notice_temp_ignore() {
+
+        // If user clicks to temp ignore the notice, update the option to change the start date - default interval of 14 days
+        if ( isset($_GET[&#x27;nf_admin_notice_temp_ignore&#x27;]) &amp;&amp; current_user_can( apply_filters( &#x27;ninja_forms_admin_parent_menu_capabilities&#x27;, &#x27;manage_options&#x27; ) ) ) {
+
+            $admin_notices_option = get_option( &#x27;nf_admin_notice&#x27;, array() );
+
+            $current_date = current_time( &quot;n/j/Y&quot; );
+            $date_array = explode( &#x27;/&#x27;, $current_date );
+            $interval = ( isset( $_GET[ &#x27;nf_int&#x27; ] ) ? $_GET[ &#x27;nf_int&#x27; ] : 14 );
+            $date_array[1] += $interval;
+            $new_start = date( &quot;n/j/Y&quot;, mktime( 0, 0, 0, $date_array[0], $date_array[1], $date_array[2] ) );
+
+            $admin_notices_option[ $_GET[ &#x27;nf_admin_notice_temp_ignore&#x27; ] ][ &#x27;start&#x27; ] = $new_start;
+            $admin_notices_option[ $_GET[ &#x27;nf_admin_notice_temp_ignore&#x27; ] ][ &#x27;dismissed&#x27; ] = 0;
+            update_option( &#x27;nf_admin_notice&#x27;, $admin_notices_option );
+            $query_str = remove_query_arg( array( &#x27;nf_admin_notice_temp_ignore&#x27;, &#x27;nf_int&#x27; ) );
+            wp_redirect( $query_str );
+            exit;
+        }
+    }
+
+    public function admin_notice_pages_blacklist( $pages ) {
+
+        foreach( $pages as $key =&gt; $page ) {
+            if ( is_array( $page ) ) {
+                if ( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; $_GET[ &#x27;page&#x27;] == $page[0] &amp;&amp; isset( $_GET[ &#x27;tab&#x27; ] ) &amp;&amp; $_GET[ &#x27;tab&#x27; ] == $page[1] ) {
+                    return true;
+                }
+            } else {
+                if ( get_current_screen()-&gt;id === $page ) {
+                    return true;
+                }
+                if ( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; $_GET[ &#x27;page&#x27;] == $page ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Page check function - This should be called from class extensions if the notice should only show on specific admin pages
+    // Expects an array in the form of IE: array( &#x27;dashboard&#x27;, &#x27;ninja-forms&#x27;, array( &#x27;ninja-forms&#x27;, &#x27;builder&#x27; ) )
+    // Function accepts dashboard as a special check and also whatever is passed to page or tab as parameters
+    // The above example will display on dashboard and all of the pages that have page=ninja-forms and any page=ninja-forms&amp;tab=builder which is redundant in the example
+    public function admin_notice_pages( $pages ) {
+
+        foreach( $pages as $key =&gt; $page ) {
+            if ( is_array( $page ) ) {
+                if ( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; $_GET[ &#x27;page&#x27;] == $page[0] &amp;&amp; isset( $_GET[ &#x27;tab&#x27; ] ) &amp;&amp; $_GET[ &#x27;tab&#x27; ] == $page[1] ) {
+                    return true;
+                }
+            } else {
+                if ( $page == &#x27;all&#x27; ) {
+                    return true;
+                }
+                if ( get_current_screen()-&gt;id === $page ) {
+                    return true;
+                }
+                if ( isset( $_GET[ &#x27;page&#x27; ] ) &amp;&amp; $_GET[ &#x27;page&#x27;] == $page ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Required fields check
+    public function required_fields( $fields ) {
+
+        if ( ! isset( $fields[ &#x27;msg&#x27; ] ) || ( isset( $fields[ &#x27;msg&#x27; ] ) &amp;&amp; empty( $fields[ &#x27;msg&#x27; ] ) ) ) {
+            return true;
+        }
+
+        if ( ! isset( $fields[ &#x27;title&#x27; ] ) || ( isset( $fields[ &#x27;title&#x27; ] ) &amp;&amp; empty( $fields[ &#x27;title&#x27; ] ) ) ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Special parameters function that is to be used in any extension of this class
+    public function special_parameters( $admin_notices ) {
+        // Intentionally left blank
+    }
+
+}
+</pre></details></body></html>

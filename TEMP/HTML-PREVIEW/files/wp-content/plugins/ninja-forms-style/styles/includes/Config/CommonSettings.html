@@ -1,0 +1,234 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/styles/includes/Config/CommonSettings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/styles/includes/Config/CommonSettings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+return apply_filters( &#x27;ninja_forms_styles_common_settings&#x27;, array(
+
+    /*
+    |--------------------------------------------------------------------------
+    | Background Color
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;background-color&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;background-color&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;color&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Background Color&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Border Width
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;border&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;border&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Border Width&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Border Style
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;border-style&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;border-style&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Border Style&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; &#x27;- &#x27; . __( &#x27;None&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Solid&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;solid&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Dashed&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;dashed&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Dotted&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;dotted&#x27;
+            ),
+        ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Border Color
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;border-color&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;border-color&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;color&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Border Color&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Text Color
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;color&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;color&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;color&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Text Color&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Height
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;height&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;height&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Height&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Width
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;width&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;width&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Width&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Font Size
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;font-size&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;font-size&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Font Size&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Margin
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;margin&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;margin&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Margin&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Padding
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;padding&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;padding&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Padding&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Display
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;display&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;display&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Display&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; &#x27;- &#x27; . __( &#x27;Default&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Block&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;block&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Inline&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;inline&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt;  __( &#x27;Inline Block&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;inline-block&#x27;
+            ),
+        ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Float
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;float&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;float&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Float&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+        &#x27;value&#x27; =&gt; null,
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Advanced
+    |--------------------------------------------------------------------------
+    */
+
+    &#x27;show_advanced_css&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;show_advanced_css&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Show Advanced CSS Properties&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;value&#x27; =&gt; 0
+    ),
+
+    &#x27;advanced&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textarea&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Advanced CSS&#x27;, &#x27;ninja-forms-layout-styles&#x27; ),
+        &#x27;value&#x27; =&gt; null,
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;deps&#x27; =&gt; array(
+            &#x27;show_advanced_css&#x27; =&gt; 1
+        )
+    ),
+
+));</pre></details></body></html>

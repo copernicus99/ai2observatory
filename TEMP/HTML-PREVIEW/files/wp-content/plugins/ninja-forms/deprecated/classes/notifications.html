@@ -1,0 +1,585 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/notifications.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/notifications.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			
+			&lt;h2&gt; &lt;a href=&quot;&quot; class=&quot;add-new-h2&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+	        &lt;!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions --&gt;
+	      	 &lt;form id=&quot;forms-filter&quot; method=&quot;get&quot;&gt;
+	            &lt;!-- For plugins, we also need to ensure that the form posts back to our current page --&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;&quot; /&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;tab&quot; value=&quot;&quot; /&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;form_id&quot; value=&quot;&quot; /&gt;
+				
+        	&lt;/form&gt;
+            
+			&lt;h2&gt; &lt;a href=&quot;&quot; class=&quot;button-secondary&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+			&lt;input type=&quot;hidden&quot; id=&quot;notification_id&quot; name=&quot;notification_id&quot; value=&quot;&quot; /&gt;
+			&lt;table class=&quot;form-table&quot;&gt;
+				&lt;tbody id=&quot;notification-main&quot;&gt;
+					&lt;tr&gt;
+						&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;setting-name&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+						&lt;td&gt;&lt;input name=&quot;settings[name]&quot; type=&quot;text&quot; id=&quot;settings-name&quot; value=&quot;&quot; class=&quot;regular-text&quot;&gt;&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+						&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;type&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+						&lt;td&gt;
+							&lt;select name=&quot;settings[type]&quot; id=&quot;settings-type&quot;&gt;
+								
+									&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+									
+							&lt;/select&gt;
+							&lt;span class=&quot;nf-more-actions&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot;&gt; &lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;
+						&lt;/td&gt;
+					&lt;/tr&gt;
+				&lt;/tbody&gt;
+				
+					&lt;tbody id=&quot;notification-&quot; class=&quot;notification-type&quot; style=&quot;&quot;&gt;
+						
+					&lt;/tbody&gt;
+					
+			&lt;/table&gt;
+			
+
+    	&lt;/div&gt;
+    	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Main Notifications Class
+ *
+ * Adds our notifications to the form edit page.
+ * Gets notification types
+ * Listens for ajax commands to delete/activate/deactivate notifications
+ * Listens for bulk actions from the notifications admin page
+ * Adds notification types processing to the appropriate action hook
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Notifications
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.8
+*/
+
+class NF_Notifications
+{
+	/**
+	 * Get things rolling
+	 *
+	 * @access public
+	 *
+	 * @since 2.8
+	 */
+	function __construct() {
+		global $pagenow;
+
+		// Register our notification types
+		Ninja_Forms()-&gt;notification_types[&#x27;email&#x27;] = require_once( NF_PLUGIN_DIR . &#x27;classes/notification-email.php&#x27; );
+		Ninja_Forms()-&gt;notification_types[&#x27;redirect&#x27;] = require_once( NF_PLUGIN_DIR . &#x27;classes/notification-redirect.php&#x27; );
+		Ninja_Forms()-&gt;notification_types[&#x27;success_message&#x27;] = require_once( NF_PLUGIN_DIR . &#x27;classes/notification-success-message.php&#x27; );
+
+		Ninja_Forms()-&gt;notification_types = apply_filters( &#x27;nf_notification_types&#x27;, Ninja_Forms()-&gt;notification_types );
+
+		// Register our notification tab
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;register_tab&#x27; ) );
+
+		// Only add these actions if we are actually on the notification tab.
+		if ( &#x27;admin.php&#x27; == $pagenow &amp;&amp; isset ( $_REQUEST[&#x27;page&#x27;] ) &amp;&amp; $_REQUEST[&#x27;page&#x27;] == &#x27;ninja-forms&#x27; &amp;&amp; isset ( $_REQUEST[&#x27;tab&#x27;] ) &amp;&amp; $_REQUEST[&#x27;tab&#x27;] == &#x27;notifications&#x27; ) {
+			add_action( &#x27;admin_init&#x27;, array( $this, &#x27;add_js&#x27; ) );
+			add_action( &#x27;admin_init&#x27;, array( $this, &#x27;add_css&#x27; ) );
+			add_action( &#x27;admin_init&#x27;, array( $this, &#x27;bulk_actions&#x27; ) );
+			add_action( &#x27;admin_init&#x27;, array( $this, &#x27;duplicate_notification&#x27; ) );
+			add_filter( &#x27;media_buttons_context&#x27;, array( $this, &#x27;tinymce_buttons&#x27; ) );
+		}
+
+		add_action( &#x27;wp_ajax_nf_delete_notification&#x27;, array( $this, &#x27;delete_notification&#x27; ) );
+		add_action( &#x27;wp_ajax_nf_activate_notification&#x27;, array( $this, &#x27;activate_notification&#x27; ) );
+		add_action( &#x27;wp_ajax_nf_deactivate_notification&#x27;, array( $this, &#x27;deactivate_notification&#x27; ) );
+
+
+
+		// Add our hook to add notification types processors.
+		add_action( &#x27;ninja_forms_post_process&#x27;, array( $this, &#x27;notification_processing&#x27; ), 999 );
+	}
+
+	/**
+	 * Register our setting tab.
+	 *
+	 * @access public
+	 *
+	 * @since 2.8
+	 * @return void
+	 */
+	public function register_tab() {
+		$form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? absint( $_REQUEST[&#x27;form_id&#x27;] ) : &#x27;&#x27;;
+		$action = isset ( $_REQUEST[&#x27;notification-action&#x27;] ) ? esc_html( $_REQUEST[&#x27;notification-action&#x27;] ) : &#x27;&#x27;;
+		$output_form = false;
+		$show_save = false;
+		if ( &#x27;edit&#x27; == $action || &#x27;new&#x27; == $action ) {
+			$output_form = true;
+			$show_save = true;
+		}
+
+		$args = array(
+			&#x27;name&#x27; =&gt; __( &#x27;Email &amp; Actions&#x27;, &#x27;ninja-forms&#x27; ),
+			&#x27;page&#x27; =&gt; &#x27;ninja-forms&#x27;,
+			&#x27;display_function&#x27; =&gt; array( $this, &#x27;output_admin&#x27; ),
+			&#x27;save_function&#x27; =&gt; array( $this, &#x27;save_admin&#x27; ),
+			&#x27;disable_no_form_id&#x27; =&gt; true,
+			&#x27;show_save&#x27; =&gt; $show_save,
+			&#x27;tab_reload&#x27; =&gt; true,
+			&#x27;output_form&#x27; =&gt; $output_form,
+		);
+
+		ninja_forms_register_tab( &#x27;notifications&#x27;, $args );
+	}
+
+	/**
+	 * Enqueue JS
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function add_js() {
+		global $ninja_forms_fields;
+
+		$form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? absint( $_REQUEST[&#x27;form_id&#x27;] ) : &#x27;&#x27;;
+		if ( empty ( $form_id ) )
+			return false;
+
+		if ( defined( &#x27;NINJA_FORMS_JS_DEBUG&#x27; ) &amp;&amp; NINJA_FORMS_JS_DEBUG ) {
+			$suffix = &#x27;&#x27;;
+			$src = &#x27;dev&#x27;;
+		} else {
+			$suffix = &#x27;.min&#x27;;
+			$src = &#x27;min&#x27;;
+		}
+
+		wp_enqueue_script( &#x27;nf-notifications&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/js/&#x27; . $src .&#x27;/notifications&#x27; . $suffix . &#x27;.js&#x27;,
+		array( &#x27;jquery&#x27;, &#x27;jquery-ui-autocomplete&#x27; ) );
+
+		wp_enqueue_script( &#x27;nf-tokenize&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/js/&#x27; . $src .&#x27;/bootstrap-tokenfield&#x27; . $suffix . &#x27;.js&#x27;,
+		array( &#x27;jquery&#x27;, &#x27;jquery-ui-autocomplete&#x27; ) );
+
+		wp_enqueue_script( &#x27;nf-combobox&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/js/&#x27; . $src .&#x27;/combobox&#x27; . $suffix . &#x27;.js&#x27;,
+		array( &#x27;jquery&#x27;, &#x27;jquery-ui-core&#x27;, &#x27;jquery-ui-button&#x27;, &#x27;jquery-ui-autocomplete&#x27; ) );
+
+		$all_fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+		$process_fields = array();
+		$search_fields = array();
+		$search_fields[&#x27;email&#x27;] = array();
+		$search_fields[&#x27;name&#x27;] = array();
+		$fields = array();
+		// Generate our search fields JS var.
+		foreach( $all_fields as $field_id =&gt; $field ) {
+			$label = esc_attr( nf_get_field_admin_label( $field_id ) );
+
+			$fields[ $field_id ] = array( &#x27;field_id&#x27; =&gt; $field_id, &#x27;label&#x27; =&gt; $label );
+
+			if ( strlen( $label ) &gt; 30 ) {
+				$tmp_label = substr( $label, 0, 30 );
+			} else {
+				$tmp_label = $label;
+			}
+
+			$tmp_array = array( &#x27;value&#x27; =&gt; &#x27;field_&#x27; . $field_id, &#x27;label&#x27; =&gt; $tmp_label . &#x27; - ID: &#x27; . $field_id );
+
+			$admin_label = $label;
+
+			$label = isset( $field[&#x27;data&#x27;][&#x27;label&#x27;] ) ? $field[&#x27;data&#x27;][&#x27;label&#x27;] : &#x27;&#x27;;
+
+			// Check to see if this field is supposed to be &quot;processed&quot;
+			$type = $field[&#x27;type&#x27;];
+			if ( isset ( $ninja_forms_fields[ $type ][&#x27;process_field&#x27;] ) &amp;&amp; $ninja_forms_fields[ $type ][&#x27;process_field&#x27;] ) {
+				$process_fields[ $field_id ] = array( &#x27;field_id&#x27; =&gt; $field_id, &#x27;label&#x27; =&gt; $label, &#x27;admin_label&#x27; =&gt; $admin_label );
+				$search_fields[&#x27;all&#x27;][] = $tmp_array;
+			}
+
+			if ( $field[&#x27;type&#x27;] == &#x27;_text&#x27; &amp;&amp; isset ( $field[&#x27;data&#x27;][&#x27;email&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;email&#x27;] == 1 ) {
+				$search_fields[&#x27;email&#x27;][] = $tmp_array;
+			} else if ( $field[&#x27;type&#x27;] == &#x27;_text&#x27; &amp;&amp; isset ( $field[&#x27;data&#x27;][&#x27;first_name&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;first_name&#x27;] == 1 ) {
+				$search_fields[&#x27;name&#x27;][] = $tmp_array;
+			} else if ( $field[&#x27;type&#x27;] == &#x27;_text&#x27; &amp;&amp; isset ( $field[&#x27;data&#x27;][&#x27;last_name&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;last_name&#x27;] == 1 ) {
+				$search_fields[&#x27;name&#x27;][] = $tmp_array;
+			}
+		}
+
+		// Add our &quot;process_fields&quot; to our form global
+		Ninja_Forms()-&gt;form( $form_id )-&gt;process_fields = $process_fields;
+
+		$js_vars = apply_filters( &#x27;nf_notification_admin_js_vars&#x27;, array(
+			&#x27;activate&#x27; 			=&gt; __( &#x27;Activate&#x27;, &#x27;ninja-forms&#x27; ),
+			&#x27;deactivate&#x27; 		=&gt; __( &#x27;Deactivate&#x27;, &#x27;ninja-forms&#x27; ),
+			&#x27;search_fields&#x27; 	=&gt; $search_fields,
+			&#x27;tokens&#x27;			=&gt; array(),
+			&#x27;all_fields&#x27;		=&gt; $fields,
+			&#x27;process_fields&#x27;	=&gt; $process_fields,
+			&#x27;filter_type&#x27;		=&gt; esc_url_raw( remove_query_arg( array( &#x27;type&#x27; ) ) ),
+		) );
+
+		wp_localize_script( &#x27;nf-notifications&#x27;, &#x27;nf_notifications&#x27;, $js_vars );
+
+	}
+
+	/**
+	 * Enqueue CSS
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function add_css() {
+		wp_enqueue_style( &#x27;nf-notifications&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/css/notifications.css&#x27; );
+
+		wp_enqueue_style( &#x27;nf-tokenize&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/css/bootstrap-tokenfield.css&#x27; );
+
+		wp_enqueue_style( &#x27;nf-combobox&#x27;,
+		NF_PLUGIN_URL . &#x27;assets/css/combobox.css&#x27; );
+
+		// wp_enqueue_style( &#x27;nf-bootstrap&#x27;,
+		// &#x27;http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css&#x27; );
+	}
+
+	/**
+	 * Output our notifications admin.
+	 *
+	 * @access public
+	 *
+	 * @since 2.8
+	 * @return void
+	 */
+	public function output_admin() {
+		$action = isset ( $_REQUEST[&#x27;notification-action&#x27;] ) ? esc_html( $_REQUEST[&#x27;notification-action&#x27;] ) : &#x27;&#x27;;
+
+		?&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;?php
+		if ( &#x27;&#x27; == $action ) {
+			?&gt;
+			&lt;h2&gt;&lt;?php _e( &#x27;Email &amp; Actions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;a href=&quot;&lt;?php echo esc_url( add_query_arg( array( &#x27;notification-action&#x27; =&gt; &#x27;new&#x27; ) ) ); ?&gt;&quot; class=&quot;add-new-h2&quot;&gt;&lt;?php _e( &#x27;Add New&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/a&gt;&lt;/h2&gt;
+
+	        &lt;!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions --&gt;
+	      	 &lt;form id=&quot;forms-filter&quot; method=&quot;get&quot;&gt;
+	            &lt;!-- For plugins, we also need to ensure that the form posts back to our current page --&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;&lt;?php echo esc_attr( $_REQUEST[&#x27;page&#x27;] ); ?&gt;&quot; /&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;tab&quot; value=&quot;&lt;?php echo esc_attr( $_REQUEST[&#x27;tab&#x27;] ); ?&gt;&quot; /&gt;
+	            &lt;input type=&quot;hidden&quot; name=&quot;form_id&quot; value=&quot;&lt;?php echo esc_attr( $_REQUEST[&#x27;form_id&#x27;] ); ?&gt;&quot; /&gt;
+				&lt;?php
+				//Create an instance of our package class...
+			    $nf_all_forms = new NF_Notifications_List_Table();
+			    //Fetch, prepare, sort, and filter our data...
+			    $nf_all_forms-&gt;prepare_items();
+	 			// Now we can render the completed list table
+	            $nf_all_forms-&gt;display();
+	            ?&gt;
+        	&lt;/form&gt;
+            &lt;?php
+		} else {
+			$id = isset ( $_REQUEST[&#x27;id&#x27;] ) ? absint( $_REQUEST[&#x27;id&#x27;] ) : &#x27;&#x27;;
+			if ( $id == &#x27;&#x27; ) {
+				$id = &#x27;new&#x27;;
+				$this_type = &#x27;email&#x27;;
+				$title = __( &#x27;New Action&#x27;, &#x27;ninja-forms&#x27; );
+			} else {
+				$this_type = Ninja_Forms()-&gt;notification( $id )-&gt;type;
+				$title = __( &#x27;Edit Action&#x27;, &#x27;ninja-forms&#x27; ) . &#x27; - ID &#x27; . $id;
+			}
+
+			?&gt;
+			&lt;h2&gt;&lt;?php echo $title; ?&gt; &lt;a href=&quot;&lt;?php echo esc_url( remove_query_arg( array( &#x27;notification-action&#x27;, &#x27;id&#x27;, &#x27;update_message&#x27; ) ) );?&gt;&quot; class=&quot;button-secondary&quot;&gt;&lt;?php _e( &#x27;Back To List&#x27;, &#x27;ninja-forms&#x27; );?&gt;&lt;/a&gt;&lt;/h2&gt;
+
+			&lt;input type=&quot;hidden&quot; id=&quot;notification_id&quot; name=&quot;notification_id&quot; value=&quot;&lt;?php echo $id; ?&gt;&quot; /&gt;
+			&lt;table class=&quot;form-table&quot;&gt;
+				&lt;tbody id=&quot;notification-main&quot;&gt;
+					&lt;tr&gt;
+						&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;setting-name&quot;&gt;&lt;?php _e( &#x27;Action Name&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+						&lt;td&gt;&lt;input name=&quot;settings[name]&quot; type=&quot;text&quot; id=&quot;settings-name&quot; value=&quot;&lt;?php echo nf_get_object_meta_value( $id, &#x27;name&#x27; ); ?&gt;&quot; class=&quot;regular-text&quot;&gt;&lt;/td&gt;
+					&lt;/tr&gt;
+					&lt;tr&gt;
+						&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;type&quot;&gt;&lt;?php _e( &#x27;Type&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+						&lt;td&gt;
+							&lt;select name=&quot;settings[type]&quot; id=&quot;settings-type&quot;&gt;
+								&lt;?php
+								foreach ( $this-&gt;get_types() as $slug =&gt; $nicename ) {
+									?&gt;
+									&lt;option value=&quot;&lt;?php echo $slug; ?&gt;&quot; &lt;?php selected ( $this_type, $slug ); ?&gt;&gt;&lt;?php echo $nicename; ?&gt;&lt;/option&gt;
+									&lt;?php
+								}
+								?&gt;
+							&lt;/select&gt;
+							&lt;span class=&quot;nf-more-actions&quot;&gt;&lt;a href=&quot;&lt;?php echo nf_aff_link( &#x27;https://ninjaforms.com/extensions/?display=actions&amp;utm_medium=plugin&amp;utm_source=action-single&amp;utm_campaign=Ninja+Forms+Upsell&amp;utm_content=Ninja+Forms+Actions&#x27; ); ?&gt;&quot; target=&quot;_blank&quot;&gt;&lt;?php _e( &#x27;Get More Actions&#x27;, &#x27;ninja-forms&#x27; ); ?&gt; &lt;span class=&quot;dashicons dashicons-external&quot;&gt;&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;
+						&lt;/td&gt;
+					&lt;/tr&gt;
+				&lt;/tbody&gt;
+				&lt;?php
+				do_action( &#x27;nf_edit_notification_settings&#x27;, $id );
+				foreach ( $this-&gt;get_types() as $slug =&gt; $nicename ) {
+					if ( $this_type == $slug ) {
+						$display = &#x27;&#x27;;
+					} else {
+						$display = &#x27;display:none;&#x27;;
+					}
+					?&gt;
+					&lt;tbody id=&quot;notification-&lt;?php echo $slug; ?&gt;&quot; class=&quot;notification-type&quot; style=&quot;&lt;?php echo $display;?&gt;&quot;&gt;
+						&lt;?php
+							// Call our type edit screen.
+							Ninja_Forms()-&gt;notification_types[ $slug ]-&gt;edit_screen( $id );
+						?&gt;
+					&lt;/tbody&gt;
+					&lt;?php
+				}
+				?&gt;
+			&lt;/table&gt;
+			&lt;?php
+		} ?&gt;
+
+    	&lt;/div&gt;
+    	&lt;?php
+	}
+
+	/**
+	 * Save our notifications admin.
+	 *
+	 * @access public
+	 *
+	 * @since 2.8
+	 * @return void
+	 */
+	public function save_admin( $form_id, $data ) {
+		if ( ! isset ( $data[&#x27;notification_id&#x27;] ) || empty ( $data[&#x27;notification_id&#x27;] ) )
+			return false;
+
+		$n_id = $data[&#x27;notification_id&#x27;];
+		$settings = $data[&#x27;settings&#x27;];
+
+		if ( &#x27;new&#x27; == $n_id ) {
+			$type = $settings[&#x27;type&#x27;];
+			$n_id = $this-&gt;create( $form_id );
+			$new = true;
+		} else {
+			$type = Ninja_Forms()-&gt;notification( $n_id )-&gt;type;
+			$new = false;
+		}
+
+		$data = Ninja_Forms()-&gt;notification_types[ $type ]-&gt;save_admin( $n_id, $data );
+
+		foreach ( $settings as $meta_key =&gt; $meta_value ) {
+			nf_update_object_meta( $n_id, $meta_key, nf_wp_kses_post_deep( $meta_value ) );
+		}
+
+		do_action( &#x27;nf_save_notification&#x27;, $n_id, $data, $new );
+
+		if ( $new ) {
+			$redirect = esc_url_raw( remove_query_arg( array( &#x27;notification-action&#x27; ) ) );
+			$redirect = esc_url_raw( add_query_arg( array( &#x27;id&#x27; =&gt; $n_id, &#x27;notification-action&#x27; =&gt; &#x27;edit&#x27;, &#x27;update_message&#x27; =&gt; urlencode( __( &#x27;Action Updated&#x27;, &#x27;ninja-forms&#x27; ) ) ), $redirect ) );
+			wp_redirect( $redirect );
+			die();
+		}
+
+		return __( &#x27;Action Updated&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	/**
+	 * Get our registered notification types
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return array $types
+	 */
+	public function get_types() {
+		$types = array();
+		foreach ( Ninja_Forms()-&gt;notification_types as $slug =&gt; $object ) {
+			$types[ $slug ] = $object-&gt;name;
+		}
+		return $types;
+	}
+
+	/**
+	 * Delete a notification.
+	 * Hooked into the ajax action for nf_delete_notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function delete_notification() {
+		// Bail if our nonce doesn&#x27;t verify.
+		check_ajax_referer( &#x27;nf_ajax&#x27;, &#x27;nf_ajax_nonce&#x27; );
+
+		$n_id = absint( $_REQUEST[&#x27;n_id&#x27;] );
+		Ninja_Forms()-&gt;notification( $n_id )-&gt;delete();
+	}
+
+	/**
+	 * Activate a notification.
+	 * Hooked into the ajax action for nf_activate_notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function activate_notification() {
+		// Bail if our nonce doesn&#x27;t verify.
+		check_ajax_referer( &#x27;nf_ajax&#x27;, &#x27;nf_ajax_nonce&#x27; );
+
+		$n_id = absint( $_REQUEST[&#x27;n_id&#x27;] );
+		Ninja_Forms()-&gt;notification( $n_id )-&gt;activate();
+	}
+
+	/**
+	 * Deactivate a notification.
+	 * Hooked into the ajax action for nf_deactivate_notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function deactivate_notification() {
+		// Bail if our nonce doesn&#x27;t verify.
+		check_ajax_referer( &#x27;nf_ajax&#x27;, &#x27;nf_ajax_nonce&#x27; );
+
+		$n_id = absint( $_REQUEST[&#x27;n_id&#x27;] );
+		Ninja_Forms()-&gt;notification( $n_id )-&gt;deactivate();
+	}
+
+	/**
+	 * Duplicate our notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function duplicate_notification() {
+		if ( ! isset ( $_REQUEST[&#x27;notification-action&#x27;] ) || $_REQUEST[&#x27;notification-action&#x27;] != &#x27;duplicate&#x27; )
+			return false;
+
+		$n_id = isset ( $_REQUEST[&#x27;id&#x27;] ) ? absint( $_REQUEST[&#x27;id&#x27;] ) : &#x27;&#x27;;
+
+		// Bail if we don&#x27;t have an ID.
+		if ( &#x27;&#x27; === $n_id )
+			return false;
+
+		Ninja_Forms()-&gt;notification( $n_id )-&gt;duplicate();
+
+		wp_redirect( esc_url_raw( remove_query_arg( array( &#x27;notification-action&#x27; ) ) ) );
+		die();
+	}
+
+	/**
+	 * Create a new notification
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return int $n_id
+	 */
+	public function create( $form_id = &#x27;&#x27; ) {
+		// Bail if we don&#x27;t have a form_id
+		if ( &#x27;&#x27; == $form_id )
+			return false;
+
+		$n_id = nf_insert_notification( $form_id );
+
+		// Activate our new notification
+		Ninja_Forms()-&gt;notification( $n_id )-&gt;activate();
+
+		return $n_id;
+	}
+
+	/**
+	 * Handle bulk actions
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function bulk_actions() {
+		$action = &#x27;&#x27;;
+
+		if ( isset( $_REQUEST[&#x27;action2&#x27;] ) &amp;&amp; -1 != $_REQUEST[&#x27;action2&#x27;] )
+			$action = esc_html( $_REQUEST[&#x27;action2&#x27;] );
+
+		if ( isset( $_REQUEST[&#x27;action&#x27;] ) &amp;&amp; -1 != $_REQUEST[&#x27;action&#x27;] )
+			$action = esc_html( $_REQUEST[&#x27;action&#x27;] );
+
+		$n_ids = isset ( $_REQUEST[&#x27;notification&#x27;] ) ? esc_html( $_REQUEST[&#x27;notification&#x27;] ) : &#x27;&#x27;;
+
+		if ( ! is_array( $n_ids ) || empty( $n_ids ) )
+			return false;
+
+        if( &#x27;delete&#x27; === $action ) {
+        	foreach ( $n_ids as $n_id ) {
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;delete();
+            }
+        } else if ( &#x27;activate&#x27; === $action ) {
+        	foreach ( $n_ids as $n_id ) {
+        		Ninja_Forms()-&gt;notification( $n_id )-&gt;activate();
+        	}
+        } else if ( &#x27;deactivate&#x27; === $action ) {
+        	foreach ( $n_ids as $n_id ) {
+        		Ninja_Forms()-&gt;notification( $n_id )-&gt;deactivate();
+        	}
+        }
+
+        wp_redirect( esc_url_raw( remove_query_arg( array( &#x27;notification&#x27;, &#x27;_wpnonce&#x27;, &#x27;_wp_http_referer&#x27;, &#x27;action&#x27;, &#x27;action2&#x27; ) ) ) );
+        die();
+	}
+
+	/**
+	 * Output our tinyMCE field buttons
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function tinymce_buttons( $context ) {
+		$form_id = isset ( $_REQUEST[&#x27;form_id&#x27;] ) ? absint( $_REQUEST[&#x27;form_id&#x27;] ) : &#x27;&#x27;;
+		if ( empty ( $form_id ) )
+			return $context;
+
+		$all_fields = Ninja_Forms()-&gt;form( $form_id )-&gt;process_fields;
+		$first_option = __( &#x27;Select a field or type to search&#x27;, &#x27;ninja-forms&#x27; );
+
+		$fields = array();
+		$html = &#x27;&lt;select class=&quot;nf-fields-combobox&quot; data-first-option=&quot;&#x27; . $first_option . &#x27;&quot;&gt;&#x27;;
+		$html .= &#x27;&lt;option value=&quot;&quot;&gt;&#x27; . $first_option .&#x27;&lt;/option&gt;&#x27;;
+		foreach( $all_fields as $field_id =&gt; $field ) {
+			$label = esc_html( $field[&#x27;label&#x27;] );
+			if ( strlen( $label ) &gt; 30 )
+				$label = substr( $label, 0, 30 ) . &#x27;...&#x27;;
+
+			$html .= &#x27;&lt;option value=&quot;&#x27; . $field_id . &#x27;&quot;&gt;&#x27; . $label . &#x27; - ID: &#x27; . $field_id . &#x27;&lt;/option&gt;&#x27;;
+		}
+		$html .= &#x27;&lt;/select&gt;&#x27;;
+		$html .= &#x27; &lt;a href=&quot;#&quot; class=&quot;button-secondary nf-insert-field&quot;&gt;&#x27; . __( &#x27;Insert Field&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt; &lt;a href=&quot;#&quot; class=&quot;button-secondary nf-insert-all-fields&quot;&gt;&#x27; . __( &#x27;Insert All Fields&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/a&gt;&#x27;;
+
+		return $html;
+	}
+
+	/**
+	 * Loop through our notifications and add their processing functions to the appropriate hook.
+	 *
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function notification_processing() {
+		global $ninja_forms_processing;
+
+		$form_id = $ninja_forms_processing-&gt;get_form_ID();
+		$notifications = nf_get_notifications_by_form_id( $form_id, false );
+		if ( is_array( $notifications ) ) {
+			foreach ( $notifications as $id ) {
+				do_action( &#x27;nf_notification_before_process&#x27;, $id );
+				if ( Ninja_Forms()-&gt;notification( $id )-&gt;active ) {
+					Ninja_Forms()-&gt;notification( $id )-&gt;process();
+				}
+			}
+		}
+	}
+
+}
+</pre></details></body></html>

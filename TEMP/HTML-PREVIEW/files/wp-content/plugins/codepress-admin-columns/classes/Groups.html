@@ -1,0 +1,155 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Groups.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Groups.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * Holds the groups to which columns can belong.
+ */
+final class AC_Groups {
+
+	const SORT_PRIORITY = 1;
+
+	const SORT_SLUG = 2;
+
+	const SORT_LABEL = 3;
+
+	/**
+	 * @var array
+	 */
+	private $groups = array();
+
+	/**
+	 * @return array
+	 */
+	public function get_groups() {
+		return $this-&gt;groups;
+	}
+
+	/**
+	 * Return the registered groups sorted by either label, slug or priority
+	 *
+	 * @param int $sort_by Default is self::SORT_PRIORITY
+	 *
+	 * @return array
+	 */
+	public function get_groups_sorted( $sort_by = null ) {
+		switch ( $sort_by ) {
+			case self::SORT_LABEL :
+				$sorted = $this-&gt;sort_groups_by_string( $this-&gt;get_groups(), &#x27;label&#x27; );
+
+				break;
+			case self::SORT_SLUG :
+				$sorted = $this-&gt;sort_groups_by_string( $this-&gt;get_groups(), &#x27;slug&#x27; );
+
+				break;
+			default :
+				$sorted = $this-&gt;sort_groups_by_priority( $this-&gt;get_groups() );
+		}
+
+		return $sorted;
+	}
+
+	/**
+	 * Sort the group by priority
+	 *
+	 * If there are more groups with the same priority it will those groups by label
+	 *
+	 * @param $groups
+	 *
+	 * @return array
+	 */
+	private function sort_groups_by_priority( array $groups ) {
+		$aggregated = $sorted = array();
+
+		foreach ( $groups as $group ) {
+			$aggregated[ $group[&#x27;priority&#x27;] ][] = $group;
+		}
+
+		ksort( $aggregated, SORT_NUMERIC );
+
+		foreach ( $aggregated as $priority =&gt; $groups ) {
+			$sorted = array_merge( $sorted, $this-&gt;sort_groups_by_string( $groups, &#x27;label&#x27; ) );
+		}
+
+		return $sorted;
+	}
+
+	/**
+	 * Sort the group by label or slug
+	 *
+	 * @param array $groups
+	 * @param string $key
+	 *
+	 * @return array
+	 */
+	private function sort_groups_by_string( array $groups, $key ) {
+		$sorted = array();
+
+		foreach ( $groups as $k =&gt; $group ) {
+			$sorted[ $k ] = $group[ $key ];
+		}
+
+		natcasesort( $sorted );
+
+		foreach ( array_keys( $sorted ) as $k ) {
+			$sorted[ $k ] = $groups[ $k ];
+		}
+
+		return $sorted;
+	}
+
+	/**
+	 * @param string $slug
+	 *
+	 * @return bool|mixed
+	 */
+	public function get_group( $slug ) {
+		if ( ! $this-&gt;has_group( $slug ) ) {
+			return false;
+		}
+
+		return $this-&gt;groups[ $slug ];
+	}
+
+	public function get_group_label( $slug ) {
+		$group = $this-&gt;get_group( $slug );
+
+		return $group ? $group[&#x27;label&#x27;] : false;
+	}
+
+	/**
+	 * @param string $slug
+	 *
+	 * @return bool
+	 */
+	public function has_group( $slug ) {
+		return isset( $this-&gt;groups[ $slug ] );
+	}
+
+	/**
+	 * Register a (column) group
+	 *
+	 * @param string $slug
+	 * @param string $label Should be translatable
+	 * @param int $priority
+	 *
+	 * @return bool
+	 */
+	public function register_group( $slug, $label, $priority = 10 ) {
+		if ( $this-&gt;has_group( $slug ) ) {
+			return false;
+		}
+
+		$this-&gt;groups[ $slug ] = array(
+			&#x27;slug&#x27;     =&gt; $slug,
+			&#x27;label&#x27;    =&gt; $label,
+			&#x27;priority&#x27; =&gt; $priority,
+		);
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/REST/NewFormTemplates.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/REST/NewFormTemplates.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_REST_NewFormTemplates extends NF_AJAX_REST_Controller
+{
+    protected $action = &#x27;nf_new_form_templates&#x27;;
+
+    /**
+     * GET new-form-templates/
+     * @return array [ $new_form_templates ]
+     */
+    public function get()
+    {
+        $templates = Ninja_Forms()-&gt;config( &#x27;NewFormTemplates&#x27; );
+        usort( $templates, array( $this, &#x27;cmp&#x27; ) );
+        array_unshift( $templates, array(
+            &#x27;id&#x27; =&gt; &#x27;new&#x27;,
+            &#x27;title&#x27; =&gt; __( &#x27;Blank Form&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;template-desc&#x27; =&gt; __( &#x27;The blank form allows you to create any type of form using our drag &amp; drop builder.&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;type&#x27;  =&gt; &#x27;default&#x27;
+        ) );
+        return array_values( $templates ); // Remove keys so that the JSON is an array.
+    }
+
+    /**
+     * Comparison function used to sort templates alphabetically by title
+     * @since  3.2.22
+     * @param  array   $a item being compared
+     * @param  array   $b item being compared
+     * @return int
+     */
+    private function cmp( $a, $b )
+    {
+        return strcmp( $a[ &#x27;title&#x27; ], $b[ &#x27;title&#x27; ] );
+    }
+
+}
+</pre></details></body></html>

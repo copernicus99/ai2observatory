@@ -1,0 +1,352 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Addon.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Addon.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+            &lt;img class=&quot;icon &quot; src=&quot;&quot; alt=&quot;&quot;&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Addon {
+
+	/**
+	 * @var string
+	 */
+	private $title;
+
+	/**
+	 * @var string
+	 */
+	private $description;
+
+	/**
+	 * @var string
+	 */
+	private $logo;
+
+	/**
+	 * Icon is a small version of the logo. Mainly used on the promo banner.
+	 *
+	 * @var string
+	 */
+	private $icon;
+
+	/**
+	 * Plugin folder name
+	 *
+	 * @var AC_PluginInformation
+	 */
+	private $addon;
+
+	/**
+	 * Plugin basename. Example: plugin/plugin.php
+	 *
+	 * @var AC_PluginInformation[]
+	 */
+	private $plugins;
+
+	/**
+	 * External website link
+	 *
+	 * @var string
+	 */
+	private $link;
+
+	/**
+	 * Plugin URL. Place where the plugin can be downloaded from. Default is install plugin screen.
+	 *
+	 * @var string Url
+	 */
+	private $plugin_url;
+
+	public function __construct( $addon_dirname ) {
+		$this-&gt;addon = new AC_PluginInformation( $addon_dirname );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_title() {
+		return $this-&gt;title;
+	}
+
+	/**
+	 * @param string $title
+	 */
+	protected function set_title( $title ) {
+		$this-&gt;title = $title;
+
+		return $this;
+	}
+
+	/**
+	 * Plugin folder name
+	 *
+	 * @return AC_PluginInformation[]
+	 */
+	public function get_plugins() {
+		return $this-&gt;plugins;
+	}
+
+	/**
+	 * @param string $slug Plugin folder name. Example: &#x27;plugin/init.php&#x27; then directory name is &#x27;plugin&#x27;.
+	 */
+	protected function add_plugin( $plugin ) {
+		$this-&gt;plugins[] = new AC_PluginInformation( $plugin );
+
+		return $this;
+	}
+
+	/**
+	 * @return AC_PluginInformation
+	 */
+	public function get_plugin() {
+		return $this-&gt;plugins[0];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_link() {
+		if ( null === $this-&gt;link ) {
+			$this-&gt;set_link( ac_get_site_utm_url( &#x27;pricing-purchase&#x27;, &#x27;addon&#x27; ) );
+		}
+
+		return $this-&gt;link;
+	}
+
+	/**
+	 * @param string $link
+	 */
+	protected function set_link( $url ) {
+		if ( ac_helper()-&gt;string-&gt;is_valid_url( $url ) ) {
+			$this-&gt;link = $url;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_description() {
+		return $this-&gt;description;
+	}
+
+	/**
+	 * @param string $description
+	 */
+	protected function set_description( $description ) {
+		$this-&gt;description = $description;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_logo() {
+		return $this-&gt;logo;
+	}
+
+	/**
+	 * @param string $logo
+	 */
+	protected function set_logo( $logo ) {
+		$this-&gt;logo = $logo;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_icon() {
+		return $this-&gt;icon;
+	}
+
+	/**
+	 * @param string $icon
+	 */
+	protected function set_icon( $icon ) {
+		$this-&gt;icon = $icon;
+
+		return $this;
+	}
+
+	/**
+	 * Plugin folder name
+	 *
+	 * @return string
+	 */
+	public function get_slug() {
+		return $this-&gt;addon-&gt;get_dirname();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_installed() {
+		return $this-&gt;addon-&gt;is_installed();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_active() {
+		return $this-&gt;addon-&gt;is_active();
+	}
+
+	/**
+	 * @return string|false Returns the plugin version if the plugin is installed, false otherwise
+	 */
+	public function get_version() {
+		return $this-&gt;addon-&gt;get_version();
+	}
+
+	/**
+	 * @return string Basename
+	 */
+	public function get_basename() {
+		return $this-&gt;addon-&gt;get_basename();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_plugin_installed() {
+		return $this-&gt;get_plugin()-&gt;is_installed();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_plugin_active() {
+		return $this-&gt;get_plugin()-&gt;is_active();
+	}
+
+	/**
+	 * @return string Basename
+	 */
+	public function get_plugin_basename() {
+		return $this-&gt;get_plugin()-&gt;get_basename();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_plugin_activation_url() {
+		return $this-&gt;get_activation_url( $this-&gt;get_plugin_basename() );
+	}
+
+	/**
+	 * Icon
+	 */
+	public function display_icon() {
+		if ( $this-&gt;get_icon() ) : ?&gt;
+            &lt;img class=&quot;icon &lt;?php echo esc_attr( $this-&gt;get_slug() ); ?&gt;&quot; src=&quot;&lt;?php echo esc_attr( $this-&gt;get_icon() ); ?&gt;&quot; alt=&quot;&lt;?php echo esc_attr( $this-&gt;get_title() ); ?&gt;&quot;&gt;
+		&lt;?php endif;
+	}
+
+	public function display_promo() {
+		if ( $this-&gt;get_icon() ) {
+			$this-&gt;display_icon();
+
+			return;
+		}
+
+		echo $this-&gt;get_title();
+	}
+
+	/**
+	 * @return AC_Column_Placeholder
+	 */
+	public function get_placeholder_column() {
+		$column = new AC_Column_Placeholder();
+		$column-&gt;set_addon( $this );
+
+		return $column;
+	}
+
+	/**
+	 * @param string $title
+	 *
+	 * @return string
+	 */
+	protected function get_fields_description( $title ) {
+		return sprintf( __( &#x27;Display and edit %s fields in the posts overview in seconds!&#x27;, &#x27;codepress-admin-columns&#x27; ), $title );
+	}
+
+	/**
+	 * Activate plugin
+	 *
+	 * @return string
+	 */
+	public function get_activation_url( $basename ) {
+		return $this-&gt;get_plugin_action_url( &#x27;activate&#x27;, $basename );
+	}
+
+	/**
+	 * Deactivate plugin
+	 *
+	 * @return string
+	 */
+	public function get_deactivation_url( $basename ) {
+		return $this-&gt;get_plugin_action_url( &#x27;deactivate&#x27;, $basename );
+	}
+
+	/**
+	 * Activate or Deactivate plugin
+	 *
+	 * @param string $action
+	 *
+	 * @return string
+	 */
+	private function get_plugin_action_url( $action = &#x27;activate&#x27;, $basename ) {
+		$plugin_url = add_query_arg( array(
+			&#x27;action&#x27;      =&gt; $action,
+			&#x27;plugin&#x27;      =&gt; $basename,
+			&#x27;ac-redirect&#x27; =&gt; true,
+		), admin_url( &#x27;plugins.php&#x27; ) );
+
+		return wp_nonce_url( $plugin_url, $action . &#x27;-plugin_&#x27; . $basename );
+	}
+
+	/**
+	 * @param string $plugin_url
+	 *
+	 * @return $this
+	 */
+	public function set_plugin_url( $plugin_url ) {
+		$this-&gt;plugin_url = $plugin_url;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $search_term
+	 *
+	 * @return string
+	 */
+	public function get_plugin_url() {
+		if ( null === $this-&gt;plugin_url ) {
+			$this-&gt;set_plugin_url( add_query_arg( array(
+				&#x27;tab&#x27;  =&gt; &#x27;search&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;term&#x27;,
+				&#x27;s&#x27;    =&gt; $this-&gt;get_title(),
+			), admin_url( &#x27;plugin-install.php&#x27; ) ) );
+		}
+
+		return $this-&gt;plugin_url;
+	}
+
+	/**
+	 * Show notice on admin page only
+	 *
+	 * @return bool
+	 */
+	public function show_missing_notice_on_current_page() {
+		return AC()-&gt;admin()-&gt;is_admin_screen() || AC()-&gt;table_screen()-&gt;get_current_list_screen();
+	}
+
+}
+</pre></details></body></html>

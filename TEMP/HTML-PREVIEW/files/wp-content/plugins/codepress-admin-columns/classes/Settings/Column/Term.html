@@ -1,0 +1,84 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Term.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Term.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_Term extends AC_Settings_Column
+	implements AC_Settings_FormatValueInterface {
+
+	/**
+	 * @var string
+	 */
+	private $term_property;
+
+	protected function set_name() {
+		$this-&gt;name = &#x27;term&#x27;;
+	}
+
+	protected function define_options() {
+		return array( &#x27;term_property&#x27; );
+	}
+
+	public function create_view() {
+		$setting = $this
+			-&gt;create_element( &#x27;select&#x27; )
+			-&gt;set_options( array(
+				&#x27;&#x27;     =&gt; __( &#x27;Title&#x27; ),
+				&#x27;slug&#x27; =&gt; __( &#x27;Slug&#x27; ),
+				&#x27;id&#x27;   =&gt; __( &#x27;ID&#x27; ),
+			) );
+
+		$view = new AC_View( array(
+			&#x27;label&#x27;   =&gt; __( &#x27;Display&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;setting&#x27; =&gt; $setting,
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_term_property() {
+		return $this-&gt;term_property;
+	}
+
+	/**
+	 * @param string $term_property
+	 *
+	 * @return bool
+	 */
+	public function set_term_property( $term_property ) {
+		$this-&gt;term_property = $term_property;
+
+		return true;
+	}
+
+	public function format( $value, $original_value ) {
+
+		// For ACP_Column_Taxonomy_Parent
+		$term_id = $value;
+
+		switch ( $this-&gt;get_term_property() ) {
+			case &#x27;slug&#x27; :
+				$label = ac_helper()-&gt;taxonomy-&gt;get_term_field( &#x27;slug&#x27;, $term_id, $this-&gt;column-&gt;get_taxonomy() );
+
+				break;
+			case &#x27;id&#x27; :
+				$label = $term_id;
+
+				break;
+			default :
+				$label = ac_helper()-&gt;taxonomy-&gt;get_term_field( &#x27;name&#x27;, $term_id, $this-&gt;column-&gt;get_taxonomy() );
+		}
+
+		if ( ! $label ) {
+			$label = false;
+		}
+
+		return ac_helper()-&gt;html-&gt;link( get_edit_term_link( $term_id, $this-&gt;column-&gt;get_taxonomy() ), $label );
+	}
+
+}
+</pre></details></body></html>

@@ -1,0 +1,132 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Type.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Column/Type.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Settings_Column_Type extends AC_Settings_Column {
+
+	/**
+	 * @var string
+	 */
+	private $type;
+
+	protected function define_options() {
+		return array(
+			&#x27;type&#x27; =&gt; $this-&gt;column-&gt;get_type(),
+		);
+	}
+
+	public function create_view() {
+		$type = $this
+			-&gt;create_element( &#x27;select&#x27; )
+			-&gt;set_options( $this-&gt;get_grouped_columns() );
+
+		// Tooltip
+		$tooltip = __( &#x27;Choose a column type.&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;&lt;em&gt;&#x27; . __( &#x27;Type&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;: &#x27; . $this-&gt;column-&gt;get_type() . &#x27;&lt;/em&gt;&#x27;;
+
+		if ( $this-&gt;column-&gt;get_name() ) {
+			$tooltip .= &#x27;&lt;em&gt;&#x27; . __( &#x27;Name&#x27;, &#x27;codepress-admin-columns&#x27; ) . &#x27;: &#x27; . $this-&gt;column-&gt;get_name() . &#x27;&lt;/em&gt;&#x27;;
+		}
+
+		$view = new AC_View( array(
+			&#x27;setting&#x27; =&gt; $type,
+			&#x27;label&#x27;   =&gt; __( &#x27;Type&#x27;, &#x27;codepress-admin-columns&#x27; ),
+			&#x27;tooltip&#x27; =&gt; $tooltip,
+		) );
+
+		return $view;
+	}
+
+	/**
+	 * Returns the type label as human readable: no tags, underscores and capitalized.
+	 *
+	 * @param AC_Column|null $column
+	 *
+	 * @return string
+	 */
+	private function get_clean_label( AC_Column $column ) {
+		$label = $column-&gt;get_label();
+
+		if ( 0 === strlen( strip_tags( $label ) ) ) {
+			$label = ucfirst( str_replace( &#x27;_&#x27;, &#x27; &#x27;, $column-&gt;get_type() ) );
+		}
+
+		return strip_tags( $label );
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return array
+	 */
+	private function get_grouped_columns() {
+		$columns = array();
+
+		// get columns and sort them
+		foreach ( $this-&gt;column-&gt;get_list_screen()-&gt;get_column_types() as $column ) {
+
+			/**
+			 * @param string $group Group slug
+			 * @param AC_Column $column
+			 */
+			$group = apply_filters( &#x27;ac/column_group&#x27;, $column-&gt;get_group(), $column );
+
+			// Labels with html will be replaced by it&#x27;s name.
+			$columns[ $group ][ $column-&gt;get_type() ] = $this-&gt;get_clean_label( $column );
+
+			if ( ! $column-&gt;is_original() ) {
+				natcasesort( $columns[ $group ] );
+			}
+		}
+
+		$grouped = array();
+
+		// create select options
+		foreach ( AC()-&gt;column_groups()-&gt;get_groups_sorted() as $group ) {
+			$slug = $group[&#x27;slug&#x27;];
+
+			// hide empty groups
+			if ( ! isset( $columns[ $slug ] ) ) {
+				continue;
+			}
+
+			if ( ! isset( $grouped[ $slug ] ) ) {
+				$grouped[ $slug ][&#x27;title&#x27;] = $group[&#x27;label&#x27;];
+			}
+
+			$grouped[ $slug ][&#x27;options&#x27;] = $columns[ $slug ];
+
+			unset( $columns[ $slug ] );
+		}
+
+		// Add columns to a &quot;default&quot; group when it has an invalid group assigned
+		foreach ( $columns as $group =&gt; $_columns ) {
+			foreach ( $_columns as $name =&gt; $label ) {
+				$grouped[&#x27;default&#x27;][&#x27;options&#x27;][ $name ] = $label;
+			}
+		}
+
+		return $grouped;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_type() {
+		return $this-&gt;type;
+	}
+
+	/**
+	 * @param string $type
+	 *
+	 * @return bool
+	 */
+	public function set_type( $type ) {
+		$this-&gt;type = $type;
+
+		return true;
+	}
+
+}
+</pre></details></body></html>

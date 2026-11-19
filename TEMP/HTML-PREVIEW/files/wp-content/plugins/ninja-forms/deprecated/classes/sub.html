@@ -1,0 +1,406 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/sub.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/sub.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Submission.
+ * This class handles storing, retrieving, editing a submission.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Submissions
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+*/
+
+class NF_Sub {
+
+	/**
+	 * @var $sub_id store our sub id
+	 */
+	var $sub_id;
+
+	/**
+	 * @var $seq_num store our sequential number
+	 */
+	var $seq_num;
+
+	/**
+	 * @var $form_id store our form_id
+	 */
+	var $form_id;
+
+	/**
+	 * @var $fields store our user values
+	 */
+	var $fields;
+
+	/**
+	 * @var $action store the action that created this sub
+	 */
+	var $action;
+
+	/**
+	 * @var $user_id store the user ID for this submission
+	 */
+	var $user_id;
+
+	/**
+	 * @var $meta store our non-field meta
+	 */
+	var $meta;
+
+	/**
+	 * @var $date_submitted store our submitted date
+	 */
+	var $date_submitted;
+
+	/**
+	 * @var $date_modified store our modified date
+	 */
+	var $date_modified;
+
+	/**
+	 * Get things started
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return void/
+	 */
+	public function __construct( $sub_id ) {
+		global $ninja_forms_fields;
+
+		// Bail if the sub doesn&#x27;t exist.
+		$sub = get_post( $sub_id );
+		if ( ! is_object( $sub ) )
+			return false;
+
+		// Set our sub id
+		$this-&gt;sub_id = $sub_id;
+
+		// Populate our fields
+		$this-&gt;fields = array();
+		$this-&gt;retrieve_fields();
+
+		// Setup our form id var
+		$this-&gt;form_id = $this-&gt;get_meta( &#x27;_form_id&#x27; );
+		// Setup our action var
+		$this-&gt;action = $this-&gt;get_meta( &#x27;_action&#x27; );
+		// Setup our sequential id
+		$this-&gt;seq_num = $this-&gt;get_meta( &#x27;_seq_num&#x27; );
+		// Setup our user_id var
+		$this-&gt;user_id = $sub-&gt;post_author;
+		// Setup our date submitted var
+		$this-&gt;date_submitted = get_the_time( &#x27;Y-m-d G:i:s&#x27;, $sub_id );
+		// Setup our date modified var
+		$this-&gt;date_modified = get_post_modified_time( &#x27;Y-m-d G:i:s&#x27;, false, $sub_id );
+
+	}
+
+	private function retrieve_fields() {
+		global $ninja_forms_fields;
+
+		// Setup our fields and meta vars.
+		$post_meta = get_post_custom( $this-&gt;sub_id );
+
+		foreach ( $post_meta as $key =&gt; $array ) {
+			if ( is_serialized( $array[0] ) ) {
+				$meta_value = unserialize( $array[0] );
+			} else {
+				$meta_value = $array[0];
+			}
+
+			if ( strpos( $key, &#x27;_field_&#x27; ) !== false ) {
+				$field_id = str_replace( &#x27;_field_&#x27;, &#x27;&#x27;, $key );
+				$field = ninja_forms_get_field_by_id( $field_id );
+				$field_type = $field[&#x27;type&#x27;];
+
+				// Check to see if our field type has been set as a &quot;process_field&quot;.
+				if ( isset ( $ninja_forms_fields[ $field_type ] ) ) {
+					$reg_field = $ninja_forms_fields[ $field_type ];
+					$process_field = $reg_field[&#x27;process_field&#x27;];
+				} else {
+					$process_field = false;
+				}
+
+				if ( $process_field ) {
+					$this-&gt;fields[ $field_id ] = $meta_value;
+				}
+
+			} else if ( $key != &#x27;_form_id&#x27; &amp;&amp; $key != &#x27;_action&#x27; ) {
+				$this-&gt;meta[ $key ] = $meta_value;
+			}
+		}
+	}
+
+	/**
+	 * Update our form id
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_form_id( $form_id ) {
+		if ( update_post_meta( $this-&gt;sub_id, &#x27;_form_id&#x27;, $form_id ) ) {
+			$this-&gt;form_id = $form_id;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update our action
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_action( $action ) {
+		if ( update_post_meta( $this-&gt;sub_id, &#x27;_action&#x27;, $action ) ) {
+			$this-&gt;action = $action;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update our sequential id
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_seq_num( $seq_num ) {
+		if ( update_post_meta( $this-&gt;sub_id, &#x27;_seq_num&#x27;, $seq_num ) ) {
+			$this-&gt;seq_num = $seq_num;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update our user id
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_user_id( $user_id ) {
+		$args = array(
+			&#x27;ID&#x27;           	=&gt; $this-&gt;sub_id,
+			&#x27;post_author&#x27; 	=&gt; $user_id,
+		);
+
+		// Update the post into the database
+		if ( wp_update_post( $args ) ) {
+			$this-&gt;user_id = $user_id;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update our date submitted
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_date_submitted( $date ) {
+		$args = array(
+			&#x27;ID&#x27;           	=&gt; $this-&gt;sub_id,
+			&#x27;post_date&#x27; 	=&gt; $date,
+			&#x27;post_date_gmt&#x27;	=&gt; get_gmt_from_date( $date ),
+		);
+
+		// Update the post into the database
+		if ( wp_update_post( $args ) ) {
+			$this-&gt;date_submitted = $date;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update our date modified
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_date_modified( $date ) {
+		$args = array(
+			&#x27;ID&#x27;           		=&gt; $this-&gt;sub_id,
+			&#x27;post_modified&#x27; 	=&gt; $date,
+			&#x27;post_modified_gmt&#x27;	=&gt; get_gmt_from_date( $date ),
+		);
+
+		// Update the post into the database
+		if ( wp_update_post( $args ) ) {
+			$this-&gt;date_modified = $date;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Add a meta value to our submission.
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function add_meta( $meta_key, $value ) {
+		if ( update_post_meta( $this-&gt;sub_id, $meta_key, $value ) ) {
+			$this-&gt;meta[ $meta_key ] = $value;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update a meta value.
+	 * Wrapper for add_field().
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_meta( $meta_key, $value ) {
+		return $this-&gt;add_meta( $meta_key, $value );
+	}
+
+	/**
+	 * Delete a meta value.
+	 *
+	 * @access public
+	 * @since 2.9
+	 * @return bool
+	 */
+	public function delete_meta( $meta_key, $value = &#x27;&#x27; ) {
+		if ( empty( $value ) ) {
+			return delete_post_meta( $this-&gt;sub_id, $meta_key );
+		} else {
+			return delete_post_meta( $this-&gt;sub_id, $meta_key, $value );
+		}
+		
+	}
+
+	/**
+	 * Add a field value to our submission.
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function add_field( $field_id, $value ) {
+		$meta_key = &#x27;_field_&#x27; . $field_id;
+		if ( update_post_meta( $this-&gt;sub_id, $meta_key, $value ) ) {
+			$this-&gt;field[ $field_id ] = $value;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update a field value
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return bool
+	 */
+	public function update_field( $field_id, $value ) {
+		return $this-&gt;add_field( $field_id, $value );
+	}
+
+	/**
+	 * Get a meta value from our submission by meta key
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return array|bool
+	 */
+	public function get_meta( $meta_key ) {
+		if ( ! isset ( $this-&gt;meta[ $meta_key ] ) ) {
+			$this-&gt;meta[ $meta_key ] = get_post_meta( $this-&gt;sub_id, $meta_key, true );
+		}
+
+		return $this-&gt;meta[ $meta_key ];
+	}
+
+	/**
+	 * Get a field value from our submission by field id
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return array|bool
+	 */
+	public function get_field( $field_id ) {
+		if ( isset ( $this-&gt;fields[ $field_id ] ) ) {
+			return $this-&gt;fields[ $field_id ];
+		} else {
+			return get_post_meta( $this-&gt;sub_id, &#x27;_field_&#x27; . $field_id, true );
+		}
+	}
+
+	/**
+	 * Get a submission from the database, returning all the field data.
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return array $sub
+	 */
+	public function get_all_fields() {
+		if ( empty ( $this-&gt;fields ) ) {
+			$this-&gt;retrieve_fields();
+		}
+		return $this-&gt;fields;
+	}
+
+	/**
+	 * Get a submission sequential ID by the post ID.
+	 * This function puts together the prefix, sequential number, and postfix
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return string $seq_num
+	 */
+	public function get_seq_num() {
+		return apply_filters( &#x27;nf_subs_seq_num&#x27;, $this-&gt;seq_num, $this-&gt;sub_id );
+	}
+
+	/**
+	 * Export our current submission.
+	 *
+	 * @access public
+	 * @param array $sub_ids
+	 * @param bool @return
+	 * @since 2.7
+	 * @return void
+	 */
+	public function export( $return = false ){
+		if ( $return ) {
+			return Ninja_Forms()-&gt;subs()-&gt;export( $this-&gt;sub_id, $return );
+		} else {
+			Ninja_Forms()-&gt;subs()-&gt;export( $this-&gt;sub_id, $return );
+		}
+	}
+
+	/**
+	 * Delete this submission
+	 *
+	 * @access public
+	 * @since 2.7
+	 * @return void
+	 */
+	public function delete() {
+		wp_delete_post( $this-&gt;sub_id, true );
+	}
+
+}
+</pre></details></body></html>

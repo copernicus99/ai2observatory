@@ -1,0 +1,184 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/libraries/wp-session.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/libraries/wp-session.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * WordPress session managment.
+ *
+ * Standardizes WordPress session data and uses either database transients or in-memory caching
+ * for storing user session information.
+ *
+ * @package WordPress
+ * @subpackage Session
+ * @since   3.7.0
+ */
+
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Return the current cache expire setting.
+ *
+ * @return int
+ */
+function wp_session_cache_expire() {
+	$wp_session = WP_Session::get_instance();
+
+	return $wp_session-&gt;cache_expiration();
+}
+
+/**
+ * Alias of wp_session_write_close()
+ */
+function wp_session_commit() {
+	wp_session_write_close();
+}
+
+/**
+ * Load a JSON-encoded string into the current session.
+ *
+ * @param string $data
+ */
+function wp_session_decode( $data ) {
+	$wp_session = WP_Session::get_instance();
+
+	return $wp_session-&gt;json_in( $data );
+}
+
+/**
+ * Encode the current session&#x27;s data as a JSON string.
+ *
+ * @return string
+ */
+function wp_session_encode() {
+	$wp_session = WP_Session::get_instance();
+
+	return $wp_session-&gt;json_out();
+}
+
+/**
+ * Regenerate the session ID.
+ *
+ * @param bool $delete_old_session
+ *
+ * @return bool
+ */
+function wp_session_regenerate_id( $delete_old_session = false ) {
+	$wp_session = WP_Session::get_instance();
+
+	$wp_session-&gt;regenerate_id( $delete_old_session );
+
+	return true;
+}
+
+/**
+ * Start new or resume existing session.
+ *
+ * Resumes an existing session based on a value sent by the _wp_session cookie.
+ *
+ * @return bool
+ */
+function wp_session_start() {
+	$wp_session = WP_Session::get_instance();
+	do_action( &#x27;wp_session_start&#x27; );
+
+	return $wp_session-&gt;session_started();
+}
+add_action( &#x27;plugins_loaded&#x27;, &#x27;wp_session_start&#x27; );
+
+/**
+ * Return the current session status.
+ *
+ * @return int
+ */
+function wp_session_status() {
+	$wp_session = WP_Session::get_instance();
+
+	if ( $wp_session-&gt;session_started() ) {
+		return PHP_SESSION_ACTIVE;
+	}
+
+	return PHP_SESSION_NONE;
+}
+
+/**
+ * Unset all session variables.
+ */
+function wp_session_unset() {
+	$wp_session = WP_Session::get_instance();
+
+	$wp_session-&gt;reset();
+}
+
+/**
+ * Write session data and end session
+ */
+function wp_session_write_close() {
+	$wp_session = WP_Session::get_instance();
+
+	$wp_session-&gt;write_data();
+	do_action( &#x27;wp_session_commit&#x27; );
+}
+add_action( &#x27;shutdown&#x27;, &#x27;wp_session_write_close&#x27; );
+
+/**
+ * Clean up expired sessions by removing data and their expiration entries from
+ * the WordPress options table.
+ *
+ * This method should never be called directly and should instead be triggered as part
+ * of a scheduled task or cron job.
+ */
+function wp_session_cleanup() {
+	global $wpdb;
+
+	if ( defined( &#x27;WP_SETUP_CONFIG&#x27; ) ) {
+		return;
+	}
+
+	if ( ! defined( &#x27;WP_INSTALLING&#x27; ) ) {
+		$expiration_keys = $wpdb-&gt;get_results( &quot;SELECT option_name, option_value FROM $wpdb-&gt;options WHERE option_name LIKE &#x27;_wp_session_expires_%&#x27;&quot; );
+
+		$now = current_time( &#x27;timestamp&#x27; );
+		$expired_sessions = array();
+
+		foreach( $expiration_keys as $expiration ) {
+			// If the session has expired
+			if ( $now &gt; intval( $expiration-&gt;option_value ) ) {
+				// Get the session ID by parsing the option_name
+				$session_id = substr( $expiration-&gt;option_name, 20 );
+
+				if( (int) -1 === (int) $session_id || ! preg_match( &#x27;/^[a-f0-9]{32}$/&#x27;, $session_id ) ) {
+					continue;
+				}
+
+				$expired_sessions[] = $expiration-&gt;option_name;
+				$expired_sessions[] = esc_sql( &quot;_wp_session_$session_id&quot; );
+			}
+		}
+
+		// Delete all expired sessions in a single query
+        if ( ! empty( $expired_sessions ) ) {
+            $option_names = implode( &quot;&#x27;,&#x27;&quot;, $expired_sessions );
+            $wpdb-&gt;query( $wpdb-&gt;prepare(
+                &quot;
+                  DELETE FROM $wpdb-&gt;options
+                  WHERE option_name
+                  IN (&#x27;%s&#x27;)
+                &quot;,
+                $option_names
+            ) );
+        }
+	}
+
+	// Allow other plugins to hook in to the garbage collection process.
+	do_action( &#x27;wp_session_cleanup&#x27; );
+}
+add_action( &#x27;wp_session_garbage_collection&#x27;, &#x27;wp_session_cleanup&#x27; );
+
+/**
+ * Register the garbage collector as a twice daily event.
+ */
+function wp_session_register_garbage_collection() {
+	if ( ! wp_next_scheduled( &#x27;wp_session_garbage_collection&#x27; ) ) {
+		wp_schedule_event( current_time( &#x27;timestamp&#x27; ), &#x27;twicedaily&#x27;, &#x27;wp_session_garbage_collection&#x27; );
+	}
+}
+add_action( &#x27;wp&#x27;, &#x27;wp_session_register_garbage_collection&#x27; );
+</pre></details></body></html>

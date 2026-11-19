@@ -1,0 +1,290 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Settings/Form/Element.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Settings/Form/Element.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+abstract class AC_Settings_Form_Element {
+
+	/**
+	 * @var array
+	 */
+	protected $attributes = array();
+
+	/**
+	 * Options for element like select
+	 *
+	 * @var array
+	 */
+	protected $options = array();
+
+	/**
+	 * The elements value
+	 *
+	 * @var mixed
+	 */
+	protected $value;
+
+	/**
+	 * Label
+	 *
+	 * @var string
+	 */
+	protected $label;
+
+	/**
+	 * Extra description
+	 *
+	 * @var string
+	 */
+	protected $description;
+
+	/**
+	 * Setup element with base name and id
+	 *
+	 * @param string $name
+	 * @param array $options
+	 */
+	public function __construct( $name, array $options = array() ) {
+		$this-&gt;set_name( $name );
+		$this-&gt;set_id( $name );
+		$this-&gt;set_options( $options );
+	}
+
+	/**
+	 * @return string|false
+	 */
+	protected function render_description() {
+		if ( ! $this-&gt;get_description() ) {
+			return false;
+		}
+
+		$template = &#x27;&lt;p class=&quot;help-msg&quot;&gt;%s&lt;/p&gt;&#x27;;
+
+		return sprintf( $template, $this-&gt;get_description() );
+	}
+
+	/**
+	 * Render this element
+	 *
+	 * @return string
+	 */
+	abstract public function render();
+
+	/**
+	 * @param $key
+	 *
+	 * @return string|false
+	 */
+	public function get_attribute( $key ) {
+		if ( ! isset( $this-&gt;attributes[ $key ] ) ) {
+			return false;
+		}
+
+		return trim( $this-&gt;attributes[ $key ] );
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $value
+	 *
+	 * @return $this
+	 */
+	public function set_attribute( $key, $value ) {
+		if ( &#x27;value&#x27; === $key ) {
+			$this-&gt;set_value( $value );
+
+			return $this;
+		}
+
+		$this-&gt;attributes[ $key ] = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_attributes() {
+		return $this-&gt;attributes;
+	}
+
+	/**
+	 * @param array $attributes
+	 *
+	 * @return $this
+	 */
+	public function set_attributes( array $attributes ) {
+		foreach ( $attributes as $key =&gt; $value ) {
+			$this-&gt;set_attribute( $key, $value );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Get attributes as string
+	 *
+	 * @param array $attributes
+	 *
+	 * @return string
+	 */
+	protected function get_attributes_as_string( array $attributes ) {
+		$output = array();
+
+		foreach ( $attributes as $key =&gt; $value ) {
+			$output[] = $this-&gt;get_attribute_as_string( $key, $value );
+		}
+
+		return implode( &#x27; &#x27;, $output );
+	}
+
+	/**
+	 * Render an attribute
+	 *
+	 * @param string $key
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	protected function get_attribute_as_string( $key, $value = null ) {
+		if ( null === $value ) {
+			$value = $this-&gt;get_attribute( $key );
+		}
+
+		return ac_helper()-&gt;html-&gt;get_attribute_as_string( $key, $value );
+	}
+
+	public function get_name() {
+		return $this-&gt;get_attribute( &#x27;name&#x27; );
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
+	public function set_name( $name ) {
+		return $this-&gt;set_attribute( &#x27;name&#x27;, $name );
+	}
+
+	/**
+	 * @return false|string
+	 */
+	public function get_id() {
+		return $this-&gt;get_attribute( &#x27;id&#x27; );
+	}
+
+	/**
+	 * @param string $id
+	 *
+	 * @return $this
+	 */
+	public function set_id( $id ) {
+		return $this-&gt;set_attribute( &#x27;id&#x27;, $id );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_value() {
+		return $this-&gt;value;
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return $this
+	 */
+	public function set_value( $value ) {
+		$this-&gt;value = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $class
+	 *
+	 * @return $this
+	 */
+	public function set_class( $class ) {
+		$this-&gt;set_attribute( &#x27;class&#x27;, $class );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $class
+	 *
+	 * @return $this
+	 */
+	public function add_class( $class ) {
+		$parts = explode( &#x27; &#x27;, (string) $this-&gt;get_attribute( &#x27;class&#x27; ) );
+		$parts[] = $class;
+
+		$this-&gt;set_class( implode( &#x27; &#x27;, $parts ) );
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_label() {
+		return $this-&gt;label;
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return $this
+	 */
+	public function set_label( $label ) {
+		$this-&gt;label = $label;
+
+		return $this;
+	}
+
+	/**
+	 * @param array $options
+	 *
+	 * @return $this
+	 */
+	public function set_options( array $options ) {
+		$this-&gt;options = $options;
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function get_options() {
+		return $this-&gt;options;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_description() {
+		return $this-&gt;description;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function set_description( $description ) {
+		$this-&gt;description = $description;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this-&gt;render();
+	}
+
+}
+</pre></details></body></html>

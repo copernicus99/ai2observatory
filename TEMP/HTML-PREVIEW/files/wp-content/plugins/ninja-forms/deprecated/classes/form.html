@@ -1,0 +1,214 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/form.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/form.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Handles the output of our form, as well as interacting with its settings.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Form
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+*/
+
+class NF_Form {
+
+	/**
+	 * @var form_id
+	 * @since 2.7
+	 */
+	var $form_id;
+
+	/**
+	 * @var settings - Form Settings
+	 * @since 2.7
+	 */
+	var $settings = array();
+
+	/**
+	 * @var fields - Form Fields
+	 * @since 2.7
+	 */
+	var $fields = array();
+
+	/**
+	 * @var fields - Fields List
+	 * @since 2.7
+	 */
+	var $field_keys = array();
+
+	/**
+	 * @var errors - Form errors
+	 * @since 2.7
+	 */
+	var $errors = array();
+
+	/**
+	 * Get things started
+	 * 
+	 * @access public
+	 * @since 2.7
+	 * @return void
+	 */
+	public function __construct( $form_id = &#x27;&#x27; ) {
+		if ( ! empty ( $form_id ) ) { // We&#x27;ve been passed a form id.
+			// Set our current form id.
+			$this-&gt;form_id = $form_id;
+			$this-&gt;update_fields();
+			$this-&gt;settings = nf_get_form_settings( $form_id );
+		}
+	}
+
+	/**
+	 * Add a form
+	 * 
+	 * @access public
+	 * @since 2.9
+	 * @return int $form_id
+	 */
+	public function create( $defaults = array() ) {
+		$form_id = nf_insert_object( &#x27;form&#x27; );
+		$date_updated = date( &#x27;Y-m-d&#x27;, current_time( &#x27;timestamp&#x27; ) );
+		nf_update_object_meta( $form_id, &#x27;date_updated&#x27;, $date_updated );
+
+		foreach( $defaults as $meta_key =&gt; $meta_value ) {
+			nf_update_object_meta( $form_id, $meta_key, $meta_value );
+		}
+
+		// Add a single event hook that will check to see if this is an orphaned function.
+		$timestamp = strtotime( &#x27;+24 hours&#x27;, time() );
+		$args = array(
+			&#x27;form_id&#x27; =&gt; $form_id
+		);
+		wp_schedule_single_event( $timestamp, &#x27;nf_maybe_delete_form&#x27;, $args );
+		return $form_id;
+	}
+
+	/**
+	 * Insert a field into our form
+	 * 
+	 * @access public
+	 * @since 2.9
+	 * @return bool()
+	 */
+	public function insert_field( $field_id ) {
+		return nf_add_relationship( $field_id, &#x27;field&#x27;, $this-&gt;form_id, &#x27;form&#x27; );
+	}
+
+	/**
+	 * Update our fields
+	 * 
+	 * @access public
+	 * @since 2.9
+	 * @return void
+	 */
+	public function update_fields() {
+		$this-&gt;fields = nf_get_fields_by_form_id( $this-&gt;form_id );
+	}
+
+	/**
+	 * Get one of our form settings.
+	 * 
+	 * @access public
+	 * @since 2.7
+	 * @return string $setting
+	 */
+	public function get_setting( $setting, $bypass_cache = false ) {
+		if ( $bypass_cache ) {
+			return nf_get_object_meta_value( $this-&gt;form_id, &#x27;last_sub&#x27; );
+		}
+		if ( isset ( $this-&gt;settings[ $setting ] ) ) {
+			return $this-&gt;settings[ $setting ];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Update a form setting (this doesn&#x27;t update anything in the database)
+	 * Changes are only applied to this object.
+	 * 
+	 * @access public
+	 * @since 2.8
+	 * @param string $setting
+	 * @param mixed $value
+	 * @return bool
+	 */
+	public function update_setting( $setting, $value ) {
+		$this-&gt;settings[ $setting ] = $value;
+		nf_update_object_meta( $this-&gt;form_id, $setting, $value );
+		$this-&gt;dump_cache();
+		return true;
+	}
+
+	/**
+	 * Get all of our settings
+	 * 
+	 * @access public
+	 * @since 2.9
+	 * @return array $settings
+	 */
+	public function get_all_settings() {
+		return $this-&gt;settings;
+	}
+
+	/**
+	 * Get all the submissions for this form
+	 * 
+	 * @access public
+	 * @since 2.7
+	 * @return array $sub_ids
+	 */
+	public function get_subs( $args = array() ) {
+		$args[&#x27;form_id&#x27;] = $this-&gt;form_id;
+		return Ninja_Forms()-&gt;subs()-&gt;get( $args );
+	}
+
+	/**
+	 * Return a count of the submissions this form has had
+	 * 
+	 * @access public
+	 * @param array $args
+	 * @since 2.7
+	 * @return int $count
+	 */
+	public function sub_count( $args = array() ) {
+		return count( $this-&gt;get_subs( $args ) );
+	}
+
+	/**
+	 * Delete this form
+	 * 
+	 * @access public
+	 * @since 2.9
+	 */
+	public function delete() {
+		global $wpdb;
+		// Delete this object.
+		nf_delete_object( $this-&gt;form_id );
+		// Delete any fields on this form.
+		$wpdb-&gt;query($wpdb-&gt;prepare( &quot;DELETE FROM &quot;.NINJA_FORMS_FIELDS_TABLE_NAME.&quot; WHERE form_id = %d&quot;, $this-&gt;form_id ) );
+	}
+
+    /**
+     * Delete the cached form object (transient)
+     *
+     * @access public
+     * @since 2.9.17
+     */
+    public function dump_cache()
+    {
+        delete_transient( &#x27;nf_form_&#x27; . $this-&gt;form_id );
+    }
+
+    /**
+     * Deprecated wrapper for dump_cache()
+     *
+     * @access public
+     * @since 2.9.12
+     */
+    public function dumpCache()
+    {
+        $this-&gt;dump_cache();
+    }
+
+}
+</pre></details></body></html>

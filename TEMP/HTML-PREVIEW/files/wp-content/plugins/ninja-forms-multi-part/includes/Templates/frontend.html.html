@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-multi-part/includes/Templates/frontend.html.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-multi-part/includes/Templates/frontend.html.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;script id=&quot;tmpl-nf-mp-form-content&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-mp-header&quot;&gt;&lt;/div&gt;
+	&lt;div class=&quot;nf-mp-body&quot;&gt;&lt;/div&gt;
+	&lt;div class=&quot;nf-mp-footer&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+
+
+&lt;script id=&quot;tmpl-nf-mp-header&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.renderProgressBar() }}}
+	{{{ data.renderBreadcrumbs() }}}
+	{{{ data.renderPartTitle() }}}
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-mp-part-title&quot; type=&quot;text/template&quot;&gt;
+	&lt;h3&gt;
+		{{{ data.title }}}
+	&lt;/h3&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-footer&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.renderNextPrevious() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-next-previous&quot; type=&quot;text/template&quot;&gt;
+	&lt;ul class=&quot;nf-next-previous&quot;&gt;
+		&lt;# if ( data.showPrevious ) { #&gt;
+		&lt;li class=&quot;nf-previous-item&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;nf-previous&quot; value=&quot;{{{ data.prevLabel }}}&quot; /&gt;
+		&lt;/li&gt;
+		&lt;# } #&gt;
+
+		&lt;# if ( data.showNext ) { #&gt;
+		&lt;li class=&quot;nf-next-item&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;nf-next&quot; value=&quot;{{{ data.nextLabel }}}&quot; /&gt;
+		&lt;/li&gt;
+		&lt;# } #&gt;
+	&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-breadcrumbs&quot; type=&quot;text/template&quot;&gt;
+	&lt;ul class=&quot;nf-breadcrumbs&quot;&gt;
+		&lt;# _.each( data.parts, function( part, index ) { #&gt;
+		&lt;li class=&quot;{{{ ( data.currentIndex == index ) ? &#x27;active&#x27; : &#x27;&#x27; }}} {{{ ( part.errors ) ? &#x27;errors&#x27; : &#x27;&#x27; }}}&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nf-breadcrumb&quot; data-index=&quot;{{{ index }}}&quot;&gt;{{{ ( part.errors ) ? &#x27;&#x27; : &#x27;&#x27; }}} {{{ part.title }}}&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;# } ); #&gt;
+	&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-progress-bar&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-progress-container&quot;&gt;
+        &lt;div class=&quot;nf-progress&quot; style=&quot;width: {{{ data.percent }}}%;&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;
+"></iframe><details><summary>Complete original source</summary><pre>&lt;script id=&quot;tmpl-nf-mp-form-content&quot; type=&quot;text/template&quot;&gt;
+	&lt;div class=&quot;nf-mp-header&quot;&gt;&lt;/div&gt;
+	&lt;div class=&quot;nf-mp-body&quot;&gt;&lt;/div&gt;
+	&lt;div class=&quot;nf-mp-footer&quot;&gt;&lt;/div&gt;
+&lt;/script&gt;
+
+&lt;?php 
+if ( ! version_compare( get_option( &#x27;ninja_forms_version&#x27;, &#x27;0&#x27; ), &#x27;3.0&#x27;, &#x27;&gt;&#x27; ) ) {
+    /* 
+     * If we&#x27;re using the RC codebase of Ninja Forms, load the older, &lt;% %&gt; style templates.
+     */
+    require_once( NF_MultiPart::$dir . &#x27;includes/Templates/frontend-old.html.php&#x27; );
+    return false;
+}
+?&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-header&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.renderProgressBar() }}}
+	{{{ data.renderBreadcrumbs() }}}
+	{{{ data.renderPartTitle() }}}
+&lt;/script&gt;
+&lt;script id=&quot;tmpl-nf-mp-part-title&quot; type=&quot;text/template&quot;&gt;
+	&lt;h3&gt;
+		{{{ data.title }}}
+	&lt;/h3&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-footer&quot; type=&quot;text/template&quot;&gt;
+	{{{ data.renderNextPrevious() }}}
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-next-previous&quot; type=&quot;text/template&quot;&gt;
+	&lt;ul class=&quot;nf-next-previous&quot;&gt;
+		&lt;# if ( data.showPrevious ) { #&gt;
+		&lt;li class=&quot;nf-previous-item&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;nf-previous&quot; value=&quot;{{{ data.prevLabel }}}&quot; /&gt;
+		&lt;/li&gt;
+		&lt;# } #&gt;
+
+		&lt;# if ( data.showNext ) { #&gt;
+		&lt;li class=&quot;nf-next-item&quot;&gt;
+			&lt;input type=&quot;button&quot; class=&quot;nf-next&quot; value=&quot;{{{ data.nextLabel }}}&quot; /&gt;
+		&lt;/li&gt;
+		&lt;# } #&gt;
+	&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-breadcrumbs&quot; type=&quot;text/template&quot;&gt;
+	&lt;ul class=&quot;nf-breadcrumbs&quot;&gt;
+		&lt;# _.each( data.parts, function( part, index ) { #&gt;
+		&lt;li class=&quot;{{{ ( data.currentIndex == index ) ? &#x27;active&#x27; : &#x27;&#x27; }}} {{{ ( part.errors ) ? &#x27;errors&#x27; : &#x27;&#x27; }}}&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nf-breadcrumb&quot; data-index=&quot;{{{ index }}}&quot;&gt;{{{ ( part.errors ) ? &#x27;&#x27; : &#x27;&#x27; }}} {{{ part.title }}}&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;# } ); #&gt;
+	&lt;/ul&gt;
+&lt;/script&gt;
+
+&lt;script id=&quot;tmpl-nf-mp-progress-bar&quot; type=&quot;text/template&quot;&gt;
+    &lt;div class=&quot;nf-progress-container&quot;&gt;
+        &lt;div class=&quot;nf-progress&quot; style=&quot;width: {{{ data.percent }}}%;&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/script&gt;</pre></details></body></html>

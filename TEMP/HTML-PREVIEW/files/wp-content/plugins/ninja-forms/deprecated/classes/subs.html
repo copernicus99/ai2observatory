@@ -1,0 +1,284 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/subs.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/subs.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Submissions.
+ * This class handles creating and exporting submissions.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Submissions
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+*/
+
+class NF_Subs {
+
+	/**
+	 * Get things started
+	 * 
+	 * @access public
+	 * @since 2.7
+	 * @return void/
+	 */
+	public function __construct() {
+
+	}
+
+	/**
+	 * Create a submission.
+	 * 
+	 * @access public
+	 * @since 2.7
+	 * @return int $sub_id
+	 */
+	public function create( $form_id = &#x27;&#x27; ) {
+		// Create Submission
+		$post = array(
+		  &#x27;post_status&#x27;    =&gt; &#x27;publish&#x27;,
+		  &#x27;post_type&#x27;      =&gt; &#x27;nf_sub&#x27;
+		);
+		$sub_id = wp_insert_post( $post );
+
+		// Add our form ID to the submission
+		Ninja_Forms()-&gt;sub( $sub_id )-&gt;update_form_id( $form_id );
+
+		// Get the current sequential ID
+		$last_sub = Ninja_Forms()-&gt;form( $form_id )-&gt;get_setting( &#x27;last_sub&#x27;, true );
+		$seq_num = ! empty ( $last_sub ) ? $last_sub + 1 : 1;
+
+		$seq_num = apply_filters( &#x27;nf_sub_seq_num&#x27;, $seq_num, $form_id );
+
+		// Add the sequential ID to the post meta
+		Ninja_Forms()-&gt;sub( $sub_id )-&gt;update_seq_num( $seq_num );
+
+		// Update our form data with the new &quot;last seq id.&quot;
+		Ninja_Forms()-&gt;form( $form_id )-&gt;update_setting( &#x27;last_sub&#x27;, $seq_num );
+
+		// Update our sub count
+		Ninja_Forms()-&gt;form( $form_id )-&gt;sub_count = $seq_num - 1;
+
+		return $sub_id;
+	}
+
+	/**
+	 * Get submissions based on specific critera.
+	 * 
+	 * @since 2.7
+	 * @param array $args
+	 * @return array $sub_ids
+	 */
+	public function get( $args = array() ) {
+
+		$query_args = array(
+			&#x27;post_type&#x27; 		=&gt; &#x27;nf_sub&#x27;,
+			&#x27;posts_per_page&#x27;	=&gt; -1,
+			&#x27;date_query&#x27;		=&gt; array(
+				&#x27;inclusive&#x27;		=&gt; true,
+			),
+		);
+
+		if( isset( $args[&#x27;form_id&#x27;] ) ) {
+			$query_args[&#x27;meta_query&#x27;][] = array(
+				&#x27;key&#x27; =&gt; &#x27;_form_id&#x27;,
+				&#x27;value&#x27; =&gt; $args[&#x27;form_id&#x27;],
+			);
+		}
+		
+		if( isset( $args[&#x27;seq_num&#x27;] ) ) {
+			$query_args[&#x27;meta_query&#x27;][] = array(
+				&#x27;key&#x27; =&gt; &#x27;_seq_num&#x27;,
+				&#x27;value&#x27; =&gt; $args[&#x27;seq_num&#x27;],
+			);
+		}
+
+		if( isset( $args[&#x27;user_id&#x27;] ) ) {
+			$query_args[&#x27;author&#x27;] = $args[&#x27;user_id&#x27;];
+		}
+		
+		if( isset( $args[&#x27;action&#x27;])){
+			$query_args[&#x27;meta_query&#x27;][] = array(
+				&#x27;key&#x27; =&gt; &#x27;_action&#x27;,
+				&#x27;value&#x27; =&gt; $args[&#x27;action&#x27;],
+			);
+		}
+
+		if ( isset ( $args[&#x27;meta&#x27;] ) ) {
+			foreach ( $args[&#x27;meta&#x27;] as $key =&gt; $value ) {
+				$query_args[&#x27;meta_query&#x27;][] = array(
+					&#x27;key&#x27; =&gt; $key,
+					&#x27;value&#x27; =&gt; $value,
+				);
+			}
+		}
+
+		if ( isset ( $args[&#x27;fields&#x27;] ) ) {
+			foreach ( $args[&#x27;fields&#x27;] as $field_id =&gt; $value ) {
+				$query_args[&#x27;meta_query&#x27;][] = array(
+					&#x27;key&#x27; =&gt; &#x27;_field_&#x27; . $field_id,
+					&#x27;value&#x27; =&gt; $value,
+				);
+			}
+		}
+
+		if( isset( $args[&#x27;begin_date&#x27;] ) AND $args[&#x27;begin_date&#x27;] != &#x27;&#x27;) {
+			$query_args[&#x27;date_query&#x27;][&#x27;after&#x27;] = nf_get_begin_date( $args[&#x27;begin_date&#x27;] )-&gt;format(&quot;Y-m-d G:i:s&quot;);
+		}
+
+		if( isset( $args[&#x27;end_date&#x27;] ) AND $args[&#x27;end_date&#x27;] != &#x27;&#x27; ) {
+			$query_args[&#x27;date_query&#x27;][&#x27;before&#x27;] = nf_get_end_date( $args[&#x27;end_date&#x27;] )-&gt;format(&quot;Y-m-d G:i:s&quot;);
+		}
+
+		$subs = new WP_Query( $query_args );;
+
+		$sub_objects = array();
+
+		if ( is_array( $subs-&gt;posts ) &amp;&amp; ! empty( $subs-&gt;posts ) ) {
+			foreach ( $subs-&gt;posts as $sub ) {
+				$sub_objects[] = Ninja_Forms()-&gt;sub( $sub-&gt;ID );
+			}			
+		}
+
+		wp_reset_postdata();
+		return $sub_objects;
+	}
+
+	/**
+	 * Export submissions.
+	 * 
+	 * @access public
+	 * @param array $sub_ids
+	 * @param bool @return
+	 * @since 2.7
+	 * @return void
+	 */
+	public function export( $sub_ids = &#x27;&#x27;, $return = false ){
+		global $ninja_forms_fields;
+
+		// Bail if we haven&#x27;t been sent any IDs.
+		if ( empty( $sub_ids ) )
+			return false;
+
+		if ( ! is_array( $sub_ids ) )
+			$sub_ids = array( $sub_ids );
+
+		$plugin_settings = nf_get_settings();
+		$date_format = $plugin_settings[&#x27;date_format&#x27;];
+	
+		$label_array = array();
+		// Get our Form ID.
+		$form_id = Ninja_Forms()-&gt;sub( $sub_ids[0] )-&gt;form_id;
+
+		// Get our list of fields.
+		$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+		// Add our sequential number.
+		$label_array[0][&#x27;_seq_num&#x27;] = __( &#x27;#&#x27;, &#x27;ninja-forms&#x27; );
+
+		// Add our &quot;Date&quot; label.
+		$label_array[0][&#x27;_date_submitted&#x27;] = __( &#x27;Date Submitted&#x27;, &#x27;ninja-forms&#x27; );
+
+		$label_array = apply_filters( &#x27;nf_subs_csv_label_array_before_fields&#x27;, $label_array, $sub_ids );
+
+		foreach ( $fields as $field_id =&gt; $field ) {
+			// Get our field type
+			$field_type = $field[&#x27;type&#x27;];
+			// Check to see if our field type has been set as a &quot;process_field&quot;.
+			if ( isset ( $ninja_forms_fields[ $field_type ] ) ) {
+				$reg_field = $ninja_forms_fields[ $field_type ];
+				$process_field = $reg_field[&#x27;process_field&#x27;];
+			} else {
+				$process_field = false;
+			}
+
+			// If this field&#x27;s &quot;process_field&quot; is set to true, then add its label to the array.
+			if ( $process_field ) {
+				if ( isset ( $field[&#x27;data&#x27;][&#x27;admin_label&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;admin_label&#x27;] != &#x27;&#x27; ) {
+					$label = $field[&#x27;data&#x27;][&#x27;admin_label&#x27;];
+				} else if( isset ( $field[&#x27;data&#x27;][&#x27;label&#x27;] ) ) {
+					$label = $field[&#x27;data&#x27;][&#x27;label&#x27;];
+				}else{
+					$label = &#x27;&#x27;;
+				}
+
+				$label_array[0][ $field_id ] = apply_filters( &#x27;nf_subs_csv_field_label&#x27;, $label, $field_id );
+			}
+		}
+
+		$label_array = ninja_forms_stripslashes_deep( $label_array );
+		$label_array = apply_filters( &#x27;nf_subs_csv_label_array&#x27;, $label_array, $sub_ids );
+
+		$value_array = array();
+		$x = 0;
+		// Loop through our submissions and create a new row for each one.
+		foreach ( $sub_ids as $sub_id ) {
+			foreach ( $label_array[0] as $field_id =&gt; $label ) {
+				// Make sure we aren&#x27;t working with our date field, which will always have a field id of 0.
+				if ( $field_id !== 0 ) {
+					// Check to see if our field_id is numeric. If it isn&#x27;t, then we&#x27;re working with meta, not a field.
+					if ( is_numeric( $field_id ) ) {
+						// We&#x27;re working with a field, grab the value.
+						$user_value = Ninja_Forms()-&gt;sub( $sub_id )-&gt;get_field( $field_id );
+					} else if ( &#x27;_date_submitted&#x27; == $field_id ) {
+						// Get the date of our submission.
+						$date = strtotime( Ninja_Forms()-&gt;sub( $sub_id )-&gt;date_submitted );
+						// The first item is our date field.
+						$user_value = date( $date_format, $date );
+					} else if ( &#x27;_seq_num&#x27; == $field_id ) {
+						$user_value = Ninja_Forms()-&gt;sub( $sub_id )-&gt;get_seq_num();
+					} else {
+						// We&#x27;re working with a piece of meta, grabe the value.
+						$user_value = Ninja_Forms()-&gt;sub( $sub_id )-&gt;get_meta( $field_id );
+					}
+
+					// Run our value through the appropriate filters before we flatten any arrays.
+					$user_value = apply_filters( &#x27;nf_subs_export_pre_value&#x27;, $user_value, $field_id );
+					
+					// Implode any arrays we might have.
+					if ( is_array( $user_value ) ) {
+						$user_value = implode( &#x27;,&#x27;, $user_value );
+					}
+
+					// Add an &#x27; to the beginning = sign to prevent any CSV/Excel security issues.
+					if ( strpos( $user_value, &#x27;=&#x27; ) === 0 ) {
+						$user_value = &quot;&#x27;&quot; . $user_value;
+					}
+					
+					// Run our final value through the appropriate filters and assign it to the array.
+					$value_array[ $x ][ $field_id ] = htmlspecialchars_decode( apply_filters( &#x27;nf_subs_csv_field_value&#x27;, $user_value, $field_id ), ENT_QUOTES );					
+				}
+			}
+			$x++;
+		}
+
+		$value_array = ninja_forms_stripslashes_deep( $value_array );
+		$value_array = apply_filters( &#x27;nf_subs_csv_value_array&#x27;, $value_array, $sub_ids );
+
+		$array = array( $label_array, $value_array );
+		$today = date( $date_format, current_time( &#x27;timestamp&#x27; ) );
+		$filename = apply_filters( &#x27;nf_subs_csv_filename&#x27;, &#x27;nf_subs_&#x27; . $today );
+		$filename = $filename . &quot;.csv&quot;;
+
+		if( $return ){
+			return str_putcsv( $array, 
+				apply_filters( &#x27;nf_sub_csv_delimiter&#x27;, &#x27;,&#x27; ), 
+				apply_filters( &#x27;nf_sub_csv_enclosure&#x27;, &#x27;&quot;&#x27; ), 
+				apply_filters( &#x27;nf_sub_csv_terminator&#x27;, &quot;\n&quot; )
+			);
+		}else{
+			header( &#x27;Content-type: application/csv&#x27;);
+			header( &#x27;Content-Disposition: attachment; filename=&quot;&#x27;.$filename .&#x27;&quot;&#x27; );
+			header( &#x27;Pragma: no-cache&#x27;);
+			header( &#x27;Expires: 0&#x27; );
+			echo apply_filters( &#x27;nf_sub_csv_bom&#x27;,&quot;\xEF\xBB\xBF&quot; ) ; // Byte Order Mark
+			echo str_putcsv( $array, 
+				apply_filters( &#x27;nf_sub_csv_delimiter&#x27;, &#x27;,&#x27; ), 
+				apply_filters( &#x27;nf_sub_csv_enclosure&#x27;, &#x27;&quot;&#x27; ), 
+				apply_filters( &#x27;nf_sub_csv_terminator&#x27;, &quot;\n&quot; )
+			);
+
+			die();
+		}
+
+	}
+
+}
+</pre></details></body></html>

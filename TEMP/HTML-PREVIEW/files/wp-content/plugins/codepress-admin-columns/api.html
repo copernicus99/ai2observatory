@@ -1,0 +1,181 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/api.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/api.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * @return bool True when Admin Columns Pro plugin is activated.
+ */
+function ac_is_pro_active() {
+	return function_exists( &#x27;ACP&#x27; );
+}
+
+/**
+ * Get the url where the Admin Columns website is hosted
+ *
+ * @return string
+ */
+function ac_get_site_url( $path = &#x27;&#x27; ) {
+	$url = &#x27;https://www.admincolumns.com&#x27;;
+
+	if ( ! empty( $path ) ) {
+		$url .= &#x27;/&#x27; . trim( $path, &#x27;/&#x27; ) . &#x27;/&#x27;;
+	}
+
+	return $url;
+}
+
+/**
+ * Url with utm tags
+ *
+ * @param string $path
+ * @param string $utm_medium
+ * @param string $utm_content
+ *
+ * @return string
+ */
+function ac_get_site_utm_url( $path, $utm_medium, $utm_content = null, $utm_campaign = false ) {
+	$url = ac_get_site_url( $path );
+
+	if ( ! $utm_campaign ) {
+		$utm_campaign = &#x27;plugin-installation&#x27;;
+	}
+
+	$args = array(
+		// Referrer: plugin
+		&#x27;utm_source&#x27;   =&gt; &#x27;plugin-installation&#x27;,
+
+		// Specific promotions or sales
+		&#x27;utm_campaign&#x27; =&gt; $utm_campaign,
+
+		// Marketing medium: banner, support documentation, email
+		&#x27;utm_medium&#x27;   =&gt; $utm_medium,
+
+		// Used for differentiation of medium
+		&#x27;utm_content&#x27;  =&gt; $utm_content,
+	);
+
+	$args = array_map( &#x27;sanitize_key&#x27;, $args );
+
+	return add_query_arg( $args, $url );
+}
+
+/**
+ * Admin Columns Twitter username
+ *
+ * @return string
+ */
+function ac_get_twitter_handle() {
+	return &#x27;admincolumns&#x27;;
+}
+
+/**
+ * Simple helper methods for AC_Column objects
+ *
+ * @since 3.0
+ */
+function ac_helper() {
+	return AC()-&gt;helper();
+}
+
+/**
+ * @since 3.0
+ * @return bool True when a minimum version of Admin Columns Pro plugin is activated.
+ */
+function ac_is_version_gte( $version ) {
+	return version_compare( AC()-&gt;get_version(), $version, &#x27;&gt;=&#x27; );
+}
+
+/**
+ * Returns row actions for the WP_List_Tables
+ *
+ * @return AC_Column_ActionColumnHelper
+ */
+function ac_action_column_helper() {
+	return AC_Column_ActionColumnHelper::instance();
+}
+
+/**
+ * Manually set the columns for a list screen
+ * This overrides the database settings and thus renders the settings screen for this list screen useless
+ *
+ * If you like to register a column of your own please have a look at our documentation.
+ * We also have a free start-kit available, which contains all the necessary files.
+ *
+ * Documentation: https://www.admincolumns.com/documentation/developer-docs/creating-new-column-type/
+ * Starter-kit: https://github.com/codepress/ac-column-template/
+ *
+ * @since 2.2
+ *
+ * @param string|array $list_screen_key List screen key or keys
+ * @param array $column_data
+ */
+function ac_register_columns( $list_screen_keys, $column_data ) {
+	AC()-&gt;api()-&gt;load_columndata( $list_screen_keys, $column_data );
+}
+
+/**
+ * Deprecated functions
+ */
+
+/**
+ * Is doing ajax
+ *
+ * @since 2.3.4
+ */
+function cac_is_doing_ajax() {
+	_deprecated_function( __FUNCTION__, &#x27;3.0&#x27; );
+
+	return AC()-&gt;table_screen()-&gt;get_list_screen_when_doing_quick_edit() || ( AC()-&gt;is_doing_ajax() &amp;&amp; isset( $_REQUEST[&#x27;list_screen&#x27;] ) );
+}
+
+/**
+ * Is WordPress doing ajax
+ *
+ * @since 2.5
+ */
+function cac_wp_is_doing_ajax() {
+	_deprecated_function( __FUNCTION__, &#x27;3.0&#x27; );
+
+	return AC()-&gt;table_screen()-&gt;get_list_screen_when_doing_quick_edit();
+}
+
+/**
+ * Whether the current screen is the Admin Columns settings screen
+ *
+ * @since 2.4.8
+ *
+ * @param string $slug Specifies a page screen (optional)
+ *
+ * @return bool True if the current screen is the settings screen, false otherwise
+ */
+function cac_is_setting_screen( $slug = &#x27;&#x27; ) {
+	_deprecated_function( __FUNCTION__, &#x27;3.0&#x27;, &#x27;AC()-&gt;admin()-&gt;is_current_page( $slug )&#x27; );
+
+	return AC()-&gt;admin()-&gt;is_current_page( $slug );
+}
+
+/**
+ * Returns true if the installed version of WooCommerce is version X or greater
+ *
+ * @since 2.3.4
+ * @deprecated 3.0
+ * @return boolean true if the installed version of WooCommerce is version X or greater
+ */
+function cpac_is_wc_version_gte( $version = &#x27;1.0&#x27; ) {
+	_deprecated_function( __FUNCTION__, &#x27;3.0&#x27; );
+
+	return false;
+}
+
+/**
+ * @deprecated 3.0
+ * @return bool True when Admin Columns Pro plugin is activated.
+ */
+function cpac_is_pro_active() {
+	_deprecated_function( __FUNCTION__, &#x27;3.0&#x27;, &#x27;ac_is_pro_active&#x27; );
+
+	return ac_is_pro_active();
+}
+</pre></details></body></html>

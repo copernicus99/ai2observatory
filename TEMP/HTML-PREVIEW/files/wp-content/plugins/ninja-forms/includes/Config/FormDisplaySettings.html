@@ -1,0 +1,245 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/FormDisplaySettings.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/FormDisplaySettings.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+return apply_filters( &#x27;ninja_forms_form_display_settings&#x27;, array(
+
+    /*
+    * FORM TITLE
+    */
+
+    &#x27;title&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;title&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Form Title&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+
+    ),
+
+    /*
+    * SHOW FORM TITLE
+    */
+
+    &#x27;show_title&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;show_title&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Display Form Title&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; 1,
+
+    ),
+
+    /*
+    * CLEAR SUCCESSFULLY COMPLETED FORM
+    */
+
+    &#x27;clear_complete&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;clear_complete&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Clear successfully completed form?&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; 1,
+        &#x27;help&#x27;  =&gt; __( &#x27;If this box is checked, Ninja Forms will clear the form values after it has been successfully submitted.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+    * HIDE SUCCESSFULLY COMPLETED FORMS
+    */
+
+    &#x27;hide_complete&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;hide_complete&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Hide successfully completed form?&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;primary&#x27;,
+        &#x27;value&#x27; =&gt; 1,
+        &#x27;help&#x27;  =&gt; __( &#x27;If this box is checked, Ninja Forms will hide the form after it has been successfully submitted.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+    * Default Label Position
+    */
+
+    &#x27;default_label_pos&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;default_label_pos&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;select&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Default Label Position&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;options&#x27; =&gt; array(
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Above Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;above&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Below Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;below&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Left of Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;left&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Right of Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;right&#x27;
+            ),
+            array(
+                &#x27;label&#x27; =&gt; __( &#x27;Hidden&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;value&#x27; =&gt; &#x27;hidden&#x27;
+            ),
+        ),
+        &#x27;value&#x27; =&gt; &#x27;above&#x27;,
+    ),
+
+    /*
+     * Classes
+     */
+
+    &#x27;classes&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;classes&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Custom Class Names&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;wrapper_class&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Wrapper&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+                &#x27;use_merge_tags&#x27; =&gt; FALSE,
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;element_class&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Element&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;placeholder&#x27; =&gt; &#x27;&#x27;,
+                &#x27;width&#x27; =&gt; &#x27;one-half&#x27;,
+                &#x27;value&#x27; =&gt; &#x27;&#x27;,
+                &#x27;use_merge_tags&#x27; =&gt; FALSE,
+            ),
+        ),
+    ),
+
+    /*
+     * KEY
+     */
+
+    &#x27;key&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;key&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Form Key&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;administration&#x27;,
+        &#x27;value&#x27; =&gt; &#x27;&#x27;,
+        &#x27;help&#x27; =&gt; __( &#x27;Programmatic name that can be used to reference this form.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * ADD SUBMIT CHECKBOX
+     */
+
+    &#x27;add_submit&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;add_submit&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;toggle&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Add Submit Button&#x27;, &#x27;ninja-forms&#x27;),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;&#x27;,
+        &#x27;value&#x27; =&gt; 1,
+        &#x27;help&#x27; =&gt; __( &#x27;We\&#x27;ve noticed that don\&#x27;t have a submit button on your form. We can add one for your automatically.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    /*
+     * Form Labels
+     */
+
+    &#x27;custom_messages&#x27; =&gt; array(
+        &#x27;name&#x27; =&gt; &#x27;custom_messages&#x27;,
+        &#x27;type&#x27; =&gt; &#x27;fieldset&#x27;,
+        &#x27;label&#x27; =&gt; __( &#x27;Custom Labels&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;settings&#x27; =&gt; array(
+            array(
+                &#x27;name&#x27; =&gt; &#x27;changeEmailErrorMsg&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Please enter a valid email address!&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+	        array(
+		        &#x27;name&#x27; =&gt; &#x27;changeDateErrorMsg&#x27;,
+		        &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+		        &#x27;label&#x27; =&gt; __( &#x27;Please enter a valid date!&#x27;, &#x27;ninja-forms&#x27; ),
+		        &#x27;width&#x27; =&gt; &#x27;full&#x27;
+	        ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;confirmFieldErrorMsg&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;These fields must match!&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;fieldNumberNumMinError&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Number Min Error&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;fieldNumberNumMaxError&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Number Max Error&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;fieldNumberIncrementBy&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Please increment by &#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;formErrorsCorrectErrors&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Please correct errors before submitting this form.&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;validateRequiredField&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;This is a required field.&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;honeypotHoneypotError&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; __( &#x27;Honeypot Error&#x27;, &#x27;ninja-forms&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+            array(
+                &#x27;name&#x27; =&gt; &#x27;fieldsMarkedRequired&#x27;,
+                &#x27;type&#x27; =&gt; &#x27;textbox&#x27;,
+                &#x27;label&#x27; =&gt; sprintf( __( &#x27;Fields marked with an %s*%s are required&#x27;, &#x27;ninja-forms&#x27; ), &#x27;&lt;span class=&quot;ninja-forms-req-symbol&quot;&gt;&#x27;, &#x27;&lt;/span&gt;&#x27; ),
+                &#x27;width&#x27; =&gt; &#x27;full&#x27;
+            ),
+        )
+    ),
+
+    /*
+     * CURRENCY
+     */
+
+    &#x27;currency&#x27; =&gt; array(
+        &#x27;name&#x27;      =&gt; &#x27;currency&#x27;,
+        &#x27;type&#x27;    =&gt; &#x27;select&#x27;,
+        &#x27;options&#x27; =&gt; array_merge( array( array( &#x27;label&#x27; =&gt; __( &#x27;Plugin Default&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;&#x27; ) ), Ninja_Forms::config( &#x27;Currency&#x27; ) ),
+        &#x27;label&#x27;   =&gt; __( &#x27;Currency&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;width&#x27; =&gt; &#x27;full&#x27;,
+        &#x27;group&#x27; =&gt; &#x27;advanced&#x27;,
+        &#x27;value&#x27;   =&gt; &#x27;&#x27;
+    ),
+
+));
+</pre></details></body></html>

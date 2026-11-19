@@ -1,0 +1,295 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/deprecated.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/deprecated.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+/*
+|--------------------------------------------------------------------------
+| Deprecated Functions
+|--------------------------------------------------------------------------
+*/
+
+function ninja_forms_display_form( $form_id = &#x27;&#x27; ){
+    Ninja_Forms::deprecated_notice( &#x27;ninja_forms_display_form&#x27;, &#x27;3.0&#x27;, &#x27;Ninja_Forms()-&gt;display( $form_id, $is_preview )&#x27;, debug_backtrace() );
+    Ninja_Forms()-&gt;display( $form_id );
+}
+
+function ninja_forms_get_fields_by_form_id($form_id, $orderby = &#x27;ORDER BY `order` ASC&#x27;){
+
+    $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+    $field_results = array();
+    foreach( $fields as $field ){
+        $field_results[] = array(
+            &#x27;id&#x27;      =&gt; $field-&gt;get_id(),
+            &#x27;form_id&#x27; =&gt; $form_id,
+            &#x27;type&#x27;    =&gt; $field-&gt;get_setting( &#x27;type&#x27; ),
+            &#x27;order&#x27;   =&gt; $field-&gt;get_setting( &#x27;order&#x27; ),
+            &#x27;data&#x27;    =&gt; $field-&gt;get_settings(),
+            &#x27;fav_id&#x27;  =&gt; null,
+            &#x27;def_id&#x27;  =&gt; null,
+        );
+    }
+    return $field_results;
+}
+
+/**
+ * Included for backwards compatibility with Visual Composer.
+ */
+function ninja_forms_get_all_forms(){
+//    Ninja_Forms::deprecated_notice( &#x27;ninja_forms_get_all_forms&#x27;, &#x27;3.0&#x27;, &#x27;Ninja_Forms()-&gt;form()-&gt;get_forms()&#x27;, debug_backtrace() );
+    $forms = array();
+    foreach( Ninja_Forms()-&gt;form()-&gt;get_forms() as $form ){
+        $forms[] = array(
+            &#x27;id&#x27; =&gt; $form-&gt;get_id(),
+            &#x27;data&#x27; =&gt; $form-&gt;get_settings(),
+            &#x27;name&#x27; =&gt; $form-&gt;get_setting( &#x27;title&#x27; )
+        );
+    }
+    return $forms;
+}
+
+function nf_is_func_disabled( $function ){
+    Ninja_Forms::deprecated_notice( &#x27;nf_is_func_disabled&#x27;, &#x27;3.0&#x27;, &#x27;WPN_Helper::is_func_disabled()&#x27;, debug_backtrace() );
+    return WPN_Helper::is_func_disabled( $function );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Deprecated Hooks
+|--------------------------------------------------------------------------
+*/
+
+add_action( &#x27;init&#x27;, &#x27;_nf_get_actions&#x27;, 999 );
+function _nf_get_actions() {
+    if ( isset( $_POST[&#x27;nf_action&#x27;] ) ) {
+        do_action( &#x27;nf_&#x27; . $_POST[&#x27;nf_action&#x27;], $_POST );
+    }
+}
+
+add_action( &#x27;init&#x27;, &#x27;_nf_post_actions&#x27;, 999 );
+function _nf_post_actions() {
+    if ( isset( $_GET[&#x27;nf_action&#x27;] ) ) {
+        do_action( &#x27;nf_&#x27; . $_GET[&#x27;nf_action&#x27;], $_GET );
+    }
+}
+
+// add_action( &#x27;shutdown&#x27;, &#x27;_nf_removed_hooks&#x27; );
+function _nf_removed_hooks() {
+    global $wp_filter;
+
+    $hooks = array(
+        /* Removed Action Hooks */
+        &#x27;ninja_forms_insert_sub&#x27;,
+        &#x27;nf_email_notification_after_settings&#x27;,
+        &#x27;nf_edit_notification_settings&#x27;,
+        &#x27;ninja_forms_edit_field_before_li&#x27;,
+        &#x27;ninja_forms_edit_field_after_li&#x27;,
+        &#x27;ninja_forms_edit_field_before_closing_li&#x27;,
+        &#x27;ninja_forms_edit_field_before_registered&#x27;,
+//    &#x27;nf_edit_field_*&#x27;,
+        &#x27;ninja_forms_edit_field_after_registered&#x27;,
+        &#x27;ninja_forms_edit_field_before_ul&#x27;,
+        &#x27;ninja_forms_edit_field_ul&#x27;,
+        &#x27;ninja_forms_edit_field_after_ul&#x27;,
+        &#x27;ninja_forms_email_admin&#x27;,
+        &#x27;ninja_forms_email_user&#x27;,
+        &#x27;ninja_forms_display_before_field_label&#x27;,
+        &#x27;ninja_forms_display_field_label&#x27;,
+        &#x27;ninja_forms_display_after_field_label&#x27;,
+        &#x27;ninja_forms_display_field_help&#x27;,
+        &#x27;ninja_forms_display_field_label&#x27;,
+        &#x27;ninja_forms_display_field_help&#x27;,
+        &#x27;nf_before_display_loading&#x27;,
+        &#x27;ninja_forms_display_open_form_wrap&#x27;,
+        &#x27;ninja_forms_display_form_title&#x27;,
+        &#x27;ninja_forms_display_open_form_tag&#x27;,
+        &#x27;ninja_forms_display_fields&#x27;,
+        &#x27;ninja_forms_display_close_form_tag&#x27;,
+        &#x27;ninja_forms_display_close_form_wrap&#x27;,
+        &#x27;nf_notification_before_process&#x27;,
+        &#x27;nf_save_notification&#x27;,
+        &#x27;nf_sub_table_after_row_actions_trash&#x27;,
+        &#x27;nf_sub_table_after_row_actions&#x27;,
+        &#x27;nf_sub_table_before_row_actions_trash&#x27;,
+        &#x27;nf_sub_table_before_row_actions&#x27;,
+        &#x27;ninja_forms_after_import_form&#x27;,
+        &#x27;ninja_forms_display_after_closing_field_wrap&#x27;,
+        &#x27;ninja_forms_display_after_field_function&#x27;,
+        &#x27;ninja_forms_display_after_field_label&#x27;,
+        &#x27;ninja_forms_display_after_field&#x27;,
+        &#x27;ninja_forms_display_after_opening_field_wrap&#x27;,
+        &#x27;ninja_forms_display_before_closing_field_wrap&#x27;,
+        &#x27;ninja_forms_display_before_field_function&#x27;,
+        &#x27;ninja_forms_display_before_field_label&#x27;,
+        &#x27;ninja_forms_display_before_field&#x27;,
+        &#x27;ninja_forms_display_before_opening_field_wrap&#x27;,
+        &#x27;ninja_forms_display_css&#x27;,
+        &#x27;ninja_forms_save_admin_metabox_option&#x27;,
+        &#x27;ninja_forms_save_admin_metabox&#x27;,
+        &#x27;ninja_forms_save_admin_sidebar&#x27;,
+        &#x27;ninja_forms_save_admin_tab&#x27;,
+        &#x27;ninja_forms_before_pre_process&#x27;,
+        &#x27;ninja_forms_display_after_fields&#x27;,
+        &#x27;ninja_forms_display_after_form_title&#x27;,
+        &#x27;ninja_forms_display_after_form_wrap&#x27;,
+        &#x27;ninja_forms_display_after_open_form_tag&#x27;,
+        &#x27;ninja_forms_display_before_fields&#x27;,
+        &#x27;ninja_forms_display_before_form_title&#x27;,
+        &#x27;ninja_forms_display_before_form_wrap&#x27;,
+        &#x27;ninja_forms_display_before_form&#x27;,
+        &#x27;ninja_forms_post_process&#x27;,
+        &#x27;ninja_forms_pre_process&#x27;,
+        &#x27;ninja_forms_process&#x27;,
+
+        /* Removed Filter Hooks */
+        &#x27;nf_export_form_row&#x27;,
+        &#x27;nf_notification_admin_js_vars&#x27;,
+        &#x27;nf_success_message_locations&#x27;,
+        &#x27;nf_notification_types&#x27;,
+        &#x27;ninja_forms_admin_submissions_datepicker_args&#x27;,
+        &#x27;ninja_forms_starter_form_contents&#x27;,
+        &#x27;ninja_forms_preview_page_title&#x27;,
+        &#x27;nf_input_limit_types&#x27;,
+        &#x27;ninja_forms_edit_field_li_label&#x27;,
+        &#x27;nf_edit_field_settings_sections&#x27;,
+        &#x27;ninja_forms_use_post_fields&#x27;,
+        &#x27;nf_general_settings_advanced&#x27;,
+        &#x27;nf_new_form_defaults&#x27;,
+        &#x27;ninja_forms_use_post_fields&#x27;,
+        &#x27;ninja_forms_form_settings_basic&#x27;,
+        &#x27;ninja_forms_form_settings_restrictions&#x27;,
+        &#x27;nf_upgrade_handler_register&#x27;,
+        &#x27;ninja_forms_save_sub&#x27;,
+        &#x27;ninja_forms_export_subs_csv_file_name&#x27;,
+        &#x27;ninja_forms_export_sub_label&#x27;,
+        &#x27;ninja_forms_export_subs_label_array&#x27;,
+        &#x27;ninja_forms_export_sub_pre_value&#x27;,
+        &#x27;ninja_forms_export_sub_value&#x27;,
+        &#x27;ninja_forms_export_subs_value_array&#x27;,
+        &#x27;ninja_forms_csv_bom&#x27;,
+        &#x27;ninja_forms_csv_delimiter&#x27;,
+        &#x27;ninja_forms_csv_enclosure&#x27;,
+        &#x27;ninja_forms_csv_terminator&#x27;,
+        &#x27;ninja_forms_sub_table_row_actions&#x27;,
+        &#x27;ninja_forms_csv_delimiter&#x27;,
+        &#x27;ninja_forms_csv_enclosure&#x27;,
+        &#x27;ninja_forms_csv_terminator&#x27;,
+        &#x27;ninja_forms_admin_menu_capabilities&#x27;,
+        &#x27;ninja_forms_email_all_fields_array&#x27;,
+        &#x27;nf_email_user_values_title&#x27;,
+        &#x27;ninja_forms_email_field_label&#x27;,
+        &#x27;ninja_forms_email_user_value&#x27;,
+        &#x27;ninja_forms_email_field_list&#x27;,
+        &#x27;ninja_forms_admin_email_message_wpautop&#x27;,
+        &#x27;ninja_forms_admin_email_from&#x27;,
+        &#x27;ninja_forms_user_email_message_wpautop&#x27;,
+        &#x27;ninja_forms_submission_csv_name&#x27;,
+        &#x27;ninja_forms_success_msg&#x27;,
+        &#x27;nf_delete_form_capabilities&#x27;,
+        &#x27;ninja_forms_field&#x27;,
+        &#x27;ninja_forms_display_field_type&#x27;,
+        &#x27;ninja_forms_use_post_fields&#x27;,
+        &#x27;ninja_forms_list_terms&#x27;,
+        &#x27;ninja_forms_display_form_form_data&#x27;,
+        &#x27;ninja_forms_admin_subject&#x27;,
+        &#x27;ninja_forms_user_subject&#x27;,
+        &#x27;ninja_forms_admin_email&#x27;,
+        &#x27;ninja_forms_user_email&#x27;,
+        &#x27;ninja_forms_save_msg&#x27;,
+        &#x27;ninja_forms_display_script_field_data&#x27;,
+        &#x27;ninja_forms_display_form_form_data&#x27;,
+        &#x27;ninja_forms_enable_credit_card_field&#x27;,
+        &#x27;ninja_forms_post_credit_card_field&#x27;,
+        &#x27;ninja_forms_credit_card_field_desc_pos&#x27;,
+        &#x27;ninja_forms_hide_cc_field&#x27;,
+        &#x27;ninja_forms_display_list_options_span_class&#x27;,
+        &#x27;nf_import_notification_meta&#x27;,
+        &#x27;ninja_forms_labels/timed_submit_error&#x27;,
+        &#x27;ninja_forms_form_list_template_function&#x27;,
+        &#x27;nf_all_fields_field_value&#x27;,
+        &#x27;nf_all_fields_table&#x27;,
+        &#x27;nf_before_import_field&#x27;,
+        &#x27;nf_delete_field_capabilities&#x27;,
+        &#x27;nf_download_all_filename&#x27;,
+        &#x27;nf_email_notification_attachment_types&#x27;,
+        &#x27;nf_email_notification_attachments&#x27;,
+        &#x27;nf_email_notification_process_setting&#x27;,
+        &#x27;nf_general_settings_recaptcha&#x27;,
+        &#x27;nf_new_field_capabilities&#x27;,
+        &#x27;nf_notification_process_setting&#x27;,
+        &#x27;nf_step_processing_labels&#x27;,
+        &#x27;nf_sub_csv_bom&#x27;,
+        &#x27;nf_sub_edit_status&#x27;,
+        &#x27;nf_sub_human_time&#x27;,
+        &#x27;nf_sub_table_row_actions&#x27;,
+        &#x27;nf_sub_table_status&#x27;,
+        &#x27;nf_sub_table_user_value_max_items&#x27;,
+        &#x27;nf_sub_table_user_value_max_len&#x27;,
+        &#x27;nf_sub_title_time&#x27;,
+        &#x27;nf_subs_csv_field_label&#x27;,
+        &#x27;nf_subs_csv_filename&#x27;,
+        &#x27;nf_subs_csv_label_array_before_fields&#x27;,
+        &#x27;nf_subs_csv_value_array&#x27;,
+        &#x27;nf_subs_export_pre_value&#x27;,
+        &#x27;nf_subs_table_qv&#x27;,
+        &#x27;nf_success_msg&#x27;,
+        &#x27;ninja_forms_admin_email_message_wpautop&#x27;,
+        &#x27;ninja_forms_admin_metabox_rte&#x27;,
+        &#x27;ninja_forms_ajax_url&#x27;,
+        &#x27;ninja_forms_before_import_form&#x27;,
+        &#x27;ninja_forms_cont_class&#x27;,
+        &#x27;ninja_forms_credit_card_cvc_desc&#x27;,
+        &#x27;ninja_forms_credit_card_cvc_label&#x27;,
+        &#x27;ninja_forms_credit_card_exp_month_desc&#x27;,
+        &#x27;ninja_forms_credit_card_exp_month_label&#x27;,
+        &#x27;ninja_forms_credit_card_exp_year_desc&#x27;,
+        &#x27;ninja_forms_credit_card_exp_year_label&#x27;,
+        &#x27;ninja_forms_credit_card_name_desc&#x27;,
+        &#x27;ninja_forms_credit_card_name_label&#x27;,
+        &#x27;ninja_forms_credit_card_number_desc&#x27;,
+        &#x27;ninja_forms_display_field_class&#x27;,
+        &#x27;ninja_forms_display_field_desc_class&#x27;,
+        &#x27;ninja_forms_display_field_processing_error_class&#x27;,
+        &#x27;ninja_forms_display_fields_wrap_visibility&#x27;,
+        &#x27;ninja_forms_display_form_visibility&#x27;,
+        &#x27;ninja_forms_display_required_items_class&#x27;,
+        &#x27;ninja_forms_display_response_message_class&#x27;,
+        &#x27;ninja_forms_display_show_form&#x27;,
+        &#x27;ninja_forms_dropdown_open_tag&#x27;,
+        &#x27;ninja_forms_dropdown_placeholder&#x27;,
+        &#x27;ninja_forms_edit_field_rte&#x27;,
+        &#x27;ninja_forms_field_post_process_user_value&#x27;,
+        &#x27;ninja_forms_field_pre_process_user_value&#x27;,
+        &#x27;ninja_forms_field_process_user_value&#x27;,
+        &#x27;ninja_forms_field_shortcode&#x27;,
+        &#x27;ninja_forms_field_wrap_class&#x27;,
+        &#x27;ninja_forms_fields_wrap_class&#x27;,
+        &#x27;ninja_forms_form_class&#x27;,
+        &#x27;ninja_forms_form_list_forms&#x27;,
+        &#x27;ninja_forms_form_wrap_class&#x27;,
+        &#x27;ninja_forms_label_class&#x27;,
+        &#x27;ninja_forms_labels/currency_symbol&#x27;,
+        &#x27;ninja_forms_labels/date_format&#x27;,
+        &#x27;ninja_forms_labels/honeypot_error&#x27;,
+        &#x27;ninja_forms_labels/invalid_email&#x27;,
+        &#x27;ninja_forms_labels/javascript_error&#x27;,
+        &#x27;ninja_forms_labels/password_mismatch&#x27;,
+        &#x27;ninja_forms_labels/process_label&#x27;,
+        &#x27;ninja_forms_labels/req_div_label&#x27;,
+        &#x27;ninja_forms_labels/req_error_label&#x27;,
+        &#x27;ninja_forms_labels/req_field_error&#x27;,
+        &#x27;ninja_forms_labels/req_field_symbol&#x27;,
+        &#x27;ninja_forms_labels/spam_error&#x27;,
+        &#x27;ninja_forms_display_fields_array&#x27;,
+
+    );
+
+    foreach( $hooks as $hook ){
+        apply_filters( $hook, &#x27;&#x27; ); // add_action() is just a wrapper for add_filter(), so use add_filter() for both.
+        if( ! isset( $wp_filter[ $hook ] ) || ! $wp_filter[ $hook ] ) continue;
+        Ninja_Forms::deprecated_notice( $hook, &#x27;3.0&#x27;, null );
+    }
+}
+
+function ninja_forms_get_form_by_id( $form_id ) {
+    Ninja_Forms::deprecated_notice( $hook, &#x27;3.0&#x27;, null );
+    return array();
+}</pre></details></body></html>

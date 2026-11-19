@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Fields/Confirm.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Fields/Confirm.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Fields_Confirm
+ */
+class NF_Fields_Confirm extends NF_Abstracts_Input
+{
+    protected $_name = &#x27;confirm&#x27;;
+
+    protected $_type = &#x27;confirm&#x27;;
+
+    protected $_nicename = &#x27;Confirm&#x27;;
+
+    protected $_section = &#x27;misc&#x27;;
+
+    protected $_icon = &#x27;check-circle-o&#x27;;
+
+    protected $_error_message = &#x27;&#x27;;
+
+    protected $_settings = array( &#x27;confirm_field&#x27; );
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this-&gt;_nicename = __( &#x27;Confirm&#x27;, &#x27;ninja-forms&#x27; );
+        $this-&gt;_settings[ &#x27;confirm_field&#x27; ][ &#x27;field_value_format&#x27; ] = &#x27;key&#x27;;
+
+        add_filter( &#x27;nf_sub_hidden_field_types&#x27;, array( $this, &#x27;hide_field_type&#x27; ) );
+    }
+
+    function hide_field_type( $field_types )
+    {
+        $field_types[] = $this-&gt;_name;
+        return $field_types;
+    }
+
+    public function validate( $field, $data )
+    {
+        if( false ){
+            $errors[] = __( &#x27;Fields do not match.&#x27;, &#x27;ninja-forms&#x27; );
+        }
+        return $errors;
+    }
+}
+</pre></details></body></html>

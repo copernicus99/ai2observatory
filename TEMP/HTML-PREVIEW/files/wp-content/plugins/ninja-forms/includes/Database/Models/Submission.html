@@ -1,0 +1,501 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Database/Models/Submission.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Database/Models/Submission.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Database_Models_Submission
+ */
+final class NF_Database_Models_Submission
+{
+    protected $_id = &#x27;&#x27;;
+
+    protected $_status = &#x27;&#x27;;
+
+    protected $_user_id = &#x27;&#x27;;
+
+    protected $_form_id = &#x27;&#x27;;
+
+    protected $_seq_num = &#x27;&#x27;;
+
+    protected $_sub_date = &#x27;&#x27;;
+
+    protected $_mod_date = &#x27;&#x27;;
+
+    protected $_field_values = array();
+
+    protected $_extra_values = array();
+
+    public function __construct( $id = &#x27;&#x27;, $form_id = &#x27;&#x27; )
+    {
+        $this-&gt;_id = $id;
+        $this-&gt;_form_id = $form_id;
+
+        if( $this-&gt;_id ){
+            $sub = get_post( $this-&gt;_id );
+            if ($sub) {
+                $this-&gt;_status = $sub-&gt;post_status;
+                $this-&gt;_user_id = $sub-&gt;post_author;
+                $this-&gt;_sub_date = $sub-&gt;post_date;
+                $this-&gt;_mod_date = $sub-&gt;post_modified;
+            }
+        }
+
+        if( $this-&gt;_id &amp;&amp; ! $this-&gt;_form_id ){
+            $this-&gt;_form_id = get_post_meta( $this-&gt;_id, &#x27;_form_id&#x27;, TRUE );
+        }
+
+        if( $this-&gt;_id &amp;&amp; $this-&gt;_form_id ){
+            $this-&gt;_seq_num = get_post_meta( $this-&gt;_id, &#x27;_seq_num&#x27;, TRUE );
+        }
+    }
+
+    /**
+     * Get Submission ID
+     *
+     * @return int
+     */
+    public function get_id()
+    {
+        return intval( $this-&gt;_id );
+    }
+
+    public function get_status()
+    {
+        return $this-&gt;_status;
+    }
+
+    public function get_user()
+    {
+        return get_user_by( &#x27;id&#x27;, $this-&gt;_user_id );
+    }
+
+    public function get_form_id()
+    {
+        return intval( $this-&gt;_form_id );
+    }
+
+    public function get_form_title()
+    {
+        $form = Ninja_Forms()-&gt;form( $this-&gt;_form_id )-&gt;get();
+        return $form-&gt;get_setting( &#x27;title&#x27; );
+    }
+
+    public function get_seq_num()
+    {
+        return intval( $this-&gt;_seq_num );
+    }
+
+    public function get_sub_date( $format )
+    {
+        return date( $format, strtotime( $this-&gt;_sub_date ) );
+    }
+
+    public function get_mod_date( $format = &#x27;m/d/Y&#x27; )
+    {
+        return date( $format, strtotime( $this-&gt;_mod_date ) );
+    }
+
+    /**
+     * Get Field Value
+     *
+     * Returns a single submission value by field ID or field key.
+     *
+     * @param int|string $field_ref
+     * @return string
+     */
+    public function get_field_value( $field_ref )
+    {
+        $field_id = ( is_numeric( $field_ref ) ) ? $field_ref : $this-&gt;get_field_id_by_key( $field_ref );
+
+        $field = &#x27;_field_&#x27; . $field_id;
+
+        if( isset( $this-&gt;_field_values[ $field ] ) ) return $this-&gt;_field_values[ $field ];
+
+        $this-&gt;_field_values[ $field ] = get_post_meta($this-&gt;_id, $field, TRUE);
+        $this-&gt;_field_values[ $field_ref ] = get_post_meta($this-&gt;_id, $field, TRUE);
+
+        return $this-&gt;_field_values[ $field ];
+    }
+
+    /**
+     * Get Field Values
+     *
+     * @return array|mixed
+     */
+    public function get_field_values()
+    {
+        if( ! empty( $this-&gt;_field_values ) ) return $this-&gt;_field_values;
+
+        $field_values = get_post_meta( $this-&gt;_id, &#x27;&#x27; );
+
+        foreach( $field_values as $field_id =&gt; $field_value ){
+            $this-&gt;_field_values[ $field_id ] = implode( &#x27;, &#x27;, $field_value );
+
+            if( 0 === strpos( $field_id, &#x27;_field_&#x27; ) ){
+                $field_id = substr( $field_id, 7 );
+            }
+
+            if( ! is_numeric( $field_id ) ) continue;
+
+            $field = Ninja_Forms()-&gt;form()-&gt;get_field( $field_id );
+            $key = $field-&gt;get_setting( &#x27;key&#x27; );
+            if( $key ) {
+                $this-&gt;_field_values[ $key ] = implode(&#x27;, &#x27;, $field_value);
+            }
+        }
+
+        return $this-&gt;_field_values;
+    }
+
+    /**
+     * Update Field Value
+     *
+     * @param $field_ref
+     * @param $value
+     * @return $this
+     */
+    public function update_field_value( $field_ref, $value )
+    {
+        $field_id = ( is_numeric( $field_ref ) ) ? $field_ref : $this-&gt;get_field_id_by_key( $field_ref );
+
+        $this-&gt;_field_values[ $field_id ] = WPN_Helper::kses_post( $value );
+
+        return $this;
+    }
+
+    /**
+     * Update Field Values
+     *
+     * @param $data
+     * @return $this
+     */
+    public function update_field_values( $data )
+    {
+        foreach( $data as $field_ref =&gt; $value )
+        {
+            $this-&gt;update_field_value( $field_ref, $value );
+        }
+
+        return $this;
+    }
+
+    public function get_extra_value( $key )
+    {
+        if( ! isset( $this-&gt;_extra_values[ $key ] ) ||  ! $this-&gt;_extra_values[ $key ] ){
+            $id = ( $this-&gt;_id ) ? $this-&gt;_id : 0;
+            $this-&gt;_extra_values[ $key ] = get_post_meta( $id, $key, TRUE );
+        }
+
+        return $this-&gt;_extra_values[ $key ];
+    }
+
+    public function get_extra_values( $keys )
+    {
+        $values = array();
+
+        foreach( $keys as $key ) {
+            $values[ $key ] = $this-&gt;get_extra_value( $key );
+        }
+
+        return $values;
+    }
+
+    public function update_extra_value( $key, $value )
+    {
+        if( property_exists( $this, $key ) ) return FALSE;
+
+        return $this-&gt;_extra_values[ $key ] = $value;
+    }
+
+    public function update_extra_values( $values )
+    {
+        foreach( $values as $key =&gt; $value ){
+            $this-&gt;update_extra_value( $key, $value );
+        }
+    }
+
+    /**
+     * Find Submissions
+     *
+     * @param $form_id
+     * @param array $where
+     * @return array
+     */
+    public function find( $form_id, array $where = array(), array $ids = array() )
+    {
+
+        $this-&gt;_form_id = $form_id;
+
+        $args = array(
+            &#x27;post_type&#x27; =&gt; &#x27;nf_sub&#x27;,
+            &#x27;posts_per_page&#x27; =&gt; -1,
+            &#x27;meta_query&#x27; =&gt; $this-&gt;format_meta_query( $where )
+        );
+
+        if ( ! empty ( $ids ) ) {
+            $args[ &#x27;post__in&#x27; ] = $ids;
+        }
+
+        $subs = get_posts( $args );
+
+        $class = get_class( $this );
+
+        $return = array();
+        foreach( $subs as $sub ){
+            $return[] = new $class( $sub-&gt;ID, $this-&gt;_form_id );
+        }
+
+        return $return;
+    }
+
+    /**
+     * Delete Submission
+     */
+    public function delete()
+    {
+        if( ! $this-&gt;_id ) return;
+
+        wp_delete_post( $this-&gt;_id );
+    }
+
+    /**
+     * Save Submission
+     *
+     * @return $this|NF_Database_Models_Submission|void
+     */
+    public function save()
+    {
+        if( ! $this-&gt;_id ){
+
+            $sub = array(
+                &#x27;post_type&#x27; =&gt; &#x27;nf_sub&#x27;,
+                &#x27;post_status&#x27; =&gt; &#x27;publish&#x27;
+            );
+
+            $this-&gt;_id = wp_insert_post( $sub );
+
+            // Log Error
+            if( ! $this-&gt;_id ) return;
+        }
+
+        if( ! $this-&gt;_seq_num &amp;&amp; $this-&gt;_form_id ){
+
+            $this-&gt;_seq_num = NF_Database_Models_Form::get_next_sub_seq( $this-&gt;_form_id );
+        }
+
+        $this-&gt;_save_extra_values();
+
+        return $this-&gt;_save_field_values();
+    }
+
+    public static function export( $form_id, array $sub_ids = array(), $return = FALSE )
+    {
+        $date_format = Ninja_Forms()-&gt;get_setting( &#x27;date_format&#x27; );
+
+        /*
+         * Labels
+         */
+
+        $field_labels = array(
+            &#x27;_seq_num&#x27; =&gt; &#x27;#&#x27;,
+            &#x27;_date_submitted&#x27; =&gt; __( &#x27;Date Submitted&#x27;, &#x27;ninja-forms&#x27; )
+        );
+
+        // Legacy Filter from 2.9.*
+        $field_labels = apply_filters( &#x27;nf_subs_csv_label_array_before_fields&#x27;, $field_labels, $sub_ids );
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields();
+
+        /*
+         * If we are using an add-on that filters our field order, we don&#x27;t want to call sort again.
+         *
+         * TODO: This is probably not the most effecient way to handle this. It should be re-thought.
+         */
+        if ( ! has_filter( &#x27;ninja_forms_get_fields_sorted&#x27; ) ) {
+            uasort( $fields, array( &#x27;NF_Database_Models_Submission&#x27;, &#x27;sort_fields&#x27; ) );
+        }
+
+        $hidden_field_types = apply_filters( &#x27;nf_sub_hidden_field_types&#x27;, array() );
+
+        /*
+         * Submissions
+         */
+
+        $subs = Ninja_Forms()-&gt;form( $form_id )-&gt;get_subs( array(), FALSE, $sub_ids );
+
+        foreach( $subs as $sub ){
+
+            $value[ &#x27;_seq_num&#x27; ] = $sub-&gt;get_seq_num();
+            $value[ &#x27;_date_submitted&#x27; ] = $sub-&gt;get_sub_date( $date_format );
+
+            foreach ($fields as $field_id =&gt; $field) {
+
+              if (!is_int($field_id)) continue;
+                if( in_array( $field-&gt;get_setting( &#x27;type&#x27; ), $hidden_field_types ) ) continue;
+
+                if ( $field-&gt;get_setting( &#x27;admin_label&#x27; ) ) {
+                    $field_labels[ $field-&gt;get_id() ] = $field-&gt;get_setting( &#x27;admin_label&#x27; );
+                } else {
+                    $field_labels[ $field-&gt;get_id() ] = $field-&gt;get_setting( &#x27;label&#x27; );
+                }
+
+                $field_value = maybe_unserialize( $sub-&gt;get_field_value( $field_id ) );
+
+                $field_value = apply_filters(&#x27;nf_subs_export_pre_value&#x27;, $field_value, $field_id);
+                $field_value = apply_filters(&#x27;ninja_forms_subs_export_pre_value&#x27;, $field_value, $field_id, $form_id);
+                $field_value = apply_filters( &#x27;ninja_forms_subs_export_field_value_&#x27; . $field-&gt;get_setting( &#x27;type&#x27; ), $field_value, $field );
+
+                if ( is_array($field_value ) ) {
+                    $field_value = implode( &#x27;,&#x27;, $field_value );
+                }
+
+                $value[ $field_id ] = $field_value;
+            }
+
+            $value_array[] = $value;
+        }
+
+        $value_array = WPN_Helper::stripslashes( $value_array );
+
+        // Legacy Filter from 2.9.*
+        $value_array = apply_filters( &#x27;nf_subs_csv_value_array&#x27;, $value_array, $sub_ids );
+
+        $csv_array[ 0 ][] = $field_labels;
+        $csv_array[ 1 ][] = $value_array;
+        
+        // Get any extra data from our other plugins...
+        $csv_array = apply_filters( &#x27;nf_subs_csv_extra_values&#x27;, $csv_array, $subs, $form_id );
+
+        $today = date( $date_format, current_time( &#x27;timestamp&#x27; ) );
+        $filename = apply_filters( &#x27;nf_subs_csv_filename&#x27;, &#x27;nf_subs_&#x27; . $today );
+        $filename = $filename . &quot;.csv&quot;;
+
+        if( $return ){
+            return WPN_Helper::str_putcsv( $csv_array,
+                apply_filters( &#x27;nf_sub_csv_delimiter&#x27;, &#x27;,&#x27; ),
+                apply_filters( &#x27;nf_sub_csv_enclosure&#x27;, &#x27;&quot;&#x27; ),
+                apply_filters( &#x27;nf_sub_csv_terminator&#x27;, &quot;\n&quot; )
+            );
+        }else{
+            header( &#x27;Content-type: application/csv&#x27;);
+            header( &#x27;Content-Disposition: attachment; filename=&quot;&#x27;.$filename .&#x27;&quot;&#x27; );
+            header( &#x27;Pragma: no-cache&#x27;);
+            header( &#x27;Expires: 0&#x27; );
+            echo apply_filters( &#x27;nf_sub_csv_bom&#x27;,&quot;\xEF\xBB\xBF&quot; ) ; // Byte Order Mark
+            echo WPN_Helper::str_putcsv( $csv_array,
+                apply_filters( &#x27;nf_sub_csv_delimiter&#x27;, &#x27;,&#x27; ),
+                apply_filters( &#x27;nf_sub_csv_enclosure&#x27;, &#x27;&quot;&#x27; ),
+                apply_filters( &#x27;nf_sub_csv_terminator&#x27;, &quot;\n&quot; )
+            );
+
+            die();
+        }
+    }
+
+    /*
+     * PROTECTED METHODS
+     */
+
+    /**
+     * Save Field Value
+     *
+     * @param $field_id
+     * @param $value
+     * @return $this
+     */
+    protected function _save_field_value( $field_id, $value )
+    {
+        update_post_meta( $this-&gt;_id, &#x27;_field_&#x27; . $field_id, $value );
+
+        return $this;
+    }
+
+    /**
+     * Save Field Values
+     *
+     * @return $this|void
+     */
+    protected function _save_field_values()
+    {
+        if( ! $this-&gt;_field_values ) return FALSE;
+
+        foreach( $this-&gt;_field_values as $field_id =&gt; $value )
+        {
+            $this-&gt;_save_field_value( $field_id, $value );
+        }
+
+        update_post_meta( $this-&gt;_id, &#x27;_form_id&#x27;, $this-&gt;_form_id );
+
+        update_post_meta( $this-&gt;_id, &#x27;_seq_num&#x27;, $this-&gt;_seq_num );
+
+        return $this;
+    }
+
+    protected function _save_extra_values()
+    {
+        if( ! $this-&gt;_extra_values ) return FALSE;
+
+        foreach( $this-&gt;_extra_values as $key =&gt; $value )
+        {
+            if( property_exists( $this, $key ) ) continue;
+
+            update_post_meta( $this-&gt;_id, $key, $value );
+        }
+    }
+
+
+    /*
+     * UTILITIES
+     */
+
+    /**
+     * Format Meta Query
+     *
+     * @param array $where
+     * @return array
+     */
+    protected function format_meta_query( array $where = array() )
+    {
+        $return = array(
+            array(
+                &#x27;key&#x27; =&gt; &#x27;_form_id&#x27;,
+                &#x27;value&#x27; =&gt; $this-&gt;_form_id
+            )
+        );
+
+        if( ! empty( $where ) ) {
+            foreach ($where as $ref =&gt; $value) {
+
+                $field_id = ( is_int( $ref ) ) ? $ref : $this-&gt;get_field_id_by_key( $ref );
+
+                $return[] = ( is_array($value) ) ? $value : array(&#x27;key&#x27; =&gt; &quot;_field_$field_id&quot;, &#x27;value&#x27; =&gt; $value);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Get Field ID By Key
+     *
+     * @param $field_key
+     * @return mixed
+     */
+    protected function get_field_id_by_key( $field_key )
+    {
+        global $wpdb;
+
+        $field_id = $wpdb-&gt;get_var( &quot;SELECT id FROM {$wpdb-&gt;prefix}nf3_fields WHERE `key` = &#x27;{$field_key}&#x27; AND `parent_id` = {$this-&gt;_form_id}&quot; );
+
+        return $field_id;
+    }
+
+    public static function sort_fields( $a, $b )
+    {
+        if ( $a-&gt;get_setting( &#x27;order&#x27; ) == $b-&gt;get_setting( &#x27;order&#x27; ) ) {
+            return 0;
+        }
+        return ( $a-&gt;get_setting( &#x27;order&#x27; ) &lt; $b-&gt;get_setting( &#x27;order&#x27; ) ) ? -1 : 1;
+    }
+
+
+} // End NF_Database_Models_Submission
+</pre></details></body></html>

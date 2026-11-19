@@ -1,0 +1,157 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/themes/twentysixteen/header.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/themes/twentysixteen/header.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;&lt;!DOCTYPE html&gt;
+&lt;html  class=&quot;no-js&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;&quot;&gt;
+	&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+	&lt;link rel=&quot;profile&quot; href=&quot;http://gmpg.org/xfn/11&quot;&gt;
+	
+	&lt;link rel=&quot;pingback&quot; href=&quot;&quot;&gt;
+	
+	
+&lt;/head&gt;
+
+&lt;body &gt;
+&lt;div id=&quot;page&quot; class=&quot;site&quot;&gt;
+	&lt;div class=&quot;site-inner&quot;&gt;
+		&lt;a class=&quot;skip-link screen-reader-text&quot; href=&quot;#content&quot;&gt;&lt;/a&gt;
+
+		&lt;header id=&quot;masthead&quot; class=&quot;site-header&quot; role=&quot;banner&quot;&gt;
+			&lt;div class=&quot;site-header-main&quot;&gt;
+				&lt;div class=&quot;site-branding&quot;&gt;
+					
+
+					
+						&lt;h1 class=&quot;site-title&quot;&gt;&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;&lt;/a&gt;&lt;/h1&gt;
+					
+						&lt;p class=&quot;site-title&quot;&gt;&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+					
+						&lt;p class=&quot;site-description&quot;&gt;&lt;/p&gt;
+					
+				&lt;/div&gt;&lt;!-- .site-branding --&gt;
+
+				
+					&lt;button id=&quot;menu-toggle&quot; class=&quot;menu-toggle&quot;&gt;&lt;/button&gt;
+
+					&lt;div id=&quot;site-header-menu&quot; class=&quot;site-header-menu&quot;&gt;
+						
+							&lt;nav id=&quot;site-navigation&quot; class=&quot;main-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&quot;&gt;
+								
+							&lt;/nav&gt;&lt;!-- .main-navigation --&gt;
+						
+
+						
+							&lt;nav id=&quot;social-navigation&quot; class=&quot;social-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&quot;&gt;
+								
+							&lt;/nav&gt;&lt;!-- .social-navigation --&gt;
+						
+					&lt;/div&gt;&lt;!-- .site-header-menu --&gt;
+				
+			&lt;/div&gt;&lt;!-- .site-header-main --&gt;
+
+			
+				
+				&lt;div class=&quot;header-image&quot;&gt;
+					&lt;a href=&quot;&quot; rel=&quot;home&quot;&gt;
+						&lt;img src=&quot;&quot; srcset=&quot;&quot; sizes=&quot;&quot; width=&quot;&quot; height=&quot;&quot; alt=&quot;&quot;&gt;
+					&lt;/a&gt;
+				&lt;/div&gt;&lt;!-- .header-image --&gt;
+			"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+/**
+ * The template for displaying the header
+ *
+ * Displays all of the head element and everything up until the &quot;site-content&quot; div.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Sixteen
+ * @since Twenty Sixteen 1.0
+ */
+
+?&gt;&lt;!DOCTYPE html&gt;
+&lt;html &lt;?php language_attributes(); ?&gt; class=&quot;no-js&quot;&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;&lt;?php bloginfo( &#x27;charset&#x27; ); ?&gt;&quot;&gt;
+	&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+	&lt;link rel=&quot;profile&quot; href=&quot;http://gmpg.org/xfn/11&quot;&gt;
+	&lt;?php if ( is_singular() &amp;&amp; pings_open( get_queried_object() ) ) : ?&gt;
+	&lt;link rel=&quot;pingback&quot; href=&quot;&lt;?php bloginfo( &#x27;pingback_url&#x27; ); ?&gt;&quot;&gt;
+	&lt;?php endif; ?&gt;
+	&lt;?php wp_head(); ?&gt;
+&lt;/head&gt;
+
+&lt;body &lt;?php body_class(); ?&gt;&gt;
+&lt;div id=&quot;page&quot; class=&quot;site&quot;&gt;
+	&lt;div class=&quot;site-inner&quot;&gt;
+		&lt;a class=&quot;skip-link screen-reader-text&quot; href=&quot;#content&quot;&gt;&lt;?php _e( &#x27;Skip to content&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&lt;/a&gt;
+
+		&lt;header id=&quot;masthead&quot; class=&quot;site-header&quot; role=&quot;banner&quot;&gt;
+			&lt;div class=&quot;site-header-main&quot;&gt;
+				&lt;div class=&quot;site-branding&quot;&gt;
+					&lt;?php twentysixteen_the_custom_logo(); ?&gt;
+
+					&lt;?php if ( is_front_page() &amp;&amp; is_home() ) : ?&gt;
+						&lt;h1 class=&quot;site-title&quot;&gt;&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;&lt;?php bloginfo( &#x27;name&#x27; ); ?&gt;&lt;/a&gt;&lt;/h1&gt;
+					&lt;?php else : ?&gt;
+						&lt;p class=&quot;site-title&quot;&gt;&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;&lt;?php bloginfo( &#x27;name&#x27; ); ?&gt;&lt;/a&gt;&lt;/p&gt;
+					&lt;?php endif;
+
+					$description = get_bloginfo( &#x27;description&#x27;, &#x27;display&#x27; );
+					if ( $description || is_customize_preview() ) : ?&gt;
+						&lt;p class=&quot;site-description&quot;&gt;&lt;?php echo $description; ?&gt;&lt;/p&gt;
+					&lt;?php endif; ?&gt;
+				&lt;/div&gt;&lt;!-- .site-branding --&gt;
+
+				&lt;?php if ( has_nav_menu( &#x27;primary&#x27; ) || has_nav_menu( &#x27;social&#x27; ) ) : ?&gt;
+					&lt;button id=&quot;menu-toggle&quot; class=&quot;menu-toggle&quot;&gt;&lt;?php _e( &#x27;Menu&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&lt;/button&gt;
+
+					&lt;div id=&quot;site-header-menu&quot; class=&quot;site-header-menu&quot;&gt;
+						&lt;?php if ( has_nav_menu( &#x27;primary&#x27; ) ) : ?&gt;
+							&lt;nav id=&quot;site-navigation&quot; class=&quot;main-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&lt;?php esc_attr_e( &#x27;Primary Menu&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&quot;&gt;
+								&lt;?php
+									wp_nav_menu( array(
+										&#x27;theme_location&#x27; =&gt; &#x27;primary&#x27;,
+										&#x27;menu_class&#x27;     =&gt; &#x27;primary-menu&#x27;,
+									 ) );
+								?&gt;
+							&lt;/nav&gt;&lt;!-- .main-navigation --&gt;
+						&lt;?php endif; ?&gt;
+
+						&lt;?php if ( has_nav_menu( &#x27;social&#x27; ) ) : ?&gt;
+							&lt;nav id=&quot;social-navigation&quot; class=&quot;social-navigation&quot; role=&quot;navigation&quot; aria-label=&quot;&lt;?php esc_attr_e( &#x27;Social Links Menu&#x27;, &#x27;twentysixteen&#x27; ); ?&gt;&quot;&gt;
+								&lt;?php
+									wp_nav_menu( array(
+										&#x27;theme_location&#x27; =&gt; &#x27;social&#x27;,
+										&#x27;menu_class&#x27;     =&gt; &#x27;social-links-menu&#x27;,
+										&#x27;depth&#x27;          =&gt; 1,
+										&#x27;link_before&#x27;    =&gt; &#x27;&lt;span class=&quot;screen-reader-text&quot;&gt;&#x27;,
+										&#x27;link_after&#x27;     =&gt; &#x27;&lt;/span&gt;&#x27;,
+									) );
+								?&gt;
+							&lt;/nav&gt;&lt;!-- .social-navigation --&gt;
+						&lt;?php endif; ?&gt;
+					&lt;/div&gt;&lt;!-- .site-header-menu --&gt;
+				&lt;?php endif; ?&gt;
+			&lt;/div&gt;&lt;!-- .site-header-main --&gt;
+
+			&lt;?php if ( get_header_image() ) : ?&gt;
+				&lt;?php
+					/**
+					 * Filter the default twentysixteen custom header sizes attribute.
+					 *
+					 * @since Twenty Sixteen 1.0
+					 *
+					 * @param string $custom_header_sizes sizes attribute
+					 * for Custom Header. Default &#x27;(max-width: 709px) 85vw,
+					 * (max-width: 909px) 81vw, (max-width: 1362px) 88vw, 1200px&#x27;.
+					 */
+					$custom_header_sizes = apply_filters( &#x27;twentysixteen_custom_header_sizes&#x27;, &#x27;(max-width: 709px) 85vw, (max-width: 909px) 81vw, (max-width: 1362px) 88vw, 1200px&#x27; );
+				?&gt;
+				&lt;div class=&quot;header-image&quot;&gt;
+					&lt;a href=&quot;&lt;?php echo esc_url( home_url( &#x27;/&#x27; ) ); ?&gt;&quot; rel=&quot;home&quot;&gt;
+						&lt;img src=&quot;&lt;?php header_image(); ?&gt;&quot; srcset=&quot;&lt;?php echo esc_attr( wp_get_attachment_image_srcset( get_custom_header()-&gt;attachment_id ) ); ?&gt;&quot; sizes=&quot;&lt;?php echo esc_attr( $custom_header_sizes ); ?&gt;&quot; width=&quot;&lt;?php echo esc_attr( get_custom_header()-&gt;width ); ?&gt;&quot; height=&quot;&lt;?php echo esc_attr( get_custom_header()-&gt;height ); ?&gt;&quot; alt=&quot;&lt;?php echo esc_attr( get_bloginfo( &#x27;name&#x27;, &#x27;display&#x27; ) ); ?&gt;&quot;&gt;
+					&lt;/a&gt;
+				&lt;/div&gt;&lt;!-- .header-image --&gt;
+			&lt;?php endif; // End header image check. ?&gt;
+		&lt;/header&gt;&lt;!-- .site-header --&gt;
+
+		&lt;div id=&quot;content&quot; class=&quot;site-content&quot;&gt;
+</pre></details></body></html>

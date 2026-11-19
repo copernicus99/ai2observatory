@@ -1,0 +1,203 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Integrations/EDD/class-extension-updater.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Integrations/EDD/class-extension-updater.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * This class handles all the update-related stuff for extensions, including adding a license section to the license tab.
+ * It accepts two args: Product Name and Version.
+ *
+ * @param $product_name string
+ * @param $version string
+ * @since 2.2.47
+ * @return void
+ */
+class NF_Extension_Updater
+{
+    public $product_nice_name = &#x27;&#x27;;
+    public $product_name = &#x27;&#x27;;
+    public $version = &#x27;&#x27;;
+    public $store_url = &#x27;https://ninjaforms.com/update-check/&#x27;;
+    public $file = &#x27;&#x27;;
+    public $author = &#x27;&#x27;;
+    public $error = &#x27;&#x27;;
+    private $_last_error;
+
+    /**
+     * Constructor function
+     *
+     * @since 2.2.47
+     * @updated 3.0
+     * @return void
+     */
+    public function __construct( $product_name, $version, $author, $file, $slug = &#x27;&#x27; )
+    {
+        $this-&gt;product_nice_name = $product_name;
+        if ( $slug == &#x27;&#x27; ) {
+            $this-&gt;product_name = strtolower( $product_name );
+            $this-&gt;product_name = preg_replace( &quot;/[^a-zA-Z]+/&quot;, &quot;&quot;, $this-&gt;product_name );
+        } else {
+            $this-&gt;product_name = $slug;
+        }
+
+        $this-&gt;version = $version;
+        $this-&gt;file = $file;
+        $this-&gt;author = $author;
+
+        $this-&gt;auto_update();
+        
+        add_filter( &#x27;ninja_forms_settings_licenses_addons&#x27;, array( $this, &#x27;register&#x27; ) );
+    }
+
+    /**
+     * Function that adds the license entry fields to the license tab.
+     *
+     * @updated 3.0
+     * @param array $licenses
+     * @return array $licenses
+     */
+    function register( $licenses ) {
+        $licenses[] = $this;
+        return $licenses;
+    }
+
+    /*
+     *
+     * Function that activates our license
+     *
+     * @since 2.2.47
+     * @return void
+     */
+    function activate_license( $license_key ) {
+
+        // data to send in our API request
+        $api_params = array(
+            &#x27;edd_action&#x27;=&gt; &#x27;activate_license&#x27;,
+            &#x27;license&#x27; 	=&gt; $license_key,
+            &#x27;item_name&#x27; =&gt; urlencode( $this-&gt;product_nice_name ), // the name of our product in EDD
+            &#x27;url&#x27; =&gt; home_url()
+        );
+
+        // Call the custom API.
+        $response = wp_remote_post( $this-&gt;store_url, array( &#x27;timeout&#x27; =&gt; 15, &#x27;sslverify&#x27; =&gt; false, &#x27;body&#x27; =&gt; $api_params ) );
+
+        $this-&gt;maybe_debug( $response );
+
+        // make sure the response came back okay
+        if ( is_wp_error( $response ) )
+            return false;
+
+        // decode the license data
+        $license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+        if ( &#x27;invalid&#x27; == $license_data-&gt;license ) {
+            $error = &#x27;&lt;span style=&quot;color: red;&quot;&gt;&#x27; . __( &#x27;Could not activate license. Please verify your license key&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/span&gt;&#x27;;
+            
+            if ( isset ( $_REQUEST[ &#x27;nf_debug&#x27; ] ) &amp;&amp; 1 == absint( $_REQUEST[ &#x27;nf_debug&#x27; ] ) ) {
+                // Add an error to our admin notice if nf_debug is turned on.
+                add_filter( &#x27;nf_admin_notices&#x27;, array( $this, &#x27;show_license_error_notice&#x27; ) );
+                $this-&gt;_last_error = var_export( $license_data, true );
+            }
+          
+            Ninja_Forms()-&gt;logger()-&gt;emergency( var_export( $license_data, true ) );
+
+        } else {
+            $error = &#x27;&#x27;;
+        }
+
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name . &#x27;_license&#x27;, $license_key );
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name . &#x27;_license_error&#x27;, $error );
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name . &#x27;_license_status&#x27;, $license_data-&gt;license );
+    }
+
+    public function show_license_error_notice( $notices ) {
+        $notices[ &#x27;license_error&#x27; ] = array(
+            &#x27;title&#x27; =&gt; __( &#x27;License Activation Error&#x27;, &#x27;ninja-forms&#x27; ),
+            &#x27;msg&#x27; =&gt; &#x27;&lt;pre&gt;&#x27; . $this-&gt;_last_error . &#x27;&lt;/pre&gt;&#x27;,
+            &#x27;int&#x27; =&gt; 0,
+            &#x27;ignore_spam&#x27; =&gt; true,
+        );
+
+        return $notices;
+    }
+
+    /*
+     *
+     * Function that deactivates our license if the user clicks the &quot;Deactivate License&quot; button.
+     *
+     * @since 2.2.47
+     * @return void
+     */
+
+    function deactivate_license() {
+
+        $license = Ninja_Forms()-&gt;get_setting( $this-&gt;product_name . &#x27;_license&#x27; );
+
+        // data to send in our API request
+        $api_params = array(
+            &#x27;edd_action&#x27;=&gt; &#x27;deactivate_license&#x27;,
+            &#x27;license&#x27; 	=&gt; $license,
+            &#x27;item_name&#x27; =&gt; urlencode( $this-&gt;product_nice_name ), // the name of our product in EDD
+            &#x27;url&#x27;       =&gt; home_url()
+        );
+
+        // Call the custom API.
+        $response = wp_remote_post( $this-&gt;store_url, array( &#x27;timeout&#x27; =&gt; 15, &#x27;sslverify&#x27; =&gt; false, &#x27;body&#x27; =&gt; $api_params ) );
+
+        $this-&gt;maybe_debug( $response );
+
+        // make sure the response came back okay
+        if ( is_wp_error( $response ) )
+            return false;
+
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name.&#x27;_license_error&#x27;, &#x27;&#x27; );
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name.&#x27;_license_status&#x27;, &#x27;invalid&#x27; );
+        Ninja_Forms()-&gt;update_setting( $this-&gt;product_name.&#x27;_license&#x27;, &#x27;&#x27; );
+    }
+
+    /**
+     * Function that runs all of our auto-update functionality
+     *
+     * @since 2.2.47
+     * @updates 3.0
+     * @return void
+     */
+    function auto_update() {
+
+        $edd_updater = new EDD_SL_Plugin_Updater( $this-&gt;store_url, $this-&gt;file, array(
+                &#x27;author&#x27;    =&gt; $this-&gt;author,  // author of this plugin
+                &#x27;version&#x27;   =&gt; $this-&gt;version, // current version number
+                &#x27;item_name&#x27; =&gt; $this-&gt;product_nice_name,  // name of this plugin
+                &#x27;license&#x27;   =&gt; Ninja_Forms()-&gt;get_setting( $this-&gt;product_name.&#x27;_license&#x27; ),  // license key
+            )
+        );
+    } // function auto_update
+
+    /**
+     * Return whether or not this license is valid.
+     *
+     * @access public
+     * @since 2.9
+     * @return bool
+     */
+    public function is_valid() {
+         return ( &#x27;valid&#x27; == Ninja_Forms()-&gt;get_setting( $this-&gt;product_name.&#x27;_license_status&#x27; ) );
+    }
+
+    /**
+     * Get any error messages for this license field.
+     *
+     * @access public
+     * @since 2.9
+     * @return string $error
+     */
+    public function get_error() {
+        return Ninja_Forms()-&gt;get_setting( $this-&gt;product_name . &#x27;_license_error&#x27; );
+    }
+
+    private function maybe_debug( $data, $key = &#x27;debug&#x27; )
+    {
+        if ( isset ( $_GET[ $key ] ) &amp;&amp; &#x27;true&#x27; == $_GET[ $key ] ) {
+            echo &#x27;&lt;pre&gt;&#x27;; var_dump( $data ); echo &#x27;&lt;/pre&gt;&#x27;;
+            die();
+        }
+    }
+
+} // End Class NF_Extension_Updater
+</pre></details></body></html>

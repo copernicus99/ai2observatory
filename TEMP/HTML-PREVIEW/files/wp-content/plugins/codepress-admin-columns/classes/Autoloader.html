@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Autoloader.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Autoloader.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class AC_Autoloader {
+
+	/**
+	 * @var AC_Autoloader;
+	 */
+	protected static $instance;
+
+	/**
+	 * Register prefixes and their path
+	 *
+	 * @var array
+	 */
+	protected $prefixes = array();
+
+	private function __construct() {
+		spl_autoload_register( array( $this, &#x27;autoload&#x27; ) );
+	}
+
+	public static function instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public static function string_to_classname( $string ) {
+		return implode( array_map( &#x27;ucfirst&#x27;, explode( &#x27;_&#x27;, str_replace( &#x27;-&#x27;, &#x27;_&#x27;, $string ) ) ) );
+	}
+
+	/**
+	 * Register a prefix that should autoload
+	 *
+	 * @param $prefix string Unique prefix to this set of classes
+	 * @param $path   string Path to directory where classes are stored
+	 */
+	public function register_prefix( $prefix, $path ) {
+		$prefix = rtrim( $prefix, &#x27;_&#x27; ) . &#x27;_&#x27;;
+		$path = trailingslashit( $path );
+
+		$this-&gt;prefixes[ $prefix ] = $path;
+
+		// make sure that more specific prefixes are checked first
+		krsort( $this-&gt;prefixes );
+	}
+
+	/**
+	 * @param $class
+	 */
+	public function autoload( $class ) {
+		foreach ( $this-&gt;prefixes as $prefix =&gt; $prefix_path ) {
+			if ( 0 !== strpos( $class, $prefix ) ) {
+				continue;
+			}
+
+			$class_path = str_replace( array( $prefix, &#x27;_&#x27; ), array( &#x27;&#x27;, &#x27;/&#x27; ), $class );
+			$file = $prefix_path . $class_path . &#x27;.php&#x27;;
+
+			if ( is_readable( $file ) ) {
+				require_once $file;
+
+				break;
+			}
+
+			// Git does not detect case-difference in a filename and older versions used same filename but with a different case
+			$basename = basename( $file );
+			$file_lc = str_replace( $basename, strtolower( $basename ), $file );
+
+			if ( is_readable( $file_lc ) ) {
+				require_once $file_lc;
+
+				break;
+			}
+		}
+	}
+
+	/**
+	 * @param string $prefix
+	 *
+	 * @return false|string
+	 */
+	private function get_path_by_prefix( $prefix ) {
+		return isset( $this-&gt;prefixes[ $prefix ] ) ? $this-&gt;prefixes[ $prefix ] : false;
+	}
+
+	/**
+	 * Get list of all class names from a directory
+	 *
+	 * @param string $dir
+	 * @param string $prefix
+	 *
+	 * @return array Class names
+	 */
+	public function get_class_names_from_dir( $dir, $prefix ) {
+		$path = trailingslashit( $dir );
+		$classes_dir = $this-&gt;get_path_by_prefix( $prefix );
+
+		// skip if directory is not auto loaded
+		if ( false === strpos( $path, $classes_dir ) ) {
+			return array();
+		}
+
+		$class_names = array();
+
+		$prefix = $prefix . str_replace( array( $classes_dir, &#x27;/&#x27; ), array( &#x27;&#x27;, &#x27;_&#x27; ), untrailingslashit( $path ) ) . &#x27;_&#x27;;
+
+		if ( is_dir( $dir ) ) {
+			$iterator = new DirectoryIterator( $dir );
+
+			foreach ( $iterator as $leaf ) {
+				// skip non php files
+				if ( $leaf-&gt;isDot() || $leaf-&gt;isDir() || &#x27;php&#x27; !== pathinfo( $leaf-&gt;getFilename(), PATHINFO_EXTENSION ) ) {
+					continue;
+				}
+
+				$class_name = $prefix . str_replace( &#x27;.php&#x27;, &#x27;&#x27;, $leaf-&gt;getFilename() );
+
+				$r = new ReflectionClass( $class_name );
+
+				if ( $r-&gt;isInstantiable() ) {
+					$class_names[] = $class_name;
+				}
+			}
+		}
+
+		return $class_names;
+	}
+
+}
+</pre></details></body></html>

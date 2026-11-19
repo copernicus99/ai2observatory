@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/input-limit.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/edit-field/input-limit.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Function that adds a character and word limit option to textboxes and textareas.
+ *
+ * @since 2.4.3
+ * @return void
+ */
+
+function ninja_forms_edit_field_input_limit( $field_id, $field_data ) {
+	
+	$field_row = ninja_forms_get_field_by_id($field_id);
+	$field_type = $field_row[&#x27;type&#x27;];
+
+	$allowed_types = apply_filters( &#x27;nf_input_limit_types&#x27;, array( &#x27;_text&#x27;, &#x27;_textarea&#x27; ) );
+
+	if ( ! in_array( $field_type, $allowed_types ) )
+		return false;
+
+	if ( isset ( $field_data[&#x27;input_limit&#x27;] ) ) {
+		$input_limit = $field_data[&#x27;input_limit&#x27;];
+	} else {
+		$input_limit = &#x27;&#x27;;
+	}
+
+	if ( isset ( $field_data[&#x27;input_limit_type&#x27;] ) ) {
+		$input_limit_type = $field_data[&#x27;input_limit_type&#x27;];
+	} else {
+		$input_limit_type = &#x27;&#x27;;
+	}
+
+	if ( isset ( $field_data[&#x27;input_limit_msg&#x27;] ) ) {
+		$input_limit_msg = $field_data[&#x27;input_limit_msg&#x27;];
+	} else {
+		$input_limit_msg = &#x27;&#x27;;
+	}
+
+	$desc = &#x27;&lt;em&gt;&#x27;.__( &#x27;If you leave the box empty, no limit will be used&#x27;, &#x27;ninja-forms&#x27; ).&#x27;&lt;/em&gt;&#x27;;
+	ninja_forms_edit_field_el_output( $field_id, &#x27;text&#x27;, __( &#x27;Limit input to this number&#x27;, &#x27;ninja-forms&#x27; ), &#x27;input_limit&#x27;, $input_limit, &#x27;thin&#x27;, &#x27;&#x27;, &#x27;widefat&#x27;, $desc );
+	ninja_forms_edit_field_el_output( $field_id, &#x27;select&#x27;, __( &#x27;of&#x27;, &#x27;ninja-forms&#x27; ), &#x27;input_limit_type&#x27;, $input_limit_type, &#x27;thin&#x27;, array( array( &#x27;name&#x27; =&gt; __( &#x27;Characters&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;char&#x27;) , array( &#x27;name&#x27; =&gt; __( &#x27;Words&#x27;, &#x27;ninja-forms&#x27; ), &#x27;value&#x27; =&gt; &#x27;word&#x27; ) ), &#x27;widefat&#x27; );
+	echo &#x27;&lt;p class=&quot;description description-wide&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x27;;
+	ninja_forms_edit_field_el_output( $field_id, &#x27;text&#x27;, __( &#x27;Text to appear after character/word counter&#x27;, &#x27;ninja-forms&#x27; ), &#x27;input_limit_msg&#x27;, $input_limit_msg, &#x27;wide&#x27;, &#x27;&#x27;, &#x27;widefat&#x27; );
+}
+
+add_action( &#x27;nf_edit_field_restrictions&#x27;, &#x27;ninja_forms_edit_field_input_limit&#x27;, 15, 2 );</pre></details></body></html>

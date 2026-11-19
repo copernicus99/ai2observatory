@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/clear-complete.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/clear-complete.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Function that resets the field values to default if the form has been submitted.
+ *
+ * @since 2.5
+ * @return void
+ */
+
+function nf_clear_complete( $form_id ) {
+	global $ninja_forms_processing, $current_user, $post;
+
+	if ( ! isset ( $ninja_forms_processing ) or $ninja_forms_processing-&gt;get_form_setting( &#x27;clear_complete&#x27; ) == 0 or $ninja_forms_processing-&gt;get_form_setting( &#x27;processing_complete&#x27; ) != 1 )
+		return false;
+
+	$all_fields = $ninja_forms_processing-&gt;get_all_fields();
+	foreach ( $all_fields as $field_id =&gt; $user_value ) {
+		$default_value = $ninja_forms_processing-&gt;get_field_setting( $field_id, &#x27;default_value&#x27; );
+
+		wp_get_current_user();
+		$user_ID 			= $current_user-&gt;ID;
+		if ( $user_ID and !empty( $user_ID ) ) {
+			$user_firstname 	= $current_user-&gt;user_firstname;
+		    $user_lastname 		= $current_user-&gt;user_lastname;
+		    $user_display_name 	= $current_user-&gt;display_name;
+		    $user_email 		= $current_user-&gt;user_email;
+		} else {
+			$user_ID 			= &#x27;&#x27;;
+			$user_firstname 	= &#x27;&#x27;;
+		    $user_lastname 		= &#x27;&#x27;;
+		    $user_display_name 	= &#x27;&#x27;;
+		    $user_email 		= &#x27;&#x27;;
+		}
+
+
+	    if ( is_object ( $post ) ) {
+		    $post_ID 			= $post-&gt;ID;
+		    $post_title 		= $post-&gt;post_title;
+		    $post_url			= get_permalink( $post_ID );
+	    } else {
+	    	$post_ID      		= &#x27;&#x27;;
+	    	$post_title 		= &#x27;&#x27;;
+	    	$post_url 			= &#x27;&#x27;;
+	    }
+
+	    switch( $default_value ){
+			case &#x27;_user_id&#x27;:
+				$default_value = $user_ID;
+				break;
+			case &#x27;_user_firstname&#x27;:
+				$default_value = $user_firstname;
+				break;
+			case &#x27;_user_lastname&#x27;:
+				$default_value = $user_lastname;
+				break;
+			case &#x27;_user_display_name&#x27;:
+				$default_value = $user_display_name;
+				break;
+			case &#x27;_user_email&#x27;:
+				$default_value = $user_email;
+				break;
+			case &#x27;post_id&#x27;:
+				$default_value = $post_ID;
+				break;
+			case &#x27;post_title&#x27;:
+				$default_value = $post_title;
+				break;
+			case &#x27;post_url&#x27;:
+				$default_value = $post_url;
+				break;
+			case &#x27;today&#x27;:
+				$plugin_settings = nf_get_settings();
+				if ( isset ( $plugin_settings[&#x27;date_format&#x27;] ) ) {
+					$date_format = $plugin_settings[&#x27;date_format&#x27;];
+				} else {
+					$date_format = &#x27;m/d/Y&#x27;;
+				}
+				$default_value = date( $date_format, current_time( &#x27;timestamp&#x27; ) );
+				break;
+		}
+
+
+
+		$ninja_forms_processing-&gt;update_field_value( $field_id, $default_value );
+	}
+}
+
+add_action( &#x27;ninja_forms_display_init&#x27;, &#x27;nf_clear_complete&#x27;, 999 );</pre></details></body></html>

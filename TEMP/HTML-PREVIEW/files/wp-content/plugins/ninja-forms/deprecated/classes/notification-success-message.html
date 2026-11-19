@@ -1,0 +1,105 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/classes/notification-success-message.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/classes/notification-success-message.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+		&lt;!-- &lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;success_message_loc&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;select name=&quot;settings[success_message_loc]&quot;&gt;
+					
+						&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+						
+				&lt;/select&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt; --&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;success_msg&quot;&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				
+			&lt;/td&gt;
+		&lt;/tr&gt;
+
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Class for our success message notification type.
+ *
+ * @package     Ninja Forms
+ * @subpackage  Classes/Notifications
+ * @copyright   Copyright (c) 2014, WPNINJAS
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.8
+*/
+
+class NF_Notification_Success_Message extends NF_Notification_Base_Type
+{
+
+	/**
+	 * Get things rolling
+	 */
+	function __construct() {
+		$this-&gt;name = __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; );
+	}
+
+	/**
+	 * Output our edit screen
+	 * 
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function edit_screen( $id = &#x27;&#x27; ) {
+		$settings = array(
+			&#x27;textarea_name&#x27; =&gt; &#x27;settings[success_msg]&#x27;,
+		);
+		$loc_opts = apply_filters( &#x27;nf_success_message_locations&#x27;,
+			array(
+				array( &#x27;action&#x27; =&gt; &#x27;ninja_forms_display_before_fields&#x27;, &#x27;name&#x27; =&gt; __( &#x27;Before Form&#x27;, &#x27;ninja-forms&#x27; ) ),
+				array( &#x27;action&#x27; =&gt; &#x27;ninja_forms_display_after_fields&#x27;, &#x27;name&#x27; =&gt; __( &#x27;After Form&#x27;, &#x27;ninja-forms&#x27; ) ),
+			)
+		);
+		?&gt;
+		&lt;!-- &lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;success_message_loc&quot;&gt;&lt;?php _e( &#x27;Location&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;select name=&quot;settings[success_message_loc]&quot;&gt;
+					&lt;?php
+					foreach ( $loc_opts as $opt ) {
+						?&gt;
+						&lt;option value=&quot;&lt;?php echo $opt[&#x27;action&#x27;];?&gt;&quot; &lt;?php selected( nf_get_object_meta_value( $id, &#x27;success_message_loc&#x27; ), $opt[&#x27;action&#x27;] ); ?&gt;&gt;&lt;?php echo $opt[&#x27;name&#x27;];?&gt;&lt;/option&gt;
+						&lt;?php
+					}
+					?&gt;
+				&lt;/select&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt; --&gt;
+		&lt;tr&gt;
+			&lt;th scope=&quot;row&quot;&gt;&lt;label for=&quot;success_msg&quot;&gt;&lt;?php _e( &#x27;Message&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/label&gt;&lt;/th&gt;
+			&lt;td&gt;
+				&lt;?php wp_editor( nf_get_object_meta_value( $id, &#x27;success_msg&#x27; ), &#x27;success_msg&#x27;, $settings ); ?&gt;
+			&lt;/td&gt;
+		&lt;/tr&gt;
+
+		&lt;?php
+	}
+
+	/**
+	 * Process our Success Message notification
+	 * 
+	 * @access public
+	 * @since 2.8
+	 * @return void
+	 */
+	public function process( $id ) {
+		global $ninja_forms_processing;
+
+		// We need to get our name setting so that we can use it to create a unique success message ID.
+		$name = Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;name&#x27; );
+		// If our name is empty, we need to generate a random string.
+		if ( empty ( $name ) ) {
+			$name = ninja_forms_random_string( 4 );
+		}
+		$success_msg = apply_filters( &#x27;nf_success_msg&#x27;, Ninja_Forms()-&gt;notification( $id )-&gt;get_setting( &#x27;success_msg&#x27; ), $id );
+		$success_msg = do_shortcode( wpautop( $success_msg ) );
+		$success_msg = nf_parse_fields_shortcode( $success_msg );
+		$ninja_forms_processing-&gt;add_success_msg( &#x27;success_msg-&#x27; . $name, $success_msg );
+	}
+}
+
+return new NF_Notification_Success_Message();</pre></details></body></html>

@@ -1,0 +1,447 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/Column.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/Column.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+/**
+ * @since 3.0
+ */
+class AC_Column {
+
+	/**
+	 * @var string Unique Name
+	 */
+	private $name;
+
+	/**
+	 * @var string Unique type
+	 */
+	private $type;
+
+	/**
+	 * @var string Label which describes this column
+	 */
+	private $label;
+
+	/**
+	 * @var string Group name
+	 */
+	private $group;
+
+	/**
+	 * @var bool An original column will use the already defined column value and label.
+	 */
+	private $original = false;
+
+	/**
+	 * @var AC_Settings_Column[]
+	 */
+	private $settings;
+
+	/**
+	 * @var AC_Settings_FormatValueInterface[]|AC_Settings_FormatCollectionInterface[]
+	 */
+	private $formatters;
+
+	/**
+	 * @var AC_ListScreen
+	 */
+	protected $list_screen;
+
+	/**
+	 * The options managed by the settings
+	 *
+	 * @var array
+	 */
+	protected $options = array();
+
+	/**
+	 * @var string|bool
+	 */
+	private $empty_char;
+
+	/**
+	 * Get the unique name of the column
+	 *
+	 * @since 2.3.4
+	 * @return string Column name
+	 */
+	public function get_name() {
+		return $this-&gt;name;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
+	public function set_name( $name ) {
+		$this-&gt;name = (string) $name;
+
+		return $this;
+	}
+
+	/**
+	 * Get the type of the column.
+	 *
+	 * @since 2.3.4
+	 * @return string Type
+	 */
+	public function get_type() {
+		return $this-&gt;type;
+	}
+
+	/**
+	 * @param string $type
+	 *
+	 * @return $this
+	 */
+	public function set_type( $type ) {
+		$this-&gt;type = (string) $type;
+
+		return $this;
+	}
+
+	/**
+	 * @return AC_ListScreen
+	 */
+	public function get_list_screen() {
+		return $this-&gt;list_screen;
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return $this
+	 */
+	public function set_list_screen( AC_ListScreen $list_screen ) {
+		$this-&gt;list_screen = $list_screen;
+
+		return $this;
+	}
+
+	/**
+	 * Get the type of the column.
+	 *
+	 * @since 2.4.9
+	 * @return string Label of column&#x27;s type
+	 */
+	public function get_label() {
+		if ( null === $this-&gt;label ) {
+			$this-&gt;set_label( $this-&gt;get_list_screen()-&gt;get_original_label( $this-&gt;get_type() ) );
+		}
+
+		return $this-&gt;label;
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return $this
+	 */
+	public function set_label( $label ) {
+		$this-&gt;label = (string) $label;
+
+		return $this;
+	}
+
+	/**
+	 * @since 3.0
+	 * @return string Group
+	 */
+	public function get_group() {
+		if ( null === $this-&gt;group ) {
+			$this-&gt;set_group( &#x27;custom&#x27; );
+
+			if ( $this-&gt;is_original() ) {
+				$this-&gt;set_group( &#x27;default&#x27; );
+			}
+		}
+
+		return $this-&gt;group;
+	}
+
+	/**
+	 * @param string $group Group label
+	 *
+	 * @return $this
+	 */
+	public function set_group( $group ) {
+		$this-&gt;group = $group;
+
+		return $this;
+	}
+
+	/**
+	 * @return string Post type
+	 */
+	public function get_post_type() {
+		return method_exists( $this-&gt;list_screen, &#x27;get_post_type&#x27; ) ? $this-&gt;list_screen-&gt;get_post_type() : false;
+	}
+
+	/**
+	 * @return string Taxonomy
+	 */
+	public function get_taxonomy() {
+		return method_exists( $this-&gt;list_screen, &#x27;get_taxonomy&#x27; ) ? $this-&gt;list_screen-&gt;get_taxonomy() : false;
+	}
+
+	/**
+	 * Return true when a default column has been replaced by a custom column.
+	 * An original column will then use the original label and value.
+	 *
+	 * @since 3.0
+	 */
+	public function is_original() {
+		return $this-&gt;original;
+	}
+
+	/**
+	 * @param bool $boolean
+	 *
+	 * @return $this
+	 */
+	public function set_original( $boolean ) {
+		$this-&gt;original = (bool) $boolean;
+
+		return $this;
+	}
+
+	/**
+	 * Overwrite this function in child class.
+	 * Determine whether this column type should be available
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool Whether the column type should be available
+	 */
+	public function is_valid() {
+		return true;
+	}
+
+	/**
+	 * @param AC_Settings_Column $setting
+	 *
+	 * @return $this
+	 */
+	public function add_setting( AC_Settings_Column $setting ) {
+		$setting-&gt;set_values( $this-&gt;options );
+
+		$this-&gt;settings[ $setting-&gt;get_name() ] = $setting;
+
+		foreach ( (array) $setting-&gt;get_dependent_settings() as $dependent_setting ) {
+			$this-&gt;add_setting( $dependent_setting );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @param string $id Settings ID
+	 */
+	public function remove_setting( $id ) {
+		if ( isset( $this-&gt;settings[ $id ] ) ) {
+			unset( $this-&gt;settings[ $id ] );
+		}
+	}
+
+	/**
+	 * @param string $id
+	 *
+	 * @return AC_Settings_Column|AC_Settings_Column_User|AC_Settings_Column_Separator|AC_Settings_Column_Label
+	 */
+	public function get_setting( $id ) {
+		return $this-&gt;get_settings()-&gt;get( $id );
+	}
+
+	public function get_formatters() {
+		if ( null === $this-&gt;formatters ) {
+			foreach ( $this-&gt;get_settings() as $setting ) {
+				if ( $setting instanceof AC_Settings_FormatValueInterface || $setting instanceof AC_Settings_FormatCollectionInterface ) {
+					$this-&gt;formatters[] = $setting;
+				}
+			}
+		}
+
+		return $this-&gt;formatters;
+	}
+
+	/**
+	 * @return AC_Collection
+	 */
+	public function get_settings() {
+		if ( null === $this-&gt;settings ) {
+			$settings = array(
+				new AC_Settings_Column_Type( $this ),
+				new AC_Settings_Column_Label( $this ),
+				new AC_Settings_Column_Width( $this ),
+			);
+
+			foreach ( $settings as $setting ) {
+				$this-&gt;add_setting( $setting );
+			}
+
+			$this-&gt;register_settings();
+
+			do_action( &#x27;ac/column/settings&#x27;, $this );
+		}
+
+		return new AC_Collection( $this-&gt;settings );
+	}
+
+	/**
+	 * Register settings
+	 */
+	protected function register_settings() {
+		// Overwrite in child class
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return null|string|bool
+	 */
+	public function get_option( $key ) {
+		$options = $this-&gt;get_options();
+
+		return isset( $options[ $key ] ) ? $options[ $key ] : null;
+	}
+
+	/**
+	 * @param array $options
+	 *
+	 * @return $this
+	 */
+	public function set_options( array $options ) {
+		$this-&gt;options = $options;
+
+		return $this;
+	}
+
+	/**
+	 * Get the current options
+	 *
+	 * @return array
+	 */
+	public function get_options() {
+		return $this-&gt;options;
+	}
+
+	/**
+	 * Enqueue CSS + JavaScript on the admin listings screen!
+	 *
+	 * This action is called in the admin_head action on the listings screen where your column values are displayed.
+	 * Use this action to add CSS + JavaScript
+	 *
+	 * @since 3.3.4
+	 */
+	public function scripts() {
+		// Overwrite in child class
+	}
+
+	/**
+	 * Apply available formatters (recursive) on the value
+	 *
+	 * @param mixed $value
+	 * @param mixed $original_value
+	 * @param int   $current Current index of self::$formatters
+	 *
+	 * @return mixed
+	 */
+	public function get_formatted_value( $value, $original_value = null, $current = 0 ) {
+		$formatters = $this-&gt;get_formatters();
+		$available = count( $formatters );
+
+		if ( null === $original_value ) {
+			$original_value = $value;
+		}
+
+		if ( $available &gt; $current ) {
+			$is_collection = $value instanceof AC_Collection;
+			$is_value_formatter = $formatters[ $current ] instanceof AC_Settings_FormatValueInterface;
+
+			if ( $is_collection &amp;&amp; $is_value_formatter ) {
+				foreach ( $value as $k =&gt; $v ) {
+					$value-&gt;put( $k, $this-&gt;get_formatted_value( $v, null, $current ) );
+				}
+
+				while ( $available &gt; $current ) {
+					if ( $formatters[ $current ] instanceof AC_Settings_FormatCollectionInterface ) {
+						return $this-&gt;get_formatted_value( $value, $original_value, $current );
+					}
+
+					++$current;
+				}
+			} elseif ( ( $is_collection &amp;&amp; ! $is_value_formatter ) || $is_value_formatter ) {
+				$value = $formatters[ $current ]-&gt;format( $value, $original_value );
+
+				return $this-&gt;get_formatted_value( $value, $original_value, ++$current );
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Get the raw, underlying value for the column
+	 * Not suitable for direct display, use get_value() for that
+	 *
+	 * @since 2.0.3
+	 *
+	 * @param int $id
+	 *
+	 * @return string|array
+	 */
+	public function get_raw_value( $id ) {
+		return null;
+	}
+
+	/**
+	 * Display value
+	 *
+	 * @param int $id
+	 *
+	 * @return int|string
+	 */
+	public function get_value( $id ) {
+		$value = $this-&gt;get_formatted_value( $this-&gt;get_raw_value( $id ), $id );
+
+		if ( $value instanceof AC_Collection ) {
+			$value = $value-&gt;filter()-&gt;implode( $this-&gt;get_separator() );
+		}
+
+		if ( ! $value &amp;&amp; ! $this-&gt;is_original() ) {
+			$value = $this-&gt;get_empty_char();
+		}
+
+		return (string) $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_separator() {
+		return &#x27;, &#x27;;
+	}
+
+	/**
+	 * @param string
+	 */
+	public function set_empty_char( $char ) {
+		$this-&gt;empty_char = (string) $char;
+	}
+
+	/**
+	 * @return bool|string
+	 */
+	public function get_empty_char() {
+		if ( null === $this-&gt;empty_char ) {
+			$this-&gt;set_empty_char( &#x27;&amp;ndash;&#x27; );
+		}
+
+		return apply_filters( &#x27;ac/empty_char&#x27;, $this-&gt;empty_char, $this );
+	}
+
+}
+</pre></details></body></html>

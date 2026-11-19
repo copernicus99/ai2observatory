@@ -1,0 +1,443 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/classes/TableScreen.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/classes/TableScreen.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+				&lt;style&gt;
+					@media screen and (min-width: 783px) {
+					
+					}
+				&lt;/style&gt;
+				"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+final class AC_TableScreen {
+
+	/**
+	 * @var array $column_headings
+	 */
+	private $column_headings = array();
+
+	/**
+	 * @var AC_ListScreen $list_screen
+	 */
+	private $current_list_screen;
+
+	public function __construct() {
+		add_action( &#x27;current_screen&#x27;, array( $this, &#x27;load_list_screen&#x27; ) );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;load_list_screen_doing_quick_edit&#x27; ) );
+		add_action( &#x27;admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+		add_action( &#x27;admin_footer&#x27;, array( $this, &#x27;admin_footer_scripts&#x27; ) );
+		add_filter( &#x27;admin_body_class&#x27;, array( $this, &#x27;admin_class&#x27; ) );
+		add_filter( &#x27;list_table_primary_column&#x27;, array( $this, &#x27;set_primary_column&#x27; ), 20 );
+		add_action( &#x27;wp_ajax_ac_get_column_value&#x27;, array( $this, &#x27;ajax_get_column_value&#x27; ) );
+	}
+
+	/**
+	 * Get column value by ajax.
+	 */
+	public function ajax_get_column_value() {
+		check_ajax_referer( &#x27;ac-ajax&#x27; );
+
+		// Get ID of entry to edit
+		$id = intval( filter_input( INPUT_POST, &#x27;pk&#x27; ) );
+
+		if ( ! $id ) {
+			$this-&gt;ajax_error( __( &#x27;Invalid item ID.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		}
+
+		$list_screen = AC()-&gt;get_list_screen( filter_input( INPUT_POST, &#x27;list_screen&#x27; ) );
+
+		if ( ! $list_screen ) {
+			$this-&gt;ajax_error( __( &#x27;Invalid list screen.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		}
+
+		$list_screen-&gt;set_layout_id( filter_input( INPUT_POST, &#x27;layout&#x27; ) );
+
+		$column = $list_screen-&gt;get_column_by_name( filter_input( INPUT_POST, &#x27;column&#x27; ) );
+
+		if ( ! $column ) {
+			$this-&gt;ajax_error( __( &#x27;Invalid column.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		}
+
+		if ( ! $column instanceof AC_Column_AjaxValue ) {
+			$this-&gt;ajax_error( __( &#x27;Invalid method.&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		}
+
+		// Trigger ajax callback
+		echo $column-&gt;get_ajax_value( $id );
+		exit;
+	}
+
+	private function ajax_error( $message ) {
+		wp_die( $message, null, 400 );
+	}
+
+	/**
+	 * Set the primary columns for the Admin Columns columns. Used to place the actions bar.
+	 *
+	 * @since 2.5.5
+	 */
+	public function set_primary_column( $default ) {
+		if ( $this-&gt;current_list_screen ) {
+
+			if ( ! $this-&gt;current_list_screen-&gt;get_column_by_name( $default ) ) {
+				$default = key( $this-&gt;current_list_screen-&gt;get_columns() );
+			}
+
+			// If actions column is present, set it as primary
+			foreach ( $this-&gt;current_list_screen-&gt;get_columns() as $column ) {
+				if ( &#x27;column-actions&#x27; == $column-&gt;get_type() ) {
+					$default = $column-&gt;get_name();
+				}
+			};
+
+			// Set inline edit data if the default column (title) is not present
+			if ( $this-&gt;current_list_screen instanceof AC_ListScreen_Post &amp;&amp; &#x27;title&#x27; !== $default ) {
+				add_filter( &#x27;page_row_actions&#x27;, array( $this, &#x27;set_inline_edit_data&#x27; ), 20, 2 );
+				add_filter( &#x27;post_row_actions&#x27;, array( $this, &#x27;set_inline_edit_data&#x27; ), 20, 2 );
+			}
+
+			// Remove inline edit action if the default column (author) is not present
+			if ( $this-&gt;current_list_screen instanceof AC_ListScreen_Comment &amp;&amp; &#x27;comment&#x27; !== $default ) {
+				add_filter( &#x27;comment_row_actions&#x27;, array( $this, &#x27;remove_quick_edit_from_actions&#x27; ), 20, 2 );
+			}
+
+			// Adds the default hidden bulk edit markup for the new primary column
+			if ( $this-&gt;current_list_screen instanceof ACP_ListScreen_Taxonomy &amp;&amp; &#x27;name&#x27; !== $default ) {
+				add_filter( &#x27;tag_row_actions&#x27;, array( $this, &#x27;add_taxonomy_hidden_quick_edit_markup&#x27; ), 20, 2 );
+			}
+		}
+
+		return $default;
+	}
+
+	/**
+	 * Sets the inline data when the title columns is not present on a AC_ListScreen_Post screen
+	 *
+	 * @param array   $actions
+	 * @param WP_Post $post
+	 */
+	public function set_inline_edit_data( $actions, $post ) {
+		get_inline_data( $post );
+
+		return $actions;
+	}
+
+	/**
+	 * Remove quick edit from actions
+	 *
+	 * @param array $actions
+	 */
+	public function remove_quick_edit_from_actions( $actions ) {
+		unset( $actions[&#x27;quickedit&#x27;] );
+
+		return $actions;
+	}
+
+	/**
+	 * Add the default markup for the default primary column for the Taxonomy list screen which is necessary for bulk edit
+	 *
+	 * @param $actions
+	 * @param $term
+	 */
+	public function add_taxonomy_hidden_quick_edit_markup( $actions, $term ) {
+		$list_table = $this-&gt;get_current_list_screen()-&gt;get_list_table();
+
+		echo sprintf( &#x27;&lt;div class=&quot;hidden&quot;&gt;%s&lt;/div&gt;&#x27;, $list_table-&gt;column_name( $term ) );
+
+		return $actions;
+	}
+
+	/**
+	 * Adds a body class which is used to set individual column widths
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $classes body classes
+	 *
+	 * @return string
+	 */
+	public function admin_class( $classes ) {
+		if ( ! $this-&gt;current_list_screen ) {
+			return $classes;
+		}
+
+		$classes .= &quot; ac-&quot; . $this-&gt;current_list_screen-&gt;get_key();
+
+		return apply_filters( &#x27;ac/table/body_class&#x27;, $classes, $this );
+	}
+
+	/**
+	 * @since 2.2.4
+	 *
+	 * @param AC_ListScreen $list_screen
+	 */
+	public function admin_scripts() {
+		if ( ! $this-&gt;current_list_screen ) {
+			return;
+		}
+
+		$list_screen = $this-&gt;current_list_screen;
+
+		// Tooltip
+		wp_register_script( &#x27;jquery-qtip2&#x27;, AC()-&gt;get_plugin_url() . &quot;external/qtip2/jquery.qtip&quot; . AC()-&gt;minified() . &quot;.js&quot;, array( &#x27;jquery&#x27; ), AC()-&gt;get_version() );
+		wp_enqueue_style( &#x27;jquery-qtip2&#x27;, AC()-&gt;get_plugin_url() . &quot;external/qtip2/jquery.qtip&quot; . AC()-&gt;minified() . &quot;.css&quot;, array(), AC()-&gt;get_version() );
+
+		// Main
+		wp_enqueue_script( &#x27;ac-table&#x27;, AC()-&gt;get_plugin_url() . &quot;assets/js/table&quot; . AC()-&gt;minified() . &quot;.js&quot;, array( &#x27;jquery&#x27;, &#x27;jquery-qtip2&#x27; ), AC()-&gt;get_version() );
+		wp_enqueue_style( &#x27;ac-table&#x27;, AC()-&gt;get_plugin_url() . &quot;assets/css/table&quot; . AC()-&gt;minified() . &quot;.css&quot;, array(), AC()-&gt;get_version() );
+
+		wp_localize_script( &#x27;ac-table&#x27;, &#x27;AC&#x27;, array(
+				&#x27;list_screen&#x27;  =&gt; $list_screen-&gt;get_key(),
+				&#x27;layout&#x27;       =&gt; $list_screen-&gt;get_layout_id(),
+				&#x27;column_types&#x27; =&gt; $this-&gt;get_column_types_mapping( $list_screen ),
+				&#x27;ajax_nonce&#x27;   =&gt; wp_create_nonce( &#x27;ac-ajax&#x27; ),
+				&#x27;table_id&#x27;     =&gt; $list_screen-&gt;get_table_attr_id(),
+				&#x27;edit_link&#x27;    =&gt; $this-&gt;get_edit_link( $list_screen ),
+				&#x27;i18n&#x27;         =&gt; array(
+					&#x27;edit_columns&#x27; =&gt; esc_html( __( &#x27;Edit columns&#x27;, &#x27;codepress-admin-columns&#x27; ) ),
+				),
+			)
+		);
+
+		/**
+		 * @param AC_ListScreen $list_screen
+		 */
+		do_action( &#x27;ac/table_scripts&#x27;, $list_screen );
+
+		// Column specific scripts
+		foreach ( $list_screen-&gt;get_columns() as $column ) {
+			$column-&gt;scripts();
+		}
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return array
+	 */
+	private function get_column_types_mapping( AC_ListScreen $list_screen ) {
+		$types = array();
+		foreach ( $list_screen-&gt;get_columns() as $column ) {
+			$types[ $column-&gt;get_name() ] = $column-&gt;get_type();
+		}
+
+		return $types;
+	}
+
+	public function get_current_list_screen() {
+		return $this-&gt;current_list_screen;
+	}
+
+	/**
+	 * Applies the width setting to the table headers
+	 */
+	private function display_width_styles() {
+		if ( $this-&gt;current_list_screen-&gt;get_settings() ) {
+
+			// CSS: columns width
+			$css_column_width = false;
+
+			foreach ( $this-&gt;current_list_screen-&gt;get_columns() as $column ) {
+
+				/* @var AC_Settings_Column_Width $setting */
+				$setting = $column-&gt;get_setting( &#x27;width&#x27; );
+
+				if ( $width = $setting-&gt;get_display_width() ) {
+					$css_column_width .= &quot;.ac-&quot; . $this-&gt;current_list_screen-&gt;get_key() . &quot; .wrap table th.column-&quot; . $column-&gt;get_name() . &quot; { width: &quot; . $width . &quot; !important; }&quot;;
+					$css_column_width .= &quot;body.acp-overflow-table.ac-&quot; . $this-&gt;current_list_screen-&gt;get_key() . &quot; .wrap th.column-&quot; . $column-&gt;get_name() . &quot; { min-width: &quot; . $width . &quot; !important; }&quot;;
+				}
+			}
+
+			if ( $css_column_width ) : ?&gt;
+				&lt;style&gt;
+					@media screen and (min-width: 783px) {
+					&lt;?php echo $css_column_width; ?&gt;
+					}
+				&lt;/style&gt;
+				&lt;?php
+			endif;
+		}
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 *
+	 * @return string|false
+	 */
+	private function get_edit_link( AC_ListScreen $list_screen ) {
+		if ( ! AC()-&gt;user_can_manage_admin_columns() ) {
+			return false;
+		}
+
+		/* @var AC_Admin_Page_Settings $settings */
+		$settings = AC()-&gt;admin()-&gt;get_page( &#x27;settings&#x27; );
+
+		if ( ! $settings-&gt;show_edit_button() ) {
+			return false;
+		}
+
+		return $list_screen-&gt;get_edit_link();
+	}
+
+	/**
+	 * Admin CSS for Column width and Settings Icon
+	 *
+	 * @since 1.4.0
+	 */
+	public function admin_footer_scripts() {
+		if ( ! $this-&gt;current_list_screen ) {
+			return;
+		}
+
+		$this-&gt;display_width_styles();
+
+		/**
+		 * Add header scripts that only apply to column screens.
+		 * @since 2.3.5
+		 *
+		 * @param object CPAC Main Class
+		 */
+		do_action( &#x27;ac/admin_footer&#x27;, $this-&gt;current_list_screen, $this );
+	}
+
+	/**
+	 * Load current list screen
+	 *
+	 * @param WP_Screen $current_screen
+	 */
+	public function load_list_screen( $current_screen ) {
+		if ( $list_screen = AC()-&gt;get_list_screen_by_wpscreen( $current_screen ) ) {
+			$this-&gt;set_current_list_screen( $list_screen );
+		}
+	}
+
+	/**
+	 * Runs when doing Quick Edit, a native WordPress ajax call
+	 */
+	public function load_list_screen_doing_quick_edit() {
+		$this-&gt;set_current_list_screen( AC()-&gt;get_list_screen( $this-&gt;get_list_screen_when_doing_quick_edit() ) );
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 */
+	public function set_current_list_screen( $list_screen ) {
+		if ( ! $list_screen ) {
+			return;
+		}
+
+		$this-&gt;current_list_screen = $list_screen;
+
+		// Init Values
+		$list_screen-&gt;set_manage_value_callback();
+
+		/**
+		 * Init Headings
+		 * @see get_column_headers() for filter location
+		 */
+		add_filter( &quot;manage_&quot; . $list_screen-&gt;get_screen_id() . &quot;_columns&quot;, array( $this, &#x27;add_headings&#x27; ), 200 );
+
+		// Stores the row actions for each table. Only used by the AC_Column_Actions column.
+		ac_action_column_helper();
+
+		/**
+		 * @since 3.0
+		 *
+		 * @param AC_ListScreen
+		 */
+		do_action( &#x27;ac/table/list_screen&#x27;, $list_screen );
+	}
+
+	/**
+	 * Is WordPress doing ajax
+	 *
+	 * @since 2.5
+	 * @return string List screen key
+	 */
+	public function get_list_screen_when_doing_quick_edit() {
+		$list_screen = false;
+
+		if ( AC()-&gt;is_doing_ajax() ) {
+
+			switch ( filter_input( INPUT_POST, &#x27;action&#x27; ) ) {
+
+				// Quick edit post
+				case &#x27;inline-save&#x27; :
+					$list_screen = filter_input( INPUT_POST, &#x27;post_type&#x27; );
+					break;
+
+				// Adding term &amp; Quick edit term
+				case &#x27;add-tag&#x27; :
+				case &#x27;inline-save-tax&#x27; :
+					$list_screen = &#x27;wp-taxonomy_&#x27; . filter_input( INPUT_POST, &#x27;taxonomy&#x27; );
+					break;
+
+				// Quick edit comment &amp; Inline reply on comment
+				case &#x27;edit-comment&#x27; :
+				case &#x27;replyto-comment&#x27; :
+					$list_screen = &#x27;wp-comments&#x27;;
+					break;
+			}
+		}
+
+		return $list_screen;
+	}
+
+	/**
+	 * @since 2.0
+	 */
+	public function add_headings( $columns ) {
+		if ( empty( $columns ) ) {
+			return $columns;
+		}
+
+		if ( ! $this-&gt;current_list_screen ) {
+			return $columns;
+		}
+
+		// Store default headings
+		if ( ! AC()-&gt;is_doing_ajax() ) {
+			$this-&gt;current_list_screen-&gt;save_default_headings( $columns );
+		}
+
+		// Run once
+		if ( $this-&gt;column_headings ) {
+			return $this-&gt;column_headings;
+		}
+
+		// Nothing stored. Show default columns on screen.
+		if ( ! $this-&gt;current_list_screen-&gt;get_settings() ) {
+			return $columns;
+		}
+
+		// Add mandatory checkbox
+		if ( isset( $columns[&#x27;cb&#x27;] ) ) {
+			$this-&gt;column_headings[&#x27;cb&#x27;] = $columns[&#x27;cb&#x27;];
+		}
+
+		// On first visit &#x27;columns&#x27; can be empty, because they were put in memory before &#x27;default headings&#x27;
+		// were stored. We force get_columns() to be re-populated.
+		if ( ! $this-&gt;current_list_screen-&gt;get_columns() ) {
+			$this-&gt;current_list_screen-&gt;reset();
+			$this-&gt;current_list_screen-&gt;reset_original_columns();
+		}
+
+		foreach ( $this-&gt;current_list_screen-&gt;get_columns() as $column ) {
+
+			/**
+			 * @since 3.0
+			 *
+			 * @param string    $label
+			 * @param AC_Column $column
+			 */
+			$label = apply_filters( &#x27;ac/headings/label&#x27;, $column-&gt;get_setting( &#x27;label&#x27; )-&gt;get_value(), $column );
+
+			$this-&gt;column_headings[ $column-&gt;get_name() ] = $label;
+		}
+
+		return apply_filters( &#x27;ac/headings&#x27;, $this-&gt;column_headings, $this-&gt;current_list_screen );
+	}
+
+}
+</pre></details></body></html>

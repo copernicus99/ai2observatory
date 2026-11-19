@@ -1,0 +1,752 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Abstracts/Model.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Abstracts/Model.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_Abstracts_Model
+ */
+class NF_Abstracts_Model
+{
+    /**
+     * Database Object
+     *
+     * @var string
+     */
+    protected $_db = &#x27;&#x27;;
+
+    /**
+     * ID
+     *
+     * The ID is assigned after being saved to the database.
+     *
+     * @var int
+     */
+    protected $_id = &#x27;&#x27;;
+
+    /**
+     * Temporary ID
+     *
+     * The temporary ID is used to reference unsaved objects
+     *   before they are stored in the database.
+     *
+     * @var string
+     */
+    protected $_tmp_id = &#x27;&#x27;;
+
+    /**
+     * Type
+     *
+     * The type is used to pragmatically identify the type
+     *   of an object without inspecting the class.
+     *
+     * @var string
+     */
+    protected $_type = &#x27;&#x27;;
+
+    /**
+     * Parent ID
+     *
+     * The ID of the parent object.
+     *
+     * @var string
+     */
+    protected $_parent_id = &#x27;&#x27;;
+
+    /**
+     * Parent Type
+     *
+     * The type of the parent object.
+     *
+     * @var string
+     */
+    protected $_parent_type = &#x27;&#x27;;
+
+    /**
+     * Table Name
+     *
+     * The name of the table where the model objects are stored.
+     *
+     * @var string
+     */
+    protected $_table_name = &#x27;&#x27;;
+
+    /**
+     * Meta Table Name
+     *
+     * The name of the table where the object settings are stored.
+     *
+     * @var string
+     */
+    protected $_meta_table_name = &#x27;&#x27;;
+
+    /**
+     * ? Deprecated ?
+     * @var string
+     */
+    protected $_relationships_table = &#x27;nf3_relationships&#x27;;
+
+    /**
+     * Columns
+     *
+     * A list of settings that are stored in the main table as columns.
+     *   These settings are NOT stored in the meta table.
+     *
+     * @var array
+     */
+    protected $_columns = array();
+
+    /**
+     * Settings
+     *
+     * A list of settings that are stored in the meta table.
+     *
+     * @var array
+     */
+    protected $_settings = array();
+
+    /**
+     * Results
+     *
+     * The last results returned by a query.
+     *
+     * @var array
+     */
+    protected $_results = array();
+
+    /**
+     * Cache
+     *
+     * A Flag for using or bypassing caching.
+     *
+     * @var bool
+     */
+    protected $_cache = TRUE;
+
+    //-----------------------------------------------------
+    // Public Methods
+    //-----------------------------------------------------
+
+    /**
+     * NF_Abstracts_Model constructor.
+     *
+     * @param $db
+     * @param $id
+     * @param $parent_id
+     */
+    public function __construct( $db, $id = NULL, $parent_id = &#x27;&#x27; )
+    {
+        /*
+         * Injected the Database Dependency
+         */
+        $this-&gt;_db = $db;
+
+        /*
+         * Assign Database Tables using the DB prefix
+         */
+        $this-&gt;_table_name          = $this-&gt;_db-&gt;prefix . $this-&gt;_table_name;
+        $this-&gt;_meta_table_name     = $this-&gt;_db-&gt;prefix . $this-&gt;_meta_table_name;
+        $this-&gt;_relationships_table = $this-&gt;_db-&gt;prefix . $this-&gt;_relationships_table;
+
+        /*
+         * Set the object ID
+         *   Check if the ID is Permanent (int) or Temporary (string)
+         */
+        if( is_numeric( $id ) ) {
+            $this-&gt;_id = absint( $id );
+        } elseif( $id ) {
+            $this-&gt;_tmp_id = $id;
+        }
+
+        /*
+         * Set the Parent ID for context
+         */
+        $this-&gt;_parent_id = $parent_id;
+    }
+
+    /**
+     * Get the Permanent ID
+     *
+     * @return int
+     */
+    public function get_id()
+    {
+        return intval( $this-&gt;_id );
+    }
+
+    /**
+     * Get the Temporary ID
+     *
+     * @return null|string
+     */
+    public function get_tmp_id()
+    {
+        return $this-&gt;_tmp_id;
+    }
+
+    /**
+     * Get the Type
+     *
+     * @return string
+     */
+    public function get_type()
+    {
+        return $this-&gt;_type;
+    }
+
+    /**
+     * Get a single setting with a default fallback
+     *
+     * @param string $setting
+     * @param bool $default optional
+     * @return string|int|bool
+     */
+    public function get_setting( $setting, $default = FALSE )
+    {
+        if( isset( $this-&gt;_settings[ $setting ] )){
+            $return =  $this-&gt;_settings[ $setting ];
+        } else {
+            $return = $this-&gt;get_settings($setting);
+            if( is_array( $return ) &amp;&amp; empty( $return ) ) $return = false;
+        }
+
+        return ( $return !== false ) ? $return : $default;
+    }
+
+    /**
+     * Get Settings
+     *
+     * @param string ...$only returns a subset of the object&#x27;s settings
+     * @return array
+     */
+    public function get_settings()
+    {
+        // If the ID is not set, then we cannot pull settings from the Database.
+        if( ! $this-&gt;_id ) return $this-&gt;_settings;
+
+        if( ! $this-&gt;_settings &amp;&amp; &#x27;field&#x27; == $this-&gt;_type ) {
+            global $wpdb;
+            $results = $wpdb-&gt;get_results(
+                &quot;
+                SELECT Meta.key, Meta.value
+                FROM $this-&gt;_table_name as Object
+                JOIN $this-&gt;_meta_table_name as Meta
+                ON Object.id = Meta.parent_id
+                WHERE Object.id = &#x27;$this-&gt;_id&#x27;
+                &quot;
+            , ARRAY_A );
+
+            foreach( $results as $result ) {
+                $key = $result[ &#x27;key&#x27; ];
+                $this-&gt;_settings[ $key ] = $result[ &#x27;value&#x27; ];
+            }
+
+            $field = $wpdb-&gt;get_row(
+                &quot;
+                SELECT `label`, `key`, `type`
+                FROM $this-&gt;_table_name
+                WHERE `id` = &#x27;$this-&gt;_id&#x27;
+                &quot;,
+                ARRAY_A
+            );
+
+            if( ! is_wp_error( $field ) ){
+                $this-&gt;_settings[ &#x27;label&#x27; ] = $field[ &#x27;label&#x27; ];
+                $this-&gt;_settings[ &#x27;key&#x27; ] = $field[ &#x27;key&#x27; ];
+                $this-&gt;_settings[ &#x27;type&#x27; ] = $field[ &#x27;type&#x27; ];
+            }
+        }
+
+        if( ! $this-&gt;_settings ) {
+            $form_cache = get_option(&#x27;nf_form_&#x27; . $this-&gt;_parent_id);
+            if ($form_cache) {
+
+                if (&#x27;field&#x27; == $this-&gt;_type) {
+
+                    if (isset($form_cache[&#x27;fields&#x27;])) {
+
+                        foreach ($form_cache[&#x27;fields&#x27;] as $object) {
+                            if ($this-&gt;_id != $object[&#x27;id&#x27;]) continue;
+
+                            $this-&gt;update_settings($object[&#x27;settings&#x27;]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Only query if settings haven&#x27;t been already queried or cache is FALSE.
+        if( ! $this-&gt;_settings || ! $this-&gt;_cache ) {
+
+            // Build query syntax from the columns property.
+            $columns = &#x27;`&#x27; . implode( &#x27;`, `&#x27;, $this-&gt;_columns ) . &#x27;`&#x27;;
+
+            // Query column settings
+            $results = $this-&gt;_db-&gt;get_row(
+                &quot;
+                SELECT $columns
+                FROM   `$this-&gt;_table_name`
+                WHERE `id` = $this-&gt;_id
+                &quot;
+            );
+
+            /*
+             * If the query returns results then
+             *   assign settings using the column name as the setting key.
+             */
+            if( $results ) {
+                foreach ($this-&gt;_columns as $column) {
+                    $this-&gt;_settings[$column] = $results-&gt;$column;
+                }
+            }
+
+            // Query settings from the meta table.
+            $meta_results = $this-&gt;_db-&gt;get_results(
+                &quot;
+                SELECT `key`, `value`
+                FROM   `$this-&gt;_meta_table_name`
+                WHERE  `parent_id` = $this-&gt;_id
+                &quot;
+            );
+
+            // Assign settings to the settings property.
+            foreach ($meta_results as $meta) {
+                $this-&gt;_settings[ $meta-&gt;key ] = $meta-&gt;value;
+            }
+        }
+
+        // Un-serialize queried settings results.
+        foreach( $this-&gt;_settings as $key =&gt; $value ){
+            $this-&gt;_settings[ $key ] = maybe_unserialize( $value );
+        }
+
+        // Check for passed arguments to limit the returned settings.
+        $only = func_get_args();
+        if ( $only &amp;&amp; is_array($only)
+            // And if the array is NOT multidimensional
+            &amp;&amp; (count($only) == count($only, COUNT_RECURSIVE))) {
+
+            // If only one setting, return a single value
+            if( 1 == count( $only ) ){
+
+                if( isset( $this-&gt;_settings[ $only[0] ] ) ) {
+                    return $this-&gt;_settings[$only[0]];
+                } else {
+                    return NULL;
+                }
+            }
+
+            // Flip the array to match the settings property
+            $only_settings = array_flip( $only );
+
+            // Return only the requested settings
+            return array_intersect_key( $this-&gt;_settings, $only_settings );
+        }
+
+        // Return all settings
+        return $this-&gt;_settings;
+    }
+
+    /**
+     * Update Setting
+     *
+     * @param $key
+     * @param $value
+     * @return bool|false|int
+     */
+    public function update_setting( $key, $value )
+    {
+        $this-&gt;_settings[ $key ] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Update Settings
+     *
+     * @param $data
+     * @return bool
+     */
+    public function update_settings( $data )
+    {
+        if( is_array( $data ) ) {
+            foreach ($data as $key =&gt; $value) {
+                $this-&gt;update_setting($key, $value);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete
+     *
+     * Delete the object, its children, and its relationships.
+     *
+     * @return bool
+     */
+    public function delete()
+    {
+        if( ! $this-&gt;get_id() ) return;
+
+        $results = array();
+
+        // Delete the object from the model&#x27;s table
+        $results[] = $this-&gt;_db-&gt;delete(
+            $this-&gt;_table_name,
+            array(
+                &#x27;id&#x27; =&gt; $this-&gt;_id
+            )
+        );
+
+        // Delete settings from the model&#x27;s meta table.
+        $results[] = $this-&gt;_db-&gt;delete(
+            $this-&gt;_meta_table_name,
+            array(
+                &#x27;parent_id&#x27; =&gt; $this-&gt;_id
+            )
+        );
+
+        // Query for child objects using the relationships table.
+
+        $children = $this-&gt;_db-&gt;get_results(
+            &quot;
+            SELECT child_id, child_type
+            FROM $this-&gt;_relationships_table
+            WHERE parent_id = $this-&gt;_id
+            AND   parent_type = &#x27;$this-&gt;_type&#x27;
+            &quot;
+        );
+
+        // Delete each child model
+        foreach( $children as $child ) {
+            $model = Ninja_Forms()-&gt;form()-&gt;get_model( $child-&gt;child_id, $child-&gt;child_type );
+            $model-&gt;delete();
+        }
+
+        // Delete all relationships
+        $this-&gt;_db-&gt;delete(
+            $this-&gt;_relationships_table,
+            array(
+                &#x27;parent_id&#x27; =&gt; $this-&gt;_id,
+                &#x27;parent_type&#x27; =&gt; $this-&gt;_type
+            )
+        );
+
+        // return False if there are no query errors.
+        return in_array( FALSE, $results );
+    }
+
+    /**
+     * Find
+     *
+     * @param string $parent_id
+     * @param array $where
+     * @return array
+     */
+    public function find( $parent_id = &#x27;&#x27;, array $where = array() )
+    {
+        // Build the query using the $where argument
+        $query = $this-&gt;build_meta_query( $parent_id, $where );
+
+        // Get object IDs from the query
+        $ids = $this-&gt;_db-&gt;get_col( $query );
+
+        // Get the current class name
+        $class = get_class( $this );
+
+        $results = array();
+        foreach( $ids as $id ){
+
+            // Instantiate a new object for each ID
+            $results[] = $object = new $class( $this-&gt;_db, $id, $parent_id );
+        }
+
+        // Return an array of objects
+        return $results;
+    }
+
+    /*
+     * UTILITY METHODS
+     */
+
+    /**
+     * Save
+     */
+    public function save()
+    {
+        $data = array ( &#x27;updated_at&#x27; =&gt; current_time( &#x27;mysql&#x27; ));
+
+        // If the ID is not set, assign an ID
+        if( ! $this-&gt;_id ){
+
+            $data[  &#x27;created_at&#x27; ] = current_time( &#x27;mysql&#x27; ) ;
+
+            if( $this-&gt;_parent_id ){
+                $data[&#x27;parent_id&#x27;] = $this-&gt;_parent_id;
+            }
+
+            // Create a new row in the database
+            $result = $this-&gt;_db-&gt;insert(
+                $this-&gt;_table_name,
+                $data
+            );
+
+            // Assign the New ID
+            $this-&gt;_id = $this-&gt;_db-&gt;insert_id;
+        } else {
+
+            $result = $this-&gt;_db-&gt;get_row( &quot;SELECT * FROM $this-&gt;_table_name WHERE id = $this-&gt;_id&quot; );
+
+            if( ! $result ){
+                $this-&gt;_insert_row( array( &#x27;id&#x27; =&gt; $this-&gt;_id ) );
+            }
+        }
+
+        $this-&gt;_save_settings();
+
+        // If a Temporary ID is set, return it along with the newly assigned ID.
+        if( $this-&gt;_tmp_id ){
+            return array( $this-&gt;_tmp_id =&gt; $this-&gt;_id );
+        }
+    }
+
+    public function _insert_row( $data = array() )
+    {
+        $data[ &#x27;created_at&#x27; ] = current_time( &#x27;mysql&#x27; );
+
+        if( $this-&gt;_parent_id ){
+            $data[&#x27;parent_id&#x27;] = $this-&gt;_parent_id;
+        }
+
+        // Create a new row in the database
+        $result = $this-&gt;_db-&gt;insert(
+            $this-&gt;_table_name,
+            $data
+        );
+    }
+
+    /**
+     * Cache Flag
+     *
+     * @param string $cache
+     * @return $this
+     */
+    public function cache( $cache = &#x27;&#x27; )
+    {
+        // Set the Cache Flag Property.
+        if( $cache !== &#x27;&#x27; ) {
+            $this-&gt;_cache = $cache;
+        }
+
+        // Return the current object for method chaining.
+        return $this;
+    }
+
+    /**
+     * Add Parent
+     *
+     * Set the Parent ID and Parent Type properties
+     *
+     * @param $parent_id
+     * @param $parent_type
+     * @return $this
+     */
+    public function add_parent( $parent_id, $parent_type )
+    {
+        $this-&gt;_parent_id = $parent_id;
+
+        $this-&gt;_parent_type = $parent_type;
+
+        // Return the current object for method chaining.
+        return $this;
+    }
+
+    //-----------------------------------------------------
+    // Protected Methods
+    //-----------------------------------------------------
+
+    /**
+     * Save Setting
+     *
+     * Save a single setting.
+     *
+     * @param $key
+     * @param $value
+     * @return bool|false|int
+     */
+    protected function _save_setting( $key, $value )
+    {
+        // If the setting is a column, save the settings to the model&#x27;s table.
+        if( in_array( $key, $this-&gt;_columns ) ){
+
+            return $this-&gt;_db-&gt;update(
+                $this-&gt;_table_name,
+                array(
+                    $key =&gt; $value
+                ),
+                array(
+                    &#x27;id&#x27; =&gt; $this-&gt;_id
+                )
+            );
+        }
+
+        $meta_row = $this-&gt;_db-&gt;get_row(
+            &quot;
+                SELECT `value`
+                FROM   `$this-&gt;_meta_table_name`
+                WHERE  `parent_id` = $this-&gt;_id
+                AND    `key` = &#x27;$key&#x27;
+                &quot;
+        );
+
+        if( $meta_row ){
+
+            $result = $this-&gt;_db-&gt;update(
+                $this-&gt;_meta_table_name,
+                array(
+                    &#x27;value&#x27; =&gt; $value
+                ),
+                array(
+                    &#x27;key&#x27; =&gt; $key,
+                    &#x27;parent_id&#x27; =&gt; $this-&gt;_id
+                )
+            );
+
+        } else {
+
+            $result = $this-&gt;_db-&gt;insert(
+                $this-&gt;_meta_table_name,
+                array(
+                    &#x27;key&#x27; =&gt; $key,
+                    &#x27;value&#x27; =&gt; $value,
+                    &#x27;parent_id&#x27; =&gt; $this-&gt;_id
+                ),
+                array(
+                    &#x27;%s&#x27;,
+                    &#x27;%s&#x27;,
+                    &#x27;%d&#x27;
+                )
+            );
+        }
+
+
+        return $result;
+    }
+
+    /**
+     * Save Settings
+     *
+     * Save all settings.
+     *
+     * @return bool
+     */
+    protected function _save_settings()
+    {
+        if( ! $this-&gt;_settings ) return;
+
+        foreach( $this-&gt;_settings as $key =&gt; $value ){
+            $value = maybe_serialize( $value );
+            $this-&gt;_results[] = $this-&gt;_save_setting( $key, $value );
+        }
+
+        $this-&gt;_save_parent_relationship();
+
+        return $this-&gt;_results;
+    }
+
+    /**
+     * Save Parent Relationship
+     *
+     * @return $this
+     */
+    protected function _save_parent_relationship()
+    {
+        // ID, Type, Parent ID, and Parent Type are required for creating a relationship.
+        if( ! $this-&gt;_id || ! $this-&gt;_type || ! $this-&gt;_parent_id || ! $this-&gt;_parent_type ) return $this;
+
+        // Check to see if a relationship exists.
+        $this-&gt;_db-&gt;get_results(
+            &quot;
+          SELECT *
+          FROM $this-&gt;_relationships_table
+          WHERE `child_id` = $this-&gt;_id
+          AND   `child_type` = &#x27;$this-&gt;_type&#x27;
+          &quot;
+        );
+
+        // If a relationship does not exists, then create one.
+        if( 0 == $this-&gt;_db-&gt;num_rows ){
+
+            $this-&gt;_db-&gt;insert(
+                $this-&gt;_relationships_table,
+                array(
+                    &#x27;child_id&#x27; =&gt; $this-&gt;_id,
+                    &#x27;child_type&#x27; =&gt; $this-&gt;_type,
+                    &#x27;parent_id&#x27; =&gt; $this-&gt;_parent_id,
+                    &#x27;parent_type&#x27; =&gt; $this-&gt;_parent_type
+                ),
+                array(
+                    &#x27;%d&#x27;,
+                    &#x27;%s&#x27;,
+                    &#x27;%d&#x27;,
+                    &#x27;%s&#x27;,
+                )
+            );
+        }
+
+        // Return the current object for method chaining.
+        return $this;
+    }
+
+    /**
+     * Build Meta Query
+     *
+     * @param string $parent_id
+     * @param array $where
+     * @return string
+     */
+    protected function build_meta_query( $parent_id = &#x27;&#x27;, array $where = array() )
+    {
+        $join_statement = array();
+        $where_statement = array();
+
+        if( $where AND is_array( $where ) ) {
+
+            $where_conditions = array();
+            foreach ($where as $key =&gt; $value) {
+                $conditions[&#x27;key&#x27;] = $key;
+                $conditions[&#x27;value&#x27;] = $value;
+
+                $where_conditions[] = $conditions;
+            }
+
+            $count = count($where);
+            for ($i = 0; $i &lt; $count; $i++) {
+
+                $join_statement[] = &quot;INNER JOIN &quot; . $this-&gt;_meta_table_name . &quot; as meta$i on meta$i.parent_id = &quot; . $this-&gt;_table_name . &quot;.id&quot;;
+                $where_statement[] = &quot;( meta$i.key = &#x27;&quot; . $where_conditions[$i][&#x27;key&#x27;] . &quot;&#x27; AND meta$i.value = &#x27;&quot; . $where_conditions[$i][&#x27;value&#x27;] . &quot;&#x27; )&quot;;
+            }
+
+        }
+
+        $join_statement = implode( &#x27; &#x27;, $join_statement );
+
+        $where_statement = implode( &#x27; AND &#x27;, $where_statement );
+
+        // TODO: Breaks SQL. Needs more testing.
+        // if( $where_statement ) $where_statement = &quot;AND &quot; . $where_statement;
+
+        if( $parent_id ){
+            $where_statement = &quot;$this-&gt;_table_name.parent_id = $parent_id $where_statement&quot;;
+        }
+
+        if( ! empty( $where_statement ) ) {
+            $where_statement = &quot;WHERE $where_statement&quot;;
+        }
+
+        return &quot;SELECT DISTINCT $this-&gt;_table_name.id FROM $this-&gt;_table_name $join_statement $where_statement&quot;;
+
+    }
+
+
+}
+</pre></details></body></html>

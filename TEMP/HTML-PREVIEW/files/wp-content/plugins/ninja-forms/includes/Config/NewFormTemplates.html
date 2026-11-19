@@ -1,0 +1,185 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/Config/NewFormTemplates.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/Config/NewFormTemplates.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+    &#x27;slug_name&#x27; =&gt; array(
+        //Same as slug name/
+        &#x27;id&#x27;            =&gt; &#x27;slug_name&#x27;,
+        &#x27;title&#x27;         =&gt; &#x27;nicename&#x27;,
+        &#x27;template-desc&#x27; =&gt; &#x27;&#x27;,
+    ),
+ */
+
+$templates = array(
+    /**
+     * Regular old form templates
+     */
+
+    &#x27;formtemplate-contactform&#x27;          =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-contactform&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Contact Us&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow your users to contact you with this simple contact form. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-quoterequest&#x27;         =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-quoterequest&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Quote Request&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Manage quote requests from your website easily with this template. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-eventregistration&#x27;    =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-eventregistration&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Event Registration&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow user to register for your next event this easy to complete form. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-enquiry&#x27;              =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-enquiry&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;General Enquiry&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Collect user enquiries with this simple, generic form. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-feedback&#x27;             =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-feedback&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Collect feedback&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Collect feedback for an event, blog post, or anything else. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-questionnaire&#x27;        =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-questionnaire&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Questionnaire&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Collect information about your users. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+
+    &#x27;formtemplate-jobapplication&#x27;        =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;formtemplate-jobapplication&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Job Application&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow users to apply for a job. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+    ),
+);
+
+$ads = array(
+    /**
+     * Ads
+     */
+
+    &#x27;mailchimp-signup&#x27;                  =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;mailchimp-signup&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;MailChimp Signup&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Add a user to a list in MailChimp. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get MailChimp for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;img src=&quot;&#x27; . Ninja_Forms::$url . &#x27;assets/img/add-ons/mailchimp-for-ninja-forms.png&quot;/&gt;
+                                                &lt;p&gt;In order to use this template, you need MailChimp for Ninja Forms.&lt;/p&gt;
+                                                &lt;p&gt;The MailChimp extension allows you to quickly create newsletter signup forms for your MailChimp account using the power and flexibility that Ninja Forms provides.&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/mail-chimp/?utm_medium=plugin&amp;amp;utm_source=dashboard&amp;amp;utm_campaign=New+Form+Templates&amp;utm_content=MailChimp&quot; title=&quot;MailChimp&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;stripe-payment&#x27;                    =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;stripe-payment&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Stripe Payment&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Collect a payment using Stripe. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get Stripe for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;div class=&quot;video-wrapper&quot;&gt;&lt;iframe src=&quot;https://www.youtube.com/embed/WdFmgAffA50&quot; allowfullscreen=&quot;&quot; name=&quot;fitvid0&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+                                                &lt;p&gt;In order to use this template, you need Stripe for Ninja Forms.&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/stripe/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=Stripe&quot; title=&quot;Stripe&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;file-upload&#x27;                       =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;file-upload&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;File Upload&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow users to upload files with their forms. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get File Uploads for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;div class=&quot;video-wrapper&quot;&gt;&lt;iframe src=&quot;https://www.youtube.com/embed/Tl91cuFsnvM&quot; allowfullscreen=&quot;&quot; name=&quot;fitvid0&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+                                                &lt;p&gt;In order to use this template, you need File Uploads for Ninja Forms.&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/stripe/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=File+Uploads&quot; title=&quot;File Uploads&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;paypal-payment&#x27;                    =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;paypal-payment&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;PayPal Payment&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Collect a payment using PayPal Express. You can add and remove fields as needed.&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get PayPal Express for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;img src=&quot;&#x27; . Ninja_Forms::$url . &#x27;assets/img/add-ons/paypal-express.png&quot;/&gt;
+                                                &lt;p&gt;In order to use this template, you need PayPal Express for Ninja Forms.&lt;/p&gt;
+                                                &lt;p&gt;PayPal Express allows you to accept payments using Ninja Forms. It leverages the powerful processing engine that runs each Ninja Form to get a total, perform a checkout, and send your users to PayPal to complete their transaction.&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/paypal-express/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=PayPal+Express&quot; title=&quot;PayPal Express&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;create-post&#x27;                       =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;create-post&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Create a Post&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow users to create posts from the front-end using a form, including custom post meta!&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get Front-End Posting for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;img src=&quot;&#x27; . Ninja_Forms::$url . &#x27;assets/img/add-ons/front-end-posting.png&quot;/&gt;
+                                                &lt;p&gt;In order to use this template, you need User Management for Ninja Forms.&lt;/p&gt;
+                                                &lt;p&gt;Create posts, pages, or any custom post type from the front-end.&lt;/p&gt;
+                                                &lt;p&gt;The Ninja Forms Front-end Posting extension gives you the power of the WordPress post editor on any publicly viewable page you choose.&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/user-management/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=Frontend+Posting&quot; title=&quot;Create Post&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;register-user&#x27;                     =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;register-user&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Register a User&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Register a WordPress User&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get User Management for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;img src=&quot;&#x27; . Ninja_Forms::$url . &#x27;assets/img/add-ons/user-management-product-graphic.png&quot;/&gt;
+                                                &lt;p&gt;In order to use this template, you need User Management for Ninja Forms.&lt;/p&gt;
+                                                &lt;p&gt;User Management brings you the remarkable flexibility to register new WordPress users and manage existing ones through your Ninja Forms!&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/user-management/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=User+Management&quot; title=&quot;User Management&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+
+    &#x27;update-profile&#x27;                    =&gt; array(
+        &#x27;id&#x27;                            =&gt; &#x27;update-profile&#x27;,
+        &#x27;title&#x27;                         =&gt; __( &#x27;Edit User Profile&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;template-desc&#x27;                 =&gt; __( &#x27;Allow WordPress users to edit their profiles from the front-end, including custom user meta!&#x27;, &#x27;ninja-forms&#x27; ),
+        &#x27;type&#x27;                          =&gt; &#x27;ad&#x27;,
+        &#x27;modal-title&#x27;                   =&gt; &#x27;Get User Management for Ninja Forms&#x27;,
+        &#x27;modal-content&#x27;                 =&gt; &#x27;&lt;div class=&quot;modal-template&quot;&gt;
+                                                &lt;img src=&quot;&#x27; . Ninja_Forms::$url . &#x27;assets/img/add-ons/user-management-product-graphic.png&quot;/&gt;
+                                                &lt;p&gt;In order to use this template, you need User Management for Ninja Forms.&lt;/p&gt;
+                                                &lt;p&gt;User Management brings you the remarkable flexibility to register new WordPress users and manage existing ones through your Ninja Forms!&lt;/p&gt;
+                                                &lt;div class=&quot;actions&quot;&gt;
+                                                    &lt;a target=&quot;_blank&quot; href=&quot;https://ninjaforms.com/extensions/user-management/?utm_medium=plugin&amp;utm_source=dashboard&amp;utm_campaign=New+Form+Templates&amp;utm_content=User+Management&quot; title=&quot;User Management&quot; class=&quot;primary nf-button&quot;&gt;Learn More&lt;/a&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;&#x27;,
+    ),
+);
+
+/**
+ * If we&#x27;ve disabled marketing using our filter, don&#x27;t merge in our ads.
+ */
+$disable_marketing = false;
+if ( ! apply_filters( &#x27;ninja_forms_disable_marketing&#x27;, $disable_marketing ) ) {
+    $templates = array_merge( $templates, $ads );
+}
+
+return apply_filters( &#x27;ninja_forms_new_form_templates&#x27;, $templates );</pre></details></body></html>

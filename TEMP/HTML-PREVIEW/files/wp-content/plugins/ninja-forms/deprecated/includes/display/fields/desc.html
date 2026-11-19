@@ -1,0 +1,61 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/desc.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/display/fields/desc.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+/**
+ * Outputs the HTML of the description content if it is set to display.
+ *
+**/
+
+// add_action( &#x27;init&#x27;, &#x27;ninja_forms_init_field_desc&#x27; );
+// function ninja_forms_init_field_desc() {
+// 	add_action( &#x27;ninja_forms_display_before_field&#x27;, &#x27;ninja_forms_add_field_desc&#x27;, 10, 2 );
+// }
+
+function ninja_forms_add_field_desc( $field_id, $data ){
+	$plugin_settings = nf_get_settings();
+
+	if ( isset( $data[&#x27;desc_pos&#x27;] ) ) {
+		$desc_pos = $data[&#x27;desc_pos&#x27;];
+	} else {
+		$desc_pos = &#x27;none&#x27;;
+	}
+
+	if ( $desc_pos == &#x27;none&#x27; ) {
+		remove_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+	} elseif ( $desc_pos == &#x27;before_everything&#x27; ) {
+		add_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+	} elseif ( $desc_pos == &#x27;before_label&#x27; ) {
+		add_action( &#x27;ninja_forms_display_before_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+	} elseif ( $desc_pos == &#x27;after_label&#x27; ) {
+		add_action( &#x27;ninja_forms_display_after_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+	} elseif ( $desc_pos == &#x27;after_everything&#x27; ) {
+		add_action( &#x27;ninja_forms_display_before_closing_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_before_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_field_label&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+		remove_action( &#x27;ninja_forms_display_after_opening_field_wrap&#x27;, &#x27;ninja_forms_display_field_desc&#x27;, 10, 2 );
+	}
+
+}
+add_action( &#x27;ninja_forms_display_before_field&#x27;, &#x27;ninja_forms_add_field_desc&#x27;, 10, 2 );
+
+function ninja_forms_display_field_desc( $field_id, $data ){
+	$plugin_settings = nf_get_settings();
+
+	$class = apply_filters( &#x27;ninja_forms_display_field_desc_class&#x27;, &#x27;ninja-forms-field-description&#x27;, $field_id );
+	
+	if ( ( isset( $data[&#x27;show_desc&#x27;] ) and $data[&#x27;show_desc&#x27;] == 1 ) and isset( $data[&#x27;desc_text&#x27;] ) ) {
+		echo &#x27;&lt;div class=&quot;&#x27; . $class . &#x27;&quot;&gt;&#x27;;
+			echo do_shortcode( wpautop( $data[&#x27;desc_text&#x27;] ) );
+		echo &#x27;&lt;/div&gt;&#x27;;
+	}
+}</pre></details></body></html>

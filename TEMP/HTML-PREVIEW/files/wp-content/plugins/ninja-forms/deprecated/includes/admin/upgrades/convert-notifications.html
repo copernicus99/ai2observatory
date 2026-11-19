@@ -1,0 +1,341 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/convert-notifications.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/convert-notifications.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Upgrade_Notifications extends NF_Upgrade
+{
+    public $name = &#x27;notifications&#x27;;
+
+    public $priority = &#x27;2.9.2&#x27;;
+
+    public $description = &#x27;An update is necessary for the new Emails &amp; Actions tab to function properly. This new section gives the user much more control over what happens when a form is submitted.&#x27;;
+
+    public $completed_forms = array();
+
+    public $args = array();
+
+    public $errors = array();
+
+    public function loading()
+    {
+        global $wpdb;
+
+        $this-&gt;removeOldEmailSettings();
+
+        $form_count = $this-&gt;getFormCount();
+
+        $forms = $this-&gt;getAllForms();
+
+        $x = 1;
+        if ( is_array( $forms ) ) {
+            foreach ( $forms as $form ) {
+                $this-&gt;args[&#x27;forms&#x27;][$x] = $form[&#x27;id&#x27;];
+                $x++;
+            }
+        }
+
+        if( empty( $this-&gt;total_steps ) || $this-&gt;total_steps &lt;= 1 ) {
+            $this-&gt;total_steps = $form_count;
+        }
+    }
+
+    public function _beforeStep( $step )
+    {
+        // Get a list of forms that we&#x27;ve already converted.
+        $this-&gt;completed_forms = get_option( &#x27;nf_convert_notifications_forms&#x27;, array() );
+
+        if ( ! is_array( $this-&gt;completed_forms ) ) {
+            $this-&gt;completed_forms = array();
+        }
+    }
+
+    public function step( $step )
+    {
+        global $ninja_forms_fields;
+
+        // Get our form ID
+        $form_id = $this-&gt;args[&#x27;forms&#x27;][ $step ];
+
+        // Bail if we&#x27;ve already converted the notifications for this form.
+        if ( in_array( $form_id, $this-&gt;completed_forms ) )
+            return false;
+
+        // Grab our form from the database
+        $form_settings = Ninja_Forms()-&gt;form( $form_id )-&gt;settings;
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+        $process_fields = array();
+        foreach( $fields as $field_id =&gt; $field ) {
+            $label = strip_tags( nf_get_field_admin_label( $field_id ) );
+
+            if ( strlen( $label ) &gt; 30 ) {
+                $tmp_label = substr( $label, 0, 30 );
+            } else {
+                $tmp_label = $label;
+            }
+
+            $tmp_array = array( &#x27;value&#x27; =&gt; $field_id, &#x27;label&#x27; =&gt; $tmp_label . &#x27; - ID: &#x27; . $field_id );
+
+            $admin_label = $label;
+
+            $label = isset( $field[&#x27;data&#x27;][&#x27;label&#x27;] ) ? $field[&#x27;data&#x27;][&#x27;label&#x27;] : &#x27;&#x27;;
+
+            // Check to see if this field is supposed to be &quot;processed&quot;
+            $type = $field[&#x27;type&#x27;];
+            if ( isset ( $ninja_forms_fields[ $type ][&#x27;process_field&#x27;] ) &amp;&amp; $ninja_forms_fields[ $type ][&#x27;process_field&#x27;] ) {
+                $process_fields[ $field_id ] = array( &#x27;field_id&#x27; =&gt; $field_id, &#x27;label&#x27; =&gt; $label, &#x27;admin_label&#x27; =&gt; $admin_label );
+            }
+        }
+
+        // Create a notification for our admin email
+        if ( ( isset ( $form_settings[&#x27;admin_email_msg&#x27;] ) &amp;&amp; ! empty ( $form_settings[&#x27;admin_email_msg&#x27;] ) ) || ( isset ( $form_settings[&#x27;admin_email_fields&#x27;] ) &amp;&amp; 1 == $form_settings[&#x27;admin_email_fields&#x27;] ) ) {
+
+            // Create a notification
+            $n_id = nf_insert_notification( $form_id );
+
+            // Update our notification type
+            nf_update_object_meta( $n_id, &#x27;type&#x27;, &#x27;email&#x27; );
+
+            // Activate our notification
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;activate();
+
+            // Update our notification name
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;name&#x27;, __( &#x27;Admin Email&#x27;, &#x27;ninja-forms&#x27; ) );
+
+            $admin_mailto = isset ( $form_settings[&#x27;admin_mailto&#x27;] ) ? $form_settings[&#x27;admin_mailto&#x27;] : array();
+
+            // Implode our admin email addresses
+            $to = implode(&#x27;`&#x27;, $admin_mailto );
+            // Update our to setting
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;to&#x27;, $to );
+
+            // Update our Format Setting
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_format&#x27;, $form_settings[&#x27;email_type&#x27;] );
+
+            // Update our attach csv option
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;attach_csv&#x27;, $form_settings[&#x27;admin_attach_csv&#x27;] );
+
+            // Update our subject
+            $subject = $this-&gt;replace_shortcodes( $form_settings[&#x27;admin_subject&#x27;] );
+
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_subject&#x27;, $subject );
+
+            // Update our From Name
+            if ( isset ( $form_settings[&#x27;email_from_name&#x27;] ) ) {
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;from_name&#x27;, $form_settings[&#x27;email_from_name&#x27;] );
+            }
+
+            foreach ( $fields as $field ) {
+                if ( isset ( $field[&#x27;data&#x27;][&#x27;from_name&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;from_name&#x27;] == 1 ) {
+                    // Update our From Name
+                    Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;from_name&#x27;, &#x27;field_&#x27; . $field[&#x27;id&#x27;] );
+                    break;
+                }
+            }
+
+            // Update our From Address
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;from_address&#x27;, $form_settings[&#x27;email_from&#x27;] );
+
+            // Get our reply-to address
+            foreach ( $fields as $field ) {
+                if ( isset ( $field[&#x27;data&#x27;][&#x27;replyto_email&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;replyto_email&#x27;] == 1 ) {
+                    Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;reply_to&#x27;, &#x27;field_&#x27; . $field[&#x27;id&#x27;] );
+                    break;
+                }
+            }
+
+            $email_message = $form_settings[&#x27;admin_email_msg&#x27;];
+
+            // Check to see if the &quot;include list of fields&quot; checkbox was checked.
+            if ( isset ( $form_settings[&#x27;admin_email_fields&#x27;] ) &amp;&amp; $form_settings[&#x27;admin_email_fields&#x27;] == 1 ) {
+                $email_message .= &#x27;&lt;br /&gt;[ninja_forms_all_fields]&#x27;;
+            }
+
+            // Update our email message
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_message&#x27;, $email_message );
+
+            Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;admin_email&#x27;, true );
+        }
+
+        // Create a notification for our user email
+        if ( ! empty ( $fields ) ) {
+            $addresses = array();
+            foreach ( $fields as $field_id =&gt; $field ) {
+                if ( isset ( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;send_email&#x27;] == 1 ) {
+                    // Add this field to our $addresses variable.
+                    $addresses[] = &#x27;field_&#x27; . $field_id;
+                    unset( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] );
+                    unset( $field[&#x27;data&#x27;][&#x27;replyto_email&#x27;] );
+                    unset( $field[&#x27;data&#x27;][&#x27;from_name&#x27;] );
+
+                    $args = array(
+                        &#x27;update_array&#x27;	=&gt; array(
+                            &#x27;data&#x27;		=&gt; serialize( $field[&#x27;data&#x27;] ),
+                        ),
+                        &#x27;where&#x27;			=&gt; array(
+                            &#x27;id&#x27; 		=&gt; $field_id,
+                        ),
+                    );
+
+                    ninja_forms_update_field( $args );
+                }
+            }
+
+            if ( ! empty ( $addresses ) ) {
+                // We have a user email, so create a notification
+                $n_id = nf_insert_notification( $form_id );
+
+                // Update our notification type
+                nf_update_object_meta( $n_id, &#x27;type&#x27;, &#x27;email&#x27; );
+
+                // Activate our notification
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;activate();
+
+                // Update our notification name
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;name&#x27;, __( &#x27;User Email&#x27;, &#x27;ninja-forms&#x27; ) );
+
+                // Implode our admin email addresses
+                $n_var = count ( $addresses ) &gt; 1 ? &#x27;bcc&#x27; : &#x27;to&#x27;;
+                $addresses = implode( &#x27;`&#x27;, $addresses );
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( $n_var, $addresses );
+
+                // Update our Format Setting
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_format&#x27;, $form_settings[&#x27;email_type&#x27;] );
+
+                // Update our subject
+                $subject = $this-&gt;replace_shortcodes( $form_settings[&#x27;user_subject&#x27;] );
+
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_subject&#x27;, $subject );
+
+                // Update our From Name
+                if ( isset ( $form_settings[&#x27;email_from_name&#x27;] ) ) {
+                    Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;from_name&#x27;, $form_settings[&#x27;email_from_name&#x27;] );
+                }
+
+                // Update our From Address
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;from_address&#x27;, $form_settings[&#x27;email_from&#x27;] );
+
+                $email_message = $form_settings[&#x27;user_email_msg&#x27;];
+
+                // Check to see if the &quot;include list of fields&quot; checkbox was checked. If so, add our table to the end of the email message.
+                if ( isset ( $form_settings[&#x27;user_email_fields&#x27;] ) &amp;&amp; $form_settings[&#x27;user_email_fields&#x27;] == 1 ) {
+                    $email_message .= &#x27;&lt;br /&gt;[ninja_forms_all_fields]&#x27;;
+                }
+
+                // Update our email message
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;email_message&#x27;, $email_message );
+
+                Ninja_Forms()-&gt;notification( $n_id )-&gt;update_setting( &#x27;user_email&#x27;, true );
+            }
+        }
+
+        if ( isset ( $form_settings[&#x27;success_msg&#x27;] ) &amp;&amp; ! empty( $form_settings[&#x27;success_msg&#x27;] ) ) {
+            // Create a notification for our success message
+            $n_id = nf_insert_notification( $form_id );
+            nf_update_object_meta( $n_id, &#x27;name&#x27;, __( &#x27;Success Message&#x27;, &#x27;ninja-forms&#x27; ) );
+            nf_update_object_meta( $n_id, &#x27;type&#x27;, &#x27;success_message&#x27; );
+            nf_update_object_meta( $n_id, &#x27;active&#x27;, 1 );
+            nf_update_object_meta( $n_id, &#x27;success_msg&#x27;, $form_settings[&#x27;success_msg&#x27;] );
+        }
+
+        if ( isset ( $form_settings[&#x27;landing_page&#x27;] ) &amp;&amp; ! empty( $form_settings[&#x27;landing_page&#x27;] ) ) {
+            // Create a notification for our redirect
+            $n_id = nf_insert_notification( $form_id );
+            nf_update_object_meta( $n_id, &#x27;name&#x27;, __( &#x27;Redirect&#x27;, &#x27;ninja-forms&#x27; ) );
+            nf_update_object_meta( $n_id, &#x27;type&#x27;, &#x27;redirect&#x27; );
+            nf_update_object_meta( $n_id, &#x27;active&#x27;, 1 );
+            nf_update_object_meta( $n_id, &#x27;redirect_url&#x27;, $form_settings[&#x27;landing_page&#x27;] );
+        }
+
+        $completed_forms = get_option( &#x27;nf_convert_notifications_forms&#x27; );
+        if ( ! is_array( $completed_forms ) || empty ( $completed_forms ) ) {
+            $completed_forms = array( $form_id );
+        } else {
+            $completed_forms[] = $form_id;
+        }
+        update_option( &#x27;nf_convert_notifications_forms&#x27;, $completed_forms );
+
+        // Unset our admin email settings and save the form.
+        if ( isset ( $form_settings[&#x27;admin_mailto&#x27;] ) ) {
+            unset( $form_settings[&#x27;admin_mailto&#x27;] );
+            unset( $form_settings[&#x27;admin_attach_csv&#x27;] );
+            unset( $form_settings[&#x27;admin_subject&#x27;] );
+            unset( $form_settings[&#x27;admin_email_msg&#x27;] );
+            unset( $form_settings[&#x27;admin_email_fields&#x27;] );
+            unset( $form_settings[&#x27;success_msg&#x27;] );
+            unset( $form_settings[&#x27;user_email_msg&#x27;] );
+            unset( $form_settings[&#x27;user_subject&#x27;] );
+            unset( $form_settings[&#x27;landing_page&#x27;] );
+
+            $args = array(
+                &#x27;update_array&#x27; 	=&gt; array(
+                    &#x27;data&#x27;		=&gt; serialize( $form_settings ),
+                ),
+                &#x27;where&#x27;		   	=&gt; array(
+                    &#x27;id&#x27;	=&gt; $form_id,
+                ),
+            );
+
+            ninja_forms_update_form( $args );
+        }
+    }
+
+    public function complete()
+    {
+        update_option( &#x27;nf_convert_notifications_complete&#x27;, true );
+    }
+
+    public function isComplete()
+    {
+        return get_option( &#x27;nf_convert_notifications_complete&#x27;, false );
+    }
+
+    /*
+     * PRIVATE METHODS
+     */
+
+    private function removeOldEmailSettings()
+    {
+        nf_change_email_fav();
+        nf_remove_old_email_settings();
+    }
+
+    private function getFormCount()
+    {
+        $forms = Ninja_Forms()-&gt;forms()-&gt;get_all();
+        return count( $forms );
+    }
+
+    private function getAllForms()
+    {
+        $forms = Ninja_Forms()-&gt;forms()-&gt;get_all();
+
+        $tmp_array = array();
+        $x = 0;
+        foreach ( $forms as $form_id ) {
+            $tmp_array[ $x ][&#x27;id&#x27;] = $form_id;
+            $tmp_array[ $x ][&#x27;data&#x27;] = Ninja_Forms()-&gt;form( $form_id )-&gt;get_all_settings();
+            $tmp_array[ $x ][&#x27;name&#x27;] = Ninja_Forms()-&gt;form( $form_id )-&gt;get_setting( &#x27;form_title&#x27; );
+            $x++;
+        }
+
+        return $tmp_array;
+    }
+
+    private function replace_shortcodes( $text ) {
+        $matches = array();
+        $pattern = get_shortcode_regex();
+        preg_match_all(&#x27;/&#x27;.$pattern.&#x27;/s&#x27;, $text, $matches);
+        if ( is_array( $matches ) &amp;&amp; ! empty( $matches[2] ) ) {
+            foreach ( $matches[2] as $key =&gt; $shortcode ) {
+                if ( $shortcode == &#x27;ninja_forms_field&#x27; ) {
+                    if ( isset ( $matches[3][ $key ] ) ) {
+                        $atts = shortcode_parse_atts( $matches[3][ $key ] );
+                        $id = $atts[&#x27;id&#x27;];
+                        $text = str_replace( $matches[0][ $key ], &#x27;`field_&#x27; . $id . &#x27;`&#x27;, $text );
+                    }
+                }
+            }
+        }
+        return $text;
+    }
+}</pre></details></body></html>

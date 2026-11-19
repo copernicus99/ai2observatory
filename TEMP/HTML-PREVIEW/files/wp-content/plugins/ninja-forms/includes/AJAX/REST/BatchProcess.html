@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/AJAX/REST/BatchProcess.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/AJAX/REST/BatchProcess.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_AJAX_REST_BatchProcess extends NF_AJAX_REST_Controller
+{
+    protected $action = &#x27;nf_batch_process&#x27;;
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * POST /forms/&lt;id&gt;/
+     * @param array $request_data [ int $clone_id ]
+     * @return array $data [ int $new_form_id ]
+     */
+    public function post( $request_data )
+    {
+        $data = array();
+        
+        // If we don&#x27;t have a nonce...
+        // OR if the nonce is invalid...
+        if ( ! isset( $request_data[ &#x27;security&#x27; ] ) || ! wp_verify_nonce( $request_data[ &#x27;security&#x27; ] ) ) {
+            // Kick the request out now.
+            $data[ &#x27;error&#x27; ] = __( &#x27;Request forbidden.&#x27;, &#x27;ninja-forms&#x27; );
+        }
+        // If we have a batch type...
+        if ( isset( $request_data[ &#x27;batch_type&#x27; ]) ){
+            $batch_type = $request_data[ &#x27;batch_type&#x27; ];
+            // Route the request to the proper controller.
+            switch ( $batch_type ) {
+                case &#x27;chunked_publish&#x27;:
+	                $batch = new NF_Admin_Processes_ChunkPublish(
+	                	$request_data );
+                    break;
+                case &#x27;delete_submissions&#x27;:
+                    break;
+                default:
+                    $data[ &#x27;error&#x27; ] = __( &#x27;Invalid request.&#x27;, &#x27;ninja-forms&#x27; );
+                    break;
+            }
+        } // Otherwise... (We don&#x27;t have a batch type.)
+        else {
+            // Kick the request out.
+            $data[ &#x27;error&#x27; ] = __( &#x27;Invalid request.&#x27;, &#x27;ninja-forms&#x27; );
+        }
+        return $data;
+    }
+
+	protected function get_request_data()
+	{
+		$request_data = array();
+
+		if( isset( $_REQUEST[ &#x27;batch_type&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;batch_type&#x27; ] ){
+			$request_data[ &#x27;batch_type&#x27; ] = $_REQUEST[ &#x27;batch_type&#x27; ];
+		}
+
+		if( isset( $_REQUEST[ &#x27;data&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;data&#x27; ] ){
+			$request_data[ &#x27;data&#x27; ] = $_REQUEST[ &#x27;data&#x27; ];
+		}
+
+		if( isset( $_REQUEST[ &#x27;security&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;security&#x27; ] ){
+			$request_data[ &#x27;security&#x27; ] = $_REQUEST[ &#x27;security&#x27; ];
+		}
+
+		if( isset( $_REQUEST[ &#x27;action&#x27; ] ) &amp;&amp; $_REQUEST[ &#x27;action&#x27; ] ){
+			$request_data[ &#x27;action&#x27; ] = $_REQUEST[ &#x27;action&#x27; ];
+		}
+
+		return $request_data;
+	}
+}
+</pre></details></body></html>

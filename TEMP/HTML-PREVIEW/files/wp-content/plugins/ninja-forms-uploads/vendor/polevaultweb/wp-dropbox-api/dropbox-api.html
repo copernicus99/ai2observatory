@@ -1,0 +1,107 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/vendor/polevaultweb/wp-dropbox-api/dropbox-api.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/vendor/polevaultweb/wp-dropbox-api/dropbox-api.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+
+class PVW_Dropbox_API {
+
+	const API_URL_BASE = &#x27;https://api.dropboxapi.com/2/&#x27;;
+	const CONTENT_URL_BASE = &#x27;https://content.dropboxapi.com/2/&#x27;;
+	protected $access_token;
+
+	public function __construct( $access_token = null ) {
+		$this-&gt;access_token = $access_token;
+	}
+
+	public function get_account_info() {
+		$endpoint = &#x27;users/get_current_account&#x27;;
+
+		$args = array(
+			&#x27;headers&#x27; =&gt; array( &#x27;Content-Type&#x27; =&gt; &#x27;application/json&#x27;, ),
+			&#x27;body&#x27;    =&gt; json_encode( null ),
+		);
+
+		return $this-&gt;post( $endpoint, $args, false );
+	}
+
+	public function put_file( $file, $filename, $path ) {
+		$endpoint = &#x27;files/upload&#x27;;
+
+		$path = trailingslashit( $path ) . $filename;
+		$path = &#x27;/&#x27;. ltrim( $path, &#x27;/&#x27; );
+
+		$data = array( &#x27;path&#x27; =&gt; $path, &#x27;mode&#x27; =&gt; &#x27;overwrite&#x27; );
+
+		$resource  = @fopen( $file, &#x27;r&#x27; );
+		$file_size = filesize( $file );
+		$file_data = fread( $resource, $file_size );
+
+		$args = array(
+			&#x27;headers&#x27; =&gt; array(
+				&#x27;Content-Type&#x27;    =&gt; &#x27;application/octet-stream&#x27;,
+				&#x27;Dropbox-API-Arg&#x27; =&gt; json_encode( $data ),
+			),
+			&#x27;body&#x27;    =&gt; $file_data,
+			&#x27;timeout&#x27; =&gt; 60,
+		);
+
+		return $this-&gt;post( $endpoint, $args );
+	}
+
+	public function get_url( $path ) {
+		$endpoint = &#x27;files/get_temporary_link&#x27;;
+
+		$path = &#x27;/&#x27; . ltrim( $path, &#x27;/&#x27; );
+
+		$args = array(
+			&#x27;headers&#x27; =&gt; array( &#x27;Content-Type&#x27; =&gt; &#x27;application/json&#x27;, ),
+			&#x27;body&#x27;    =&gt; json_encode( array( &#x27;path&#x27; =&gt; $path ) ),
+		);
+
+		return $this-&gt;post( $endpoint, $args, false );
+	}
+
+	public function access_token_upgrade( $app_key, $app_secret, $token, $token_secret ) {
+		$endpoint = &#x27;auth/token/from_oauth1&#x27;;
+
+		$args = array(
+			&#x27;headers&#x27; =&gt; array(
+				&#x27;Content-Type&#x27;  =&gt; &#x27;application/json&#x27;,
+				&#x27;Authorization&#x27; =&gt; &#x27;Basic &#x27; . base64_encode( $app_key . &#x27;:&#x27; . $app_secret ),
+			),
+			&#x27;body&#x27;    =&gt; json_encode( array( &#x27;oauth1_token&#x27; =&gt; $token, &#x27;oauth1_token_secret&#x27; =&gt; $token_secret ) ),
+		);
+
+		$new_token = $this-&gt;post( $endpoint, $args, false, false );
+
+		if ( $new_token &amp;&amp; isset( $new_token-&gt;oauth2_token ) ) {
+			return $new_token-&gt;oauth2_token;
+		}
+
+		return false;
+	}
+
+	protected function post( $endpoint, $args, $content_api = true, $auth = true ) {
+		$url      = ( $content_api ? self::CONTENT_URL_BASE : self::API_URL_BASE ) . $endpoint;
+		$defaults = array();
+		if ( $auth ) {
+			$defaults = array(
+				&#x27;headers&#x27; =&gt; array(
+					&#x27;Authorization&#x27; =&gt; &#x27;Bearer &#x27; . $this-&gt;access_token,
+				),
+			);
+		}
+
+		$args   = array_merge_recursive( $args, $defaults );
+		$result = wp_remote_post( $url, $args );
+
+		$response = wp_remote_retrieve_body( $result );
+		if ( empty( $response ) ) {
+			return false;
+		}
+
+		$body = json_decode( $response );
+		if ( empty( $body ) ) {
+			return false;
+		}
+
+		return $body;
+	}
+}</pre></details></body></html>

@@ -1,0 +1,181 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/convert-forms.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/convert-forms.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+final class NF_Upgrade_Forms extends NF_Upgrade
+{
+    public $name = &#x27;forms&#x27;;
+
+    public $priority = &#x27;2.9.0&#x27;;
+
+    public $description = &#x27;Form settings and information needs to be transferred to a new forms database. This new storage method will make it much easier effecient to interact with forms.&#x27;;
+
+    public $completed_forms = array();
+
+    public $args = array();
+
+    public $errors = array();
+
+    public function loading()
+    {
+        global $wpdb;
+
+        // Check that the table exists
+        if( 0 == $wpdb-&gt;query( &quot;SHOW TABLES LIKE &#x27;&quot; . NINJA_FORMS_TABLE_NAME . &quot;&#x27;&quot; ) ) {
+            //TODO Maybe change error to debug message instead
+            $this-&gt;errors[] = NINJA_FORMS_TABLE_NAME . &#x27; is not in the database&#x27;;
+            return;
+        }
+
+        // Get all our forms
+        $forms = $wpdb-&gt;get_results( &#x27;SELECT id FROM &#x27; . NINJA_FORMS_TABLE_NAME, ARRAY_A );
+
+        $x = 1;
+        if ( is_array( $forms ) ) {
+            foreach ( $forms as $form ) {
+                $this-&gt;args[&#x27;forms&#x27;][$x] = $form[&#x27;id&#x27;];
+                $x++;
+            }
+        }
+
+        $this-&gt;total_steps = count( $this-&gt;args[&#x27;forms&#x27;] );
+
+        if( empty( $this-&gt;total_steps ) || $this-&gt;total_steps &lt;= 1 ) {
+            $this-&gt;total_steps = 1;
+        }
+
+    }
+
+    public function _beforeStep( $step )
+    {
+        // Get a list of forms that we&#x27;ve already converted.
+        $this-&gt;completed_forms = get_option( &#x27;nf_converted_forms&#x27;, array() );
+
+        if ( ! is_array( $this-&gt;completed_forms ) ) {
+            $this-&gt;completed_forms = array();
+        }
+
+        $this-&gt;form_id = $this-&gt;args[&#x27;forms&#x27;][ $step ];
+
+        Ninja_Forms()-&gt;form( $this-&gt;form_id )-&gt;dumpCache();
+
+        // Bail if we&#x27;ve already converted the db for this form.
+        if ( in_array( $this-&gt;form_id, $this-&gt;completed_forms ) ) {
+            return false;
+        }
+    }
+
+    public function step( $step )
+    {
+        $this-&gt;update_form_settings( $this-&gt;form_id );
+    }
+
+    public function _afterStep( $step )
+    {
+        $this-&gt;completed_forms[] = $this-&gt;form_id;
+        update_option( &#x27;nf_converted_forms&#x27;, $this-&gt;completed_forms );
+
+        Ninja_Forms()-&gt;form( $this-&gt;form_id )-&gt;dumpCache();
+    }
+
+    public function complete()
+    {
+        update_option( &#x27;nf_convert_forms_complete&#x27;, true );
+        update_option( &#x27;nf_converted_form_reset&#x27;, false );
+    }
+
+    public function isComplete()
+    {
+        return get_option( &#x27;nf_convert_forms_complete&#x27;, false );
+    }
+
+    /*
+     * CONVERSION METHODS
+     */
+
+    public function update_form_settings( $form_id )
+    {
+        global $wpdb;
+
+        // Check to see if the conversion has been reset.
+        $is_reset = get_option( &#x27;nf_converted_form_reset&#x27;, 0 );
+
+        // Check to see if an object exists with our form id.
+        $type = nf_get_object_type($form_id);
+
+        if ( $type ) {
+            // We have an object with our form id.
+
+            if ( $is_reset AND &#x27;form&#x27; == $type ) {
+                // Give precedence to the most recent form.
+
+                // Set a new ID for the form being converted.
+                $f_id = nf_insert_object(&#x27;form&#x27;);
+
+                $fields = $wpdb-&gt;get_results(&quot;SELECT * FROM &quot; . NINJA_FORMS_FIELDS_TABLE_NAME . &quot; WHERE form_id = &quot; . $form_id, ARRAY_A);
+
+                foreach ($fields as $field) {
+
+                    unset($field[&#x27;id&#x27;]);
+
+                    $field[&#x27;form_id&#x27;] = $f_id;
+
+                    // Copy the Fields to the new ID.
+                    $wpdb-&gt;insert(NINJA_FORMS_FIELDS_TABLE_NAME, $field);
+
+                }
+
+                $relationships = $wpdb-&gt;get_results(&quot;SELECT * FROM &quot; . NF_OBJECT_RELATIONSHIPS_TABLE_NAME . &quot; WHERE parent_id = &quot; . $form_id, ARRAY_A);
+
+                foreach ($relationships as $relationship) {
+
+                    unset($relationship[&#x27;id&#x27;]);
+
+                    // Copy the object related to the form.
+                    $object = $wpdb-&gt;get_results(&quot;SELECT * FROM &quot; . NF_OBJECTS_TABLE_NAME . &quot; WHERE id = &quot; . $relationship[&#x27;child_id&#x27;], ARRAY_A);
+
+                    unset($object[&#x27;id&#x27;]);
+
+                    $wpdb-&gt;insert(NF_OBJECTS_TABLE_NAME, $object);
+
+                    $relationship[&#x27;child_id&#x27;] = $wpdb-&gt;insert_id;
+
+                    $relationship[&#x27;parent_id&#x27;] = $f_id;
+
+                    // Copy the Relationships to the new ID.
+                    $wpdb-&gt;insert(NF_OBJECT_RELATIONSHIPS_TABLE_NAME, $relationship);
+
+                }
+
+            } else {
+                // Give precedence to the converting form.
+
+                // Insert a new object.
+                $next_id = nf_insert_object($type);
+
+                // Replace all instances of the conflicting object ID with our new one.
+                $wpdb-&gt;update(NF_OBJECT_META_TABLE_NAME, array(&#x27;object_id&#x27; =&gt; $next_id), array(&#x27;object_id&#x27; =&gt; $form_id));
+                $wpdb-&gt;update(NF_OBJECT_RELATIONSHIPS_TABLE_NAME, array(&#x27;parent_id&#x27; =&gt; $next_id), array(&#x27;parent_type&#x27; =&gt; $type, &#x27;parent_id&#x27; =&gt; $form_id));
+                $wpdb-&gt;update(NF_OBJECT_RELATIONSHIPS_TABLE_NAME, array(&#x27;child_id&#x27; =&gt; $next_id), array(&#x27;child_type&#x27; =&gt; $type, &#x27;child_id&#x27; =&gt; $form_id));
+
+                // Delete the original (conflicting) object
+                $wpdb-&gt;query(&#x27;DELETE FROM &#x27; . NF_OBJECTS_TABLE_NAME . &#x27; WHERE id = &#x27; . $form_id);
+
+            }
+
+        }
+
+        // Get the form from the old table.
+        $form = $wpdb-&gt;get_row( &#x27;SELECT * FROM &#x27; . NINJA_FORMS_TABLE_NAME . &#x27; WHERE id = &#x27; . $form_id, ARRAY_A );
+
+        // Set the insert form ID, if not already set.
+        $f_id = isset ( $f_id ) ? $f_id : nf_insert_object( &#x27;form&#x27;, $form[&#x27;id&#x27;] );
+
+        // Unpack the converted form&#x27;s settings
+        $settings = maybe_unserialize( $form[&#x27;data&#x27;] );
+        $settings[&#x27;date_updated&#x27;] = $form[&#x27;date_updated&#x27;];
+
+        foreach ( $settings as $meta_key =&gt; $value ) {
+            nf_update_object_meta( $f_id, $meta_key, $value );
+        }
+        nf_update_object_meta( $f_id, &#x27;status&#x27;, &#x27;&#x27; );
+    }
+}</pre></details></body></html>

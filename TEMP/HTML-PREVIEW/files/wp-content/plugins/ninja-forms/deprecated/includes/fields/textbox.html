@@ -1,0 +1,414 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/fields/textbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/fields/textbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;default_value_&quot; name=&quot;ninja_forms_field_[default_value_type]&quot; class=&quot;widefat ninja-forms-_text-default-value&quot;&gt;
+				&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_id&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_firstname&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_lastname&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_display_name&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_email&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;post_id&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;post_title&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;post_url&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;today&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &gt; -&gt;&lt;/option&gt;
+				&lt;option value=&quot;querystring&quot; &gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+
+		&lt;label for=&quot;&quot; id=&quot;default_value_label_&quot; style=&quot;&quot;&gt;
+			&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code nf-default-value-text&quot; name=&quot;ninja_forms_field_[default_value]&quot; id=&quot;ninja_forms_field__default_value&quot; value=&quot;&quot; data-field-id=&quot;&quot; /&gt;
+			&lt;span class=&quot;querystring-error&quot; style=&quot;display:none;&quot;&gt;&lt;/span&gt;
+		&lt;/label&gt;
+
+
+	&lt;/div&gt;
+	
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;mask_&quot;  name=&quot;&quot; class=&quot;widefat ninja-forms-_text-mask&quot;&gt;
+				&lt;option value=&quot;&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;(999) 999-9999&quot; &gt;&lt;/option&gt;
+				&lt;option value=&quot;date&quot; &gt; - &lt;/option&gt;
+				&lt;option value=&quot;currency&quot; &gt; - &lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;  id=&quot;mask_label_&quot; style=&quot;&quot;&gt;
+			 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&quot;#&quot; name=&quot;&quot; class=&quot;ninja-forms-mask-help&quot;&gt;&lt;/a&gt;&lt;br /&gt;
+			&lt;input type=&quot;text&quot; id=&quot;ninja_forms_field__mask&quot; name=&quot;ninja_forms_field_[mask]&quot; class=&quot;widefat code&quot; value=&quot;&quot; /&gt;
+		&lt;/label&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	
+	&lt;input id=&quot;ninja_forms_field_&quot; data-mask=&quot;&quot; data-input-limit=&quot;&quot; data-input-limit-type=&quot;&quot; data-input-limit-msg=&quot;&quot; name=&quot;ninja_forms_field_&quot; type=&quot;text&quot; placeholder=&quot;&quot; class=&quot; &quot; value=&quot;&quot; rel=&quot;&quot;   /&gt;
+	
+	&lt;input type=&quot;text&quot; name=&quot;fields[]&quot; value=&quot;&quot;&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+function ninja_forms_register_field_textbox(){
+	$args = array(
+		&#x27;name&#x27; =&gt; __( &#x27;Textbox&#x27;, &#x27;ninja-forms&#x27; ),
+		&#x27;sidebar&#x27; =&gt; &#x27;template_fields&#x27;,
+		&#x27;edit_options&#x27; =&gt; array(
+		
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;first_name&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;last_name&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_address_1&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_address_2&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_city&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_zip&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_phone&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_email&#x27;,
+			),
+			array(
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;,
+				&#x27;name&#x27; =&gt; &#x27;user_info_field_group&#x27;,
+				&#x27;default&#x27; =&gt; 1,
+			),
+
+		),
+		&#x27;edit_settings&#x27; =&gt; array(
+			&#x27;restrictions&#x27; =&gt; array(
+				array(
+					&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+					&#x27;name&#x27; =&gt; &#x27;email&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;Validate as an email address? (Field must be required)&#x27;, &#x27;ninja-forms&#x27; ),
+				),
+				array(
+					&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;Disable Input&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;name&#x27; =&gt; &#x27;disable_input&#x27;,
+				),
+			),
+			&#x27;advanced&#x27; =&gt; array(
+				array(
+					&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+					&#x27;name&#x27; =&gt; &#x27;datepicker&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;Datepicker&#x27;, &#x27;ninja-forms&#x27; ),
+				),
+				array(
+					&#x27;type&#x27; =&gt; &#x27;checkbox&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;This is the user\&#x27;s state&#x27;, &#x27;ninja-forms&#x27; ),
+					&#x27;name&#x27; =&gt; &#x27;user_state&#x27;,
+				),
+			),
+		),
+		&#x27;display_function&#x27; =&gt; &#x27;ninja_forms_field_text_display&#x27;,
+		&#x27;save_function&#x27; =&gt; &#x27;&#x27;,
+		&#x27;group&#x27; =&gt; &#x27;standard_fields&#x27;,
+		&#x27;edit_label&#x27; =&gt; true,
+		&#x27;edit_label_pos&#x27; =&gt; true,
+		&#x27;edit_req&#x27; =&gt; true,
+		&#x27;edit_custom_class&#x27; =&gt; true,
+		&#x27;edit_help&#x27; =&gt; true,
+		&#x27;edit_desc&#x27; =&gt; true,
+		&#x27;edit_meta&#x27; =&gt; false,
+		&#x27;edit_conditional&#x27; =&gt; true,
+		&#x27;edit_autocomplete_off&#x27; =&gt; true,
+		&#x27;conditional&#x27; =&gt; array(
+			&#x27;value&#x27; =&gt; array(
+				&#x27;type&#x27; =&gt; &#x27;text&#x27;,
+			),
+		),
+		&#x27;pre_process&#x27; =&gt; &#x27;ninja_forms_field_text_pre_process&#x27;,
+		&#x27;edit_sub_value&#x27; =&gt; &#x27;nf_field_text_edit_sub_value&#x27;,
+		&#x27;sub_table_value&#x27; =&gt; &#x27;nf_field_text_sub_table_value&#x27;,
+		&#x27;edit_placeholder&#x27; =&gt; true,
+	);
+
+	ninja_forms_register_field( &#x27;_text&#x27;, $args );
+}
+
+add_action( &#x27;init&#x27;, &#x27;ninja_forms_register_field_textbox&#x27; );
+
+function nf_field_text_edit_default_value( $field_id, $data ){
+	$field = ninja_forms_get_field_by_id( $field_id );
+	if ( &#x27;_text&#x27; != $field[&#x27;type&#x27;] )
+		return false;
+
+	$plugin_settings = nf_get_settings();
+
+	$currency_symbol = isset( $plugin_settings[&#x27;currency_symbol&#x27;] ) ? $plugin_settings[&#x27;currency_symbol&#x27;] : &quot;$&quot;;
+	$date_format = isset( $plugin_settings[&#x27;date_format&#x27;] ) ? $plugin_settings[&#x27;date_format&#x27;] : &quot;m/d/Y&quot;;
+	$default_value = isset( $data[&#x27;default_value&#x27;] ) ? $data[&#x27;default_value&#x27;] : &#x27;&#x27;;
+	$default_value_type = isset( $data[&#x27;default_value_type&#x27;] ) ? $data[&#x27;default_value_type&#x27;] : &#x27;&#x27;;
+	$custom = &#x27;&#x27;;
+
+	if( $default_value == &#x27;none&#x27; ){
+		$default_value = &#x27;&#x27;;
+	}
+
+	?&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;?php _e( &#x27;Default Value&#x27; , &#x27;ninja-forms&#x27;); ?&gt;
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;default_value_&lt;?php echo $field_id;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[default_value_type]&quot; class=&quot;widefat ninja-forms-_text-default-value&quot;&gt;
+				&lt;option value=&quot;&quot; &lt;?php if( $default_value == &#x27;&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;None&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_id&quot; &lt;?php if($default_value == &#x27;_user_id&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;User ID (If logged in)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_firstname&quot; &lt;?php if($default_value == &#x27;_user_firstname&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;User Firstname (If logged in)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_lastname&quot; &lt;?php if($default_value == &#x27;_user_lastname&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;User Lastname (If logged in)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_display_name&quot; &lt;?php if($default_value == &#x27;_user_display_name&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;User Display Name (If logged in)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_user_email&quot; &lt;?php if($default_value == &#x27;_user_email&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;User Email (If logged in)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;post_id&quot; &lt;?php if($default_value == &#x27;post_id&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Post / Page ID (If available)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;post_title&quot; &lt;?php if($default_value == &#x27;post_title&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Post / Page Title (If available)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;post_url&quot; &lt;?php if($default_value == &#x27;post_url&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Post / Page URL (If available)&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;today&quot; &lt;?php if($default_value == &#x27;today&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Today\&#x27;s Date&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &lt;?php if($custom != &#x27;no&#x27;){ echo &#x27;selected&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Custom&#x27;, &#x27;ninja-forms&#x27;); ?&gt; -&gt;&lt;/option&gt;
+				&lt;option value=&quot;querystring&quot; &lt;?php if($default_value_type == &#x27;querystring&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;yes&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Querystring Variable&#x27;, &#x27;ninja-forms&#x27;); ?&gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+
+		&lt;label for=&quot;&quot; id=&quot;default_value_label_&lt;?php echo $field_id;?&gt;&quot; style=&quot;&lt;?php if($custom == &#x27;no&#x27;){ echo &#x27;display:none;&#x27;;}?&gt;&quot;&gt;
+			&lt;br /&gt;
+			&lt;input type=&quot;text&quot; class=&quot;widefat code nf-default-value-text&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[default_value]&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_default_value&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; data-field-id=&quot;&lt;?php echo $field_id; ?&gt;&quot; /&gt;
+			&lt;span class=&quot;querystring-error&quot; style=&quot;display:none;&quot;&gt;&lt;?php _e( &#x27;This keyword is reserved by WordPress. Please try another.&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/span&gt;
+		&lt;/label&gt;
+
+
+	&lt;/div&gt;
+	&lt;?php
+}
+add_action( &#x27;nf_edit_field_advanced&#x27;, &#x27;nf_field_text_edit_default_value&#x27;, 9, 2 );
+
+
+function nf_field_text_edit_input_mask( $field_id, $data ) {
+	$field = ninja_forms_get_field_by_id( $field_id );
+	if ( &#x27;_text&#x27; != $field[&#x27;type&#x27;] )
+		return false;
+
+	$custom = &#x27;&#x27;;
+	// Field Mask	
+	$mask = isset( $data[&#x27;mask&#x27;] ) ? $data[&#x27;mask&#x27;] : &#x27;&#x27;;
+	$plugin_settings = nf_get_settings();
+	$currency_symbol = $plugin_settings[&#x27;currency_symbol&#x27;];
+	$date_format = $plugin_settings[&#x27;date_format&#x27;];
+	?&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;&gt;
+			&lt;?php _e( &#x27;Input Mask&#x27; , &#x27;ninja-forms&#x27;); ?&gt;
+		&lt;/label&gt;&lt;br /&gt;
+			&lt;select id=&quot;mask_&lt;?php echo $field_id;?&gt;&quot;  name=&quot;&quot; class=&quot;widefat ninja-forms-_text-mask&quot;&gt;
+				&lt;option value=&quot;&quot; &lt;?php if($mask == &#x27;&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;None&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;(999) 999-9999&quot; &lt;?php if($mask == &#x27;(999) 999-9999&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Phone - (555) 555-5555&#x27;, &#x27;ninja-forms&#x27;); ?&gt;&lt;/option&gt;
+				&lt;option value=&quot;date&quot; &lt;?php if($mask == &#x27;date&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Date&#x27;, &#x27;ninja-forms&#x27;); ?&gt; - &lt;?php echo $date_format;?&gt;&lt;/option&gt;
+				&lt;option value=&quot;currency&quot; &lt;?php if($mask == &#x27;currency&#x27;){ echo &#x27;selected&#x27;; $custom = &#x27;no&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Currency&#x27;, &#x27;ninja-forms&#x27;); ?&gt; - &lt;?php echo $currency_symbol;?&gt;&lt;/option&gt;
+				&lt;option value=&quot;_custom&quot; &lt;?php if($custom != &#x27;no&#x27;){ echo &#x27;selected&#x27;;}?&gt;&gt;&lt;?php _e(&#x27;Custom&#x27;, &#x27;ninja-forms&#x27;); ?&gt; -&gt;&lt;/option&gt;
+			&lt;/select&gt;
+
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;div class=&quot;description description-thin&quot;&gt;
+		&lt;span class=&quot;field-option&quot;&gt;
+		&lt;label for=&quot;&quot;  id=&quot;mask_label_&lt;?php echo $field_id;?&gt;&quot; style=&quot;&lt;?php if($custom == &#x27;no&#x27;){ echo &#x27;display:none;&#x27;;}?&gt;&quot;&gt;
+			&lt;?php _e( &#x27;Custom Mask Definition&#x27; , &#x27;ninja-forms&#x27;); ?&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;a href=&quot;#&quot; name=&quot;&quot; class=&quot;ninja-forms-mask-help&quot;&gt;&lt;?php _e( &#x27;Help&#x27;, &#x27;ninja-forms&#x27; ); ?&gt;&lt;/a&gt;&lt;br /&gt;
+			&lt;input type=&quot;text&quot; id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;_mask&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;[mask]&quot; class=&quot;widefat code&quot; value=&quot;&lt;?php echo $mask; ?&gt;&quot; /&gt;
+		&lt;/label&gt;
+		&lt;/span&gt;
+	&lt;/div&gt;
+	&lt;?php
+}
+
+add_action( &#x27;nf_edit_field_restrictions&#x27;, &#x27;nf_field_text_edit_input_mask&#x27;, 10, 2 );
+
+function ninja_forms_field_text_display( $field_id, $data, $form_id = &#x27;&#x27; ){
+	global $current_user;
+	$field_class = ninja_forms_get_field_class( $field_id, $form_id );
+
+	if ( isset( $data[&#x27;email&#x27;] ) &amp;&amp; $data[&#x27;email&#x27;] == 1 ) {
+		$field_class .= &#x27; email&#x27;;
+	}
+
+	if(isset($data[&#x27;default_value&#x27;])){
+		$default_value = $data[&#x27;default_value&#x27;];
+	}else{
+		$default_value = &#x27;&#x27;;
+	}
+
+	if(isset($data[&#x27;label_pos&#x27;])){
+		$label_pos = $data[&#x27;label_pos&#x27;];
+	}else{
+		$label_pos = &quot;left&quot;;
+	}
+
+	if(isset($data[&#x27;label&#x27;])){
+		$label = $data[&#x27;label&#x27;];
+	}else{
+		$label = &#x27;&#x27;;
+	}
+
+	if( isset( $data[&#x27;mask&#x27;] ) ){
+		$mask = $data[&#x27;mask&#x27;];
+	}else{
+		$mask = &#x27;&#x27;;
+	}	
+
+	if( isset( $data[&#x27;input_limit&#x27;] ) ){
+		$input_limit = $data[&#x27;input_limit&#x27;];
+	}else{
+		$input_limit = &#x27;&#x27;;
+	}
+
+	if( isset( $data[&#x27;input_limit_type&#x27;] ) ){
+		$input_limit_type = $data[&#x27;input_limit_type&#x27;];
+	}else{
+		$input_limit_type = &#x27;&#x27;;
+	}
+
+	if( isset( $data[&#x27;input_limit_msg&#x27;] ) ){
+		$input_limit_msg = $data[&#x27;input_limit_msg&#x27;];
+	}else{
+		$input_limit_msg = &#x27;&#x27;;
+	}
+
+	$autocomplete_off = isset ( $data[&#x27;autocomplete_off&#x27;] ) ? $data[&#x27;autocomplete_off&#x27;] : 0;
+
+	if ( 1 == $autocomplete_off ) {
+		$autocomplete_off = &#x27;autocomplete=&quot;off&quot;&#x27;;
+	} else {
+		$autocomplete_off = &#x27;&#x27;;
+	}
+
+	switch( $mask ){
+		case &#x27;&#x27;:
+			$mask_class = &#x27;&#x27;;
+			break;
+		case &#x27;date&#x27;:
+			$mask_class = &#x27;ninja-forms-date&#x27;;
+			break;
+		case &#x27;currency&#x27;:
+			$mask_class =  &#x27;ninja-forms-currency&#x27;;
+			break;
+		default:
+			$mask_class = &#x27;ninja-forms-mask&#x27;;
+			break;
+	}
+
+	if( isset( $data[&#x27;datepicker&#x27;] ) AND $data[&#x27;datepicker&#x27;] == 1 ){
+		$mask_class = &#x27;ninja-forms-datepicker&#x27;;
+	}
+
+	$disable_input = isset( $data[&#x27;disable_input&#x27;] ) ? $data[&#x27;disable_input&#x27;] : 0;
+
+	if ( 1 == $disable_input ) {
+		$disabled = &#x27;disabled&#x27;;
+	} else {
+		$disabled = &#x27;&#x27;;
+	}
+
+	$placeholder = isset ( $data[&#x27;placeholder&#x27;] ) ? $data[&#x27;placeholder&#x27;] : &#x27;&#x27;;
+
+	?&gt;
+	&lt;input id=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; data-mask=&quot;&lt;?php echo $mask;?&gt;&quot; data-input-limit=&quot;&lt;?php echo $input_limit;?&gt;&quot; data-input-limit-type=&quot;&lt;?php echo $input_limit_type;?&gt;&quot; data-input-limit-msg=&quot;&lt;?php echo $input_limit_msg;?&gt;&quot; name=&quot;ninja_forms_field_&lt;?php echo $field_id;?&gt;&quot; type=&quot;text&quot; placeholder=&quot;&lt;?php echo $placeholder;?&gt;&quot; class=&quot;&lt;?php echo $field_class;?&gt; &lt;?php echo $mask_class;?&gt;&quot; value=&quot;&lt;?php echo $default_value;?&gt;&quot; rel=&quot;&lt;?php echo $field_id;?&gt;&quot; &lt;?php echo $disabled; ?&gt; &lt;?php echo $autocomplete_off; ?&gt; /&gt;
+	&lt;?php
+
+}
+
+function ninja_forms_field_text_pre_process( $field_id, $user_value ){
+	global $ninja_forms_processing;
+	$plugin_settings = nf_get_settings();
+	if( isset( $plugin_settings[&#x27;invalid_email&#x27;] ) ){
+		$invalid_email = __( $plugin_settings[&#x27;invalid_email&#x27;], &#x27;ninja-forms&#x27; );
+	}else{
+		$invalid_email = __( &#x27;Please enter a valid email address.&#x27;, &#x27;ninja-forms&#x27; );
+	}
+	$field_row = $ninja_forms_processing-&gt;get_field_settings( $field_id );
+	$data = $field_row[&#x27;data&#x27;];
+	if( isset( $data[&#x27;email&#x27;] ) AND $data[&#x27;email&#x27;] == 1 AND $user_value != &#x27;&#x27; ){
+		if ( ! is_email( $user_value ) ) {
+
+            //Check False Positive
+            if ( &#x27;inside&#x27; == $data[&#x27;label_pos&#x27;] AND ( $data[&#x27;label&#x27;] . &quot; *&quot; ) == $ninja_forms_processing-&gt;get_field_value( $field_id ) ) {
+                //False Positive
+            } else {
+                $ninja_forms_processing-&gt;add_error(&#x27;email-&#x27; . $field_id, $invalid_email, $field_id);
+                $ninja_forms_processing-&gt;add_error(&#x27;email-general&#x27;, $invalid_email);
+            }
+		}
+	}
+
+	if( ( isset( $data[&#x27;replyto_email&#x27;] ) AND $data[&#x27;replyto_email&#x27;] == 1 ) OR ( isset( $data[&#x27;from_email&#x27;] ) AND $data[&#x27;from_email&#x27;] == 1 ) ) {
+		$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+		$ninja_forms_processing-&gt;update_form_setting( &#x27;admin_email_replyto&#x27;, $user_value );
+	}
+
+	if( isset( $data[&#x27;from_name&#x27;] ) AND $data[&#x27;from_name&#x27;] == 1 ){
+		$user_value = $ninja_forms_processing-&gt;get_field_value( $field_id );
+		if( $ninja_forms_processing-&gt;get_form_setting( &#x27;admin_email_name&#x27; ) ){
+			$admin_email_name = $ninja_forms_processing-&gt;get_form_setting( &#x27;admin_email_name&#x27; );
+			$admin_email_name .= &quot; &quot;.$user_value;
+		}else{
+			$admin_email_name = $user_value;
+		}
+		$ninja_forms_processing-&gt;update_form_setting( &#x27;admin_email_name&#x27;, $admin_email_name );
+	}
+}
+
+/**
+ * Edit submission value output function
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_text_edit_sub_value( $field_id, $user_value ) {
+	?&gt;
+	&lt;input type=&quot;text&quot; name=&quot;fields[&lt;?php echo $field_id; ?&gt;]&quot; value=&quot;&lt;?php echo $user_value; ?&gt;&quot;&gt;
+	&lt;?php
+}
+
+/**
+ * Output the value that shows up in the submissions table
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_field_text_sub_table_value( $field_id, $user_value ) {
+	// Cut down our string if it is longer than 140 characters.
+	$max_len = apply_filters( &#x27;nf_sub_table_user_value_max_len&#x27;, 140, $field_id );
+	if ( strlen( $user_value ) &gt; 140 )
+		$user_value = substr( $user_value, 0, 140 );
+
+	echo nl2br( $user_value );
+}
+</pre></details></body></html>

@@ -1,0 +1,147 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/dropbox.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/deprecated/includes/external/dropbox.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+			&lt;a id=&quot;dropbox-disconnect&quot; href=&quot;&quot; class=&quot;button-secondary&quot;&gt;&lt;/a&gt;
+		
+			&lt;a id=&quot;dropbox-connect&quot; href=&quot;&quot; class=&quot;button-secondary&quot;&gt;&lt;/a&gt;
+		"></iframe><details><summary>Complete original source</summary><pre>&lt;?php
+
+require_once( NINJA_FORMS_UPLOADS_DIR . &#x27;/includes/lib/dropbox/dropbox.php&#x27; );
+
+class External_Dropbox extends NF_Upload_External {
+
+	private $title = &#x27;Dropbox&#x27;;
+
+	private $slug = &#x27;dropbox&#x27;;
+
+	private $path;
+
+	private $settings;
+
+	function __construct() {
+		$this-&gt;set_settings();
+		parent::__construct( $this-&gt;title, $this-&gt;slug, $this-&gt;settings );
+
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;disconnect&#x27; ) );
+		add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;connect_notice&#x27; ) );
+		add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;disconnect_notice&#x27; ) );
+	}
+
+	private function set_settings() {
+		$this-&gt;settings = array(
+			array(
+				&#x27;name&#x27;             =&gt; &#x27;dropbox_connect&#x27;,
+				&#x27;type&#x27;             =&gt; &#x27;&#x27;,
+				&#x27;label&#x27;            =&gt; sprintf( __( &#x27;Connect to %s&#x27;, &#x27;ninja-forms-uploads&#x27; ), $this-&gt;title ),
+				&#x27;desc&#x27;             =&gt; &#x27;&#x27;,
+				&#x27;display_function&#x27; =&gt; array( $this, &#x27;connect_url&#x27; )
+			),
+			array(
+				&#x27;name&#x27;          =&gt; &#x27;dropbox_file_path&#x27;,
+				&#x27;type&#x27;          =&gt; &#x27;text&#x27;,
+				&#x27;label&#x27;         =&gt; __( &#x27;File Path&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;desc&#x27;          =&gt; __( &#x27;Custom directory for the files to be uploaded to in your Dropbox:&lt;br&gt; /Apps/Ninja Forms Uploads/&#x27;. $this-&gt;get_path() , &#x27;ninja-forms-uploads&#x27; ),
+				&#x27;default_value&#x27; =&gt; &#x27;&#x27;
+			),
+			array(
+				&#x27;name&#x27; =&gt; &#x27;dropbox_token&#x27;,
+				&#x27;type&#x27; =&gt; &#x27;hidden&#x27;
+			)
+		);
+	}
+
+	private function get_path() {
+		if ( is_null( $this-&gt;path ) ) {
+			$plugin_settings = get_option( &#x27;ninja_forms_settings&#x27; );
+			$this-&gt;path = isset( $plugin_settings[&#x27;dropbox_file_path&#x27;] ) ? $plugin_settings[&#x27;dropbox_file_path&#x27;] : &#x27;&#x27;;
+			$this-&gt;path = trim( $this-&gt;path );
+			$this-&gt;path = apply_filters( &#x27;ninja_forms_uploads_&#x27; . $this-&gt;slug . &#x27;_path&#x27;, $this-&gt;path );
+			if ( &#x27;/&#x27; == $this-&gt;path ) {
+				$this-&gt;path = &#x27;&#x27;;
+			}
+
+			if ( &#x27;&#x27; != $this-&gt;path ) {
+				$this-&gt;path = $this-&gt;sanitize_path( $this-&gt;path );
+			}
+		}
+
+		return $this-&gt;path;
+	}
+
+	public function is_connected() {
+		$data = get_option( &#x27;ninja_forms_settings&#x27; );
+		if ( ( isset( $data[&#x27;dropbox_access_token&#x27;] ) &amp;&amp; $data[&#x27;dropbox_access_token&#x27;] != &#x27;&#x27; ) &amp;&amp;
+		     ( isset( $data[&#x27;dropbox_access_token_secret&#x27;] ) &amp;&amp; $data[&#x27;dropbox_access_token_secret&#x27;] != &#x27;&#x27; )
+		) {
+			if ( false === ( $authorised = get_transient( &#x27;nf_fu_dropbox_authorised&#x27; ) ) ) {
+				$dropbox = new nf_dropbox();
+				$authorised = $dropbox-&gt;is_authorized();
+
+				set_transient( &#x27;nf_fu_dropbox_authorised&#x27;, $authorised, 60 * 60 * 5 );
+			}
+			return $authorised;
+		}
+
+		return false;
+	}
+
+	public function upload_file( $file, $path = &#x27;&#x27; ) {
+		$dropbox  = new nf_dropbox();
+		$path     = $this-&gt;get_path();
+		$filename = $this-&gt;get_filename_external( $file );
+		$dropbox-&gt;upload_file( $file, $filename, $path );
+
+		return array( &#x27;path&#x27; =&gt; $path, &#x27;filename&#x27; =&gt; $filename );
+	}
+
+	public function file_url( $filename, $path = &#x27;&#x27;, $data = array() ) {
+		$dropbox = new nf_dropbox();
+		$url     = $dropbox-&gt;get_link( $path . $filename );
+		if ( $url ) {
+			return $url;
+		}
+
+		return admin_url();
+	}
+
+	public function connect_url( $form_id, $data ) {
+		$dropbox        = new nf_dropbox();
+		$callback_url   = admin_url( &#x27;/admin.php?page=ninja-forms-uploads&amp;tab=external_settings&#x27; );
+		$disconnect_url = admin_url( &#x27;/admin.php?page=ninja-forms-uploads&amp;tab=external_settings&amp;action=disconnect_&#x27; . $this-&gt;slug );
+		if ( $dropbox-&gt;is_authorized() ) {
+			?&gt;
+			&lt;a id=&quot;dropbox-disconnect&quot; href=&quot;&lt;?php echo $disconnect_url; ?&gt;&quot; class=&quot;button-secondary&quot;&gt;&lt;?php _e( &#x27;Disconnect&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt;
+		&lt;?php } else { ?&gt;
+			&lt;a id=&quot;dropbox-connect&quot; href=&quot;&lt;?php echo $dropbox-&gt;get_authorize_url( $callback_url ); ?&gt;&quot; class=&quot;button-secondary&quot;&gt;&lt;?php _e( &#x27;Connect&#x27;, &#x27;ninja-forms-uploads&#x27; ); ?&gt;&lt;/a&gt;
+		&lt;?php
+		}
+	}
+
+	public function disconnect() {
+		if ( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == &#x27;ninja-forms-uploads&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;tab&#x27;] ) &amp;&amp; $_GET[&#x27;tab&#x27;] == &#x27;external_settings&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;action&#x27;] ) &amp;&amp; $_GET[&#x27;action&#x27;] == &#x27;disconnect_&#x27; . $this-&gt;slug
+		) {
+
+			$dropbox = new nf_dropbox();
+			$dropbox-&gt;unlink_account();
+		}
+	}
+
+	public function connect_notice() {
+		if ( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == &#x27;ninja-forms-uploads&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;tab&#x27;] ) &amp;&amp; $_GET[&#x27;tab&#x27;] == &#x27;external_settings&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;oauth_token&#x27;] ) &amp;&amp; isset( $_GET[&#x27;uid&#x27;] )
+		) {
+			echo &#x27;&lt;div class=&quot;updated&quot;&gt;&lt;p&gt;&#x27; . sprintf( __( &#x27;Connected to %s&#x27;, &#x27;ninja-forms-uploads&#x27; ), $this-&gt;title ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;;
+		}
+	}
+
+	public function disconnect_notice() {
+		if ( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == &#x27;ninja-forms-uploads&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;tab&#x27;] ) &amp;&amp; $_GET[&#x27;tab&#x27;] == &#x27;external_settings&#x27; &amp;&amp;
+		     isset( $_GET[&#x27;action&#x27;] ) &amp;&amp; $_GET[&#x27;action&#x27;] == &#x27;disconnect_&#x27; . $this-&gt;slug
+		) {
+			echo &#x27;&lt;div class=&quot;updated&quot;&gt;&lt;p&gt;&#x27; . sprintf( __( &#x27;Disconnected from %s&#x27;, &#x27;ninja-forms-uploads&#x27; ), $this-&gt;title ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;;
+		}
+	}
+
+}</pre></details></body></html>

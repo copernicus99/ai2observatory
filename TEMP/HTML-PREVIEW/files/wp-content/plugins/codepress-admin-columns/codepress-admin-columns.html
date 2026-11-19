@@ -1,0 +1,608 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/codepress-admin-columns/codepress-admin-columns.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../index.html">← All PHP files</a><h1>wp-content/plugins/codepress-admin-columns/codepress-admin-columns.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php
+/*
+Plugin Name: Admin Columns
+Version: 3.0.3
+Description: Customize columns on the administration screens for post(types), pages, media, comments, links and users with an easy to use drag-and-drop interface.
+Author: AdminColumns.com
+Author URI: https://www.admincolumns.com
+Plugin URI: https://www.admincolumns.com
+Text Domain: codepress-admin-columns
+Domain Path: /languages
+License: GPL v3
+
+Admin Columns Plugin
+Copyright (C) 20011-2017, Admin Columns - info@admincolumns.com
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see &lt;http://www.gnu.org/licenses/&gt;.
+*/
+
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+// Only run plugin in the admin
+if ( ! is_admin() ) {
+	return false;
+}
+
+/**
+ * The Admin Columns Class
+ *
+ * @since 1.0
+ */
+class CPAC {
+
+	/**
+	 * Basename of the plugin, retrieved through plugin_basename function
+	 *
+	 * @since 1.0
+	 * @var string
+	 */
+	private $plugin_basename;
+
+	/**
+	 * Admin Columns settings class instance
+	 *
+	 * @since  2.2
+	 * @access private
+	 * @var AC_Admin
+	 */
+	private $admin;
+
+	/**
+	 * @var AC_Groups Column Groups
+	 */
+	private $column_groups;
+
+	/**
+	 * @var AC_Groups Listscreen Groups
+	 */
+	private $list_screen_groups;
+
+	/**
+	 * @var AC_TableScreen
+	 */
+	private $table_screen;
+
+	/**
+	 * @since 3.0
+	 * @var null|string $version Version number
+	 */
+	private $version = null;
+
+	/**
+	 * @since 3.0
+	 * @var AC_Helper
+	 */
+	private $helper;
+
+	/**
+	 * @since 3.0
+	 * @var AC_ListScreen[]
+	 */
+	private $list_screens;
+
+	/**
+	 * @var array $notices
+	 */
+	private $notices;
+
+	/**
+	 * @var AC_API
+	 */
+	private $api;
+
+	/**
+	 * @var AC_Addons
+	 */
+	private $addons;
+
+	/**
+	 * @since 2.5
+	 */
+	private static $_instance = null;
+
+	/**
+	 * @since 2.5
+	 */
+	public static function instance() {
+		if ( null === self::$_instance ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
+
+	/**
+	 * @since 1.0
+	 */
+	private function __construct() {
+		$this-&gt;plugin_basename = plugin_basename( __FILE__ );
+
+		// Backwards compatibility
+		define( &#x27;CPAC_VERSION&#x27;, $this-&gt;get_version() );
+		define( &#x27;CPAC_URL&#x27;, $this-&gt;get_plugin_url() );
+		define( &#x27;CPAC_DIR&#x27;, $this-&gt;get_plugin_dir() );
+
+		// Autoload classes
+		$this-&gt;autoloader()-&gt;register_prefix( &#x27;AC_&#x27;, $this-&gt;get_plugin_dir() . &#x27;classes/&#x27; );
+
+		require_once $this-&gt;get_plugin_dir() . &#x27;api.php&#x27;;
+
+		// Third Party
+		new AC_ThirdParty_ACF();
+		new AC_ThirdParty_NinjaForms();
+		new AC_ThirdParty_WooCommerce();
+		new AC_ThirdParty_WPML();
+
+		// Init
+		$this-&gt;addons = new AC_Addons();
+		$this-&gt;admin = new AC_Admin();
+		$this-&gt;table_screen = new AC_TableScreen();
+		$this-&gt;helper = new AC_Helper();
+		$this-&gt;api = new AC_API();
+
+		new AC_Notice_Review();
+
+		// Hooks
+		add_action( &#x27;init&#x27;, array( $this, &#x27;localize&#x27; ) );
+		add_filter( &#x27;plugin_action_links&#x27;, array( $this, &#x27;add_settings_link&#x27; ), 1, 2 );
+		add_action( &#x27;admin_enqueue_scripts&#x27;, array( $this, &#x27;admin_scripts&#x27; ) );
+
+		// Notices
+		add_action( &#x27;admin_notices&#x27;, array( $this, &#x27;display_notices&#x27; ) );
+		add_action( &#x27;network_admin_notices&#x27;, array( $this, &#x27;display_notices&#x27; ) );
+
+		add_action( &#x27;after_setup_theme&#x27;, array( $this, &#x27;ready&#x27; ) );
+
+		// Set capabilities
+		register_activation_hook( __FILE__, array( $this, &#x27;set_capabilities&#x27; ) );
+		add_action( &#x27;admin_init&#x27;, array( $this, &#x27;set_capabilities_multisite&#x27; ) );
+	}
+
+	public function ready() {
+
+		/**
+		 * For loading external resources, e.g. column settings.
+		 * Can be called from plugins and themes.
+		 */
+		do_action( &#x27;ac/ready&#x27;, $this );
+	}
+
+	/**
+	 * @return AC_Autoloader
+	 */
+	public function autoloader() {
+		require_once $this-&gt;get_plugin_dir() . &#x27;classes/Autoloader.php&#x27;;
+
+		return AC_Autoloader::instance();
+	}
+
+	/**
+	 * @since 3.0
+	 * @return string Path to plugin dir
+	 */
+	public function get_plugin_dir() {
+		return plugin_dir_path( __FILE__ );
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function get_plugin_url() {
+		return plugin_dir_url( __FILE__ );
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function get_version() {
+		if ( null === $this-&gt;version ) {
+			$this-&gt;version = $this-&gt;get_plugin_version( __FILE__ );
+		}
+
+		return $this-&gt;version;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function get_plugin_version( $file ) {
+		require_once ABSPATH . &#x27;wp-admin/includes/plugin.php&#x27;;
+
+		$plugin = get_plugin_data( $file, false, false );
+
+		return isset( $plugin[&#x27;Version&#x27;] ) ? $plugin[&#x27;Version&#x27;] : false;
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function get_upgrade_version() {
+		return &#x27;2.0.0&#x27;;
+	}
+
+	/**
+	 * @since 2.2
+	 * @uses  load_plugin_textdomain()
+	 */
+	public function localize() {
+		load_plugin_textdomain( &#x27;codepress-admin-columns&#x27;, false, dirname( $this-&gt;plugin_basename ) . &#x27;/languages/&#x27; );
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function minified() {
+		return defined( &#x27;SCRIPT_DEBUG&#x27; ) &amp;&amp; SCRIPT_DEBUG ? &#x27;&#x27; : &#x27;.min&#x27;;
+	}
+
+	/**
+	 * Add caps for Multisite admins
+	 */
+	public function set_capabilities_multisite() {
+		if ( is_multisite() &amp;&amp; current_user_can( &#x27;administrator&#x27; ) ) {
+			$this-&gt;set_capabilities();
+		}
+	}
+
+	/**
+	 * @return bool True when user can manage admin columns
+	 */
+	public function user_can_manage_admin_columns() {
+		return current_user_can( &#x27;manage_admin_columns&#x27; );
+	}
+
+	/**
+	 * Add capability to administrator to manage admin columns.
+	 * You can use the capability &#x27;manage_admin_columns&#x27; to grant other roles this privilege as well.
+	 *
+	 * @since 2.0.4
+	 */
+	public function set_capabilities() {
+		if ( $role = get_role( &#x27;administrator&#x27; ) ) {
+			$role-&gt;add_cap( &#x27;manage_admin_columns&#x27; );
+		}
+	}
+
+	/**
+	 * Disable side wide notices
+	 *
+	 * @return bool True when no notices should be displayed
+	 */
+	public function suppress_site_wide_notices() {
+		return apply_filters( &#x27;ac/suppress_site_wide_notices&#x27;, false );
+	}
+
+	/**
+	 * Add a settings link to the Admin Columns entry in the plugin overview screen
+	 *
+	 * @since 1.0
+	 * @see   filter:plugin_action_links
+	 */
+	public function add_settings_link( $links, $file ) {
+		if ( $file === $this-&gt;plugin_basename ) {
+			array_unshift( $links, ac_helper()-&gt;html-&gt;link( AC()-&gt;admin()-&gt;get_link( &#x27;settings&#x27; ), __( &#x27;Settings&#x27; ) ) );
+		}
+
+		return $links;
+	}
+
+	/**
+	 * @since 2.5
+	 */
+	public function use_delete_confirmation() {
+		return apply_filters( &#x27;ac/delete_confirmation&#x27;, true );
+	}
+
+	/**
+	 * @since 3.0
+	 * @return AC_API
+	 */
+	public function api() {
+		return $this-&gt;api;
+	}
+
+	/**
+	 * @since 2.2
+	 * @return AC_Admin Settings class instance
+	 */
+	public function admin() {
+		return $this-&gt;admin;
+	}
+
+	/**
+	 * @since 2.2
+	 * @return AC_Addons Add-ons class instance
+	 */
+	public function addons() {
+		return $this-&gt;addons;
+	}
+
+	/**
+	 * Column groups
+	 */
+	public function set_column_groups() {
+		$groups = new AC_Groups();
+
+		$groups-&gt;register_group( &#x27;default&#x27;, __( &#x27;Default&#x27;, &#x27;codepress-admin-columns&#x27; ) );
+		$groups-&gt;register_group( &#x27;plugin&#x27;, __( &#x27;Plugins&#x27; ), 20 );
+		$groups-&gt;register_group( &#x27;custom_field&#x27;, __( &#x27;Custom Fields&#x27;, &#x27;codepress-admin-columns&#x27; ), 30 );
+		$groups-&gt;register_group( &#x27;custom&#x27;, __( &#x27;Custom&#x27;, &#x27;codepress-admin-columns&#x27; ), 40 );
+
+		foreach ( $this-&gt;addons()-&gt;get_missing_addons() as $addon ) {
+			$groups-&gt;register_group( $addon-&gt;get_slug(), $addon-&gt;get_title(), 11 );
+		}
+
+		$this-&gt;column_groups = $groups;
+
+		do_action( &#x27;ac/column_groups&#x27;, $groups );
+	}
+
+	/**
+	 * @return AC_Groups
+	 */
+	public function column_groups() {
+		if ( null === $this-&gt;column_groups ) {
+			$this-&gt;set_column_groups();
+		}
+
+		return $this-&gt;column_groups;
+	}
+
+	/**
+	 * Contains simple helper methods
+	 *
+	 * @since 3.0
+	 *
+	 * @return AC_Helper
+	 */
+	public function helper() {
+		return $this-&gt;helper;
+	}
+
+	/**
+	 * @return AC_TableScreen Returns the screen manager for the list table
+	 */
+	public function table_screen() {
+		return $this-&gt;table_screen;
+	}
+
+	/**
+	 * @since 3.0
+	 *
+	 * @param string $key
+	 *
+	 * @return AC_ListScreen|false
+	 */
+	public function get_list_screen( $key ) {
+		$screens = $this-&gt;get_list_screens();
+
+		if ( ! isset( $screens[ $key ] ) ) {
+			return false;
+		}
+
+		return $screens[ $key ];
+	}
+
+	/**
+	 * @param WP_Screen $wp_screen
+	 *
+	 * @return AC_ListScreen|bool
+	 */
+	public function get_list_screen_by_wpscreen( $wp_screen ) {
+		if ( ! $wp_screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		foreach ( $this-&gt;get_list_screens() as $list_screen ) {
+			if ( $list_screen-&gt;is_current_screen( $wp_screen ) ) {
+				return $list_screen;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function list_screen_exists( $key ) {
+		return $this-&gt;get_list_screen( $key ) ? true : false;
+	}
+
+	/**
+	 * Returns the default list screen when no choice is made by the user
+	 *
+	 * @since 3.0
+	 * @return AC_ListScreen
+	 */
+	public function get_default_list_screen() {
+		$screens = $this-&gt;get_list_screens();
+		$default_screen = array_shift( $screens );
+
+		return $default_screen;
+	}
+
+	/**
+	 * Get registered list screens
+	 *
+	 * @since 3.0
+	 * @return AC_ListScreen[]
+	 */
+	public function get_list_screens() {
+		if ( null === $this-&gt;list_screens ) {
+			$this-&gt;set_list_screens();
+		}
+
+		return $this-&gt;list_screens;
+	}
+
+	/**
+	 * Get registered list screens
+	 *
+	 * @since 3.0
+	 */
+	private function set_list_screens() {
+
+		// Post types
+		foreach ( $this-&gt;get_post_types() as $post_type ) {
+			$this-&gt;register_list_screen( new AC_ListScreen_Post( $post_type ) );
+		}
+
+		$this-&gt;register_list_screen( new AC_ListScreen_Media() );
+		$this-&gt;register_list_screen( new AC_ListScreen_Comment() );
+
+		// Users, not for network users
+		if ( ! is_multisite() ) {
+			$this-&gt;register_list_screen( new AC_ListScreen_User() );
+		}
+
+		// as of 3.5 link manager is removed
+		if ( get_option( &#x27;link_manager_enabled&#x27; ) ) {
+			$this-&gt;register_list_screen( new AC_ListScreen_Link() );
+		}
+
+		/**
+		 * @since 3.0
+		 */
+		do_action( &#x27;ac/list_screens&#x27;, $this );
+	}
+
+	/**
+	 * @param AC_ListScreen $list_screen
+	 */
+	public function register_list_screen( AC_ListScreen $list_screen ) {
+		$this-&gt;list_screens[ $list_screen-&gt;get_key() ] = $list_screen;
+	}
+
+	/**
+	 * Column groups
+	 */
+	public function set_list_screen_groups() {
+		$groups = new AC_Groups();
+
+		$groups-&gt;register_group( &#x27;post&#x27;, __( &#x27;Post Type&#x27;, &#x27;codepress-admin-columns&#x27; ), 5 );
+		$groups-&gt;register_group( &#x27;user&#x27;, __( &#x27;Users&#x27; ) );
+		$groups-&gt;register_group( &#x27;media&#x27;, __( &#x27;Media&#x27; ) );
+		$groups-&gt;register_group( &#x27;comment&#x27;, __( &#x27;Comments&#x27; ) );
+		$groups-&gt;register_group( &#x27;link&#x27;, __( &#x27;Links&#x27; ), 15 );
+
+		$this-&gt;list_screen_groups = $groups;
+
+		do_action( &#x27;ac/list_screen_groups&#x27;, $groups );
+	}
+
+	/**
+	 * @return AC_Groups
+	 */
+	public function list_screen_groups() {
+		if ( null === $this-&gt;list_screen_groups ) {
+			$this-&gt;set_list_screen_groups();
+		}
+
+		return $this-&gt;list_screen_groups;
+	}
+
+	/**
+	 * Get a list of post types for which Admin Columns is active
+	 *
+	 * @since 1.0
+	 *
+	 * @return array List of post type keys (e.g. post, page)
+	 */
+	public function get_post_types() {
+		$post_types = array();
+
+		if ( post_type_exists( &#x27;post&#x27; ) ) {
+			$post_types[&#x27;post&#x27;] = &#x27;post&#x27;;
+		}
+		if ( post_type_exists( &#x27;page&#x27; ) ) {
+			$post_types[&#x27;page&#x27;] = &#x27;page&#x27;;
+		}
+
+		$post_types = array_merge( $post_types, get_post_types( array(
+			&#x27;_builtin&#x27; =&gt; false,
+			&#x27;show_ui&#x27;  =&gt; true,
+		) ) );
+
+		/**
+		 * Filter the post types for which Admin Columns is active
+		 *
+		 * @since 2.0
+		 *
+		 * @param array $post_types List of active post type names
+		 */
+		return apply_filters( &#x27;ac/post_types&#x27;, $post_types );
+	}
+
+	/**
+	 * Display admin notice
+	 */
+	public function display_notices() {
+		if ( $this-&gt;notices ) {
+			echo implode( $this-&gt;notices );
+		}
+	}
+
+	/**
+	 * @param string $message Message body
+	 * @param string $type    &#x27;updated&#x27;, &#x27;error&#x27; or &#x27;notice-warning&#x27;
+	 */
+	public function notice( $message, $type = &#x27;updated&#x27; ) {
+		$this-&gt;notices[] = &#x27;&lt;div class=&quot;ac-message notice &#x27; . esc_attr( $type ) . &#x27;&quot;&gt;&lt;p&gt;&#x27; . $message . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;;
+	}
+
+	/**
+	 * @return AC_Admin_Page_Columns
+	 */
+	public function admin_columns_screen() {
+		return $this-&gt;admin()-&gt;get_page( &#x27;columns&#x27; );
+	}
+
+	/**
+	 * @since 3.0
+	 */
+	public function admin_scripts() {
+		wp_register_script( &#x27;ac-sitewide-notices&#x27;, AC()-&gt;get_plugin_url() . &quot;assets/js/message&quot; . AC()-&gt;minified() . &quot;.js&quot;, array( &#x27;jquery&#x27; ), AC()-&gt;get_version() );
+		wp_register_style( &#x27;ac-sitewide-notices&#x27;, AC()-&gt;get_plugin_url() . &quot;assets/css/message&quot; . AC()-&gt;minified() . &quot;.css&quot;, array(), AC()-&gt;get_version() );
+	}
+
+	/**
+	 * @return bool True when doing ajax
+	 */
+	public function is_doing_ajax() {
+		return defined( &#x27;DOING_AJAX&#x27; ) &amp;&amp; DOING_AJAX;
+	}
+
+}
+
+/**
+ * @deprecated 3.0
+ */
+function cpac() {
+	return AC();
+}
+
+/**
+ * @since 3.0
+ * @return CPAC
+ */
+function AC() {
+	return CPAC::instance();
+}
+
+// Global for backwards compatibility.
+$GLOBALS[&#x27;cpac&#x27;] = AC();</pre></details></body></html>

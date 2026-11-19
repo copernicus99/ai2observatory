@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/attachments.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-uploads/includes/integrations/ninjaforms/attachments.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) {
+	exit;
+}
+
+class NF_FU_Integrations_NinjaForms_Attachments {
+
+	/**
+	 * NF_FU_Integrations_NinjaForms_Attachments constructor.
+	 */
+	public function __construct() {
+		add_filter( &#x27;ninja_forms_action_email_settings&#x27;, array( $this, &#x27;email_settings&#x27; ) );
+		add_filter( &#x27;ninja_forms_action_email_attachments&#x27;, array( $this, &#x27;attach_files&#x27; ), 10, 3 );
+	}
+
+	/**
+	 * Allow uploads to be attached to email actions
+	 *
+	 * @param array $settings
+	 *
+	 * @return array $settings
+	 */
+	public function email_settings( $settings ) {
+		$form_id = filter_input( INPUT_GET, &#x27;form_id&#x27;, FILTER_VALIDATE_INT );
+
+		if ( ! isset( $form_id ) ) {
+			return $settings;
+		}
+
+		if ( ! $this-&gt;form_has_file_uploads( $form_id ) ) {
+			return $settings;
+		}
+
+		$settings[&#x27;field_list_fu_email_attachments&#x27;] = array(
+			&#x27;name&#x27;        =&gt; &#x27;field_list_fu_email_attachments&#x27;,
+			&#x27;type&#x27;        =&gt; &#x27;field-list&#x27;,
+			&#x27;label&#x27;       =&gt; __( &#x27;Attach File Uploads&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+			&#x27;width&#x27;       =&gt; &#x27;full&#x27;,
+			&#x27;group&#x27;       =&gt; &#x27;advanced&#x27;,
+			&#x27;field_types&#x27; =&gt; array( NF_FU_File_Uploads::TYPE ),
+			&#x27;settings&#x27;    =&gt; array(
+				array(
+					&#x27;name&#x27;  =&gt; &#x27;toggle&#x27;,
+					&#x27;type&#x27;  =&gt; &#x27;toggle&#x27;,
+					&#x27;label&#x27; =&gt; __( &#x27;Field&#x27;, &#x27;ninja-forms-uploads&#x27; ),
+					&#x27;width&#x27; =&gt; &#x27;full&#x27;,
+				),
+			),
+		);
+
+		return $settings;
+	}
+
+	/**
+	 * Has the form got file upload fields
+	 *
+	 * @param $form_id
+	 *
+	 * @return bool
+	 */
+	protected function form_has_file_uploads( $form_id ) {
+		foreach ( Ninja_Forms()-&gt;form( $form_id )-&gt;get_fields() as $field_id =&gt; $field ) {
+			if ( ! is_object( $field ) || ! method_exists( $field, &#x27;get_settings&#x27; ) ) {
+				continue;
+			}
+
+			$get_settings = $field-&gt;get_settings();
+			if ( NF_FU_File_Uploads::TYPE == $get_settings[&#x27;type&#x27;] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Attach file uploads to the email
+	 *
+	 * @param array $attachments
+	 * @param array $data
+	 * @param array $settings
+	 *
+	 * @return array
+	 */
+	public function attach_files( $attachments, $data, $settings ) {
+		foreach ( $settings as $key =&gt; $value ) {
+			if ( false === strpos( $key, &#x27;field_list_fu_email_attachments-&#x27; ) || 1 != $value ) {
+				continue;
+			}
+
+			if ( ! isset( $data[&#x27;fields&#x27;] ) ) {
+				continue;
+			}
+
+			$field_key = str_replace( &#x27;field_list_fu_email_attachments-&#x27;, &#x27;&#x27;, $key );
+			foreach ( $data[&#x27;fields&#x27;] as $field ) {
+				if ( $field_key != $field[&#x27;key&#x27;] ) {
+					continue;
+				}
+
+				foreach ( $field[&#x27;files&#x27;] as $file ) {
+					$attachments[] = $file[&#x27;data&#x27;][&#x27;file_path&#x27;];
+				}
+			}
+		}
+
+		return $attachments;
+	}
+}</pre></details></body></html>

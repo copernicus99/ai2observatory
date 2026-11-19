@@ -1,0 +1,402 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/upgrade-functions.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/includes/admin/upgrades/upgrade-functions.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><h2>Static HTML fragment preview</h2><p>Layout and images may be incomplete because dependencies and PHP output are omitted.</p><iframe sandbox="" referrerpolicy="no-referrer" title="Static fragment preview" srcdoc="&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; form-action &#x27;none&#x27;; base-uri &#x27;none&#x27;&quot;&gt;&lt;style&gt;body{font:16px system-ui;overflow-wrap:anywhere}img{max-width:100%}&lt;/style&gt;
+	&lt;script type=&quot;text/javascript&quot;&gt;
+		jQuery(document).ready(function() {
+			window.location.href = &quot;&quot;;
+		} );
+	&lt;/script&gt;
+	"></iframe><details><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! function_exists( &#x27;nf_is_func_disabled&#x27; ) ) {
+	function nf_is_func_disabled($function)
+	{
+		$disabled = explode(&#x27;,&#x27;, ini_get(&#x27;disable_functions&#x27;));
+
+		return in_array($function, $disabled);
+	}
+}
+
+/**
+ * Upgrade Functions
+ *
+ * @package     Ninja Forms
+ * @subpackage  Admin/Upgrades
+ * @copyright   Copyright (c) 2014, WP Ninjas
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+ */
+
+// Exit if accessed directly
+if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * DEPRECATED - Display Upgrade Notices
+ *
+ * @since 2.7
+ * @return void
+*/
+function nf_show_upgrade_notices() {
+
+	// Convert notifications
+	if ( isset ( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == &#x27;nf-processing&#x27; )
+		return; // Don&#x27;t show notices on the processing page.
+
+	$n_conversion_complete = get_option( &#x27;nf_convert_notifications_complete&#x27;, false );
+
+	if ( ! $n_conversion_complete ) {
+		printf(
+			&#x27;&lt;div class=&quot;update-nag&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Ninja Forms needs to upgrade your form notifications, click %shere%s to start the upgrade.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;,
+			&#x27;&lt;a href=&quot;&#x27; . admin_url( &#x27;index.php?page=nf-processing&amp;action=convert_notifications&#x27; ) . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27;
+		);
+	}
+
+	$update_email_settings_complete = get_option( &#x27;nf_update_email_settings_complete&#x27;, false );
+
+	if ( $n_conversion_complete &amp;&amp; ! $update_email_settings_complete ) {
+		printf(
+			&#x27;&lt;div class=&quot;update-nag&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Ninja Forms needs to update your email settings, click %shere%s to start the upgrade.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;,
+			&#x27;&lt;a href=&quot;&#x27; . admin_url( &#x27;index.php?page=nf-processing&amp;action=update_email_settings&#x27; ) . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27;
+		);
+	}
+
+	if ( isset( $_GET[&#x27;page&#x27;] ) &amp;&amp; $_GET[&#x27;page&#x27;] == &#x27;nf-upgrades&#x27; )
+		return; // Don&#x27;t show notices on the upgrades page
+
+	$step = get_option( &#x27;nf_convert_subs_step&#x27; );
+
+	if ( $step != &#x27;complete&#x27; ) {
+		if ( empty( $step ) ) {
+			$step = 1;
+		}
+		printf(
+			&#x27;&lt;div class=&quot;update-nag&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Ninja Forms needs to upgrade the submissions table, click %shere%s to start the upgrade.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/p&gt;&lt;/div&gt;&#x27;,
+			&#x27;&lt;a href=&quot;&#x27; . admin_url( &#x27;index.php?page=nf-upgrades&amp;nf-upgrade=upgrade_subs_to_cpt&amp;step=&#x27; . $step ) . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27;
+		);
+	}
+
+	$upgrade_notice = get_option( &#x27;nf_upgrade_notice&#x27; );
+
+	if ( $upgrade_notice != &#x27;closed&#x27; ) {
+		printf(
+			&#x27;&lt;div class=&quot;update-nag&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Thank you for updating to version 2.7 of Ninja Forms. Please update any Ninja Forms extensions from &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;a href=&quot;http://ninjaforms.com/your-account/purchases/&quot;&lt;/a&gt;ninjaforms.com&lt;/a&gt;. &lt;a href=&quot;%s&quot;&gt;Dismiss this notice&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&#x27;,
+			esc_url( add_query_arg( array( &#x27;nf_action&#x27; =&gt; &#x27;dismiss_upgrade_notice&#x27; ) ) )
+		);
+	}
+
+	if ( defined( &#x27;NINJA_FORMS_UPLOADS_VERSION&#x27; ) &amp;&amp; version_compare( NINJA_FORMS_UPLOADS_VERSION, &#x27;1.3.5&#x27; ) == -1 ) {
+		echo &#x27;&lt;div class=&quot;error&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Your version of the Ninja Forms File Upload extension isn\&#x27;t compatible with version 2.7 of Ninja Forms. It needs to be at least version 1.3.5. Please update this extension at &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;a href=&quot;http://ninjaforms.com/your-account/purchases/&quot;&lt;/a&gt;ninjaforms.com&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&#x27;;
+	}
+
+	if ( defined( &#x27;NINJA_FORMS_SAVE_PROGRESS_VERSION&#x27; ) &amp;&amp; version_compare( NINJA_FORMS_SAVE_PROGRESS_VERSION, &#x27;1.1.3&#x27; ) == -1 ) {
+		echo &#x27;&lt;div class=&quot;error&quot;&gt;&lt;p&gt;&#x27; . __( &#x27;Your version of the Ninja Forms Save Progress extension isn\&#x27;t compatible with version 2.7 of Ninja Forms. It needs to be at least version 1.1.3. Please update this extension at &#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;a href=&quot;http://ninjaforms.com/your-account/purchases/&quot;&lt;/a&gt;ninjaforms.com&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&#x27;;
+	}
+
+	$forms_conversion_complete = get_option( &#x27;nf_convert_forms_complete&#x27;, false );
+
+	if ( ! $forms_conversion_complete ) {
+		$title = urlencode( __( &#x27;Updating Form Database&#x27;, &#x27;ninja-forms&#x27; ) );
+		printf(
+			&#x27;&lt;div class=&quot;update-nag&quot;&gt;&#x27; . __( &#x27;Ninja Forms needs to upgrade your form settings, click %shere%s to start the upgrade.&#x27;, &#x27;ninja-forms&#x27; ) . &#x27;&lt;/div&gt;&#x27;,
+			&#x27;&lt;a href=&quot;&#x27; . admin_url( &#x27;index.php?page=nf-processing&amp;action=convert_forms&amp;title=&#x27; . $title ) . &#x27;&quot;&gt;&#x27;, &#x27;&lt;/a&gt;&#x27;
+		);
+	}
+
+}
+//add_action( &#x27;admin_notices&#x27;, &#x27;nf_show_upgrade_notices&#x27; );
+
+/**
+ * Triggers all upgrade functions
+ *
+ * This function is usually triggered via AJAX
+ *
+ * @since 2.7
+ * @return void
+*/
+function nf_trigger_upgrades() {
+	if ( DOING_AJAX )
+		die( &#x27;complete&#x27; ); // Let AJAX know that the upgrade is complete
+}
+add_action( &#x27;wp_ajax_edd_trigger_upgrades&#x27;, &#x27;nf_trigger_upgrades&#x27; );
+
+/**
+ * Upgrades for Ninja Forms v2.7 and Submission Custom Post Type.
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_v27_upgrade_subs_to_cpt() {
+	//Bail if we aren&#x27;t in the admin.
+	if ( ! is_admin() )
+		return false;
+
+	// Bail if we don&#x27;t have the appropriate permissions.
+	if ( is_multisite() ) {
+		if ( ! is_super_admin() )
+			return false;
+	} else {
+		if ( ! current_user_can( &#x27;install_plugins&#x27; ) )
+			return false;
+	}
+
+	if ( function_exists( &#x27;ignore_user_abort&#x27; ) &amp;&amp; ! nf_is_func_disabled( &#x27;ignore_user_abort&#x27; ) ) {
+		ignore_user_abort( true );
+	}
+
+	$step   = isset( $_GET[&#x27;step&#x27;] )  ? absint( $_GET[&#x27;step&#x27;] )  : 1;
+	$total  = isset( $_GET[&#x27;total&#x27;] ) ? absint( $_GET[&#x27;total&#x27;] ) : false;
+	$number  = isset( $_GET[&#x27;custom&#x27;] ) ? absint( $_GET[&#x27;custom&#x27;] ) : 1;
+
+	if ( get_option( &#x27;nf_convert_subs_num&#x27; ) ) {
+		$number = get_option( &#x27;nf_convert_subs_num&#x27; );
+	}
+
+	$form_id  = isset( $_GET[&#x27;form_id&#x27;] ) ? absint( $_GET[&#x27;form_id&#x27;] ) : 0;
+
+	update_option( &#x27;nf_convert_subs_step&#x27;, $step );
+
+	$convert_subs = new NF_Convert_Subs();
+	$old_sub_count = $convert_subs-&gt;count_old_subs();
+
+	if( empty( $total ) || $total &lt;= 1 ) {
+		$total = round( ( $old_sub_count / 100 ), 0 ) + 2;
+	}
+
+	if ( $step &lt;= $total ) {
+		if ( $step == 1 ) {
+			$begin = 0;
+		} else {
+			$begin = ( $step - 1 ) * 100;
+		}
+
+		$subs_results = $convert_subs-&gt;get_old_subs( $begin, 100 );
+
+		if ( is_array( $subs_results ) &amp;&amp; ! empty( $subs_results ) ) {
+
+			foreach ( $subs_results as $sub ) {
+				if ( $form_id != $sub[&#x27;form_id&#x27;] ) {
+					$form_id = $sub[&#x27;form_id&#x27;];
+					$number = 1;
+				}
+				$converted = get_option( &#x27;nf_converted_subs&#x27; );
+				if ( empty( $converted ) )
+					$converted = array();
+
+				if ( ! in_array( $sub[&#x27;id&#x27;], $converted ) ) {
+					$convert_subs-&gt;convert( $sub, $number );
+
+					$converted[] = $sub[&#x27;id&#x27;];
+					update_option( &#x27;nf_converted_subs&#x27;, $converted );
+					$number++;
+					update_option( &#x27;nf_convert_subs_num&#x27;, $number );
+				}
+			}
+		}
+
+		$step++;
+
+		$redirect = add_query_arg( array(
+			&#x27;page&#x27;        	=&gt; &#x27;nf-upgrades&#x27;,
+			&#x27;nf-upgrade&#x27; 	=&gt; &#x27;upgrade_subs_to_cpt&#x27;,
+			&#x27;step&#x27;        	=&gt; $step,
+			&#x27;custom&#x27;      	=&gt; $number,
+			&#x27;total&#x27;       	=&gt; $total,
+			&#x27;form_id&#x27;		=&gt; $form_id
+		), admin_url( &#x27;index.php&#x27; ) );
+		wp_redirect( $redirect ); exit;
+
+	} else {
+		update_option( &#x27;nf_convert_subs_step&#x27;, &#x27;complete&#x27; );
+		delete_option( &#x27;nf_convert_subs_num&#x27; );
+		wp_redirect( admin_url( &#x27;index.php?page=nf-about&#x27; ) ); exit;
+	}
+}
+add_action( &#x27;nf_upgrade_subs_to_cpt&#x27;, &#x27;nf_v27_upgrade_subs_to_cpt&#x27; );
+
+/**
+ * Keep our upgrade notice closed.
+ *
+ * @since 2.7
+ * @return void
+ */
+function nf_dismiss_upgrade_notice() {
+	update_option( &#x27;nf_upgrade_notice&#x27;, &#x27;closed&#x27; );
+	wp_redirect( esc_url_raw( remove_query_arg( &#x27;nf_action&#x27; ) ) );
+	exit;
+}
+
+add_action( &#x27;nf_dismiss_upgrade_notice&#x27;, &#x27;nf_dismiss_upgrade_notice&#x27; );
+
+
+/**
+ * Clearing out the old email favourite field and replacing it with the new version.
+ *
+ * @since 2.8.4
+ * @return void
+ */
+function nf_clear_old_favs() {
+	global $wpdb;
+
+	$email_fav_updated = get_option( &#x27;nf_email_fav_updated&#x27;, false );
+
+	if ( $email_fav_updated )
+		return false;
+
+	nf_change_email_fav();
+	nf_remove_old_email_settings();
+	nf_change_state_dropdown_fav();
+
+	update_option( &#x27;nf_email_fav_updated&#x27;, true );
+}
+
+add_action( &#x27;admin_init&#x27;, &#x27;nf_clear_old_favs&#x27; );
+
+/**
+ * Remove old email &quot;send to&quot; settings from form fiels.
+ *
+ * @since 2.8.4
+ * @return void
+ */
+function nf_remove_old_email_settings( $form_id = &#x27;&#x27; ) {
+
+	if ( &#x27;&#x27; == $form_id ) {
+		$forms = ninja_forms_get_all_forms( true );
+
+		if ( is_array( $forms ) ) {
+			foreach ( $forms as $form ) {
+				nf_remove_old_email_send_to( $form[&#x27;id&#x27;] );
+			}
+		}
+	} else {
+		nf_remove_old_email_send_to( $form_id );
+	}
+}
+
+/**
+ * Removes old email settings form a single form.
+ *
+ * @since 2.8.4
+ * @return void
+ */
+function nf_remove_old_email_send_to( $form_id ) {
+	if ( empty ( $form_id ) )
+		return false;
+
+	// Remove any &quot;Admin mailto&quot; settings we might have.
+	$form_row = ninja_forms_get_form_by_id( $form_id );
+
+	if ( isset ( $form_row[&#x27;data&#x27;][&#x27;admin_mailto&#x27;] ) ) {
+		unset ( $form_row[&#x27;data&#x27;][&#x27;admin_mailto&#x27;] );
+
+		$args = array(
+			&#x27;update_array&#x27;	=&gt; array(
+				&#x27;data&#x27;		=&gt; serialize( $form_row[&#x27;data&#x27;] ),
+			),
+			&#x27;where&#x27;			=&gt; array(
+				&#x27;id&#x27; 		=&gt; $form_id,
+			),
+		);
+
+		ninja_forms_update_form( $args );
+
+	}
+
+	// Update any old email settings we have.
+	$fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+
+	// Create a notification for our user email
+	if ( ! empty ( $fields ) ) {
+		foreach ( $fields as $field_id =&gt; $field ) {
+			if ( isset ( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] ) &amp;&amp; $field[&#x27;data&#x27;][&#x27;send_email&#x27;] == 1 ) {
+				// Add this field to our $addresses variable.
+				unset( $field[&#x27;data&#x27;][&#x27;send_email&#x27;] );
+				unset( $field[&#x27;data&#x27;][&#x27;replyto_email&#x27;] );
+				unset( $field[&#x27;data&#x27;][&#x27;from_name&#x27;] );
+
+				$args = array(
+					&#x27;update_array&#x27;	=&gt; array(
+						&#x27;data&#x27;		=&gt; serialize( $field[&#x27;data&#x27;] ),
+					),
+					&#x27;where&#x27;			=&gt; array(
+						&#x27;id&#x27; 		=&gt; $field_id,
+					),
+				);
+
+				ninja_forms_update_field( $args );
+			}
+		}
+	}
+}
+
+/**
+ * Remove the old copy of our email defined field and replace it.
+ *
+ * @since 2.8.4
+ * @return void
+ */
+function nf_change_email_fav() {
+	global $wpdb;
+
+	$email_address = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;Email&#x27; ), ARRAY_A );
+
+	$sql = &#x27;DELETE FROM `&#x27; . NINJA_FORMS_FAV_FIELDS_TABLE_NAME . &#x27;` WHERE name = &quot;Email Address&quot;&#x27;;
+
+	$wpdb-&gt;query( $sql );
+
+	$sql = &#x27;DELETE FROM `&#x27; . NINJA_FORMS_FAV_FIELDS_TABLE_NAME . &#x27;` WHERE name = &quot;Email&quot;&#x27;;
+
+	$wpdb-&gt;query( $sql );
+
+	if ( isset ( $email_address[&#x27;id&#x27;] ) &amp;&amp; ! empty ( $email_address[&#x27;id&#x27;] ) ) {
+		$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+		(&#x27; . $email_address[&#x27;id&#x27;] . &#x27;, 0, \&#x27;_text\&#x27;, 0, \&#x27;a:25:{s:5:&quot;label&quot;;s:5:&quot;Email&quot;;s:9:&quot;label_pos&quot;;s:5:&quot;above&quot;;s:13:&quot;default_value&quot;;s:0:&quot;&quot;;s:4:&quot;mask&quot;;s:0:&quot;&quot;;s:10:&quot;datepicker&quot;;s:1:&quot;0&quot;;s:5:&quot;email&quot;;s:1:&quot;1&quot;;s:10:&quot;send_email&quot;;s:1:&quot;0&quot;;s:10:&quot;from_email&quot;;s:1:&quot;0&quot;;s:10:&quot;first_name&quot;;s:1:&quot;0&quot;;s:9:&quot;last_name&quot;;s:1:&quot;0&quot;;s:9:&quot;from_name&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_1&quot;;s:1:&quot;0&quot;;s:14:&quot;user_address_2&quot;;s:1:&quot;0&quot;;s:9:&quot;user_city&quot;;s:1:&quot;0&quot;;s:8:&quot;user_zip&quot;;s:1:&quot;0&quot;;s:10:&quot;user_phone&quot;;s:1:&quot;0&quot;;s:10:&quot;user_email&quot;;s:1:&quot;1&quot;;s:21:&quot;user_info_field_group&quot;;s:1:&quot;1&quot;;s:3:&quot;req&quot;;s:1:&quot;0&quot;;s:5:&quot;class&quot;;s:0:&quot;&quot;;s:9:&quot;show_help&quot;;s:1:&quot;0&quot;;s:9:&quot;help_text&quot;;s:0:&quot;&quot;;s:17:&quot;calc_auto_include&quot;;s:1:&quot;0&quot;;s:11:&quot;calc_option&quot;;s:1:&quot;0&quot;;s:11:&quot;conditional&quot;;s:0:&quot;&quot;;}\&#x27;, \&#x27;Email\&#x27;)&#x27;;
+		$wpdb-&gt;query($sql);		
+	}
+
+}
+
+/**
+ * Fix a serialized array error with the state dropdown favourite field
+ * 
+ * @since 2.8.4
+ * @return void
+ */
+function nf_change_state_dropdown_fav() {
+	global $wpdb;
+
+	$state_dropdown = $wpdb-&gt;get_row( $wpdb-&gt;prepare( &quot;SELECT * FROM &quot;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&quot; WHERE name = %s AND row_type = 0&quot;, &#x27;State Dropdown&#x27; ), ARRAY_A );
+	
+	$sql = &#x27;DELETE FROM `&#x27; . NINJA_FORMS_FAV_FIELDS_TABLE_NAME . &#x27;` WHERE name = &quot;State Dropdown&quot;&#x27;;
+
+	$wpdb-&gt;query( $sql );
+	
+	$sql = &#x27;INSERT INTO `&#x27;.NINJA_FORMS_FAV_FIELDS_TABLE_NAME.&#x27;` (`id`, `row_type`, `type`, `order`, `data`, `name`) VALUES
+	(&#x27; . $state_dropdown[&#x27;id&#x27;] . &#x27;, 0, \&#x27;_list\&#x27;, 0, \&#x27;a:10:{s:5:\&quot;label\&quot;;s:14:\&quot;State Dropdown\&quot;;s:9:\&quot;label_pos\&quot;;s:4:\&quot;left\&quot;;s:9:\&quot;list_type\&quot;;s:8:\&quot;dropdown\&quot;;s:10:\&quot;multi_size\&quot;;s:1:\&quot;5\&quot;;s:15:\&quot;list_show_value\&quot;;s:1:\&quot;1\&quot;;s:4:\&quot;list\&quot;;a:1:{s:7:\&quot;options\&quot;;a:51:{i:0;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Alabama\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:1;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Alaska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:2;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Arizona\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AZ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:3;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Arkansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;AR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:4;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;California\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:5;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Colorado\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:6;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Connecticut\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;CT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:7;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Delaware\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:8;a:3:{s:5:\&quot;label\&quot;;s:20:\&quot;District of Columbia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;DC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:9;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Florida\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;FL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:10;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Georgia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;GA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:11;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Hawaii\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;HI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:12;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Idaho\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ID\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:13;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Illinois\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IL\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:14;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Indiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:15;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Iowa\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;IA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:16;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Kansas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:17;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Kentucky\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;KY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:18;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Louisiana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;LA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:19;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Maine\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ME\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:20;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Maryland\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:21;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;Massachusetts\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:22;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Michigan\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:23;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Minnesota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:24;a:3:{s:5:\&quot;label\&quot;;s:11:\&quot;Mississippi\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MS\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:25;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Missouri\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MO\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:26;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Montana\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;MT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:27;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Nebraska\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NE\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:28;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Nevada\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:29;a:3:{s:5:\&quot;label\&quot;3s:13:\&quot;New Hampshire\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:30;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Jersey\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NJ\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:31;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;New Mexico\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NM\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:32;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;New York\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:33;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;North Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;NC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:34;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;North Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;ND\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:35;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Ohio\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OH\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:36;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Oklahoma\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OK\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:37;a:3:{s:5:\&quot;label\&quot;;s:6:\&quot;Oregon\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;OR\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:38;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Pennsylvania\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;PA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:39;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;Rhode Island\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;RI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:40;a:3:{s:5:\&quot;label\&quot;;s:14:\&quot;South Carolina\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SC\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:41;a:3:{s:5:\&quot;label\&quot;;s:12:\&quot;South Dakota\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;SD\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:42;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Tennessee\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TN\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:43;a:3:{s:5:\&quot;label\&quot;;s:5:\&quot;Texas\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;TX\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:44;a:3:{s:5:\&quot;label\&quot;;s:4:\&quot;Utah\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;UT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:45;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Vermont\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VT\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:46;a:3:{s:5:\&quot;label\&quot;;s:8:\&quot;Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;VA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:47;a:3:{s:5:\&quot;label\&quot;;s:10:\&quot;Washington\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WA\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:48;a:3:{s:5:\&quot;label\&quot;;s:13:\&quot;West Virginia\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WV\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:49;a:3:{s:5:\&quot;label\&quot;;s:9:\&quot;Wisconsin\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WI\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}i:50;a:3:{s:5:\&quot;label\&quot;;s:7:\&quot;Wyoming\&quot;;s:5:\&quot;value\&quot;;s:2:\&quot;WY\&quot;;s:8:\&quot;selected\&quot;;s:1:\&quot;0\&quot;;}}}s:3:\&quot;req\&quot;;s:1:\&quot;0\&quot;;s:5:\&quot;class\&quot;;s:0:\&quot;\&quot;;s:9:\&quot;show_help\&quot;;s:1:\&quot;0\&quot;;s:9:\&quot;help_text\&quot;;s:0:\&quot;\&quot;;}\&#x27;, \&#x27;State Dropdown\&#x27;)&#x27;;
+	
+	$wpdb-&gt;query( $sql );
+}
+
+/**
+ * Check our option to see if we&#x27;ve updated all of our forms.
+ * If we haven&#x27;t, loop through all of our forms and see if any need to be updated.
+ *
+ * @since 2.9
+ * @return void
+ */
+function nf_29_update_all_form_settings_check() {
+
+	$forms_conversion_complete = get_option( &#x27;nf_convert_forms_complete&#x27;, false );
+
+	if ( $forms_conversion_complete )
+		return false;
+
+	$url = admin_url( &#x27;index.php?page=nf-upgrade-handler&#x27; );
+	
+	?&gt;
+	&lt;script type=&quot;text/javascript&quot;&gt;
+		jQuery(document).ready(function() {
+			window.location.href = &quot;&lt;?php echo $url; ?&gt;&quot;;
+		} );
+	&lt;/script&gt;
+	&lt;?php
+}
+
+add_action( &#x27;nf_admin_before_form_list&#x27;, &#x27;nf_29_update_all_form_settings_check&#x27; );</pre></details></body></html>

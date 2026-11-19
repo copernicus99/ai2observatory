@@ -1,0 +1,118 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/includes/MergeTags/Other.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/includes/MergeTags/Other.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+/**
+ * Class NF_MergeTags_Other
+ */
+final class NF_MergeTags_Other extends NF_Abstracts_MergeTags
+{
+    protected $id = &#x27;other&#x27;;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this-&gt;title = __( &#x27;Other&#x27;, &#x27;ninja-forms&#x27; );
+        $this-&gt;merge_tags = Ninja_Forms()-&gt;config( &#x27;MergeTagsOther&#x27; );
+
+        add_action( &#x27;init&#x27;, array( $this, &#x27;init&#x27; ) );
+    }
+
+    public function replace( $subject )
+    {
+        $subject = parent::replace( $subject );
+
+        if (is_string($subject)) {
+            preg_match_all(&quot;/{querystring:(.*?)}/&quot;, $subject, $matches );
+        }
+
+        if ( ! isset( $matches ) || ! is_array( $matches ) ) return $subject;
+
+        /**
+         * $matches[0][$i]  merge tag match     {post_meta:foo}
+         * $matches[1][$i]  captured meta key   foo
+         */
+        foreach( $matches[0] as $i =&gt; $search ){
+            // Replace unused querystring merge tags.
+            $subject = str_replace( $matches[0][$i], &#x27;&#x27;, $subject );
+        }
+
+        return $subject;
+    }
+
+    public function init()
+    {
+        if( is_admin() ) {
+            if( ! defined( &#x27;DOING_AJAX&#x27; ) || ! DOING_AJAX ) return;
+            $url_query = parse_url( wp_get_referer(), PHP_URL_QUERY );
+            parse_str( $url_query, $variables );
+        } else {
+            $variables = $_GET;
+        }
+
+        if( ! is_array( $variables ) ) return;
+
+        foreach( $variables as $key =&gt; $value ){
+            $value = wp_kses_post( $value );
+            $this-&gt;set_merge_tags( $key, $value );
+        }
+    }
+
+    public function __call($name, $arguments)
+    {
+        return $this-&gt;merge_tags[ $name ][ &#x27;value&#x27; ];
+    }
+
+    public function set_merge_tags( $key, $value )
+    {
+        // Remove static callback potential
+        if( false !== strpos( $key, &#x27;::&#x27; ) ) return;
+
+        $callback = ( is_numeric( $key ) ) ? &#x27;querystring_&#x27; . $key : $key;
+
+        $this-&gt;merge_tags[ $callback ] = array(
+            &#x27;id&#x27; =&gt; $key,
+            &#x27;tag&#x27; =&gt; &quot;{querystring:&quot; . $key . &quot;}&quot;,
+            &#x27;callback&#x27; =&gt; $callback,
+            &#x27;value&#x27; =&gt; $value
+        );
+
+        $this-&gt;merge_tags[ $callback . &#x27;_deprecated&#x27; ] = array(
+            &#x27;id&#x27; =&gt; $key,
+            &#x27;tag&#x27; =&gt; &quot;{&quot; . $key . &quot;}&quot;,
+            &#x27;callback&#x27; =&gt; $callback,
+            &#x27;value&#x27; =&gt; $value
+        );
+    }
+
+    protected function system_date()
+    {
+        $format = Ninja_Forms()-&gt;get_setting( &#x27;date_format&#x27; );
+        if ( empty( $format ) ) {
+            $format = &#x27;Y/m/d&#x27;;
+        }
+        return date( $format, time() );
+    }
+
+    protected function system_time()
+    {
+        return date_i18n( get_option( &#x27;time_format&#x27; ), current_time( &#x27;timestamp&#x27; ) );
+    }
+
+    protected function user_ip()
+    {
+        $ip = &#x27;127.0.0.1&#x27;;
+        if ( ! empty( $_SERVER[&#x27;HTTP_CLIENT_IP&#x27;] ) ) {
+            //check ip from share internet
+            $ip = $_SERVER[&#x27;HTTP_CLIENT_IP&#x27;];
+        } elseif ( ! empty( $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;] ) ) {
+            //to check ip is pass from proxy
+            $ip = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];
+        } elseif( ! empty( $_SERVER[&#x27;REMOTE_ADDR&#x27;] ) ) {
+            $ip = $_SERVER[&#x27;REMOTE_ADDR&#x27;];
+        }
+
+        return apply_filters( &#x27;ninja_forms-get_ip&#x27;, apply_filters( &#x27;nf_get_ip&#x27;, $ip ) );
+    }
+
+
+} // END CLASS NF_MergeTags_Other
+</pre></details></body></html>

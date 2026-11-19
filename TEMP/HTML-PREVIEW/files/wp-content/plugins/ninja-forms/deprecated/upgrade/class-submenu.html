@@ -1,0 +1,327 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms/deprecated/upgrade/class-submenu.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms/deprecated/upgrade/class-submenu.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+class NF_THREE_Submenu
+{
+    /**
+     * (required) The slug name for the parent menu (or the file name of a standard WordPress admin page)
+     *
+     * @var string
+     */
+    public $parent_slug = &#x27;&#x27;;
+
+    /**
+     * (required) The text to be displayed in the title tags of the page when the menu is selected
+     *
+     * @var string
+     */
+    public $page_title = &#x27;Ninja Forms THREE&#x27;;
+
+    /**
+     * (required) The on-screen name text for the menu
+     *
+     * @var string
+     */
+    public $menu_title = &#x27;Ninja Forms THREE&#x27;;
+
+    /**
+     * (required) The capability required for this menu to be displayed to the user.
+     *
+     * @var string
+     */
+    public $capability = &#x27;manage_options&#x27;;
+
+    /**
+     * (required) The slug name to refer to this menu by (should be unique for this menu).
+     *
+     * @var string
+     */
+    public $menu_slug = &#x27;ninja-forms-three&#x27;;
+
+    /**
+     * (optional) The function that displays the page content for the menu page.
+     *
+     * @var string
+     */
+    public $function = &#x27;display&#x27;;
+
+    public $priority = 9001;
+
+    /**
+     * Constructor
+     *
+     * Translate text and add the &#x27;admin_menu&#x27; action.
+     */
+    public function __construct()
+    {
+        $this-&gt;menu_title = __( &#x27;Update&#x27;, &#x27;ninja-forms&#x27; );
+        $this-&gt;page_title = __( &#x27;Update to Ninja Forms THREE&#x27;, &#x27;ninja-forms&#x27; );
+
+        $this-&gt;capability = apply_filters( &#x27;submenu_&#x27; . $this-&gt;menu_slug . &#x27;_capability&#x27;, $this-&gt;capability );
+
+        add_action( &#x27;admin_menu&#x27;, array( $this, &#x27;register&#x27; ), $this-&gt;priority );
+
+        add_action( &#x27;wp_ajax_ninja_forms_upgrade_check&#x27;, array( $this, &#x27;upgrade_check&#x27; ) );
+        add_action( &#x27;wp_ajax_ninja_forms_optin&#x27;, array( $this, &#x27;optin&#x27; ) );
+        add_action( &#x27;wp_ajax_ninja_forms_optout&#x27;, array( $this, &#x27;optout&#x27; ) );
+
+        add_filter( &#x27;nf_general_settings_advanced&#x27;, array( $this, &#x27;settings_upgrade_button&#x27; ) );
+    }
+
+    /**
+     * Register the menu page.
+     */
+    public function register()
+    {
+        if( ! ninja_forms_three_addons_version_check() ) return;
+
+        if( ! ninja_forms_three_addons_check() ){
+            // Hide the submenu
+            $this-&gt;parent_slug = &#x27;&#x27;;
+        }
+
+        $function = ( $this-&gt;function ) ? array( $this, $this-&gt;function ) : NULL;
+
+        add_submenu_page(
+            $this-&gt;parent_slug,
+            $this-&gt;page_title,
+            $this-&gt;menu_title,
+            $this-&gt;capability,
+            $this-&gt;menu_slug,
+            $function
+        );
+    }
+
+    /**
+     * Display the menu page.
+     */
+    public function display()
+    {
+        global $ninja_forms_tabs_metaboxes;
+
+        $addon_installed = false;
+        if ( isset ( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-settings&#x27;][&#x27;license_settings&#x27;][&#x27;license_settings&#x27;][&#x27;settings&#x27;] ) ) {
+            if ( 0 &lt; count( $ninja_forms_tabs_metaboxes[&#x27;ninja-forms-settings&#x27;][&#x27;license_settings&#x27;][&#x27;license_settings&#x27;][&#x27;settings&#x27;] ) ) {
+                $addon_installed = true;
+            }            
+        }
+        
+        $is_opted_in = get_option( &#x27;ninja_forms_allow_tracking&#x27;, false );
+        $is_opted_out = get_option( &#x27;ninja_forms_do_not_allow_tracking&#x27;, false );
+        if ( ! $addon_installed &amp;&amp; ( ! $is_opted_in || $is_opted_out ) ) {
+            $opted_in = 0;
+        } else {
+            $opted_in = 1;
+        }
+
+        $all_forms = Ninja_Forms()-&gt;forms()-&gt;get_all();
+
+        wp_enqueue_style( &#x27;ninja-forms-three-upgrade-styles&#x27;, plugin_dir_url(__FILE__) . &#x27;upgrade.css&#x27; );
+        wp_enqueue_style( &#x27;ninja-forms-three-upgrade-jbox&#x27;, plugin_dir_url(__FILE__) . &#x27;jBox.css&#x27; );
+
+        wp_enqueue_script( &#x27;ninja-forms-three-upgrade&#x27;, plugin_dir_url(__FILE__) . &#x27;upgrade.js&#x27;, array( &#x27;jquery&#x27;, &#x27;wp-util&#x27; ), &#x27;&#x27;, TRUE );
+        wp_enqueue_script( &#x27;ninja-forms-three-upgrade-jbox&#x27;, plugin_dir_url(__FILE__) . &#x27;jBox.min.js&#x27;, array( &#x27;jquery&#x27;, &#x27;wp-util&#x27; ), &#x27;&#x27;, TRUE );
+        wp_localize_script( &#x27;ninja-forms-three-upgrade&#x27;, &#x27;nfThreeUpgrade&#x27;, array(
+            &#x27;forms&#x27; =&gt; $all_forms,
+            &#x27;redirectURL&#x27; =&gt; admin_url( &#x27;admin.php?page=ninja-forms&amp;nf-switcher=upgrade&#x27; ),
+            &#x27;optedIn&#x27; =&gt; $opted_in,
+        ) );
+
+        include plugin_dir_path( __FILE__ ) . &#x27;tmpl-submenu.html.php&#x27;;
+    }
+
+    public function upgrade_check()
+    {
+        if( ! isset( $_POST[ &#x27;formID&#x27; ] ) ) $this-&gt;respond( array( &#x27;error&#x27; =&gt; &#x27;Form ID not found.&#x27; ) );
+
+        $form_id = absint( $_POST[ &#x27;formID&#x27; ] );
+
+        $can_upgrade = TRUE;
+
+        $fields = Ninja_Forms()-&gt;form( $form_id )-&gt;fields;
+        $settings = Ninja_Forms()-&gt;form( $form_id )-&gt;get_all_settings();
+
+        foreach( $fields as $field ){
+            if( &#x27;_calc&#x27; == $field[ &#x27;type&#x27; ] ){
+                // $can_upgrade = FALSE;
+            }
+        }
+
+        $this-&gt;respond( array(
+            &#x27;id&#x27; =&gt; $form_id,
+            &#x27;title&#x27; =&gt; $settings[ &#x27;form_title&#x27; ],
+            &#x27;canUpgrade&#x27; =&gt; $can_upgrade
+        ) );
+    }
+
+    private function respond( $response =  array() )
+    {
+        echo wp_json_encode( $response );
+        wp_die(); // this is required to terminate immediately and return a proper response
+    }
+
+    public function settings_upgrade_button( $settings )
+    {
+        $settings[&#x27;update_to_three&#x27;] = array(
+            &#x27;name&#x27; =&gt; &#x27;update_to_three&#x27;,
+            &#x27;type&#x27; =&gt; &#x27;&#x27;,
+            &#x27;label&#x27; =&gt; __(&#x27;Ninja Forms THREE&#x27;, &#x27;ninja-forms&#x27;),
+            &#x27;display_function&#x27; =&gt; array($this, &#x27;settings_upgrade_button_display&#x27;),
+            &#x27;desc&#x27; =&gt; __(&#x27;Upgrade to the Ninja Forms THREE.&#x27;, &#x27;ninja-forms&#x27;)
+        );
+
+        return $settings;
+    }
+
+    public function settings_upgrade_button_display()
+    {
+        include plugin_dir_path( __FILE__ ) . &#x27;tmpl-settings-upgrade-button.html.php&#x27;;
+    }
+
+    public function optin() {
+        if ( ! current_user_can( &#x27;manage_options&#x27; ) ) return false;
+
+        $api_url = &#x27;http://api.ninjaforms.com/&#x27;;
+
+        /**
+         * Update our tracking option.
+         */
+        update_option( &#x27;ninja_forms_allow_tracking&#x27;, true );
+        update_option( &#x27;ninja_forms_do_not_allow_tracking&#x27;, false );
+
+        /**
+         * Gather site data before we send.
+         *
+         * We send the following site data with our passed data:
+         * IP Address
+         * Email
+         * Site Url
+         */
+
+        $ip_address = &#x27;&#x27;;
+        if ( array_key_exists( &#x27;SERVER_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;SERVER_ADDR&#x27; ];
+        } else if ( array_key_exists( &#x27;LOCAL_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;LOCAL_ADDR&#x27; ];
+        }
+
+        /**
+         * Email address of the current user, defaulting to admin email if they do not have one.
+         */
+        $current_user = wp_get_current_user();
+        if ( ! empty ( $current_user-&gt;user_email ) ) {
+            $email = $current_user-&gt;user_email;
+        } else {
+            $email = get_option( &#x27;admin_email&#x27; );
+        }        
+
+        $site_data = array(
+            &#x27;url&#x27;           =&gt; site_url(),
+            &#x27;ip_address&#x27;    =&gt; $ip_address,
+            &#x27;email&#x27;         =&gt; $email,
+        );
+
+        /**
+         * Send our environment variables.
+         */
+        
+        global $wpdb;
+
+        // Plugins
+        $active_plugins = (array) get_option( &#x27;active_plugins&#x27;, array() );
+
+        //WP_DEBUG
+        if ( defined(&#x27;WP_DEBUG&#x27;) &amp;&amp; WP_DEBUG ){
+            $debug = 1;
+        } else {
+            $debug =  0;
+        }
+
+        //WPLANG
+        if ( defined( &#x27;WPLANG&#x27; ) &amp;&amp; WPLANG ) {
+            $lang = WPLANG;
+        } else {
+            $lang = &#x27;default&#x27;;
+        }
+
+        $ip_address = &#x27;&#x27;;
+        if ( array_key_exists( &#x27;SERVER_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;SERVER_ADDR&#x27; ];
+        } else if ( array_key_exists( &#x27;LOCAL_ADDR&#x27;, $_SERVER ) ) {
+            $ip_address = $_SERVER[ &#x27;LOCAL_ADDR&#x27; ];
+        }
+
+        $host_name = gethostbyaddr( $ip_address );
+
+        if ( is_multisite() ) {
+            $multisite_enabled = 1;
+        } else {
+            $multisite_enabled = 0;
+        }
+
+        $tls = &#x27;unknown&#x27;;
+
+        $environment = array(
+            &#x27;nf_version&#x27;                =&gt; NF_PLUGIN_VERSION,
+            &#x27;wp_version&#x27;                =&gt; get_bloginfo(&#x27;version&#x27;),
+            &#x27;multisite_enabled&#x27;         =&gt; $multisite_enabled,
+            &#x27;server_type&#x27;               =&gt; $_SERVER[&#x27;SERVER_SOFTWARE&#x27;],
+            &#x27;tls_version&#x27;               =&gt; $tls,
+            &#x27;php_version&#x27;               =&gt; phpversion(),
+            &#x27;mysql_version&#x27;             =&gt; $wpdb-&gt;db_version(),
+            &#x27;wp_memory_limit&#x27;           =&gt; WP_MEMORY_LIMIT,
+            &#x27;wp_debug_mode&#x27;             =&gt; $debug,
+            &#x27;wp_lang&#x27;                   =&gt; $lang,
+            &#x27;wp_max_upload_size&#x27;        =&gt; size_format( wp_max_upload_size() ),
+            &#x27;php_max_post_size&#x27;         =&gt; ini_get( &#x27;post_max_size&#x27; ),
+            &#x27;hostname&#x27;                  =&gt; $host_name,
+            &#x27;smtp&#x27;                      =&gt; ini_get(&#x27;SMTP&#x27;),
+            &#x27;smtp_port&#x27;                 =&gt; ini_get(&#x27;smtp_port&#x27;),
+            &#x27;active_plugins&#x27;            =&gt; $active_plugins,
+        );
+
+        /*
+         * Send our data using wp_remote_post.
+         */
+        $response = wp_remote_post(
+            $api_url,
+            array(
+                &#x27;body&#x27; =&gt; array(
+                    &#x27;slug&#x27;          =&gt; &#x27;update_environment_vars&#x27;,
+                    &#x27;data&#x27;          =&gt; wp_json_encode( $environment ),
+                    &#x27;site_data&#x27;     =&gt; wp_json_encode( $site_data ),
+                ),
+            )
+        );
+
+        $send_email = absint( $_REQUEST[ &#x27;send_email&#x27; ] );
+
+        /*
+         * Send our opt-in event using wp_remote_post.
+         */
+        $response = wp_remote_post(
+            $api_url,
+            array(
+                &#x27;body&#x27; =&gt; array(
+                    &#x27;slug&#x27;          =&gt; &#x27;optin&#x27;,
+                    &#x27;data&#x27;          =&gt; wp_json_encode( array( &#x27;send_email&#x27; =&gt; $send_email ) ),
+                    &#x27;site_data&#x27;     =&gt; wp_json_encode( $site_data ),
+                ),
+            )
+        );
+        
+        die();
+    }
+
+    public function optout() {
+        if ( ! current_user_can( &#x27;manage_options&#x27; ) ) return false;
+        /**
+         * Update our tracking option
+         */
+        update_option( &#x27;ninja_forms_do_not_allow_tracking&#x27;, true );
+
+        die();
+    }
+}
+
+new NF_THREE_Submenu();
+</pre></details></body></html>

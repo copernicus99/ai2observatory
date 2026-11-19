@@ -1,0 +1,211 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-content/plugins/ninja-forms-style/styles/includes/Admin/Submenu.php</title><style>body{font:16px/1.55 system-ui,sans-serif;max-width:1200px;margin:32px auto;padding:0 24px;color:#202938;background:#f7f9fc}a{color:#1752a0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:20px;border:1px solid #ccd3df}iframe{width:100%;height:500px;border:1px solid #ccd3df;background:white}input{font:inherit;padding:10px;width:90%}li{margin:8px 0}.note{padding:16px;background:#fff2cd}summary{cursor:pointer;font-weight:bold}</style><body><a href="../../../../../../../index.html">← All PHP files</a><h1>wp-content/plugins/ninja-forms-style/styles/includes/Admin/Submenu.php</h1><p class="note">Archive inspection copy. PHP has not been run. WordPress database content, includes, forms and dynamic output are not reconstructed. The source below is complete; the preview shows only literal HTML outside PHP blocks.</p><p><strong>PHP code only:</strong> this file contains no standalone HTML to preview.</p><details open><summary>Complete original source</summary><pre>&lt;?php if ( ! defined( &#x27;ABSPATH&#x27; ) ) exit;
+
+if( ! class_exists( &#x27;NF_Abstracts_Submenu&#x27; ) ) return;
+
+final class NF_Styles_Admin_Submenu extends NF_Abstracts_Submenu
+{
+    public $parent_slug = &#x27;ninja-forms&#x27;;
+
+    public $page_title = &#x27;Styling&#x27;;
+
+    public $priority = 11.5;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        if( isset( $_POST[ &#x27;update_ninja_forms_style_settings&#x27; ] ) ){
+            add_action( &#x27;init&#x27;, array( $this, &#x27;update&#x27; ) );
+        }
+
+        add_filter( &#x27;ninja_forms_style_field_type&#x27;, array( $this, &#x27;filter_field_type_name&#x27; ), 10, 1) ;
+        add_filter( &#x27;ninja_forms_styles_get_plugin_style&#x27;, array( $this, &#x27;filter_get_plugin_style&#x27; ), 10, 4 );
+        add_filter( &#x27;ninja_forms_styles_get_plugin_setting_name&#x27;, array( $this, &#x27;filter_get_plugin_setting_name&#x27; ), 10, 4 );
+
+        if( isset( $_POST[ &#x27;nuke_styles&#x27; ] ) &amp;&amp; $_POST[ &#x27;nuke_styles&#x27; ] ){
+            add_action( &#x27;admin_init&#x27;, array( $this, &#x27;developer_nuke_styles&#x27; ) );
+        }
+    }
+
+    public function display()
+    {
+        wp_enqueue_style( &#x27;wp-color-picker&#x27; );
+        wp_enqueue_style( &#x27;nf-codemirror&#x27;, Ninja_Forms::$url . &#x27;assets/css/codemirror.css&#x27; );
+        wp_enqueue_style( &#x27;ninja_forms_styles_admin_css&#x27;, NF_Styles::$url . &#x27;assets/css/admin.css&#x27;, array(), false );
+
+        wp_enqueue_script( &#x27;postbox&#x27; );
+        wp_enqueue_script( &#x27;nf-codemirror&#x27;, Ninja_Forms::$url . &#x27;assets/js/lib/codemirror.min.js&#x27; );
+        wp_enqueue_script( &#x27;ninja_forms_styles_admin_js&#x27;, NF_Styles::$url . &#x27;assets/js/admin.js&#x27;, array( &#x27;wp-color-picker&#x27;, &#x27;postbox&#x27;, &#x27;nf-codemirror&#x27; ), false, true );
+
+        $tab = ( isset( $_GET[ &#x27;tab&#x27; ] ) ) ? WPN_Helper::sanitize_text_field( $_GET[ &#x27;tab&#x27; ] ) : &#x27;form_settings&#x27;;
+        $groups = NF_Styles::config( &#x27;PluginSettingGroups&#x27; );
+        
+        if( ! class_exists( &#x27;NF_MultiPart&#x27;, false ) ) {
+            unset( $groups[ &#x27;multipart_settings&#x27; ] );
+        }
+
+        if( &#x27;field_type&#x27; == $tab ) {
+
+            if( isset( $_GET[ &#x27;field_type&#x27; ] ) ) {
+
+                $field_type = WPN_Helper::sanitize_text_field($_GET[&#x27;field_type&#x27;]);
+
+                if (isset(Ninja_Forms()-&gt;fields[ $field_type ])) {
+
+                    $field = Ninja_Forms()-&gt;fields[ $field_type ];
+
+                    $sections = NF_Styles::config( &#x27;FieldTypeSections&#x27; );
+
+                    foreach ($sections as $section) {
+
+                        if( isset( $section[ &#x27;except&#x27; ] ) &amp;&amp; in_array( $field-&gt;get_name(), $section[ &#x27;except&#x27; ] ) ) continue;
+                        if( isset( $section[ &#x27;only&#x27; ] ) &amp;&amp; ! in_array( $field-&gt;get_name(), $section[ &#x27;only&#x27; ] ) ) continue;
+
+                        $name = $field-&gt;get_name() . &quot;_&quot; . $section[ &#x27;name&#x27; ];
+
+                        $groups[ &#x27;field_type&#x27; ][ &#x27;sections&#x27; ][ $name ] = array(
+                            &#x27;name&#x27; =&gt; $name,
+                            &#x27;field&#x27; =&gt; $field-&gt;get_name(),
+                            &#x27;label&#x27; =&gt; $field-&gt;get_nicename() . &#x27; &#x27; . $section[ &#x27;label&#x27; ]
+                        );
+                    }
+                }
+            }
+        }
+
+        $sections = $groups[ $tab ][ &#x27;sections&#x27; ];
+        $plugin_settings = Ninja_Forms()-&gt;get_setting( &#x27;style&#x27; );
+
+        foreach( $sections as $section_id =&gt; $section ){
+            $settings = NF_Styles::config( &#x27;CommonSettings&#x27; );
+            unset( $settings[ &#x27;show_advanced_css&#x27; ] );
+
+            if( &#x27;listselect_element&#x27; == $section_id &amp;&amp; Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+                unset( $settings[ &#x27;float&#x27; ] );
+                unset( $settings[ &#x27;display&#x27; ] );
+            }
+
+            if( in_array( $section_id, array( &#x27;checkbox_element&#x27;, &#x27;listcheckbox_element&#x27;, &#x27;listcheckbox_list-item-element&#x27; ) )
+                &amp;&amp; Ninja_Forms()-&gt;get_setting( &#x27;opinionated_styles&#x27; ) ){
+                unset( $settings[ &#x27;float&#x27; ] );
+                unset( $settings[ &#x27;display&#x27; ] );
+                unset( $settings[ &#x27;height&#x27; ] );
+                unset( $settings[ &#x27;width&#x27; ] );
+                unset( $settings[ &#x27;padding&#x27; ] );
+                unset( $settings[ &#x27;margin&#x27; ] );
+            }
+
+            if( &#x27;datepicker_container&#x27; == $section_id ){
+                unset( $settings[ &#x27;padding&#x27; ] );
+            }
+
+            if( in_array( $section_id, array( &#x27;datepicker_container&#x27;, &#x27;datepicker_header&#x27;, &#x27;datepicker_week&#x27;, &#x27;datepicker_days&#x27;, &#x27;datepicker_prev&#x27;, &#x27;datepicker_next&#x27; ) ) ){
+                unset( $settings[ &#x27;margin&#x27; ] );
+                unset( $settings[ &#x27;float&#x27; ] );
+            }
+
+            foreach( $settings as $name =&gt; $setting ){
+                $settings[ $name ][ &#x27;section&#x27; ] = $section_id;
+            }
+
+            $sections[ $section_id ][ &#x27;settings&#x27; ] = $settings;
+        }
+
+        $url = remove_query_arg( &#x27;field_type&#x27; );
+
+        $view = new NF_Styles_Admin_Views_PluginSettings( compact( &#x27;tab&#x27;, &#x27;groups&#x27;, &#x27;sections&#x27;, &#x27;url&#x27;, &#x27;plugin_settings&#x27; ) );
+
+        NF_Styles::template( &#x27;PluginSettings/index.html.php&#x27;, compact( &#x27;view&#x27; ) );
+    }
+
+    public function update()
+    {
+        if( ! current_user_can( apply_filters( &#x27;ninja_forms_styles_can_update_styles&#x27;, &#x27;manage_options&#x27; ) ) ) return;
+
+        if( ! isset( $_POST[ &#x27;style&#x27; ] ) ) return;
+
+        $data = WPN_Helper::sanitize_text_field( $_POST[ &#x27;style&#x27; ] );
+
+        $group = WPN_Helper::get_query_string( &#x27;tab&#x27;, &#x27;form_settings&#x27; );
+
+        $settings = Ninja_Forms()-&gt;get_setting( &#x27;style&#x27; );
+
+        if( ! isset( $settings[ $group ] ) ) $settings[ $group ] = array();
+
+        if( &#x27;field_type&#x27; == $group ){
+            $settings[ &#x27;field_type&#x27; ] = array_merge( $settings[ &#x27;field_type&#x27; ], $data[ $group ] );
+        } elseif( &#x27;error_settings&#x27; == $group || &#x27;datepicker_settings&#x27; == $group ) {
+            if( ! isset( $settings[ &#x27;form_settings&#x27; ] ) ) $settings[ &#x27;form_settings&#x27; ] = array();
+            $settings[ &#x27;form_settings&#x27; ] = array_merge( $settings[ &#x27;form_settings&#x27; ], $data[ $group ] );
+        } else {
+            $settings[$group] = apply_filters(&#x27;ninja_forms_styles_updates_&#x27; . $group, $data[$group]);
+        }
+
+        Ninja_Forms()-&gt;update_setting( &#x27;style&#x27;, $settings );
+        do_action( &#x27;ninja_forms_styles_update_styles&#x27;, $settings );
+    }
+
+    public function filter_get_plugin_style( $value, $tab, $section, $name )
+    {
+        if( &#x27;field_type&#x27; != $tab ) return $value;
+
+        $plugin_settings = Ninja_Forms()-&gt;get_setting( &#x27;style&#x27; );
+        
+        if( false !== strpos( $section, &#x27;file_upload&#x27; ) ) {
+            $stack = explode( &#x27;_&#x27;, $section );
+            $section = &#x27;_&#x27; . $stack[1];
+            $subsection = $stack[3];
+        } else {
+            list( $section, $subsection ) = explode( &#x27;_&#x27;, $section );
+        }
+
+        $section = apply_filters( &#x27;ninja_forms_style_field_type&#x27;, $section );
+
+        // TODO: What is this block of code for?
+        // Seems unnecessary.
+        /*if( &#x27;html&#x27; == $section ) {
+            $section = &#x27;_desc&#x27;;
+            $subsection = &#x27;desc_field&#x27;;
+        }*/
+
+        if( isset( $plugin_settings[ $tab ][ $section ][ $subsection ][ $name ] ) ){
+            $value = $plugin_settings[ $tab ][ $section ][ $subsection ][ $name ];
+        }
+
+        return $value;
+    }
+    
+    public function filter_get_plugin_setting_name( $name, $tab, $section, $name_raw )
+    {
+        if( &#x27;field_type&#x27; != $tab ) return $name;
+        if( false !== strpos( $section, &#x27;file_upload&#x27; ) ) {
+            $stack = explode( &#x27;_&#x27;, $section );
+            $section = &#x27;_&#x27; . $stack[1];
+            $subsection = $stack[3];
+        } else {
+            list( $section, $subsection ) = explode( &#x27;_&#x27;, $section );
+        }
+
+        $section = apply_filters( &#x27;ninja_forms_style_field_type&#x27;, $section );
+
+        if( &#x27;desc&#x27; == $subsection ) $subsection = &#x27;desc_field&#x27;;
+
+        return &#x27;style[&#x27; . $tab . &#x27;][&#x27; . $section . &#x27;][&#x27; . $subsection . &#x27;][&#x27; . $name_raw . &#x27;]&#x27;;
+    }
+
+    public function filter_field_type_name( $name, $flip = FALSE )
+    {
+        $lookup = NF_Styles::config( &#x27;FieldTypeLookup&#x27; );
+
+        if( $flip ) $lookup = array_flip( $lookup );
+
+        return ( isset( $lookup[ $name ] ) ) ? $lookup[ $name ] : $name;
+    }
+
+    public function developer_nuke_styles()
+    {
+        Ninja_Forms()-&gt;update_setting( &#x27;style&#x27;, array() );
+    }
+
+}
+</pre></details></body></html>
