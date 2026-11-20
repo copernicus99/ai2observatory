@@ -1580,3 +1580,8 @@ nav:before {
 .recovered-photo { margin: 32px auto; text-align: center; }
 .recovered-photo img { max-width: 100%; height: auto; }
 .recovered-photo figcaption { margin-top: 12px; }
+
+/* Membership and employment inquiry pages. */
+.inquiry-content section { margin: 32px 0; }
+.inquiry-content p { margin-bottom: 18px; }
+.inquiry-content .btn { max-width: 100%; white-space: normal; }

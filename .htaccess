@@ -2,6 +2,11 @@ DirectoryIndex index.html
 
 RewriteEngine On
 
+# Historical membership and service entry points.
+RewriteRule ^emp\.html$ /employment/ [R=301,L]
+RewriteRule ^reserve/?$ /initial/#existing-member [R=301,L,NE]
+RewriteRule ^[Nn]ew/?$ /initial/#new-member [R=301,L,NE]
+
 # Repair old links before checking whether the requested file exists.
 RewriteCond %{THE_REQUEST} "\s/+([A-Za-z0-9_-][^?\ ]*?)//+([^?\ ]*)"
 RewriteRule ^ /%1/%2 [R=301,L,NE]
